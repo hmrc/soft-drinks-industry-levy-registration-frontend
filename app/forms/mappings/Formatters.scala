@@ -1,9 +1,26 @@
+/*
+ * Copyright 2023 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package forms.mappings
 
+import models.Enumerable
 import play.api.data.FormError
 import play.api.data.format.Formatter
-import models.Enumerable
 
+import scala.util.Try
 import scala.util.control.Exception.nonFatalCatch
 
 trait Formatters {
@@ -77,6 +94,46 @@ trait Formatters {
         }
 
       override def unbind(key: String, value: A): Map[String, String] =
+        baseFormatter.unbind(key, value.toString)
+    }
+
+  private[mappings] def litresFormatter(band: String,
+                                        args: Seq[String] = Seq.empty): Formatter[Long] =
+    new Formatter[Long] {
+
+      val requiredKey = s"litres.error.$band.required"
+      val outOfRangeKey = s"litres.error.$band.outOfMaxVal"
+      val negativeNumber = s"litres.error.$band.negative"
+      val wholeNumberKey = s"litres.error.$band.wholeNumber"
+      val nonNumericKey = s"litres.error.$band.nonNumeric"
+
+
+      val decimalRegexp = """^-?(\d*\.\d*)$"""
+      val numberRegexp = """^\d+$*"""
+      private val baseFormatter = stringFormatter(requiredKey, args)
+
+      override def bind(key: String, data: Map[String, String]) =
+        baseFormatter
+          .bind(key, data)
+          .map(_.replace(",", ""))
+          .flatMap {
+            case s if s.matches(numberRegexp) =>
+              nonFatalCatch
+                .either(s.toLong)
+                .left.map(_ => Seq(FormError(key, outOfRangeKey, args)))
+            case s if s.startsWith("-") =>
+              Left(Seq(FormError(key, negativeNumber, args)))
+            case s if s.matches(decimalRegexp) =>
+              Try(s.split("\\.")(0).toLong)
+                .fold(_ => Left(Seq(FormError(key, outOfRangeKey, args))),
+                  _ => Left(Seq(FormError(key, wholeNumberKey, args))))
+            case s =>
+              nonFatalCatch
+                .either(s.toLong)
+                .left.map(_ => Seq(FormError(key, nonNumericKey, args)))
+          }
+
+      override def unbind(key: String, value: Long) =
         baseFormatter.unbind(key, value.toString)
     }
 }
