@@ -1,4 +1,4 @@
-service.name = soft-drinks-industry-levy-registration-frontend
+service.name = soft-drinks-industry-levy
 
 site.back = Back
 site.remove = Remove
@@ -6,14 +6,32 @@ site.change = Change
 site.no = No
 site.yes = Yes
 site.continue = Continue
+site.saveContinue = Save and continue
 site.start = Start now
 site.startAgain = Start again
 site.signIn = Sign in
 site.govuk = GOV.UK
+site.whatNext = What happens next
+site.print = Print this page
 
 date.day = Day
 date.month = Month
 date.year = Year
+
+litres.lowBand = Litres in the low band
+litres.lowBandHint = At least 5 grams of sugar per 100 millilitres
+litres.highBand = Litres in the high band
+litres.highBandHint = At least 8 grams of sugar per 100 millilitres
+litres.error.lowBand.required = Enter the number of litres in the low band
+litres.error.highBand.required = Enter the number of litres in the high band
+litres.error.lowBand.nonNumeric = Number of litres in the low band must be numeric
+litres.error.highBand.nonNumeric = Number of litres in the high band must be numeric
+litres.error.lowBand.negative = Number of litres in the low band must be a positive number
+litres.error.highBand.negative = Number of litres in the high band must be a positive number
+litres.error.lowBand.wholeNumber = Number of litres in the low band must be a whole number
+litres.error.highBand.wholeNumber = Number of litres in the high band must be a whole number
+litres.error.lowBand.outOfMaxVal = Number of litres in the low band must be less than 100,000,000,000,000
+litres.error.highBand.outOfMaxVal = Number of litres in the high band must be less than 100,000,000,000,000
 
 timeout.title = You’re about to be signed out
 timeout.message = For security reasons, you will be signed out of this service in

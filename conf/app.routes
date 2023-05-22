@@ -4,9 +4,9 @@
 
 GET         /                                            controllers.IndexController.onPageLoad
 
-GET         /assets/*file                                controllers.Assets.versioned(path="/public", file: Asset)
+GET         /start                                       controllers.RegistrationController.start
 
-GET         /language/:lang                              controllers.LanguageSwitchController.switchToLanguage(lang: String)
+GET         /assets/*file                                controllers.Assets.versioned(path="/public", file: Asset)
 
 GET         /refresh-session                             controllers.KeepAliveController.keepAlive
 

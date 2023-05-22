@@ -16,17 +16,69 @@
 
 package base
 
+import config.FrontendAppConfig
 import controllers.actions._
-import models.UserAnswers
+import models.{Contact, LitresInBands, RetrievedActivity, RetrievedSubscription, Site, UkAddress, UserAnswers}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{OptionValues, TryValues}
+import org.scalatestplus.mockito.MockitoSugar
 import play.api.Application
-import play.api.i18n.{Messages, MessagesApi}
+import play.api.i18n.{Lang, Messages, MessagesApi, MessagesImpl}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.libs.json.Writes
+import play.api.mvc.MessagesControllerComponents
 import play.api.test.FakeRequest
+import play.api.test.Helpers.stubControllerComponents
+import queries.Settable
+import services.SessionService
+
+import java.time.LocalDate
+import scala.util.{Failure, Try}
+
+object SpecBase {
+  val aSubscription = RetrievedSubscription(
+    utr = "0000000022",
+    sdilRef = "XKSDIL000000022",
+    orgName = "Super Lemonade Plc",
+    address = UkAddress(List("63 Clifton Roundabout", "Worcester"), "WR53 7CX"),
+    activity = RetrievedActivity(smallProducer = false, largeProducer = true, contractPacker = false, importer = false, voluntaryRegistration = false),
+    liabilityDate = LocalDate.of(2018, 4, 19),
+    productionSites = List(
+      Site(
+        UkAddress(List("33 Rhes Priordy", "East London"), "E73 2RP"),
+        Some("88"),
+        Some("Wild Lemonade Group"),
+        Some(LocalDate.of(2018, 2, 26))),
+      Site(
+        UkAddress(List("117 Jerusalem Court", "St Albans"), "AL10 3UJ"),
+        Some("87"),
+        Some("Highly Addictive Drinks Plc"),
+        Some(LocalDate.of(2019, 8, 19))),
+      Site(
+        UkAddress(List("87B North Liddle Street", "Guildford"), "GU34 7CM"),
+        Some("94"),
+        Some("Monster Bottle Ltd"),
+        Some(LocalDate.of(2017, 9, 23))),
+      Site(
+        UkAddress(List("122 Dinsdale Crescent", "Romford"), "RM95 8FQ"),
+        Some("27"),
+        Some("Super Lemonade Group"),
+        Some(LocalDate.of(2017, 4, 23))),
+      Site(
+        UkAddress(List("105B Godfrey Marchant Grove", "Guildford"), "GU14 8NL"),
+        Some("96"),
+        Some("Star Products Ltd"),
+        Some(LocalDate.of(2017, 2, 11)))
+    ),
+    warehouseSites = List(),
+    contact = Contact(Some("Ava Adams"), Some("Chief Infrastructure Agent"), "04495 206189", "Adeline.Greene@gmail.com"),
+    deregDate = None
+  )
+
+}
 
 trait SpecBase
   extends AnyFreeSpec
@@ -34,19 +86,77 @@ trait SpecBase
     with TryValues
     with OptionValues
     with ScalaFutures
-    with IntegrationPatience {
+    with IntegrationPatience
+     {
 
-  val userAnswersId: String = "id"
+  val internalId: String = "id"
+  val sdilNumber: String = "XKSDIL000000022"
 
-  def emptyUserAnswers : UserAnswers = UserAnswers(userAnswersId)
+  val application = applicationBuilder(userAnswers = None).build()
+  implicit lazy val messagesAPI = application.injector.instanceOf[MessagesApi]
+  implicit lazy val messagesProvider = MessagesImpl(Lang("en"), messagesAPI)
+  lazy val mcc = application.injector.instanceOf[MessagesControllerComponents]
+  lazy val frontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
+
+
+
+  def emptyUserAnswers : UserAnswers = UserAnswers(internalId)
 
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 
-  protected def applicationBuilder(userAnswers: Option[UserAnswers] = None): GuiceApplicationBuilder =
+  protected def applicationBuilder(hasCTEnrolment: Boolean =false, utr: Option[String] = None, userAnswers: Option[UserAnswers] = None): GuiceApplicationBuilder = {
+    val bodyParsers = stubControllerComponents().parsers.defaultBodyParser
     new GuiceApplicationBuilder()
       .overrides(
-        bind[DataRequiredAction].to[DataRequiredActionImpl],
-        bind[IdentifierAction].to[FakeIdentifierAction],
-        bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(userAnswers))
-      )
+        bind[IdentifierAction].toInstance(new FakeIdentifierAction(bodyParsers, hasCTEnrolment, utr)),
+        bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(userAnswers)),
+        bind[DataRequiredAction].to[DataRequiredActionImpl])
+  }
+
+  val aSubscription = RetrievedSubscription(
+    utr = "0000000022",
+    sdilRef = "XKSDIL000000022",
+    orgName = "Super Lemonade Plc",
+    address = UkAddress(List("63 Clifton Roundabout", "Worcester"), "WR53 7CX"),
+    activity = RetrievedActivity(smallProducer = false, largeProducer = true, contractPacker = false, importer = false, voluntaryRegistration = false),
+    liabilityDate = LocalDate.of(2018, 4, 19),
+    productionSites = List(
+      Site(
+        UkAddress(List("33 Rhes Priordy", "East London"), "E73 2RP"),
+        Some("88"),
+        Some("Wild Lemonade Group"),
+        Some(LocalDate.of(2018, 2, 26))),
+      Site(
+        UkAddress(List("117 Jerusalem Court", "St Albans"), "AL10 3UJ"),
+        Some("87"),
+        Some("Highly Addictive Drinks Plc"),
+        Some(LocalDate.of(2019, 8, 19))),
+      Site(
+        UkAddress(List("87B North Liddle Street", "Guildford"), "GU34 7CM"),
+        Some("94"),
+        Some("Monster Bottle Ltd"),
+        Some(LocalDate.of(2017, 9, 23))),
+      Site(
+        UkAddress(List("122 Dinsdale Crescent", "Romford"), "RM95 8FQ"),
+        Some("27"),
+        Some("Super Lemonade Group"),
+        Some(LocalDate.of(2017, 4, 23))),
+      Site(
+        UkAddress(List("105B Godfrey Marchant Grove", "Guildford"), "GU14 8NL"),
+        Some("96"),
+        Some("Star Products Ltd"),
+        Some(LocalDate.of(2017, 2, 11)))
+    ),
+    warehouseSites = List(),
+    contact = Contact(Some("Ava Adams"), Some("Chief Infrastructure Agent"), "04495 206189", "Adeline.Greene@gmail.com"),
+    deregDate = None
+  )
+
+  val userDetailsWithSetMethodsReturningFailure: UserAnswers = new UserAnswers("sdilId") {
+    override def set[A](page: Settable[A], value: A)(implicit writes: Writes[A]): Try[UserAnswers] = Failure[UserAnswers](new Exception(""))
+
+    override def setList[A](producer: Settable[A], value: A)(implicit writes: Writes[A]): Try[UserAnswers] = Failure[UserAnswers](new Exception(""))
+
+    override def setAndRemoveLitresIfReq(page: Settable[Boolean], litresPage: Settable[LitresInBands], value: Boolean)(implicit writes: Writes[Boolean]): Try[UserAnswers] = Failure[UserAnswers](new Exception(""))
+  }
 }
