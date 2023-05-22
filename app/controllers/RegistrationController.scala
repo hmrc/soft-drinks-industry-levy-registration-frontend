@@ -39,11 +39,7 @@ class RegistrationController @Inject()(identify: IdentifierAction,
     implicit request =>
       val defaultUserAnswers = new UserAnswers(request.internalId)
       sessionService.set(defaultUserAnswers).map{
-        case Right(_) if request.hasCTEnrolment =>
-          //ToDo redirect to first page for user with ct enrolment
-          Redirect(routes.IndexController.onPageLoad)
-        case Right(_) => //ToDo redirect to first page for user without ct enrolment
-          Redirect(routes.IndexController.onPageLoad)
+        case Right(_) => Redirect(routes.IndexController.onPageLoad)
         case Left(_) => InternalServerError(errorHandler.internalServerErrorTemplate)
       }
   }

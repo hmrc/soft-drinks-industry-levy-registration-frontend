@@ -10,40 +10,19 @@ class RegistrationControllerISpec extends ControllerITTestHelper {
 
   s"GET $path" - {
     "when the user meets the requirements for registration" - {
-      "and has a IR-CT enrolment" - {
-        "should create a database record and redirect to the ???" in {
-          given
-            .commonPrecondition
+      "should create a database record and redirect to the IndexController" in {
+        given
+          .commonPrecondition
 
-          remove(identifier)
+        remove(identifier)
 
-          WsTestClient.withClient { client =>
-            val result1 = createClientRequestGet(client, baseUrl + path)
+        WsTestClient.withClient { client =>
+          val result1 = createClientRequestGet(client, baseUrl + path)
 
-            whenReady(result1) { res =>
-              res.status mustBe 303
-              res.header(HeaderNames.LOCATION) mustBe Some(routes.IndexController.onPageLoad.url)
-              getAnswers(identifier) mustBe defined
-            }
-          }
-        }
-      }
-
-      "and does not have a IR-CT enrolment" - {
-        "should create a database record and redirect to the ???" in {
-          given
-            .authorisedButNoEnrolmentsPrecondition
-
-          remove(identifier)
-
-          WsTestClient.withClient { client =>
-            val result1 = createClientRequestGet(client, baseUrl + path)
-
-            whenReady(result1) { res =>
-              res.status mustBe 303
-              res.header(HeaderNames.LOCATION) mustBe Some(routes.IndexController.onPageLoad.url)
-              getAnswers(identifier) mustBe defined
-            }
+          whenReady(result1) { res =>
+            res.status mustBe 303
+            res.header(HeaderNames.LOCATION) mustBe Some(routes.IndexController.onPageLoad.url)
+            getAnswers(identifier) mustBe defined
           }
         }
       }

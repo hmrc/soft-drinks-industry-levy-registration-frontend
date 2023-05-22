@@ -22,25 +22,13 @@ import play.api.mvc._
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class FakeIdentifierAction @Inject()(bodyParsers: PlayBodyParsers) extends IdentifierAction  {
+class FakeIdentifierAction(bodyParsers: BodyParser[AnyContent], hasCTEnrolment: Boolean = false, utr: Option[String] = None) extends IdentifierAction  {
 
   override protected def refine[A](request: Request[A]): Future[Either[Result, IdentifierRequest[A]]] =
-    Future.successful(Right(IdentifierRequest(request, "id")))
+    Future.successful(Right(IdentifierRequest(request, "id", hasCTEnrolment, utr)))
 
   override def parser: BodyParser[AnyContent] =
-    bodyParsers.default
-
-  override protected def executionContext: ExecutionContext =
-    scala.concurrent.ExecutionContext.Implicits.global
-}
-
-class FakeIdentifierActionWithCTEnrolment @Inject()(bodyParsers: PlayBodyParsers) extends IdentifierAction  {
-
-  override protected def refine[A](request: Request[A]): Future[Either[Result, IdentifierRequest[A]]] =
-    Future.successful(Right(IdentifierRequest(request, "id", true, Some("utr"))))
-
-  override def parser: BodyParser[AnyContent] =
-    bodyParsers.default
+    bodyParsers
 
   override protected def executionContext: ExecutionContext =
     scala.concurrent.ExecutionContext.Implicits.global
