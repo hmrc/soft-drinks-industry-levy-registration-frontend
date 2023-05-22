@@ -34,7 +34,8 @@ class SoftDrinksIndustryLevyConnector @Inject()(
 
   private def getSubscriptionUrl(identifierValue: String, identifierType: String): String = s"$sdilUrl/subscription/$identifierType/$identifierValue"
 
-  def retrieveSubscription(identifierValue: String, identifierType: String, internalId: String)(implicit hc: HeaderCarrier): Future[Option[RetrievedSubscription]] = {
+  def retrieveSubscription(identifierValue: String, identifierType: String, internalId: String)
+                          (implicit hc: HeaderCarrier): Future[Option[RetrievedSubscription]] = {
     sdilSessionCache.fetchEntry[OptRetrievedSubscription](internalId, SDILSessionKeys.SUBSCRIPTION).flatMap{
       case Some(optSubscription) => Future.successful(optSubscription.optRetrievedSubscription)
       case None =>

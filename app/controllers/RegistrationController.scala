@@ -32,7 +32,7 @@ import scala.concurrent.ExecutionContext
 class RegistrationController @Inject()(identify: IdentifierAction,
                                         sessionService: SessionService,
                                         val controllerComponents: MessagesControllerComponents,
-                                        errorHandler: ErrorHandler,
+                                        errorHandler: ErrorHandler
                                           )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
   def start: Action[AnyContent] = identify.async {
