@@ -21,4 +21,12 @@ import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.{Arbitrary, Gen}
 
 trait ModelGenerators {
+
+  implicit lazy val arbitraryLitresInBands: Arbitrary[LitresInBands] =
+    Arbitrary {
+      for {
+        lowBand <- arbitrary[Long]
+        highBand <- arbitrary[Long]
+      } yield LitresInBands(lowBand, highBand)
+    }
 }

@@ -2,7 +2,6 @@ package controllers
 
 import models.{CheckMode, LitresInBands, NormalMode}
 import org.jsoup.Jsoup
-import pages.HowManyTestYNWithLitresPage
 import play.api.http.HeaderNames
 import play.api.i18n.Messages
 import play.api.libs.json.Json
