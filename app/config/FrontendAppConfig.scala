@@ -52,5 +52,5 @@ class FrontendAppConfig @Inject() (configuration: ServicesConfig) {
   val lowerBandCostPerLitre: BigDecimal = BigDecimal(configuration.getString("lowerBandCostPerLitre"))
   val higherBandCostPerLitre: BigDecimal = BigDecimal(configuration.getString("higherBandCostPerLitre"))
 
-
+  val helpdeskPhoneNumber: String = configuration.getString("helpdeskPhoneNumber")
 }

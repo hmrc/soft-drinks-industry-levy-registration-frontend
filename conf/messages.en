@@ -73,3 +73,7 @@ signedOut.guidance = We did not save your answers.
 
 unauthorised.title = You can’t access this service with this account
 unauthorised.heading = You can’t access this service with this account
+
+cannotRegisterPartnership.title = You cannot register online as a partnership
+cannotRegisterPartnership.heading = You cannot register online as a partnership
+cannotRegisterPartnership.subText = You need to call {0} to register.
