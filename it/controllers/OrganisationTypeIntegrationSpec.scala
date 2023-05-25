@@ -27,7 +27,7 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include(Messages("organisationType" + ".title"))
+            page.title must include(Messages("organisationType.title"))
             val radioInputs = page.getElementsByClass("govuk-radios__input")
             radioInputs.size() mustBe OrganisationType.values.size
 
@@ -56,7 +56,7 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include(Messages("organisationType" + ".title"))
+              page.title must include(Messages("organisationType.title"))
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe OrganisationType.values.size
 
@@ -88,7 +88,7 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include(Messages("organisationType" + ".title"))
+            page.title must include(Messages("organisationType.title"))
             val radioInputs = page.getElementsByClass("govuk-radios__input")
             radioInputs.size() mustBe OrganisationType.values.size
 
@@ -118,7 +118,7 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include(Messages("organisationType" + ".title"))
+              page.title must include(Messages("organisationType.title"))
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe OrganisationType.values.size
 
@@ -177,7 +177,6 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
                 res.status mustBe 303
                 res.header(HeaderNames.LOCATION) mustBe Some(routes.IndexController.onPageLoad.url)
                 val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[OrganisationType]](None)(_.get(OrganisationTypePage))
-                println(Console.BLUE + "data stored when it already contains data and then is submitted " + dataStoredForPage + Console.WHITE)
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe radio
               }
@@ -294,31 +293,3 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
     testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath, Some(Json.obj("value" -> "true")))
   }
 }
-//
-//"OrganisationType" - {
-//    "Should store the organisation type the user selected in UserAnswers" in {
-//      val expectedResult:Some[JsObject] = Some(Json.obj( "organisationType" -> "Sole trader"))
-//      val userAnswers = emptyUserAnswers
-//      setAnswers(userAnswers)
-//      given
-//        .authorisedButNoEnrolmentsPrecondition
-//
-//      WsTestClient.withClient { client =>
-//        val result = client.url(baseUrl + path)
-//          .addCookies(DefaultWSCookie("mdtp", authAndSessionCookie))
-//          .withHttpHeaders("X-Session-ID" -> "XKSDIL000000022",
-//            "Csrf-Token" -> "nocheck")
-//          .withFollowRedirects(false)
-//          .post(Json.obj("value" -> SoleTrader.toString))
-//
-//        whenReady(result) { res =>
-//          res.status mustBe 303
-//          res.header(HeaderNames.LOCATION) mustBe Some(routes.IndexController.onPageLoad.url)
-//          getAnswers(identifier) mustBe defined
-//          println(Console.YELLOW + "userAnswers are  " + userAnswers.get(OrganisationTypePage) + Console.WHITE)
-//          getAnswers(identifier).map(userAnswers => userAnswers.data) mustBe expectedResult
-//        }
-//      }
-//    }
-//  }
-//}
