@@ -23,6 +23,7 @@ class CannotRegisterPartnershipControllerISpec extends ControllerITTestHelper {
           res.status mustBe 200
           val page = Jsoup.parse(res.body)
           page.title must include(Messages("cannotRegisterPartnership" + ".title"))
+          page.getElementsByClass("govuk-body").text() mustBe Messages("cannotRegisterPartnership.subText", "0300 200 1000")
         }
       }
     }
