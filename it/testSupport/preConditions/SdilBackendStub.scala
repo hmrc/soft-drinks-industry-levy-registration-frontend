@@ -48,7 +48,8 @@ case class SdilBackendStub()
     deregDate = None
   )
 
-  val aSubscriptionWithDeRegDate = aSubscription.copy(deregDate = Some(LocalDate.of(2017, 2, 11)))
+  val aSubscriptionWithDeRegDate = aSubscription.copy(
+    deregDate = Some(LocalDate.of(2022, 2, 11)))
 
 
   def retrieveSubscription(identifier: String, refNum: String) = {
@@ -63,7 +64,7 @@ case class SdilBackendStub()
   def retrieveSubscriptionWithDeRegDate(identifier: String, refNum: String) = {
     stubFor(
       get(
-        urlPathMatching(s"/subscription/$identifier/$refNum"))
+        urlEqualTo(s"/subscription/$identifier/$refNum"))
         .willReturn(
           ok(Json.toJson(aSubscriptionWithDeRegDate).toString())))
     builder

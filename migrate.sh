@@ -19,5 +19,8 @@ echo ""
 rsync -avm --include='*.scala' -f 'hide,! */' ../generated-test/ ../test/
 rm -rf ../generated-test/
 
+rsync -avm --include='*.scala' -f 'hide,! */' ../generated-it-test/ ../it/
+rm -rf ../generated-it-test/
+
 echo ""
 echo "Migrations complete"

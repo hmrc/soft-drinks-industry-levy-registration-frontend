@@ -71,7 +71,7 @@ class AuthenticatedIdentifierAction @Inject()(
     sdilConnector.retrieveSubscription(utr, "utr", internalId).flatMap {
       case Some(sub) if sub.deregDate.isEmpty =>
         Future.successful(Left(Redirect(config.sdilFrontendBaseUrl)))
-      case None =>
+      case _ =>
         Future.successful(Right(IdentifierRequest(request, internalId, hasCTEnrolment, Some(utr))))
     }
   }

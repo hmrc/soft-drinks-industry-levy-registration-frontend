@@ -12,15 +12,17 @@ import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
 import play.api.inject._
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc.{CookieHeaderEncoding, MessagesControllerComponents, Session, SessionCookieBaker}
+import play.api.test.DefaultAwaitTimeout
+import play.api.test.Helpers._
 import play.api.{Application, Environment, Mode}
-import repositories.SessionRepository
+import repositories.{SDILSessionCacheRepository, SessionRepository}
 import testSupport.databases.SessionDatabaseOperations
 import uk.gov.hmrc.crypto.PlainText
 import uk.gov.hmrc.play.bootstrap.frontend.filters.crypto.SessionCookieCrypto
 import uk.gov.hmrc.play.health.HealthController
 
 import java.time.{Clock, ZoneOffset}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{Await, ExecutionContext}
 import scala.jdk.CollectionConverters._
 
 trait TestConfiguration
@@ -73,16 +75,20 @@ trait TestConfiguration
     s"microservice.services.auth.port" -> s"$wiremockPort",
     s"microservice.services.bas-gateway.host" -> s"$wiremockHost",
     s"microservice.services.bas-gateway.port" -> s"$wiremockPort",
+    s"microservice.services.soft-drinks-industry-levy-frontend.host" -> s"$wiremockHost",
+    s"microservice.services.soft-drinks-industry-levy-frontend.port" -> s"$wiremockPort",
     s"microservice.services.soft-drinks-industry-levy.host" -> s"$wiremockHost",
     s"microservice.services.soft-drinks-industry-levy.port" -> s"$wiremockPort",
     "play.filters.csrf.header.bypassHeaders.X-Requested-With" -> "*",
     "play.filters.csrf.header.bypassHeaders.Csrf-Token" -> "nocheck",
     "json.encryption.key" -> "fqpLDZ4sumDsekHkeEBlCA==",
     "json.encryption.previousKeys" -> "[]",
-    "play.http.router" -> "testOnlyDoNotUseInAppConf.Routes"
+    "play.http.router" -> "testOnlyDoNotUseInAppConf.Routes",
+    "helpdeskPhoneNumber" -> "0300 200 1000"
   )
 
   override implicit lazy val app: Application = appBuilder().build()
+  val sessionCache = app.injector.instanceOf[SDILSessionCacheRepository]
 
   def configParams: Map[String, Any] = Map()
 
@@ -109,6 +115,7 @@ trait TestConfiguration
   }
 
   override def beforeEach() = {
+    await(sessionCache.collection.drop().toFuture())
     resetAllScenarios()
     reset()
   }
