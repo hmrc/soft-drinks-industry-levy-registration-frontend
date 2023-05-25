@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
-package generators
+package forms
 
-import org.scalacheck.Arbitrary
-import pages._
+import javax.inject.Inject
 
-trait PageGenerators {
+import forms.mappings.Mappings
+import play.api.data.Form
+import models.OrganisationType
 
-  implicit lazy val arbitraryOrganisationTypePage: Arbitrary[OrganisationTypePage.type] =
-    Arbitrary(OrganisationTypePage)
+class OrganisationTypeFormProvider @Inject() extends Mappings {
+
+  def apply(): Form[OrganisationType] =
+    Form(
+      "value" -> enumerable[OrganisationType]("organisationType.error.required")
+    )
 }

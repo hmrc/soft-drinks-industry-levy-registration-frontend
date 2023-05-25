@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package generators
+package pages
 
-import org.scalacheck.Arbitrary
-import pages._
+import models.OrganisationType
+import play.api.libs.json.JsPath
 
-trait PageGenerators {
+case object OrganisationTypePage extends QuestionPage[OrganisationType] {
 
-  implicit lazy val arbitraryOrganisationTypePage: Arbitrary[OrganisationTypePage.type] =
-    Arbitrary(OrganisationTypePage)
+  override def path: JsPath = JsPath \ toString
+
+  override def toString: String = "organisationType"
 }

@@ -22,6 +22,11 @@ import org.scalacheck.{Arbitrary, Gen}
 
 trait ModelGenerators {
 
+  implicit lazy val arbitraryOrganisationType: Arbitrary[OrganisationType] =
+    Arbitrary {
+      Gen.oneOf(OrganisationType.values.toSeq)
+    }
+
   implicit lazy val arbitraryLitresInBands: Arbitrary[LitresInBands] =
     Arbitrary {
       for {

@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
-package generators
+package pages
 
-import org.scalacheck.Arbitrary
-import pages._
+import models.OrganisationType
+import pages.behaviours.PageBehaviours
 
-trait PageGenerators {
+class OrganisationTypeSpec extends PageBehaviours {
 
-  implicit lazy val arbitraryOrganisationTypePage: Arbitrary[OrganisationTypePage.type] =
-    Arbitrary(OrganisationTypePage)
+  "OrganisationTypePage" - {
+
+    beRetrievable[OrganisationType](OrganisationTypePage)
+
+    beSettable[OrganisationType](OrganisationTypePage)
+
+    beRemovable[OrganisationType](OrganisationTypePage)
+  }
 }
