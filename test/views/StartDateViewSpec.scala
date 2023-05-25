@@ -23,6 +23,7 @@ import play.api.i18n.Messages
 import play.api.mvc.Request
 import play.api.test.FakeRequest
 import views.html.StartDateView
+import views.html.helpers.howDoIKnowWhenIBecameLiable
 
 import java.time.LocalDate
 
@@ -30,6 +31,7 @@ import java.time.LocalDate
 class StartDateViewSpec extends ViewSpecHelper {
 
   val view = application.injector.instanceOf[StartDateView]
+  val helperView = application.injector.instanceOf[howDoIKnowWhenIBecameLiable]
   val formProvider = new StartDateFormProvider
   val form = formProvider.apply()
   implicit val request: Request[_] = FakeRequest()
@@ -90,7 +92,7 @@ class StartDateViewSpec extends ViewSpecHelper {
     }
 
     "contain the correct button" - {
-      document.getElementsByClass(Selectors.button).text() mustBe Messages("site.continue")
+      document.getElementsByClass(Selectors.button).text() mustBe Messages("site.saveContinue")
     }
 
     "contains a form with the correct action" - {
