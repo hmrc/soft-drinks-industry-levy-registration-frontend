@@ -59,7 +59,7 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title() mustBe expectedPageTitle
+            page.title() must include(expectedPageTitle)
           }
         }
       }

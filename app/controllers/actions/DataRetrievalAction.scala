@@ -30,12 +30,12 @@ class DataRetrievalActionImpl @Inject()(val sessionService: SessionService,
                                        )(implicit val executionContext: ExecutionContext) extends DataRetrievalAction {
 
   override protected def refine[A](request: IdentifierRequest[A]): Future[Either[Result, OptionalDataRequest[A]]] = {
-
     sessionService.get(request.internalId).map {
       case Right(userAnsOps) =>
         Right(
           OptionalDataRequest(request, request.internalId, request.hasCTEnrolment, request.utr, userAnsOps))
-      case Left(_) => Left(InternalServerError(errorHandler.internalServerErrorTemplate(request)))
+      case Left(_) =>
+        Left(InternalServerError(errorHandler.internalServerErrorTemplate(request)))
     }
   }
 }

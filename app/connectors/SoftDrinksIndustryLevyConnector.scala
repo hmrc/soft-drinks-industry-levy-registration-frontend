@@ -42,7 +42,8 @@ class SoftDrinksIndustryLevyConnector @Inject()(
         http.GET[Option[RetrievedSubscription]](getSubscriptionUrl(identifierValue: String, identifierType)).flatMap {
           optRetrievedSubscription =>
             sdilSessionCache.save(internalId, SDILSessionKeys.SUBSCRIPTION, OptRetrievedSubscription(optRetrievedSubscription))
-              .map{_ => optRetrievedSubscription}
+              .map{_ =>
+                optRetrievedSubscription}
         }
     }
   }

@@ -8,14 +8,12 @@ trait PreconditionHelpers {
     builder
       .user.isAuthorisedAndEnrolled
       .sdilBackend.retrieveSubscriptionNone("utr", "0000001611")
-      .sdilBackend.retrieveSubscriptionNone("sdil", "XKSDIL000000022")
   }
 
   def authorisedWithSdilSubscriptionIncDeRegDatePrecondition = {
     builder
       .user.isAuthorisedAndEnrolled
       .sdilBackend.retrieveSubscriptionWithDeRegDate("utr", "0000001611")
-      .sdilBackend.retrieveSubscriptionWithDeRegDate("sdil", "XKSDIL000000022")
   }
 
   def authorisedButNoEnrolmentsPrecondition = {
@@ -30,7 +28,6 @@ trait PreconditionHelpers {
     builder
       .user.isAuthorisedAndEnrolled
       .sdilBackend.retrieveSubscription("utr", "0000001611")
-      .sdilBackend.retrieveSubscription("sdil", "XKSDIL000000022")
   }
 
   def authorisedWithInvalidRolePrecondition  = {
