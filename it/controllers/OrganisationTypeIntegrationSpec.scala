@@ -27,12 +27,11 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include(Messages("organisationType" + ".title"
-            ) )
+            page.title must include(Messages("organisationType" + ".title"))
             val radioInputs = page.getElementsByClass("govuk-radios__input")
-            radioInputs.size() mustBe OrganisationType.valuesWithOutST.size
+            radioInputs.size() mustBe OrganisationType.values.size
 
-            OrganisationType.valuesWithOutST.zipWithIndex.foreach { case (radio1, index1) =>
+            OrganisationType.values.zipWithIndex.foreach { case (radio1, index1) =>
               radioInputs.get(index1).attr("value") mustBe radio1.toString
               radioInputs.get(index1).hasAttr("checked") mustBe false
             }
@@ -41,7 +40,7 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
       }
     }
 
-    OrganisationType.valuesWithOutST.zipWithIndex.foreach { case (radio, index) =>
+    OrganisationType.values.zipWithIndex.foreach { case (radio, index) =>
       s"when the userAnswers contains data for the page with " + radio.toString + " selected" - {
         s"should return OK and render the page with " + radio.toString + " radio checked" in {
           given
@@ -57,12 +56,11 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include(Messages("organisationType" + ".title"
-              ) )
+              page.title must include(Messages("organisationType" + ".title"))
               val radioInputs = page.getElementsByClass("govuk-radios__input")
-              radioInputs.size() mustBe OrganisationType.valuesWithOutST.size
+              radioInputs.size() mustBe OrganisationType.values.size
 
-              OrganisationType.valuesWithOutST.zipWithIndex.foreach { case (radio1, index1) =>
+              OrganisationType.values.zipWithIndex.foreach { case (radio1, index1) =>
                 radioInputs.get(index1).attr("value") mustBe radio1.toString
                 radioInputs.get(index1).hasAttr("checked") mustBe index == index1
               }
@@ -71,8 +69,7 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
         }
       }
     }
-    testOtherSuccessUserTypes(baseUrl + normalRoutePath, Messages("organisationType" + ".title"
-    ) )
+    testOtherSuccessUserTypes(baseUrl + normalRoutePath, Messages("organisationType" + ".title") + " - soft-drinks-industry-levy - GOV.UK")
     testUnauthorisedUser(baseUrl + normalRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)
   }
@@ -91,12 +88,11 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include(Messages("organisationType" + ".title"
-            ) )
+            page.title must include(Messages("organisationType" + ".title"))
             val radioInputs = page.getElementsByClass("govuk-radios__input")
-            radioInputs.size() mustBe OrganisationType.valuesWithOutST.size
+            radioInputs.size() mustBe OrganisationType.values.size
 
-            OrganisationType.valuesWithOutST.zipWithIndex.foreach { case (radio1, index1) =>
+            OrganisationType.values.zipWithIndex.foreach { case (radio1, index1) =>
               radioInputs.get(index1).attr("value") mustBe radio1.toString
               radioInputs.get(index1).hasAttr("checked") mustBe false
             }
@@ -105,7 +101,7 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
       }
     }
 
-    OrganisationType.valuesWithOutST.zipWithIndex.foreach { case (radio, index) =>
+    OrganisationType.values.zipWithIndex.foreach { case (radio, index) =>
       s"when the userAnswers contains data for the page with " + radio.toString + " selected" - {
         s"should return OK and render the page with " + radio.toString + " radio checked" in {
           given
@@ -122,12 +118,11 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include(Messages("organisationType" + ".title"
-              ) )
+              page.title must include(Messages("organisationType" + ".title"))
               val radioInputs = page.getElementsByClass("govuk-radios__input")
-              radioInputs.size() mustBe OrganisationType.valuesWithOutST.size
+              radioInputs.size() mustBe OrganisationType.values.size
 
-              OrganisationType.valuesWithOutST.zipWithIndex.foreach { case (radio1, index1) =>
+              OrganisationType.values.zipWithIndex.foreach { case (radio1, index1) =>
                 radioInputs.get(index1).attr("value") mustBe radio1.toString
                 radioInputs.get(index1).hasAttr("checked") mustBe index == index1
               }
@@ -136,15 +131,15 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
         }
       }
     }
-    testOtherSuccessUserTypes(baseUrl + checkRoutePath, Messages("organisationType" + ".title"
-    ) )
+    println(Console.BLUE + "getAnswers =  " + getAnswers(sdilNumber) + Console.WHITE)
+    testOtherSuccessUserTypes(baseUrl + checkRoutePath, Messages("organisationType" + ".title") + " - soft-drinks-industry-levy - GOV.UK")
     testUnauthorisedUser(baseUrl + checkRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath)
 
   }
 
   s"POST " + normalRoutePath - {
-    OrganisationType.valuesWithOutST.foreach { case radio =>
+    OrganisationType.values.foreach { case radio =>
       "when the user selects " + radio.toString - {
         "should update the session with the new value and redirect to the index controller" - {
           "when the session contains no data for page" in {
@@ -156,18 +151,21 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
               val result = createClientRequestPOST(
                 client, baseUrl + normalRoutePath, Json.obj("value" -> radio)
               )
-
+              println(Console.MAGENTA + "radio selection is  " + radio + Console.WHITE)
+              println(Console.GREEN + "********************************** Result is " + result.value + Console.WHITE)
               whenReady(result) { res =>
                 res.status mustBe 303
                 res.header(HeaderNames.LOCATION) mustBe Some(routes.IndexController.onPageLoad.url)
                 val dataStoredForPage = getAnswers(sdilNumber).fold[Option[OrganisationType]](None)(_.get(OrganisationTypePage))
+                println(Console.YELLOW + "data stored when user selects an answer is " + dataStoredForPage + Console.WHITE)
+                println(Console.YELLOW + "getAnswers =  " + getAnswers(sdilNumber) + Console.WHITE)
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe radio
               }
             }
           }
 
-          "when the session already contains data for page" in {
+          "when the session already contains data for page !!!!!!!!!!!! This test is failing !!!!!!!!!!!!!" in {
             given
               .commonPrecondition
 
@@ -183,6 +181,7 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
                 res.status mustBe 303
                 res.header(HeaderNames.LOCATION) mustBe Some(routes.IndexController.onPageLoad.url)
                 val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[OrganisationType]](None)(_.get(OrganisationTypePage))
+                println(Console.BLUE + "data stored when it already contains data and then is submitted " + dataStoredForPage + Console.WHITE)
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe radio
               }
@@ -206,15 +205,13 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + Messages("organisationType" + ".title"
-            ) )
+            page.title must include("Error: " + Messages("organisationType" + ".title"))
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")
               .attr("href") mustBe "#value_0"
-            errorSummary.text() mustBe Messages("organisationType" + ".error.required"
-            )
+            errorSummary.text() mustBe Messages("organisationType" + ".error.required")
           }
         }
       }
@@ -272,7 +269,7 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
       }
     }
 
-    "when the user does not select and option" - {
+    "when the user does not select an option" - {
       "should return 400 with required error" in {
         given
           .commonPrecondition
@@ -286,15 +283,13 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + Messages("organisationType" + ".title"
-            ) )
+            page.title must include("Error: " + Messages("organisationType" + ".title"))
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")
               .attr("href") mustBe "#value_0"
-            errorSummary.text() mustBe Messages("organisationType" + ".error.required"
-            )
+            errorSummary.text() mustBe Messages("organisationType" + ".error.required")
           }
         }
       }

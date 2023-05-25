@@ -75,11 +75,11 @@ unauthorised.title = You can’t access this service with this account
 unauthorised.heading = You can’t access this service with this account
 
 organisationType.title = Which of these best describes your business?
-organisationType.limitedCompany = Limited company
-organisationType.lLP = Limited liability partnership (LLP)
+organisationType.limitedcompany = Limited company
+organisationType.limitedliabilitypartnership = Limited liability partnership (LLP)
 organisationType.partnership = Partnership
-organisationType.soleTrader = Sole trader
-organisationType.unincorporatedBody = Unincorporated body
+organisationType.soletrader = Sole trader
+organisationType.unincorporatedbody = Unincorporated body
 organisationType.checkYourAnswersLabel = Which of these best describes your business?
 organisationType.error.required = Select the option that best describes your business
 organisationType.change.hidden = Organisation Type
