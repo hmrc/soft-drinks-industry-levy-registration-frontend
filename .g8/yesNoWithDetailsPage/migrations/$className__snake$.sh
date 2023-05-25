@@ -17,7 +17,7 @@ echo "" >> ../conf/messages.en
 echo "$className;format="decap"$.title = $title$" >> ../conf/messages.en
 echo "$className;format="decap"$.heading = $heading$" >> ../conf/messages.en
 echo "$className;format="decap"$.detailsLink = $detailsLinkText$" >> ../conf/messages.en
-echo "$className;format="decap"$.detailsContent = $className;format="decap"$" >> ../conf/messages.en
+echo "$className;format="decap"$.detailsContent = $detailsContent$" >> ../conf/messages.en
 echo "$className;format="decap"$.checkYourAnswersLabel = $checkYourAnswersLabel$" >> ../conf/messages.en
 echo "$className;format="decap"$.error.required = Select yes if $className;format="decap"$" >> ../conf/messages.en
 echo "$className;format="decap"$.change.hidden = $className$" >> ../conf/messages.en
