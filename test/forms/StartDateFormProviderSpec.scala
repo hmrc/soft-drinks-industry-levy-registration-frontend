@@ -14,21 +14,25 @@
  * limitations under the License.
  */
 
-package generators
+package forms
 
-import models._
-import org.scalacheck.Arbitrary
-import org.scalacheck.Arbitrary.arbitrary
-import pages._
-import play.api.libs.json.{JsValue, Json}
+import java.time.{LocalDate, ZoneOffset}
 
-trait UserAnswersEntryGenerators extends PageGenerators with ModelGenerators {
+import forms.behaviours.DateBehaviours
 
-  implicit lazy val arbitraryStartDateUserAnswersEntry: Arbitrary[(StartDatePage.type, JsValue)] =
-    Arbitrary {
-      for {
-        page  <- arbitrary[StartDatePage.type]
-        value <- arbitrary[Int].map(Json.toJson(_))
-      } yield (page, value)
-    }
+class StartDateFormProviderSpec extends DateBehaviours {
+
+  val form = new StartDateFormProvider()()
+
+  ".value" - {
+
+    val validData = datesBetween(
+      min = LocalDate.of(2000, 1, 1),
+      max = LocalDate.now(ZoneOffset.UTC)
+    )
+
+    behave like dateField(form, "value", validData)
+
+    behave like mandatoryDateField(form, "value", "startDate.error.required.all")
+  }
 }

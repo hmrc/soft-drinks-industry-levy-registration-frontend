@@ -21,3 +21,8 @@ GET         /account/signed-out                          controllers.auth.Signed
 GET         /unauthorised                                controllers.UnauthorisedController.onPageLoad
 
 GET        /cannot-register-partnership                       controllers.CannotRegisterPartnershipController.onPageLoad()
+
+GET        /start-date                              controllers.StartDateController.onPageLoad(mode: Mode = NormalMode)
+POST       /start-date                              controllers.StartDateController.onSubmit(mode: Mode = NormalMode)
+GET        /change-start-date                        controllers.StartDateController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-start-date                        controllers.StartDateController.onSubmit(mode: Mode = CheckMode)
