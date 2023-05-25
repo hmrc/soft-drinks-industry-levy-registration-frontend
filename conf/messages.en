@@ -74,6 +74,16 @@ signedOut.guidance = We did not save your answers.
 unauthorised.title = You can’t access this service with this account
 unauthorised.heading = You can’t access this service with this account
 
+organisationType.title = Which of these best describes your business?
+organisationType.limitedcompany = Limited company
+organisationType.limitedliabilitypartnership = Limited liability partnership (LLP)
+organisationType.partnership = Partnership
+organisationType.soletrader = Sole trader
+organisationType.unincorporatedbody = Unincorporated body
+organisationType.checkYourAnswersLabel = Which of these best describes your business?
+organisationType.error.required = Select the option that best describes your business
+organisationType.change.hidden = Organisation Type
+
 cannotRegisterPartnership.title = You cannot register online as a partnership
 cannotRegisterPartnership.heading = You cannot register online as a partnership
 cannotRegisterPartnership.subText = You need to call {0} to register.

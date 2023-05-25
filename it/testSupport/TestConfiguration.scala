@@ -61,7 +61,7 @@ trait TestConfiguration
   val authData = Map("authToken" -> AUTHORIZE_HEADER_VALUE)
   val sessionAndAuth  = Map("authToken" -> AUTHORIZE_HEADER_VALUE, "sessionId" -> sessionId)
 
-  lazy val sessionRespository: SessionRepository = app.injector.instanceOf[SessionRepository]
+  lazy val sessionRepository: SessionRepository = app.injector.instanceOf[SessionRepository]
 
   val authCookie: String = createSessionCookieAsString(authData).substring(5)
   val authAndSessionCookie: String = createSessionCookieAsString(sessionAndAuth).substring(5)

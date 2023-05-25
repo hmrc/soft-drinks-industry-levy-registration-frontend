@@ -11,20 +11,20 @@ trait SessionDatabaseOperations {
 
   self: TestConfiguration =>
 
-  val sessionRespository: SessionRepository
+  val sessionRepository: SessionRepository
 
   def setAnswers(userAnswers: UserAnswers)(implicit timeout: Duration): Unit = Await.result(
-    sessionRespository.set(userAnswers),
+    sessionRepository.set(userAnswers),
     timeout
   )
 
   def getAnswers(id: String)(implicit timeout: Duration): Option[UserAnswers] = Await.result(
-    sessionRespository.get(id),
+    sessionRepository.get(id),
     timeout
   )
 
   def remove(id: String)(implicit timeout: Duration): Boolean = Await.result(
-    sessionRespository.clear(id),
+    sessionRepository.clear(id),
     timeout
   )
 
