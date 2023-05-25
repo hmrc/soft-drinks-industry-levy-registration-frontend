@@ -12,8 +12,8 @@ import models.$className$
 
 class $className$ControllerISpec extends ControllerITTestHelper {
 
-  val normalRoutePath = "/$className;format="decap"$"
-  val checkRoutePath = "/change$className$"
+  val normalRoutePath = "/$url$"
+  val checkRoutePath = "/change-$url$"
 
   "GET " + normalRoutePath - {
     "when the userAnswers contains no data" - {

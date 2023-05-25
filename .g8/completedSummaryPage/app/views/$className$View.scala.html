@@ -6,7 +6,7 @@
 
 @(userAnswers: UserAnswers)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = titleNoForm(messages("$className;format="decap"$.title")), showBackLink = false) {
+@layout(pageTitle = titleNoForm(messages("$className;format="decap"$.heading")), showBackLink = false) {
 
     @govukPanel(Panel(
     title = Text(messages("$className;format="decap"$.title")),

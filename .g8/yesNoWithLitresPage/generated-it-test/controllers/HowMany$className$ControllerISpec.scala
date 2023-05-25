@@ -12,8 +12,8 @@ import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
 
 class HowMany$className$ControllerISpec extends LitresISpecHelper {
 
-  val normalRoutePath = "/howMany$className$"
-  val checkRoutePath = "/changeHowMany$className$"
+  val normalRoutePath = "/$litresUrl$"
+  val checkRoutePath = "/$litresUrl$"
 
   val userAnswers = emptyUserAnswers.set(HowMany$className$Page, litresInBands).success.value
 

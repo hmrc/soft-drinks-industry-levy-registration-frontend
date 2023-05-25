@@ -11,8 +11,8 @@ import play.api.test.WsTestClient
 
 class $className$ControllerISpec extends ControllerITTestHelper {
 
-  val normalRoutePath = "/$className;format="decap"$"
-  val checkRoutePath = "/change$className$"
+  val normalRoutePath = "/$yesNoUrl$"
+  val checkRoutePath = "/change-$yesNoUrl$"
 
   "GET " + normalRoutePath - {
     "when the userAnswers contains no data" - {
