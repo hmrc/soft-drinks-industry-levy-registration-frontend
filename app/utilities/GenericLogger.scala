@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package generators
+package utilities
 
-import org.scalacheck.Arbitrary
-import pages._
+import play.api.Logger
 
-trait PageGenerators {
+class GenericLogger {
 
-  implicit lazy val arbitraryOrganisationTypePage: Arbitrary[OrganisationTypePage.type] =
-    Arbitrary(OrganisationTypePage)
+  val logger: Logger = Logger(this.getClass)
+
 }

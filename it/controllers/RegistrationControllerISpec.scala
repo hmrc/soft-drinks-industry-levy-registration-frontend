@@ -2,7 +2,7 @@ package controllers
 
 import play.api.http.HeaderNames
 import play.api.test.WsTestClient
-import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, defined, include}
+import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, defined}
 
 class RegistrationControllerISpec extends ControllerITTestHelper {
 

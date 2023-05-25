@@ -20,4 +20,9 @@ GET         /account/signed-out                          controllers.auth.Signed
 
 GET         /unauthorised                                controllers.UnauthorisedController.onPageLoad
 
+GET        /organisation-type                            controllers.OrganisationTypeController.onPageLoad(mode: Mode = NormalMode)
+POST       /organisation-type                            controllers.OrganisationTypeController.onSubmit(mode: Mode = NormalMode)
+GET        /change-organisation-type                     controllers.OrganisationTypeController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-organisation-type                     controllers.OrganisationTypeController.onSubmit(mode: Mode = CheckMode)
+
 GET        /cannot-register-partnership                       controllers.CannotRegisterPartnershipController.onPageLoad()
