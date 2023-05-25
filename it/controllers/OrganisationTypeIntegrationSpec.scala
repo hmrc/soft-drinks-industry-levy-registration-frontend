@@ -151,9 +151,10 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
               val result = createClientRequestPOST(
                 client, baseUrl + normalRoutePath, Json.obj("value" -> radio)
               )
+              println(Console.GREEN + "userAnswers  " + getAnswers(sdilNumber) + Console.WHITE)
               println(Console.MAGENTA + "radio selection is  " + radio + Console.WHITE)
-              println(Console.GREEN + "********************************** Result is " + result.value + Console.WHITE)
               whenReady(result) { res =>
+                println(Console.YELLOW + "********************************** Result is " + res + Console.WHITE)
                 res.status mustBe 303
                 res.header(HeaderNames.LOCATION) mustBe Some(routes.IndexController.onPageLoad.url)
                 val dataStoredForPage = getAnswers(sdilNumber).fold[Option[OrganisationType]](None)(_.get(OrganisationTypePage))
