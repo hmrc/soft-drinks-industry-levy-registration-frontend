@@ -69,7 +69,7 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
         }
       }
     }
-    testOtherSuccessUserTypes(baseUrl + normalRoutePath, Messages("organisationType" + ".title") + " - soft-drinks-industry-levy - GOV.UK")
+    testOtherSuccessUserTypes(baseUrl + normalRoutePath, Messages("organisationType.title"))
     testUnauthorisedUser(baseUrl + normalRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)
   }
@@ -131,7 +131,7 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
         }
       }
     }
-    testOtherSuccessUserTypes(baseUrl + checkRoutePath, Messages("organisationType" + ".title") + " - soft-drinks-industry-levy - GOV.UK")
+    testOtherSuccessUserTypes(baseUrl + checkRoutePath, Messages("organisationType.title"))
     testUnauthorisedUser(baseUrl + checkRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath)
 
@@ -233,7 +233,7 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
               whenReady(result) { res =>
                 res.status mustBe 303
                 res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
-                val dataStoredForPage = getAnswers(sdilNumber).fold[Option[OrganisationType]](None)(_.get(OrganisationTypePage))
+                val dataStoredForPage = getAnswers(identifier).fold[Option[OrganisationType]](None)(_.get(OrganisationTypePage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe radio
               }

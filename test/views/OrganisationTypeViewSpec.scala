@@ -51,13 +51,13 @@ class OrganisationTypeViewSpec extends ViewSpecHelper {
     val html = view(form, NormalMode, withoutSoleTrader = false)(request, messages(application))
     val document = doc(html)
     "should contain the expected title" in {
-      document.title() must include("Which of these best describes your business?")
+      document.title() must include ("Which of these best describes your business? - soft-drinks-industry-levy - GOV.UK")
     }
 
     "should include a legend with the expected heading" in {
       val legend = document.getElementsByClass(Selectors.legend)
       legend.size() mustBe 1
-      legend.get(0).getElementsByClass(Selectors.heading).text() mustEqual Messages("Which of these best describes your business?")
+      legend.get(0).getElementsByClass(Selectors.heading).text() mustEqual "Which of these best describes your business?"
     }
 
     "when the form is not preoccupied and has no errors" - {
