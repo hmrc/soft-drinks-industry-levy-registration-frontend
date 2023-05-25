@@ -84,7 +84,7 @@ trait TestConfiguration
     "json.encryption.key" -> "fqpLDZ4sumDsekHkeEBlCA==",
     "json.encryption.previousKeys" -> "[]",
     "play.http.router" -> "testOnlyDoNotUseInAppConf.Routes",
-    "helpdeskPhoneNumber" -> "0300 200 1000"
+    "helpdeskPhoneNumber" -> "0300-200-1000"
   )
 
   override implicit lazy val app: Application = appBuilder().build()
