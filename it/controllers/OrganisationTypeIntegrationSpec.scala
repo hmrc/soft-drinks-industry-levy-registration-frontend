@@ -13,7 +13,7 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
   val normalRoutePath = "/organisation-type"
   val checkRoutePath = "/change-organisation-type"
 
-  "GET " + normalRoutePath - {
+  "GET" + normalRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the OrganisationType page with no data populated" in {
         given
@@ -131,7 +131,6 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
         }
       }
     }
-    println(Console.BLUE + "getAnswers =  " + getAnswers(sdilNumber) + Console.WHITE)
     testOtherSuccessUserTypes(baseUrl + checkRoutePath, Messages("organisationType" + ".title") + " - soft-drinks-industry-levy - GOV.UK")
     testUnauthorisedUser(baseUrl + checkRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath)
@@ -147,26 +146,22 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
               .commonPrecondition
 
             setAnswers(emptyUserAnswers)
+
             WsTestClient.withClient { client =>
               val result = createClientRequestPOST(
                 client, baseUrl + normalRoutePath, Json.obj("value" -> radio)
               )
-              println(Console.GREEN + "userAnswers  " + getAnswers(sdilNumber) + Console.WHITE)
-              println(Console.MAGENTA + "radio selection is  " + radio + Console.WHITE)
               whenReady(result) { res =>
-                println(Console.YELLOW + "********************************** Result is " + res + Console.WHITE)
                 res.status mustBe 303
                 res.header(HeaderNames.LOCATION) mustBe Some(routes.IndexController.onPageLoad.url)
-                val dataStoredForPage = getAnswers(sdilNumber).fold[Option[OrganisationType]](None)(_.get(OrganisationTypePage))
-                println(Console.YELLOW + "data stored when user selects an answer is " + dataStoredForPage + Console.WHITE)
-                println(Console.YELLOW + "getAnswers =  " + getAnswers(sdilNumber) + Console.WHITE)
+                val dataStoredForPage = getAnswers(identifier).fold[Option[OrganisationType]](None)(_.get(OrganisationTypePage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe radio
               }
             }
           }
 
-          "when the session already contains data for page !!!!!!!!!!!! This test is failing !!!!!!!!!!!!!" in {
+          "when the session already contains data for page" in {
             given
               .commonPrecondition
 
