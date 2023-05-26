@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-package models
+package models.backend
 
-import models.backend.UkAddress
 import play.api.libs.json.{Format, Json}
 
-case class Warehouse(tradingName: Option[String],
-                      address: UkAddress)
 
-object Warehouse {
-  implicit val format: Format[Warehouse] = Json.format[Warehouse]
+case class UkAddress(lines: List[String],
+                     postCode: String,
+                     alfId: Option[String] = None)
+
+object UkAddress {
+  implicit val ukAddressFormat: Format[UkAddress] = Json.format[UkAddress]
 }

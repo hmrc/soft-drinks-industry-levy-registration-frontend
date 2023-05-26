@@ -14,26 +14,32 @@
  * limitations under the License.
  */
 
-package models
+package forms
 
-import play.api.libs.json.{Format, Json}
+import forms.behaviours.BooleanFieldBehaviours
+import play.api.data.FormError
 
-import java.time.LocalDate
+class PackagingSiteDetailsFormProviderSpec extends BooleanFieldBehaviours {
 
-case class Site(
-                 address: UkAddress,
-                 ref: Option[String],
-                 tradingName: Option[String],
-                 closureDate: Option[LocalDate]
-               ) {
-  def getLines: List[String] =
-    tradingName.fold(address.lines :+ address.postCode) { x =>
-      (x :: address.lines) :+ address.postCode
-    }
-}
+  val requiredKey = "packagingSiteDetails.error.required"
+  val invalidKey = "error.boolean"
 
-object Site {
-  implicit val format: Format[Site] = Json.format[Site]
+  val form = new PackagingSiteDetailsFormProvider()()
 
+  ".value" - {
 
+    val fieldName = "value"
+
+    behave like booleanField(
+      form,
+      fieldName,
+      invalidError = FormError(fieldName, invalidKey)
+    )
+
+    behave like mandatoryField(
+      form,
+      fieldName,
+      requiredError = FormError(fieldName, requiredKey)
+    )
+  }
 }

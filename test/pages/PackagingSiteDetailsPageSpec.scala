@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-package models
+package pages
 
-import models.backend.UkAddress
-import play.api.libs.json.{Format, Json}
+import pages.behaviours.PageBehaviours
 
-case class Warehouse(tradingName: Option[String],
-                      address: UkAddress)
+class PackagingSiteDetailsPageSpec extends PageBehaviours {
 
-object Warehouse {
-  implicit val format: Format[Warehouse] = Json.format[Warehouse]
+  "PackagingSiteDetailsPage" - {
+
+    beRetrievable[Boolean](PackagingSiteDetailsPage)
+
+    beSettable[Boolean](PackagingSiteDetailsPage)
+
+    beRemovable[Boolean](PackagingSiteDetailsPage)
+  }
 }
