@@ -87,3 +87,5 @@ organisationType.change.hidden = Organisation Type
 cannotRegisterPartnership.title = You cannot register online as a partnership
 cannotRegisterPartnership.heading = You cannot register online as a partnership
 cannotRegisterPartnership.subText = You need to call {0} to register.
+doNotRegister.title = You do not need to register
+doNotRegister.heading = You do not need to register
