@@ -12,8 +12,8 @@ import play.api.test.WsTestClient
 
 class $className$ControllerISpec extends ControllerITTestHelper {
 
-  val normalRoutePath = "/$className;format="decap"$"
-  val checkRoutePath = "/change$className$"
+  val normalRoutePath = "/$url$"
+  val checkRoutePath = "/change-$url$"
 
   val $className;format="decap"$JsObject = Json.toJson($className;format="decap"$).as[JsObject].value
   val $className;format="decap"$Map: collection.Map[String, String] = {

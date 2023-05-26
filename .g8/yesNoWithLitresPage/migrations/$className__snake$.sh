@@ -6,32 +6,32 @@ echo "Applying migration $className;format="snake"$"
 echo "Adding routes to conf/app.routes"
 
 echo "" >> ../conf/app.routes
-echo "GET        /$className;format="decap"$                        controllers.$className$Controller.onPageLoad(mode: Mode = NormalMode)" >> ../conf/app.routes
-echo "POST       /$className;format="decap"$                        controllers.$className$Controller.onSubmit(mode: Mode = NormalMode)" >> ../conf/app.routes
+echo "GET        /$yesNoUrl$                        controllers.$className$Controller.onPageLoad(mode: Mode = NormalMode)" >> ../conf/app.routes
+echo "POST       /$yesNoUrl$                        controllers.$className$Controller.onSubmit(mode: Mode = NormalMode)" >> ../conf/app.routes
 
-echo "GET        /change$className$                  controllers.$className$Controller.onPageLoad(mode: Mode = CheckMode)" >> ../conf/app.routes
-echo "POST       /change$className$                  controllers.$className$Controller.onSubmit(mode: Mode = CheckMode)" >> ../conf/app.routes
+echo "GET        /change-$yesNoUrl$                  controllers.$className$Controller.onPageLoad(mode: Mode = CheckMode)" >> ../conf/app.routes
+echo "POST       /change-$yesNoUrl$                  controllers.$className$Controller.onSubmit(mode: Mode = CheckMode)" >> ../conf/app.routes
 
-echo "GET        /howMany$className$                        controllers.HowMany$className$Controller.onPageLoad(mode: Mode = NormalMode)" >> ../conf/app.routes
-echo "POST       /howMany$className$                        controllers.HowMany$className$Controller.onSubmit(mode: Mode = NormalMode)" >> ../conf/app.routes
+echo "GET        /$litresUrl$                        controllers.HowMany$className$Controller.onPageLoad(mode: Mode = NormalMode)" >> ../conf/app.routes
+echo "POST       /$litresUrl$                        controllers.HowMany$className$Controller.onSubmit(mode: Mode = NormalMode)" >> ../conf/app.routes
 
-echo "GET        /changeHowMany$className$                  controllers.HowMany$className$Controller.onPageLoad(mode: Mode = CheckMode)" >> ../conf/app.routes
-echo "POST       /changeHowMany$className$                  controllers.HowMany$className$Controller.onSubmit(mode: Mode = CheckMode)" >> ../conf/app.routes
+echo "GET        /change-$litresUrl$                  controllers.HowMany$className$Controller.onPageLoad(mode: Mode = CheckMode)" >> ../conf/app.routes
+echo "POST       /change-$litresUrl$                  controllers.HowMany$className$Controller.onSubmit(mode: Mode = CheckMode)" >> ../conf/app.routes
 
 echo "Adding messages to conf.messages"
 echo "" >> ../conf/messages.en
-echo "$className;format="decap"$.title = $className;format="decap"$" >> ../conf/messages.en
-echo "$className;format="decap"$.heading = $className;format="decap"$" >> ../conf/messages.en
-echo "$className;format="decap"$.detailsLink = $className;format="decap"$" >> ../conf/messages.en
-echo "$className;format="decap"$.detailsContent = $className;format="decap"$" >> ../conf/messages.en
-echo "$className;format="decap"$.error.required = Select yes if $className;format="decap"$" >> ../conf/messages.en
-echo "$className;format="decap"$.change.hidden = Change $className$" >> ../conf/messages.en
+echo "$className;format="decap"$.title = $yesNoTitle$" >> ../conf/messages.en
+echo "$className;format="decap"$.heading = $yesNoHeading$" >> ../conf/messages.en
+echo "$className;format="decap"$.error.required = Select yes if you $yesNoHeading;format="decap"$" >> ../conf/messages.en
+echo "$className;format="decap"$.checkYourAnswersLabel = $checkYourAnswersLabel$" >> ../conf/messages.en
+echo "$className;format="decap"$.change.hidden = Change $yesNoHeading;format="decap"$" >> ../conf/messages.en
 
-echo "howMany$className$.title = howMany$className$" >> ../conf/messages.en
-echo "howMany$className$.heading = howMany$className$" >> ../conf/messages.en
-echo "howMany$className$.subtext = howMany$className$" >> ../conf/messages.en
+echo "howMany$className$.title = $litresTitle$" >> ../conf/messages.en
+echo "howMany$className$.heading = $litresHeading$" >> ../conf/messages.en
+echo "howMany$className$.subtext = $litresSubText$" >> ../conf/messages.en
 echo "$className;format="decap"$.lowband.litres.hidden = change amount of litres in lowband for $className;format="decap"$" >> ../conf/messages.en
 echo "$className;format="decap"$.highband.litres.hidden = change amount of litres in highband for $className;format="decap"$" >> ../conf/messages.en
+
 
 echo "Adding to UserAnswersEntryGenerators"
 awk '/trait UserAnswersEntryGenerators/ {\
@@ -54,6 +54,7 @@ awk '/trait PageGenerators/ {\
     print "    Arbitrary($className$Page)";\
     next }1' ../test-utils/generators/PageGenerators.scala > tmp && mv tmp ../test-utils/generators/PageGenerators.scala
 
+echo "Adding to UserAnswersGenerator"
 awk '/val generators/ {\
     print;\
     print "    arbitrary[($className$Page.type, JsValue)] ::";\

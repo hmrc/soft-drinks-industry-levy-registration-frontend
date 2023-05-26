@@ -3,19 +3,20 @@ package controllers
 import models.{CheckMode, NormalMode}
 import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
+import pages.$className$Page
 import play.api.http.HeaderNames
 import play.api.i18n.Messages
 import play.api.libs.json.Json
 import play.api.test.WsTestClient
 
-class TestYNWithLitresControllerISpec extends ControllerITTestHelper {
+class $className$ControllerISpec extends ControllerITTestHelper {
 
-  val normalRoutePath = "/testYNWithLitres"
-  val checkRoutePath = "/changeTestYNWithLitres"
+  val normalRoutePath = "/$yesNoUrl$"
+  val checkRoutePath = "/change-$yesNoUrl$"
 
   "GET " + normalRoutePath - {
     "when the userAnswers contains no data" - {
-      "should return OK and render the TestYNWithLitres page with no data populated" in {
+      "should return OK and render the $className$ page with no data populated" in {
         given
           .commonPrecondition
 
@@ -27,7 +28,7 @@ class TestYNWithLitresControllerISpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include(Messages("testYNWithLitres" + ".title"))
+            page.title must include(Messages("$className;format="decap"$" + ".title"))
             val radioInputs = page.getElementsByClass("govuk-radios__input")
             radioInputs.size() mustBe 2
             radioInputs.get(0).attr("value") mustBe "true"
@@ -39,7 +40,7 @@ class TestYNWithLitresControllerISpec extends ControllerITTestHelper {
       }
     }
 
-    userAnswersForTestYNWithLitresPage.foreach { case (key, userAnswers) =>
+    userAnswersFor$className$Page.foreach { case (key, userAnswers) =>
       s"when the userAnswers contains data for the page with " + key + " selected" - {
         s"should return OK and render the page with " + key + " radio checked" in {
           given
@@ -53,7 +54,7 @@ class TestYNWithLitresControllerISpec extends ControllerITTestHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include(Messages("testYNWithLitres" + ".title"))
+              page.title must include(Messages("$className;format="decap"$" + ".title"))
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe 2
               radioInputs.get(0).attr("value") mustBe "true"
@@ -65,14 +66,14 @@ class TestYNWithLitresControllerISpec extends ControllerITTestHelper {
         }
       }
     }
-    testOtherSuccessUserTypes(baseUrl + normalRoutePath, Messages("testYNWithLitres" + ".title"))
+    testOtherSuccessUserTypes(baseUrl + normalRoutePath, Messages("$className;format="decap"$" + ".title"))
     testUnauthorisedUser(baseUrl + normalRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)
   }
 
   s"GET " + checkRoutePath - {
     "when the userAnswers contains no data" - {
-      "should return OK and render the TestYNWithLitres page with no data populated" in {
+      "should return OK and render the $className$ page with no data populated" in {
         given
           .commonPrecondition
 
@@ -84,7 +85,7 @@ class TestYNWithLitresControllerISpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include(Messages("testYNWithLitres" + ".title"))
+            page.title must include(Messages("$className;format="decap"$" + ".title"))
             val radioInputs = page.getElementsByClass("govuk-radios__input")
             radioInputs.size() mustBe 2
             radioInputs.get(0).attr("value") mustBe "true"
@@ -96,7 +97,7 @@ class TestYNWithLitresControllerISpec extends ControllerITTestHelper {
       }
     }
 
-    userAnswersForTestYNWithLitresPage.foreach { case (key, userAnswers) =>
+    userAnswersFor$className$Page.foreach { case (key, userAnswers) =>
       s"when the userAnswers contains data for the page with " + key + " selected" - {
         s"should return OK and render the page with " + key + " radio checked" in {
           given
@@ -110,7 +111,7 @@ class TestYNWithLitresControllerISpec extends ControllerITTestHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include(Messages("testYNWithLitres" + ".title"))
+              page.title must include(Messages("$className;format="decap"$" + ".title"))
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe 2
               radioInputs.get(0).attr("value") mustBe "true"
@@ -123,13 +124,13 @@ class TestYNWithLitresControllerISpec extends ControllerITTestHelper {
       }
     }
 
-    testOtherSuccessUserTypes(baseUrl + checkRoutePath, Messages("testYNWithLitres" + ".title"))
+    testOtherSuccessUserTypes(baseUrl + checkRoutePath, Messages("$className;format="decap"$" + ".title"))
     testUnauthorisedUser(baseUrl + checkRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath)
   }
 
   s"POST " + normalRoutePath - {
-    userAnswersForTestYNWithLitresPage.foreach { case (key, userAnswers) =>
+    userAnswersFor$className$Page.foreach { case (key, userAnswers) =>
       "when the user selects " + key - {
         "should update the session with the new value and redirect to the index controller" - {
           "when the session contains no data for page" in {
@@ -146,12 +147,12 @@ class TestYNWithLitresControllerISpec extends ControllerITTestHelper {
               whenReady(result) { res =>
                 res.status mustBe 303
                 val expectedLocation = if (yesSelected) {
-                  routes.HowManyTestYNWithLitresController.onPageLoad(NormalMode).url
+                  routes.HowMany$className$Controller.onPageLoad(NormalMode).url
                 } else {
-                  routes.TestYNController.onPageLoad(NormalMode).url
+                  $nextPage$.url
                 }
                 res.header(HeaderNames.LOCATION) mustBe Some(expectedLocation)
-                val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(TestYNWithLitresPage))
+                val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get($className$Page))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe yesSelected
               }
@@ -172,12 +173,12 @@ class TestYNWithLitresControllerISpec extends ControllerITTestHelper {
               whenReady(result) { res =>
                 res.status mustBe 303
                 val expectedLocation = if (yesSelected) {
-                  routes.HowManyTestYNWithLitresController.onPageLoad(NormalMode).url
+                  routes.HowMany$className$Controller.onPageLoad(NormalMode).url
                 } else {
-                  routes.TestYNController.onPageLoad(NormalMode).url
+                  $nextPage$.url
                 }
                 res.header(HeaderNames.LOCATION) mustBe Some(expectedLocation)
-                val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(TestYNWithLitresPage))
+                val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get($className$Page))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe yesSelected
               }
@@ -201,13 +202,13 @@ class TestYNWithLitresControllerISpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + Messages("testYNWithLitres" + ".title"))
+            page.title must include("Error: " + Messages("$className;format="decap"$" + ".title"))
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")
               .attr("href") mustBe "#value"
-            errorSummary.text() mustBe Messages("testYNWithLitres" + ".error.required")
+            errorSummary.text() mustBe Messages("$className;format="decap"$" + ".error.required")
           }
         }
       }
@@ -217,7 +218,7 @@ class TestYNWithLitresControllerISpec extends ControllerITTestHelper {
   }
 
   s"POST " + checkRoutePath - {
-    userAnswersForTestYNWithLitresPage.foreach { case (key, userAnswers) =>
+    userAnswersFor$className$Page.foreach { case (key, userAnswers) =>
       "when the user selects " + key - {
         val yesSelected = key == "yes"
         "should update the session with the new value and redirect to the checkAnswers controller" - {
@@ -234,12 +235,12 @@ class TestYNWithLitresControllerISpec extends ControllerITTestHelper {
               whenReady(result) { res =>
                 res.status mustBe 303
                 val expectedLocation = if(yesSelected) {
-                  routes.HowManyTestYNWithLitresController.onPageLoad(CheckMode).url
+                  routes.HowMany$className$Controller.onPageLoad(CheckMode).url
                 } else {
                   routes.CheckYourAnswersController.onPageLoad.url
                 }
                 res.header(HeaderNames.LOCATION) mustBe Some(expectedLocation)
-                val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(TestYNWithLitresPage))
+                val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get($className$Page))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe yesSelected
               }
@@ -260,12 +261,12 @@ class TestYNWithLitresControllerISpec extends ControllerITTestHelper {
               whenReady(result) { res =>
                 res.status mustBe 303
                 val expectedLocation = if (yesSelected) {
-                  routes.HowManyTestYNWithLitresController.onPageLoad(CheckMode).url
+                  routes.HowMany$className$Controller.onPageLoad(CheckMode).url
                 } else {
                   routes.CheckYourAnswersController.onPageLoad.url
                 }
                 res.header(HeaderNames.LOCATION) mustBe Some(expectedLocation)
-                val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(TestYNWithLitresPage))
+                val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get($className$Page))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe yesSelected
               }
@@ -289,13 +290,13 @@ class TestYNWithLitresControllerISpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + Messages("testYNWithLitres" + ".title"))
+            page.title must include("Error: " + Messages("$className;format="decap"$" + ".title"))
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")
               .attr("href") mustBe "#value"
-            errorSummary.text() mustBe Messages("testYNWithLitres" + ".error.required")
+            errorSummary.text() mustBe Messages("$className;format="decap"$" + ".error.required")
           }
         }
       }

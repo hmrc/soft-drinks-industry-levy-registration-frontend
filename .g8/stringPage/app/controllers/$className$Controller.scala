@@ -13,6 +13,7 @@ import views.html.$className$View
 import handlers.ErrorHandler
 
 import scala.concurrent.{ExecutionContext, Future}
+import utilities.GenericLogger
 
 class $className$Controller @Inject()(
                                        override val messagesApi: MessagesApi,
@@ -24,7 +25,8 @@ class $className$Controller @Inject()(
                                        formProvider: $className$FormProvider,
                                        val controllerComponents: MessagesControllerComponents,
                                        view: $className$View,
-                                       val errorHandler: ErrorHandler
+                                       val errorHandler: ErrorHandler,
+                                       val genericLogger: GenericLogger
                                      )(implicit ec: ExecutionContext) extends ControllerHelper {
 
   val form = formProvider()

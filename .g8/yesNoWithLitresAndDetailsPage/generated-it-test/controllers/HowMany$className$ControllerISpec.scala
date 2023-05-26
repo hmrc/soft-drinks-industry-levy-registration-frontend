@@ -2,6 +2,7 @@ package controllers
 
 import models.{CheckMode, LitresInBands, NormalMode}
 import org.jsoup.Jsoup
+import pages.HowMany$className$Page
 import play.api.http.HeaderNames
 import play.api.i18n.Messages
 import play.api.libs.json.Json
@@ -9,23 +10,23 @@ import play.api.test.WsTestClient
 import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
 
 
-class HowManyTestYNWithLitresControllerISpec extends LitresISpecHelper {
+class HowMany$className$ControllerISpec extends LitresISpecHelper {
 
-  val normalRoutePath = "/howManyTestYNWithLitres"
-  val checkRoutePath = "/changeHowManyTestYNWithLitres"
+  val normalRoutePath = "/$litresUrl$"
+  val checkRoutePath = "/change-$litresUrl$"
 
-  val userAnswers = emptyUserAnswers.set(HowManyTestYNWithLitresPage, litresInBands).success.value
+  val userAnswers = emptyUserAnswers.set(HowMany$className$Page, litresInBands).success.value
 
   List(NormalMode, CheckMode).foreach { mode =>
     val (path, redirectLocation) = if(mode == NormalMode) {
-      (normalRoutePath, routes.TestYNController.onPageLoad(NormalMode).url)
+      (normalRoutePath, $nextPage$.url)
     } else {
       (checkRoutePath, routes.CheckYourAnswersController.onPageLoad.url)
     }
 
     "GET " + path - {
       "when the userAnswers contains no data" - {
-        "should return OK and render the litres page for TestYNWithLitres with no data populated" in {
+        "should return OK and render the litres page for $className$ with no data populated" in {
           given
             .commonPrecondition
 
@@ -37,7 +38,7 @@ class HowManyTestYNWithLitresControllerISpec extends LitresISpecHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include(Messages("howManyTestYNWithLitres" + ".title"))
+              page.title must include(Messages("howMany$className$" + ".title"))
               testLitresInBandsNoPrepopulatedData(page)
             }
           }
@@ -57,13 +58,13 @@ class HowManyTestYNWithLitresControllerISpec extends LitresISpecHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include(Messages("howManyTestYNWithLitres" + ".title"))
+              page.title must include(Messages("howMany$className$" + ".title"))
               testLitresInBandsWithPrepopulatedData(page)
             }
           }
         }
       }
-      testOtherSuccessUserTypes(baseUrl + path, Messages("testYNWithLitres" + ".title"))
+      testOtherSuccessUserTypes(baseUrl + path, Messages("howMany$className$" + ".title"))
       testUnauthorisedUser(baseUrl + path)
       testAuthenticatedUserButNoUserAnswers(baseUrl + path)
     }
@@ -84,7 +85,7 @@ class HowManyTestYNWithLitresControllerISpec extends LitresISpecHelper {
               whenReady(result) { res =>
                 res.status mustBe 303
                 res.header(HeaderNames.LOCATION) mustBe Some(redirectLocation)
-                val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[LitresInBands]](None)(_.get(HowManyTestYNWithLitresPage))
+                val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[LitresInBands]](None)(_.get(HowMany$className$Page))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe litresInBands
               }
@@ -104,7 +105,7 @@ class HowManyTestYNWithLitresControllerISpec extends LitresISpecHelper {
               whenReady(result) { res =>
                 res.status mustBe 303
                 res.header(HeaderNames.LOCATION) mustBe Some(redirectLocation)
-                val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[LitresInBands]](None)(_.get(HowManyTestYNWithLitresPage))
+                val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[LitresInBands]](None)(_.get(HowMany$className$Page))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe litresInBandsDiff
               }
@@ -114,7 +115,7 @@ class HowManyTestYNWithLitresControllerISpec extends LitresISpecHelper {
       }
 
       "should return 400 with required error" - {
-        val errorTitle = "Error: " + Messages("howManyTestYNWithLitres.title")
+        val errorTitle = "Error: " + Messages("howMany$className$.title")
 
         "when no questions are answered" in {
           given

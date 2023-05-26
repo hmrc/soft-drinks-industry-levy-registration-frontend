@@ -12,8 +12,8 @@ import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
 
 class HowMany$className$ControllerISpec extends LitresISpecHelper {
 
-  val normalRoutePath = "/howMany$className$"
-  val checkRoutePath = "/changeHowMany$className$"
+  val normalRoutePath = "/$litresUrl$"
+  val checkRoutePath = "/change-$litresUrl$"
 
   val userAnswers = emptyUserAnswers.set(HowMany$className$Page, litresInBands).success.value
 
@@ -64,7 +64,7 @@ class HowMany$className$ControllerISpec extends LitresISpecHelper {
           }
         }
       }
-      testOtherSuccessUserTypes(baseUrl + path, Messages("$className;format="decap"$" + ".title"))
+      testOtherSuccessUserTypes(baseUrl + path, Messages("howMany$className$" + ".title"))
       testUnauthorisedUser(baseUrl + path)
       testAuthenticatedUserButNoUserAnswers(baseUrl + path)
     }

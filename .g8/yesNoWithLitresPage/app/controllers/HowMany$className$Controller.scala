@@ -11,6 +11,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SessionService
 import views.html.HowMany$className$View
 import handlers.ErrorHandler
+import utilities.GenericLogger
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -24,7 +25,8 @@ class HowMany$className;format="cap"$Controller @Inject()(
                                          formProvider: HowManyLitresFormProvider,
                                          val controllerComponents: MessagesControllerComponents,
                                          view: HowMany$className$View,
-                                         val errorHandler: ErrorHandler
+                                         val errorHandler: ErrorHandler,
+                                         val genericLogger: GenericLogger
                                  )(implicit ec: ExecutionContext) extends ControllerHelper {
 
   val form = formProvider()

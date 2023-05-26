@@ -7,7 +7,7 @@ import play.api.test.WsTestClient
 
 class $className$ControllerISpec extends ControllerITTestHelper {
 
-  val normalRoutePath = "/$className;format="decap"$"
+  val normalRoutePath = "/$url$"
 
   "GET " + normalRoutePath - {
     "should return OK and render the $className$ page" in {

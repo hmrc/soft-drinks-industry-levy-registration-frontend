@@ -11,8 +11,8 @@ import play.api.test.WsTestClient
 
 class $className$ControllerISpec extends ControllerITTestHelper {
 
-  val normalRoutePath = "/$className;format="decap"$"
-  val checkRoutePath = "/change$className$"
+  val normalRoutePath = "/$url$"
+  val checkRoutePath = "/change-$url$"
 
   val $className;format="decap"$ = "testing123"
   val $className;format="decap"$Diff = "testing456"
