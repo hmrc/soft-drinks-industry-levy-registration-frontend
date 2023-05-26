@@ -34,6 +34,7 @@ echo "howMany$className$.subtext = $litresSubText$" >> ../conf/messages.en
 echo "$className;format="decap"$.lowband.litres.hidden = change amount of litres in lowband for $className;format="decap"$" >> ../conf/messages.en
 echo "$className;format="decap"$.highband.litres.hidden = change amount of litres in highband for $className;format="decap"$" >> ../conf/messages.en
 
+
 echo "Adding to UserAnswersEntryGenerators"
 awk '/trait UserAnswersEntryGenerators/ {\
     print;\
@@ -55,6 +56,7 @@ awk '/trait PageGenerators/ {\
     print "    Arbitrary($className$Page)";\
     next }1' ../test-utils/generators/PageGenerators.scala > tmp && mv tmp ../test-utils/generators/PageGenerators.scala
 
+echo "Adding to UserAnswersGenerator"
 awk '/val generators/ {\
     print;\
     print "    arbitrary[($className$Page.type, JsValue)] ::";\
@@ -75,13 +77,13 @@ awk '/class Navigator/ {\
     print "  }";\
     next }1' ../app/navigation/Navigator.scala > tmp && mv tmp ../app/navigation/Navigator.scala
 
-awk '/private val normalRoutes/ {\
+awk '/override val normalRoutes/ {\
     print;\
     print "    case $className$Page => userAnswers => navigationFor$className$(userAnswers, NormalMode)";\
     print "    case HowMany$className$Page => userAnswers => $nextPage$";\
     next }1' ../app/navigation/Navigator.scala > tmp && mv tmp ../app/navigation/Navigator.scala
 
-awk '/private val checkRouteMap/ {\
+awk '/override val checkRouteMap/ {\
     print;\
     print "    case $className$Page => userAnswers => navigationFor$className$(userAnswers, CheckMode)";\
     next }1' ../app/navigation/Navigator.scala > tmp && mv tmp ../app/navigation/Navigator.scala

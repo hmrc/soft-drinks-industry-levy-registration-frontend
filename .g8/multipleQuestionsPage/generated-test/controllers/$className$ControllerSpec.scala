@@ -20,6 +20,7 @@ import views.html.$className$View
 
 import scala.concurrent.Future
 import org.jsoup.Jsoup
+import play.api.libs.json.Json
 
 class $className$ControllerSpec extends SpecBase with MockitoSugar with LoggerHelper {
 
@@ -59,8 +60,6 @@ class $className$ControllerSpec extends SpecBase with MockitoSugar with LoggerHe
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
-
-      val userAnswers = UserAnswers(sdilNumber).set($className$Page, true).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 

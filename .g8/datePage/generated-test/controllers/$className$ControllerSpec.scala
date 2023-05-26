@@ -12,7 +12,7 @@ import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.$className$Page
 import play.api.inject.bind
-import play.api.mvc.Call
+import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Call}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.SessionService
@@ -20,6 +20,7 @@ import views.html.$className$View
 
 import scala.concurrent.Future
 import org.jsoup.Jsoup
+import java.time.{LocalDate, ZoneOffset}
 
 class $className$ControllerSpec extends SpecBase with MockitoSugar with LoggerHelper {
 
@@ -30,12 +31,12 @@ class $className$ControllerSpec extends SpecBase with MockitoSugar with LoggerHe
   val formProvider = new $className$FormProvider()
   val form = formProvider()
 
-  def getRequest(): FakeRequest[AnyContentAsEmpty.type] =
+  def getRequest: FakeRequest[AnyContentAsEmpty.type] =
     FakeRequest(GET, $className;
   format = "decap" $Route
   )
 
-  def postRequest(): FakeRequest[AnyContentAsFormUrlEncoded] =
+  def postRequest: FakeRequest[AnyContentAsFormUrlEncoded] =
     FakeRequest(POST, $className;
   format = "decap" $Route
   )
@@ -66,7 +67,7 @@ class $className$ControllerSpec extends SpecBase with MockitoSugar with LoggerHe
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(sdilNumber).set($className$Page, true).success.value
+      val userAnswers = UserAnswers(sdilNumber).set(DatePageNamePage, validAnswer).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
@@ -77,7 +78,7 @@ class $className$ControllerSpec extends SpecBase with MockitoSugar with LoggerHe
         val result = route(application, getRequest).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(validAnswer), NormalMode)(getRequest, messages(application)).toString
       }
     }
 
@@ -125,8 +126,9 @@ class $className$ControllerSpec extends SpecBase with MockitoSugar with LoggerHe
 
           val result = route(application, request).value
 
-        status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+          status(result) mustEqual BAD_REQUEST
+          contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        }
       }
     }
 

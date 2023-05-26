@@ -178,7 +178,7 @@ class $className$ControllerSpec extends SpecBase with MockitoSugar with LoggerHe
         withCaptureOfLoggingFrom(application.injector.instanceOf[GenericLogger].logger) { events =>
           val request =
             FakeRequest(POST, $className;format="decap"$Route)
-              .withFormUrlEncodedBody(("value", $className$.values.head.toString))
+              .withFormUrlEncodedBody(("value", "true"))
 
           await(route(application, request).value)
           events.collectFirst {
