@@ -1,6 +1,9 @@
 package controllers
 
 import base.SpecBase
+import errors.SessionDatabaseInsertError
+import helpers.LoggerHelper
+import utilities.GenericLogger
 import forms.$className$FormProvider
 import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
@@ -18,7 +21,7 @@ import views.html.$className$View
 import scala.concurrent.Future
 import org.jsoup.Jsoup
 
-class $className$ControllerSpec extends SpecBase with MockitoSugar {
+class $className$ControllerSpec extends SpecBase with MockitoSugar with LoggerHelper {
 
   def onwardRoute = Call("GET", "/foo")
 
@@ -80,7 +83,7 @@ class $className$ControllerSpec extends SpecBase with MockitoSugar {
       running(application) {
         val request =
           FakeRequest(POST, $className;format="decap"$Route)
-            .withFormUrlEncodedBody(("value", "true"))
+        .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
 
@@ -96,7 +99,7 @@ class $className$ControllerSpec extends SpecBase with MockitoSugar {
       running(application) {
         val request =
           FakeRequest(POST, $className;format="decap"$Route)
-            .withFormUrlEncodedBody(("value", ""))
+        .withFormUrlEncodedBody(("value", ""))
 
         val boundForm = form.bind(Map("value" -> ""))
 
@@ -130,7 +133,7 @@ class $className$ControllerSpec extends SpecBase with MockitoSugar {
       running(application) {
         val request =
           FakeRequest(POST, $className;format="decap"$Route)
-            .withFormUrlEncodedBody(("value", "true"))
+        .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
 
@@ -155,6 +158,35 @@ class $className$ControllerSpec extends SpecBase with MockitoSugar {
         status(result) mustEqual INTERNAL_SERVER_ERROR
         val page = Jsoup.parse(contentAsString(result))
         page.title() mustBe "Sorry, we are experiencing technical difficulties - 500 - soft-drinks-industry-levy - GOV.UK"
+      }
+    }
+
+    "should log an error message when internal server error is returned when user answers are not set in session repository" in {
+      val mockSessionService = mock[SessionService]
+
+      when(mockSessionService.set(any())) thenReturn Future.successful(Left(SessionDatabaseInsertError))
+
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[SessionService].toInstance(mockSessionService)
+          )
+          .build()
+
+      running(application) {
+        withCaptureOfLoggingFrom(application.injector.instanceOf[GenericLogger].logger) { events =>
+          val request =
+            FakeRequest(POST, $className;format="decap"$Route)
+          .withFormUrlEncodedBody(("value", "true"))
+
+          await(route(application, request).value)
+          events.collectFirst {
+            case event =>
+              event.getLevel.levelStr mustBe "ERROR"
+              event.getMessage mustEqual "Failed to set value in session repository while attempting set on $className;format="decap"$"
+          }.getOrElse(fail("No logging captured"))
+        }
       }
     }
   }

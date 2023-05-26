@@ -11,6 +11,8 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SessionService
 import views.html.$className$View
 import handlers.ErrorHandler
+import utilities.GenericLogger
+
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -19,6 +21,7 @@ class $className;format="cap"$Controller @Inject()(
                                          val sessionService: SessionService,
                                          val navigator: Navigator,
                                          identify: IdentifierAction,
+                                         val genericLogger: GenericLogger,
                                          getData: DataRetrievalAction,
                                          requireData: DataRequiredAction,
                                          formProvider: $className$FormProvider,

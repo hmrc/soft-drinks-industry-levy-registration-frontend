@@ -13,19 +13,21 @@ import views.html.$className$View
 import handlers.ErrorHandler
 
 import scala.concurrent.{ExecutionContext, Future}
+import utilities.GenericLogger
 
 class $className$Controller @Inject()(
-                                        override val messagesApi: MessagesApi,
-                                        val sessionService: SessionService,
-                                        val navigator: Navigator,
-                                        identify: IdentifierAction,
-                                        getData: DataRetrievalAction,
-                                        requireData: DataRequiredAction,
-                                        formProvider: $className$FormProvider,
-                                        val controllerComponents: MessagesControllerComponents,
-                                        view: $className$View,
-                                        val errorHandler: ErrorHandler
-                                      )(implicit ec: ExecutionContext) extends ControllerHelper {
+                                       override val messagesApi: MessagesApi,
+                                       val sessionService: SessionService,
+                                       val navigator: Navigator,
+                                       identify: IdentifierAction,
+                                       getData: DataRetrievalAction,
+                                       requireData: DataRequiredAction,
+                                       formProvider: $className$FormProvider,
+                                       val controllerComponents: MessagesControllerComponents,
+                                       view: $className$View,
+                                       val errorHandler: ErrorHandler,
+                                       val genericLogger: GenericLogger
+                                     )(implicit ec: ExecutionContext) extends ControllerHelper {
 
   val form = formProvider()
 

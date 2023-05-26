@@ -50,8 +50,6 @@ class OrganisationTypeController @Inject()(
   def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
       val withoutSoleTrader: Boolean = if (request.hasCTEnrolment) true else false
-//      println(Console.YELLOW + "hasCTEnrolment is  " + request.hasCTEnrolment + Console.WHITE)
-//      println(Console.YELLOW + "w/o sole trader is " + withoutSoleTrader + Console.WHITE)
       val preparedForm = request.userAnswers.get(OrganisationTypePage) match {
         case None => form
         case Some(value) => form.fill(value)
@@ -63,15 +61,12 @@ class OrganisationTypeController @Inject()(
   def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
       val withoutSoleTrader: Boolean = if (request.hasCTEnrolment) true else false
-//      println(Console.YELLOW + "On Submit hasCTEnrolment is  " + request.hasCTEnrolment + Console.WHITE)
-//      println(Console.YELLOW + "w/o sole trader is " + withoutSoleTrader + Console.WHITE)
       form.bindFromRequest().fold(
         formWithErrors =>
           Future.successful(BadRequest(view(formWithErrors, mode, withoutSoleTrader))),
 
         value => {
           val updatedAnswers = request.userAnswers.set(OrganisationTypePage, value)
-//          println(Console.MAGENTA + "within Submit - Value - userAnswers are " + updatedAnswers.get + Console.WHITE)
           updateDatabaseAndRedirect(updatedAnswers, OrganisationTypePage, mode)
         }
       )

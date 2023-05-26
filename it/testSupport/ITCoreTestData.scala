@@ -26,7 +26,7 @@ trait ITCoreTestData extends TryValues {
   def sdilNumber = "XKSDIL000000022"
   val producerName = Some("Super Cola Ltd")
 
-  val identifier = "some-id"
+  def identifier = "some-id"
 
   implicit val duration = 5.seconds
   def emptyUserAnswers = UserAnswers(identifier, Json.obj())

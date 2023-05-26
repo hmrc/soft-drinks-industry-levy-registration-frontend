@@ -13,6 +13,7 @@ import views.html.HowMany$className$View
 import handlers.ErrorHandler
 
 import scala.concurrent.{ExecutionContext, Future}
+import utilities.GenericLogger
 
 class HowMany$className;format="cap"$Controller @Inject()(
                                          override val messagesApi: MessagesApi,
@@ -24,6 +25,7 @@ class HowMany$className;format="cap"$Controller @Inject()(
                                          formProvider: HowManyLitresFormProvider,
                                          val controllerComponents: MessagesControllerComponents,
                                          view: HowMany$className$View,
+                                         val genericLogger: GenericLogger,
                                          val errorHandler: ErrorHandler
                                  )(implicit ec: ExecutionContext) extends ControllerHelper {
 
