@@ -103,5 +103,5 @@ doNotRegister.paragraph2Link = go back and check your answers
 thirdPartyPackagers.title = Do you use any third parties in the UK to package liable drinks on your behalf?
 thirdPartyPackagers.heading = Do you use any third parties in the UK to package liable drinks on your behalf?
 thirdPartyPackagers.checkYourAnswersLabel = Do you use any third parties in the UK to package liable drinks on your behalf?
-thirdPartyPackagers.error.required = Select yes if thirdPartyPackagers
+thirdPartyPackagers.error.required = Select yes if you use any third parties in the UK to package liable drinks on your behalf
 thirdPartyPackagers.change.hidden = ThirdPartyPackagers
