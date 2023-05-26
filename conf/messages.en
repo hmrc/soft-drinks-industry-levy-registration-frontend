@@ -99,3 +99,9 @@ doNotRegister.b5 = end of the month in which you brought liable drinks into the 
 doNotRegister.b6 = date you know you are going to bring liable drinks into the UK
 doNotRegister.paragraph2 = If this is not right, you need to
 doNotRegister.paragraph2Link = go back and check your answers
+
+thirdPartyPackagers.title = Do you use any third parties in the UK to package liable drinks on your behalf?
+thirdPartyPackagers.heading = Do you use any third parties in the UK to package liable drinks on your behalf?
+thirdPartyPackagers.checkYourAnswersLabel = Do you use any third parties in the UK to package liable drinks on your behalf?
+thirdPartyPackagers.error.required = Select yes if thirdPartyPackagers
+thirdPartyPackagers.change.hidden = ThirdPartyPackagers

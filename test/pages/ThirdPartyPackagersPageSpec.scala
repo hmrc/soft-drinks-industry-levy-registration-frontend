@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-package generators
+package pages
 
-import org.scalacheck.Arbitrary
-import pages._
+import pages.behaviours.PageBehaviours
 
-trait PageGenerators {
+class ThirdPartyPackagersPageSpec extends PageBehaviours {
 
-  implicit lazy val arbitraryThirdPartyPackagersPage: Arbitrary[ThirdPartyPackagersPage.type] =
-    Arbitrary(ThirdPartyPackagersPage)
+  "ThirdPartyPackagersPage" - {
 
-  implicit lazy val arbitraryOrganisationTypePage: Arbitrary[OrganisationTypePage.type] =
-    Arbitrary(OrganisationTypePage)
+    beRetrievable[Boolean](ThirdPartyPackagersPage)
+
+    beSettable[Boolean](ThirdPartyPackagersPage)
+
+    beRemovable[Boolean](ThirdPartyPackagersPage)
+  }
 }
