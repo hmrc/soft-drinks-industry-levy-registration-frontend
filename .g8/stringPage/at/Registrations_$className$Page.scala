@@ -3,7 +3,7 @@
  *
  */
 
-package uk.gov.hmrc.test.sdil.pages.returns
+package uk.gov.hmrc.test.sdil.pages.registration
 
 import uk.gov.hmrc.test.sdil.conf.TestConfiguration
 import uk.gov.hmrc.test.sdil.pages.generic.BasePage

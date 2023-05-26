@@ -31,3 +31,6 @@ GET        /operate-packaging-sites                        controllers.OperatePa
 POST       /operate-packaging-sites                        controllers.OperatePackagingSitesController.onSubmit(mode: Mode = NormalMode)
 GET        /change-operate-packaging-sites                  controllers.OperatePackagingSitesController.onPageLoad(mode: Mode = CheckMode)
 POST       /change-operate-packaging-sites                  controllers.OperatePackagingSitesController.onSubmit(mode: Mode = CheckMode)
+
+GET        /do-not-register                        controllers.DoNotRegisterController.onPageLoad
+
