@@ -87,7 +87,7 @@ trait SpecBase
     with IntegrationPatience
      {
 
-  val internalId: String = "id"
+  def identifier: String = "id"
   val sdilNumber: String = "XKSDIL000000022"
 
   val application = applicationBuilder(userAnswers = None).build()
@@ -98,7 +98,7 @@ trait SpecBase
 
 
 
-  def emptyUserAnswers : UserAnswers = UserAnswers(internalId)
+  def emptyUserAnswers : UserAnswers = UserAnswers(identifier)
 
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 
