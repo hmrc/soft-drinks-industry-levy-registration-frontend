@@ -50,7 +50,7 @@ class $className$ControllerSpec extends SpecBase with MockitoSugar with LoggerHe
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(sdilNumber).set($className$Page, $className$.values.toSet).success.value
+      val userAnswers = UserAnswers(identifier).set($className$Page, $className$.values.toSet).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
@@ -101,7 +101,7 @@ class $className$ControllerSpec extends SpecBase with MockitoSugar with LoggerHe
           FakeRequest(POST, $className;format="decap"$Route)
         .withFormUrlEncodedBody(("value[0]", "invalid value"))
 
-        val boundForm = form.bind(Map("value" -> "invalid value"))
+        val boundForm = form.bind(Map("value[0]" -> "invalid value"))
 
         val view = application.injector.instanceOf[$className$View]
 

@@ -32,7 +32,7 @@ class $className$ControllerSpec extends SpecBase with MockitoSugar with LoggerHe
   lazy val $className;format="decap"$Route = routes.$className$Controller.onPageLoad(NormalMode).url
 
   val userAnswers = UserAnswers(
-    sdilNumber,
+    identifier,
     Json.obj(
       $className$Page.toString -> Json.obj(
         "$field1Name$" -> "value 1",

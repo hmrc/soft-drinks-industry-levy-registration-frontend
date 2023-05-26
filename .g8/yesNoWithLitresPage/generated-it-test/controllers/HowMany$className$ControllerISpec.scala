@@ -64,7 +64,7 @@ class HowMany$className$ControllerISpec extends LitresISpecHelper {
           }
         }
       }
-      testOtherSuccessUserTypes(baseUrl + path, Messages(howMany"$className$" + ".title"))
+      testOtherSuccessUserTypes(baseUrl + path, Messages("howMany$className$" + ".title"))
       testUnauthorisedUser(baseUrl + path)
       testAuthenticatedUserButNoUserAnswers(baseUrl + path)
     }

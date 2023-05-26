@@ -50,7 +50,7 @@ class HowMany$className$ControllerSpec extends SpecBase with MockitoSugar with L
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(sdilNumber).set(HowMany$className$Page, LitresInBands(100, 200)).success.value
+      val userAnswers = UserAnswers(identifier).set(HowMany$className$Page, LitresInBands(100, 200)).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
