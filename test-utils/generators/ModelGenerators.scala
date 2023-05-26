@@ -22,6 +22,11 @@ import org.scalacheck.{Arbitrary, Gen}
 
 trait ModelGenerators {
 
+  implicit lazy val arbitraryHowManyLitresGlobally: Arbitrary[HowManyLitresGlobally] =
+    Arbitrary {
+      Gen.oneOf(HowManyLitresGlobally.values.toSeq)
+    }
+
   implicit lazy val arbitraryOrganisationType: Arbitrary[OrganisationType] =
     Arbitrary {
       Gen.oneOf(OrganisationType.values.toSeq)
