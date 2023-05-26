@@ -24,4 +24,19 @@
 @layout(pageTitle = titleNoForm(messages("doNotRegister.title"))) {
 
     <h1 class="govuk-heading-m">@messages("doNotRegister.heading")</h1>
+
+    <p class="govuk-body">@messages("doNotRegister.paragraph")</p>
+
+    <ul class="govuk-list govuk-list--bullet">
+     <li>@messages("doNotRegister.b1")</li>
+     <li>@messages("doNotRegister.b2")</li>
+     <li>@messages("doNotRegister.b3")</li>
+     <li>@messages("doNotRegister.b4")</li>
+     <li>@messages("doNotRegister.b5")</li>
+     <li>@messages("doNotRegister.b6")</li>
+    </ul>
+
+    <p class="govuk-body">@messages("doNotRegister.paragraph2") <a href="@controllers.routes.IndexController.onPageLoad.url" id="goBackCheckAnswers">@messages("doNotRegister.paragraph2Link")</a></p>
+
+
 }
