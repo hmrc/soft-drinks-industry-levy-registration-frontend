@@ -61,7 +61,7 @@ class $className$ControllerSpec extends SpecBase with MockitoSugar with LoggerHe
         val view = application.injector.instanceOf[$className$View]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode)(getRequest, messages(application)).toString
       }
     }
 
@@ -97,9 +97,6 @@ class $className$ControllerSpec extends SpecBase with MockitoSugar with LoggerHe
           .build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, $className;format="decap"$Route)
-        .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, postRequest).value
 
