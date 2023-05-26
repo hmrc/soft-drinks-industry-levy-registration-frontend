@@ -75,13 +75,13 @@ awk '/class Navigator/ {\
     print "  }";\
     next }1' ../app/navigation/Navigator.scala > tmp && mv tmp ../app/navigation/Navigator.scala
 
-awk '/override val normalRoutes/ {\
+awk '/private val normalRoutes/ {\
     print;\
     print "    case $className$Page => userAnswers => navigationFor$className$(userAnswers, NormalMode)";\
     print "    case HowMany$className$Page => userAnswers => $nextPage$";\
     next }1' ../app/navigation/Navigator.scala > tmp && mv tmp ../app/navigation/Navigator.scala
 
-awk '/override val checkRouteMap/ {\
+awk '/private val checkRouteMap/ {\
     print;\
     print "    case $className$Page => userAnswers => navigationFor$className$(userAnswers, CheckMode)";\
     next }1' ../app/navigation/Navigator.scala > tmp && mv tmp ../app/navigation/Navigator.scala
