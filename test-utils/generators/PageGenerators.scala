@@ -39,6 +39,9 @@ trait PageGenerators {
   implicit lazy val arbitraryThirdPartyPackagersPage: Arbitrary[ThirdPartyPackagersPage.type] =
     Arbitrary(ThirdPartyPackagersPage)
 
+  implicit lazy val arbitraryStartDatePage: Arbitrary[StartDatePage.type] =
+    Arbitrary(StartDatePage)
+
   implicit lazy val arbitraryOrganisationTypePage: Arbitrary[OrganisationTypePage.type] =
     Arbitrary(OrganisationTypePage)
 }
