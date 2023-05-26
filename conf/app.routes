@@ -25,7 +25,12 @@ POST       /organisation-type                            controllers.Organisatio
 GET        /change-organisation-type                     controllers.OrganisationTypeController.onPageLoad(mode: Mode = CheckMode)
 POST       /change-organisation-type                     controllers.OrganisationTypeController.onSubmit(mode: Mode = CheckMode)
 
-GET        /cannot-register-partnership                       controllers.CannotRegisterPartnershipController.onPageLoad()
+GET        /cannot-register-partnership                  controllers.CannotRegisterPartnershipController.onPageLoad()
+
+GET        /how-many-litres-globally                     controllers.HowManyLitresGloballyController.onPageLoad(mode: Mode = NormalMode)
+POST       /how-many-litres-globally                     controllers.HowManyLitresGloballyController.onSubmit(mode: Mode = NormalMode)
+GET        /change-how-many-litres-globally              controllers.HowManyLitresGloballyController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-how-many-litres-globally              controllers.HowManyLitresGloballyController.onSubmit(mode: Mode = CheckMode)
 
 GET        /third-party-packagers                        controllers.ThirdPartyPackagersController.onPageLoad(mode: Mode = NormalMode)
 POST       /third-party-packagers                        controllers.ThirdPartyPackagersController.onSubmit(mode: Mode = NormalMode)
