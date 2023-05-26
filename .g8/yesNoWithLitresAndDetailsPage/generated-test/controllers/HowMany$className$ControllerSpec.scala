@@ -175,7 +175,7 @@ class HowMany$className$ControllerSpec extends SpecBase with MockitoSugar with L
       running(application) {
         withCaptureOfLoggingFrom(application.injector.instanceOf[GenericLogger].logger) { events =>
           val request =
-            FakeRequest(POST, $className;format = "decap" $Route)
+            FakeRequest(POST, howMany$className$Route)
           .withFormUrlEncodedBody(("lowBand", "1000"), ("highBand", "2000"))
 
           await(route(application, request).value)

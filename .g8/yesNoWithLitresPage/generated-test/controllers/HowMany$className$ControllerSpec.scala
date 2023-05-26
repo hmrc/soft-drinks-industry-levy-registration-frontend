@@ -1,6 +1,9 @@
 package controllers
 
 import base.SpecBase
+import errors.SessionDatabaseInsertError
+import helpers.LoggerHelper
+import utilities.GenericLogger
 import forms.HowManyLitresFormProvider
 import models.{NormalMode, UserAnswers, LitresInBands}
 import navigation.{FakeNavigator, Navigator}
@@ -18,7 +21,7 @@ import views.html.HowMany$className$View
 import scala.concurrent.Future
 import org.jsoup.Jsoup
 
-class HowMany$className$ControllerSpec extends SpecBase with MockitoSugar {
+class HowMany$className$ControllerSpec extends SpecBase with MockitoSugar with LoggerHelper{
 
   def onwardRoute = Call("GET", "/foo")
 
@@ -146,13 +149,42 @@ class HowMany$className$ControllerSpec extends SpecBase with MockitoSugar {
       running(application) {
         val request =
           FakeRequest(POST, howMany$className$Route)
-        .withFormUrlEncodedBody(("lowBand", "1000"), ("highBand", "2000"))
+            .withFormUrlEncodedBody(("lowBand", "1000"), ("highBand", "2000"))
 
         val result = route(application, request).value
 
         status(result) mustEqual INTERNAL_SERVER_ERROR
         val page = Jsoup.parse(contentAsString(result))
         page.title() mustBe "Sorry, we are experiencing technical difficulties - 500 - soft-drinks-industry-levy - GOV.UK"
+      }
+    }
+
+    "should log an error message when internal server error is returned when user answers are not set in session repository" in {
+      val mockSessionService = mock[SessionService]
+
+      when(mockSessionService.set(any())) thenReturn Future.successful(Left(SessionDatabaseInsertError))
+
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[SessionService].toInstance(mockSessionService)
+          )
+          .build()
+
+      running(application) {
+        withCaptureOfLoggingFrom(application.injector.instanceOf[GenericLogger].logger) { events =>
+          val request =
+            FakeRequest(POST, howMany$className$Route)
+              .withFormUrlEncodedBody(("lowBand", "1000"), ("highBand", "2000"))
+
+          await(route(application, request).value)
+          events.collectFirst {
+            case event =>
+              event.getLevel.levelStr mustBe "ERROR"
+              event.getMessage mustEqual "Failed to set value in session repository while attempting set on howMany$className$"
+          }.getOrElse(fail("No logging captured"))
+        }
       }
     }
   }
