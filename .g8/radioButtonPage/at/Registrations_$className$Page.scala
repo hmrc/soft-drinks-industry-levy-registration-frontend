@@ -8,7 +8,7 @@ package uk.gov.hmrc.test.sdil.pages.returns
 import uk.gov.hmrc.test.sdil.conf.TestConfiguration
 import uk.gov.hmrc.test.sdil.pages.generic.BasePage
 
-object $className$Page extends BasePage {
+object Registrations_$className$Page extends BasePage {
 
   override val url: String = TestConfiguration.url("registration-frontend") + "/$url$"
   override val title = "$title$"
