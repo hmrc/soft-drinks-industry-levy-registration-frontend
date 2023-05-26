@@ -33,3 +33,8 @@ GET        /change-third-party-packagers                  controllers.ThirdParty
 POST       /change-third-party-packagers                  controllers.ThirdPartyPackagersController.onSubmit(mode: Mode = CheckMode)
 
 GET        /do-not-register                        controllers.DoNotRegisterController.onPageLoad
+
+GET        /ask-secondary-warehouses                        controllers.AskSecondaryWarehousesController.onPageLoad(mode: Mode = NormalMode)
+POST       /ask-secondary-warehouses                        controllers.AskSecondaryWarehousesController.onSubmit(mode: Mode = NormalMode)
+GET        /change-ask-secondary-warehouses                  controllers.AskSecondaryWarehousesController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-ask-secondary-warehouses                  controllers.AskSecondaryWarehousesController.onSubmit(mode: Mode = CheckMode)
