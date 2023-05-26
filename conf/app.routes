@@ -26,3 +26,5 @@ GET        /change-organisation-type                     controllers.Organisatio
 POST       /change-organisation-type                     controllers.OrganisationTypeController.onSubmit(mode: Mode = CheckMode)
 
 GET        /cannot-register-partnership                       controllers.CannotRegisterPartnershipController.onPageLoad()
+
+GET        /do-not-register                        controllers.DoNotRegisterController.onPageLoad

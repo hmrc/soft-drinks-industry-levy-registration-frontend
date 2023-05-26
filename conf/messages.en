@@ -87,3 +87,15 @@ organisationType.change.hidden = Organisation Type
 cannotRegisterPartnership.title = You cannot register online as a partnership
 cannotRegisterPartnership.heading = You cannot register online as a partnership
 cannotRegisterPartnership.subText = You need to call {0} to register.
+
+doNotRegister.title = You do not need to register
+doNotRegister.heading = You do not need to register
+doNotRegister.paragraph = Based on your answers you do not need to register. You will need to register within 30 days of the:
+doNotRegister.b1 = end of the month if you have produced over 1 million litres of liable drinks in the past 12 months
+doNotRegister.b2 = date you know that you will produce over 1 million litres of liable drinks in the next 30 days
+doNotRegister.b3 = end of the month in which you packaged liable drinks for someone else
+doNotRegister.b4 = date you know you are going to package liable drinks for someone else
+doNotRegister.b5 = end of the month in which you brought liable drinks into the UK
+doNotRegister.b6 = date you know you are going to bring liable drinks into the UK
+doNotRegister.paragraph2 = If this is not right, you need to
+doNotRegister.paragraph2Link = go back and check your answers
