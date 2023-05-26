@@ -10,6 +10,12 @@ import scala.concurrent.duration.DurationInt
 
 trait ITCoreTestData extends TryValues {
 
+  val userAnswersForOperatePackagingSitesPage: Map[String, UserAnswers] = {
+    val yesSelected = emptyUserAnswers.set(OperatePackagingSitesPage, true).success.value
+    val noSelected = emptyUserAnswers.set(OperatePackagingSitesPage, false).success.value
+    Map("yes" -> yesSelected, "no" -> noSelected)
+    }
+
   val year = 2022
   val month = 11
   val day = 10

@@ -87,3 +87,9 @@ organisationType.change.hidden = Organisation Type
 cannotRegisterPartnership.title = You cannot register online as a partnership
 cannotRegisterPartnership.heading = You cannot register online as a partnership
 cannotRegisterPartnership.subText = You need to call {0} to register.
+
+operatePackagingSites.title = Do you operate any packaging sites in the UK to package liable drinks for the brands you own?
+operatePackagingSites.heading = Do you operate any packaging sites in the UK to package liable drinks for the brands you own?
+operatePackagingSites.checkYourAnswersLabel = Do you operate any packaging sites in the UK to package liable drinks for the brands you own?
+operatePackagingSites.error.required = Select yes if you operate any packaging sites in the UK to package liable drinks for brands you own
+operatePackagingSites.change.hidden = OperatePackagingSites

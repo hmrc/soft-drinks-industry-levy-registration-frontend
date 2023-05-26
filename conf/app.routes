@@ -26,3 +26,8 @@ GET        /change-organisation-type                     controllers.Organisatio
 POST       /change-organisation-type                     controllers.OrganisationTypeController.onSubmit(mode: Mode = CheckMode)
 
 GET        /cannot-register-partnership                       controllers.CannotRegisterPartnershipController.onPageLoad()
+
+GET        /operate-packaging-sites                        controllers.OperatePackagingSitesController.onPageLoad(mode: Mode = NormalMode)
+POST       /operate-packaging-sites                        controllers.OperatePackagingSitesController.onSubmit(mode: Mode = NormalMode)
+GET        /change-operate-packaging-sites                  controllers.OperatePackagingSitesController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-operate-packaging-sites                  controllers.OperatePackagingSitesController.onSubmit(mode: Mode = CheckMode)
