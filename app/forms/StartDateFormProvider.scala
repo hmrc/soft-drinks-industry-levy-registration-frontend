@@ -24,6 +24,9 @@ import play.api.data.Form
 
 class StartDateFormProvider @Inject() extends Mappings {
 
+  def today: LocalDate = LocalDate.now()
+  def sdilFoundingDate: LocalDate = LocalDate.of(2018,4,5)
+
   def apply(): Form[LocalDate] =
     Form(
       "value" -> localDate(
@@ -31,6 +34,9 @@ class StartDateFormProvider @Inject() extends Mappings {
         allRequiredKey = "startDate.error.required.all",
         twoRequiredKey = "startDate.error.required.two",
         requiredKey    = "startDate.error.required"
+      ).verifying(
+        minDate(sdilFoundingDate, "startDate.minimumDate"),
+        maxDate(today, "startDate.error.maximumDate")
       )
     )
 }

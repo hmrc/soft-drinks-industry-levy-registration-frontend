@@ -90,9 +90,11 @@ startDate.list.help.5= knew you were going to package liable drinks for someone 
 startDate.list.help.6= brought liable drinks into the UK
 startDate.list.help.7= knew you were going to bring liable drinks into the UK
 startDate.checkYourAnswersLabel = StartDate
-startDate.error.required.all = Enter the startDate
-startDate.error.required.two = The date you became liable to register must include {0} and {1}
-startDate.error.required = The date you became liable to register must include {0}
-startDate.error.invalid = Enter a real date
+startDate.error.required.all = Enter the date you became liable to register
+startDate.error.required.two = The date you became liable to register must include a {0} and {1}
+startDate.error.required = The date you became liable to register must include a {0}
+
+startDate.error.invalid = The date you became liable to register must be a real date, like  31 7 2020
+startDate.minimumDate = The date you became liable to register must be after 5 April 2018
 startDate.error.maximumDate = The date you became liable to register must be today or in the past
 startDate.change.hidden = StartDate
