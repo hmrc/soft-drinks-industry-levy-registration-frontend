@@ -38,13 +38,34 @@ trait ITCoreTestData extends TryValues {
   implicit val duration = 5.seconds
   def emptyUserAnswers = UserAnswers(identifier, Json.obj())
 
-  val PackagingSite1 = Site(
+  def packagingSite1 = Site(
     UkAddress(List("33 Rhes Priordy", "East London"), "E73 2RP"),
     None,
     Some("Wild Lemonade Group"),
     None)
 
-  lazy val packagingSiteListWith1 = Map(("78941132", PackagingSite1))
+  def packagingSiteListWith1 = Map(("78941132", packagingSite1))
+
+  val address45Characters = Site(
+    UkAddress(List("29 Station Pl.", "The Railyard", "Cambridge"), "CB1 2FP"),
+    None,
+    None,
+    None)
+
+  val address47Characters = Site(
+    UkAddress(List("29 Station Place", "The Railyard", "Cambridge"), "CB1 2FP"),
+    Some("10"),
+    None,
+    None)
+
+  val address49Characters = Site(
+    UkAddress(List("29 Station PlaceDr", "The Railyard", "Cambridge"), "CB1 2FP"),
+    None,
+    None,
+    None)
+
+  def packagingSiteListWith3 = Map(("12345678", address45Characters), ("23456789", address47Characters), ("34567890", address49Characters))
+
 
   def userAnswersWith1PackingSite = emptyUserAnswers.copy(packagingSiteList = packagingSiteListWith1)
 }

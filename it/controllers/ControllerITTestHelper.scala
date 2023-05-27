@@ -1,5 +1,6 @@
 package controllers
 
+import models.UserAnswers
 import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
 import play.api.http.HeaderNames
@@ -28,12 +29,12 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
       .post(json)
   }
 
-  def testOtherSuccessUserTypes(url: String, expectedPageTitle: String): Unit = {
+  def testOtherSuccessUserTypes(url: String, expectedPageTitle: String, userAnswers: UserAnswers = emptyUserAnswers): Unit = {
     "the user is authenticated, has a sdil subscription with a deregDate" - {
       s"render the $expectedPageTitle page" in {
         given.authorisedWithSdilSubscriptionIncDeRegDatePrecondition
 
-        setAnswers(emptyUserAnswers)
+        setAnswers(userAnswers)
 
         WsTestClient.withClient { client =>
           val result1 = createClientRequestGet(client, url)
@@ -51,7 +52,7 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
       s"render the $expectedPageTitle page" in {
         given.authorisedButNoEnrolmentsPrecondition
 
-        setAnswers(emptyUserAnswers)
+        setAnswers(userAnswers)
 
         WsTestClient.withClient { client =>
           val result1 = createClientRequestGet(client, url)

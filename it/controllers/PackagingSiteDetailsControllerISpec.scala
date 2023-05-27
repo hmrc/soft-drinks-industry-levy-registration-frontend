@@ -21,8 +21,6 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
           .commonPrecondition
 
         setAnswers(userAnswersWith1PackingSite)
-        println("£££££££££££££££££££££££")
-
         WsTestClient.withClient { client =>
           val result1 = createClientRequestGet(client, baseUrl + normalRoutePath)
 
@@ -30,6 +28,45 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
             page.title must include(Messages("packagingSiteDetails" + ".title", 1))
+            val summaryList = page.getElementsByClass("govuk-summary-list")
+            summaryList.size mustBe 1
+            val summaryListRows = summaryList.get(0).getElementsByClass("govuk-summary-list__row")
+            summaryListRows.size() mustBe 1
+            val summaryRow = summaryListRows.get(0)
+            summaryRow.text() must include(packagingSite1.address.lines.mkString(", ") + s", ${packagingSite1.address.postCode}")
+            val radioInputs = page.getElementsByClass("govuk-radios__input")
+            radioInputs.size() mustBe 2
+            radioInputs.get(0).attr("value") mustBe "true"
+            radioInputs.get(0).hasAttr("checked") mustBe false
+            radioInputs.get(1).attr("value") mustBe "false"
+            radioInputs.get(1).hasAttr("checked") mustBe false
+          }
+        }
+      }
+    }
+
+    "when the userAnswers contains more than 1 packagaing site and no data" - {
+      "should return OK and render the PackagingSiteDetails page with no data populated" in {
+        given
+          .commonPrecondition
+
+        setAnswers(emptyUserAnswers.copy(packagingSiteList = packagingSiteListWith3))
+
+        WsTestClient.withClient { client =>
+          val result1 = createClientRequestGet(client, baseUrl + normalRoutePath)
+
+          whenReady(result1) { res =>
+            res.status mustBe 200
+            val page = Jsoup.parse(res.body)
+            page.title must include(Messages("packagingSiteDetails" + ".title", 3))
+            val summaryList = page.getElementsByClass("govuk-summary-list")
+            summaryList.size mustBe 1
+            val summaryListRows = summaryList.get(0).getElementsByClass("govuk-summary-list__row")
+            summaryListRows.size() mustBe 3
+            packagingSiteListWith3.zipWithIndex.foreach { case ((_, site), index) =>
+              val summaryRow = summaryListRows.get(index)
+              summaryRow.text() must include(site.address.lines.mkString(", ") + s", ${site.address.postCode}")
+            }
             val radioInputs = page.getElementsByClass("govuk-radios__input")
             radioInputs.size() mustBe 2
             radioInputs.get(0).attr("value") mustBe "true"
@@ -67,12 +104,12 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
         }
       }
     }
-    testOtherSuccessUserTypes(baseUrl + normalRoutePath, Messages("packagingSiteDetails" + ".title"))
+    testOtherSuccessUserTypes(baseUrl + normalRoutePath, Messages("packagingSiteDetails" + ".title", 1), userAnswersWith1PackingSite)
     testUnauthorisedUser(baseUrl + normalRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)  }
 
   s"GET " + checkRoutePath - {
-    "when the userAnswers contains no data" - {
+    "when the userAnswers contains 1 packagaing site and no data" - {
       "should return OK and render the PackagingSiteDetails page with no data populated" in {
         given
           .commonPrecondition
@@ -86,6 +123,45 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
             page.title must include(Messages("packagingSiteDetails" + ".title", 1))
+            val summaryList = page.getElementsByClass("govuk-summary-list")
+            summaryList.size mustBe 1
+            val summaryListRows = summaryList.get(0).getElementsByClass("govuk-summary-list__row")
+            summaryListRows.size() mustBe 1
+            val summaryRow = summaryListRows.get(0)
+            summaryRow.text() must include(packagingSite1.address.lines.mkString(", ") + s", ${packagingSite1.address.postCode}")
+            val radioInputs = page.getElementsByClass("govuk-radios__input")
+            radioInputs.size() mustBe 2
+            radioInputs.get(0).attr("value") mustBe "true"
+            radioInputs.get(0).hasAttr("checked") mustBe false
+            radioInputs.get(1).attr("value") mustBe "false"
+            radioInputs.get(1).hasAttr("checked") mustBe false
+          }
+        }
+      }
+    }
+
+    "when the userAnswers contains more than 1 packagaing site and no data" - {
+      "should return OK and render the PackagingSiteDetails page with no data populated" in {
+        given
+          .commonPrecondition
+
+        setAnswers(emptyUserAnswers.copy(packagingSiteList = packagingSiteListWith3))
+
+        WsTestClient.withClient { client =>
+          val result1 = createClientRequestGet(client, baseUrl + checkRoutePath)
+
+          whenReady(result1) { res =>
+            res.status mustBe 200
+            val page = Jsoup.parse(res.body)
+            page.title must include(Messages("packagingSiteDetails" + ".title", 3))
+            val summaryList = page.getElementsByClass("govuk-summary-list")
+            summaryList.size mustBe 1
+            val summaryListRows = summaryList.get(0).getElementsByClass("govuk-summary-list__row")
+            summaryListRows.size() mustBe 3
+            packagingSiteListWith3.zipWithIndex.foreach{case((_, site), index) =>
+            val summaryRow = summaryListRows.get(index)
+              summaryRow.text() must include(site.address.lines.mkString(", ") + s", ${site.address.postCode}")
+            }
             val radioInputs = page.getElementsByClass("govuk-radios__input")
             radioInputs.size() mustBe 2
             radioInputs.get(0).attr("value") mustBe "true"
@@ -111,7 +187,13 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include(Messages("packagingSiteDetails" + ".title"))
+              page.title must include(Messages("packagingSiteDetails" + ".title", 1))
+              val summaryList = page.getElementsByClass("govuk-summary-list")
+              summaryList.size mustBe 1
+              val summaryListRows = summaryList.get(0).getElementsByClass("govuk-summary-list__row")
+              summaryListRows.size() mustBe 1
+              val summaryRow = summaryListRows.get(0)
+              summaryRow.text() must include(packagingSite1.address.lines.mkString(", ") + s", ${packagingSite1.address.postCode}")
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe 2
               radioInputs.get(0).attr("value") mustBe "true"
@@ -124,7 +206,7 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
       }
     }
 
-    testOtherSuccessUserTypes(baseUrl + checkRoutePath, Messages("packagingSiteDetails" + ".title"))
+    testOtherSuccessUserTypes(baseUrl + checkRoutePath, Messages("packagingSiteDetails" + ".title", 1), userAnswersWith1PackingSite)
     testUnauthorisedUser(baseUrl + checkRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath)
   }
