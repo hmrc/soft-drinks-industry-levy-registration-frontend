@@ -23,5 +23,6 @@ case class Warehouse(tradingName: Option[String],
                       address: UkAddress)
 
 object Warehouse {
+
   implicit val format: Format[Warehouse] = Json.format[Warehouse]
 }

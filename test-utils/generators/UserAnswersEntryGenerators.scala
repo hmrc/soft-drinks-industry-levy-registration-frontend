@@ -32,6 +32,30 @@ trait UserAnswersEntryGenerators extends PageGenerators with ModelGenerators {
       } yield (page, value)
     }
 
+  implicit lazy val arbitraryHowManyLitresGloballyUserAnswersEntry: Arbitrary[(HowManyLitresGloballyPage.type, JsValue)] =
+    Arbitrary {
+      for {
+        page  <- arbitrary[HowManyLitresGloballyPage.type]
+        value <- arbitrary[HowManyLitresGlobally].map(Json.toJson(_))
+      } yield (page, value)
+    }
+
+  implicit lazy val arbitraryAskSecondaryWarehousesUserAnswersEntry: Arbitrary[(AskSecondaryWarehousesPage.type, JsValue)] =
+    Arbitrary {
+      for {
+        page  <- arbitrary[AskSecondaryWarehousesPage.type]
+        value <- arbitrary[Boolean].map(Json.toJson(_))
+      } yield (page, value)
+    }
+
+  implicit lazy val arbitraryThirdPartyPackagersUserAnswersEntry: Arbitrary[(ThirdPartyPackagersPage.type, JsValue)] =
+    Arbitrary {
+      for {
+        page  <- arbitrary[ThirdPartyPackagersPage.type]
+        value <- arbitrary[Boolean].map(Json.toJson(_))
+      } yield (page, value)
+    }
+
   implicit lazy val arbitraryOrganisationTypeUserAnswersEntry: Arbitrary[(OrganisationTypePage.type, JsValue)] =
     Arbitrary {
       for {

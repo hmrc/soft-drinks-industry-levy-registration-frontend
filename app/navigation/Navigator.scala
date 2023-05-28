@@ -26,13 +26,27 @@ import models._
 @Singleton
 class Navigator @Inject()() {
 
+  private def navigationForThirdPartyPackers(userAnswers: UserAnswers, mode: Mode): Call = {
+    if (userAnswers.get(page = ThirdPartyPackagersPage).contains(true)) {
+      routes.HowManyThirdPartyPackagersController.onPageLoad(mode)
+    } else if(mode == CheckMode){
+        routes.CheckYourAnswersController.onPageLoad
+    } else {
+        routes.IndexController.onPageLoad
+    }
+  }
+
   private val normalRoutes: Page => UserAnswers => Call = {
+    case ThirdPartyPackagersPage => userAnswers => navigationForThirdPartyPackers(userAnswers, NormalMode)
+    case HowManyThirdPartyPackagersPage => userAnswers => routes.IndexController.onPageLoad
     case PackagingSiteDetailsPage => userAnswers => routes.IndexController.onPageLoad
+    case AskSecondaryWarehousesPage => userAnswers => routes.IndexController.onPageLoad
     case OrganisationTypePage => userAnswers => routes.IndexController.onPageLoad
     case _ => _ => routes.IndexController.onPageLoad
   }
 
   private val checkRouteMap: Page => UserAnswers => Call = {
+    case ThirdPartyPackagersPage => userAnswers => navigationForThirdPartyPackers(userAnswers, CheckMode)
     case _ => _ => routes.CheckYourAnswersController.onPageLoad
   }
 

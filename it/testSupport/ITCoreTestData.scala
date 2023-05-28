@@ -15,6 +15,18 @@ trait ITCoreTestData extends TryValues {
     val yesSelected = userAnswersWith1PackingSite.set(PackagingSiteDetailsPage, true).success.value
     val noSelected = userAnswersWith1PackingSite.set(PackagingSiteDetailsPage, false).success.value
     Map("yes" -> yesSelected, "no" -> noSelected)
+  }
+
+  val userAnswersForAskSecondaryWarehousesPage: Map[String, UserAnswers] = {
+    val yesSelected = emptyUserAnswers.set(AskSecondaryWarehousesPage, true).success.value
+    val noSelected = emptyUserAnswers.set(AskSecondaryWarehousesPage, false).success.value
+    Map("yes" -> yesSelected, "no" -> noSelected)
+    }
+
+  val userAnswersForThirdPartyPackagersPage: Map[String, UserAnswers] = {
+    val yesSelected = emptyUserAnswers.set(ThirdPartyPackagersPage, true).success.value
+    val noSelected = emptyUserAnswers.set(ThirdPartyPackagersPage, false).success.value
+    Map("yes" -> yesSelected, "no" -> noSelected)
     }
 
   val year = 2022

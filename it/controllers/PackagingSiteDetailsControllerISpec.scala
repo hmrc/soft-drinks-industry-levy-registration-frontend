@@ -27,13 +27,13 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include(Messages("packagingSiteDetails" + ".title", 1))
+            page.title must include(Messages("packagingSiteDetails" + ".title1Site"))
             val summaryList = page.getElementsByClass("govuk-summary-list")
             summaryList.size mustBe 1
             val summaryListRows = summaryList.get(0).getElementsByClass("govuk-summary-list__row")
             summaryListRows.size() mustBe 1
             val summaryRow = summaryListRows.get(0)
-            summaryRow.text() must include(packagingSite1.address.lines.mkString(", ") + s", ${packagingSite1.address.postCode}")
+            summaryRow.text() must include((packagingSite1.address.lines :+ packagingSite1.address.postCode).mkString(", "))
             val radioInputs = page.getElementsByClass("govuk-radios__input")
             radioInputs.size() mustBe 2
             radioInputs.get(0).attr("value") mustBe "true"
@@ -58,7 +58,7 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include(Messages("packagingSiteDetails" + ".title", 3))
+            page.title must include(Messages("packagingSiteDetails" + ".titleMultipleSites", 3))
             val summaryList = page.getElementsByClass("govuk-summary-list")
             summaryList.size mustBe 1
             val summaryListRows = summaryList.get(0).getElementsByClass("govuk-summary-list__row")
@@ -92,7 +92,7 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include(Messages("packagingSiteDetails" + ".title", 1))
+              page.title must include(Messages("packagingSiteDetails" + ".title1Site"))
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe 2
               radioInputs.get(0).attr("value") mustBe "true"
@@ -104,7 +104,7 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
         }
       }
     }
-    testOtherSuccessUserTypes(baseUrl + normalRoutePath, Messages("packagingSiteDetails" + ".title", 1), userAnswersWith1PackingSite)
+    testOtherSuccessUserTypes(baseUrl + normalRoutePath, Messages("packagingSiteDetails" + ".title1Site"), userAnswersWith1PackingSite)
     testUnauthorisedUser(baseUrl + normalRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)  }
 
@@ -122,13 +122,13 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include(Messages("packagingSiteDetails" + ".title", 1))
+            page.title must include(Messages("packagingSiteDetails" + ".title1Site"))
             val summaryList = page.getElementsByClass("govuk-summary-list")
             summaryList.size mustBe 1
             val summaryListRows = summaryList.get(0).getElementsByClass("govuk-summary-list__row")
             summaryListRows.size() mustBe 1
             val summaryRow = summaryListRows.get(0)
-            summaryRow.text() must include(packagingSite1.address.lines.mkString(", ") + s", ${packagingSite1.address.postCode}")
+            summaryRow.text() must include((packagingSite1.address.lines :+ packagingSite1.address.postCode).mkString(", "))
             val radioInputs = page.getElementsByClass("govuk-radios__input")
             radioInputs.size() mustBe 2
             radioInputs.get(0).attr("value") mustBe "true"
@@ -153,7 +153,7 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include(Messages("packagingSiteDetails" + ".title", 3))
+            page.title must include(Messages("packagingSiteDetails" + ".titleMultipleSites", 3))
             val summaryList = page.getElementsByClass("govuk-summary-list")
             summaryList.size mustBe 1
             val summaryListRows = summaryList.get(0).getElementsByClass("govuk-summary-list__row")
@@ -187,7 +187,7 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include(Messages("packagingSiteDetails" + ".title", 1))
+              page.title must include(Messages("packagingSiteDetails" + ".title1Site"))
               val summaryList = page.getElementsByClass("govuk-summary-list")
               summaryList.size mustBe 1
               val summaryListRows = summaryList.get(0).getElementsByClass("govuk-summary-list__row")
@@ -206,7 +206,7 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
       }
     }
 
-    testOtherSuccessUserTypes(baseUrl + checkRoutePath, Messages("packagingSiteDetails" + ".title", 1), userAnswersWith1PackingSite)
+    testOtherSuccessUserTypes(baseUrl + checkRoutePath, Messages("packagingSiteDetails" + ".title1Site"), userAnswersWith1PackingSite)
     testUnauthorisedUser(baseUrl + checkRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath)
   }
@@ -274,7 +274,7 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + Messages("packagingSiteDetails" + ".title", 1))
+            page.title must include("Error: " + Messages("packagingSiteDetails" + ".title1Site"))
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
@@ -352,7 +352,7 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + Messages("packagingSiteDetails" + ".title", 1))
+            page.title must include("Error: " + Messages("packagingSiteDetails" + ".title1Site"))
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary

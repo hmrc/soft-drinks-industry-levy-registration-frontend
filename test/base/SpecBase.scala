@@ -18,7 +18,8 @@ package base
 
 import config.FrontendAppConfig
 import controllers.actions._
-import models.{Contact, LitresInBands, RetrievedActivity, RetrievedSubscription, Site, UkAddress, UserAnswers}
+import models.backend.{Site, UkAddress}
+import models.{Contact, LitresInBands, RetrievedActivity, RetrievedSubscription, UserAnswers}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers

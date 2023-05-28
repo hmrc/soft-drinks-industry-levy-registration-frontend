@@ -16,6 +16,7 @@
 
 @import views.summary.PackagingSiteDetailsSummary
 @import models.backend.Site
+@import views.helpers.TitleAndHeadingHelper._
 
 @this(
     layout: templates.Layout,
@@ -28,7 +29,7 @@
 
 @(form: Form[_], mode: Mode, siteList: Map[String, Site])(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("packagingSiteDetails.title", siteList.size))) {
+@layout(pageTitle = title(form, getTitleForPackagingSiteDetails(siteList.size))) {
 
     @formHelper(action = routes.PackagingSiteDetailsController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
@@ -36,7 +37,7 @@
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
 
-        <h1 class="govuk-heading-m">@messages("packagingSiteDetails.heading1", siteList.size)</h1>
+        <h1 class="govuk-heading-m">@messages(getHeaderForPackagingSiteDetails(siteList.size))</h1>
 
         @govukSummaryList(PackagingSiteDetailsSummary.summaryList(siteList))
 

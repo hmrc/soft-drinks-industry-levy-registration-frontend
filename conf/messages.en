@@ -87,9 +87,70 @@ organisationType.change.hidden = Organisation Type
 cannotRegisterPartnership.title = You cannot register online as a partnership
 cannotRegisterPartnership.heading = You cannot register online as a partnership
 cannotRegisterPartnership.subText = You need to call {0} to register.
-packagingSiteDetails.title = You added {0} UK packaging site
-packagingSiteDetails.heading1 = You added {0} UK packaging site
+
+packagingSiteDetails.title1Site = You added 1 UK packaging site
+packagingSiteDetails.titleMultipleSites = You added {0} UK packaging sites
+packagingSiteDetails.heading1Site = You added 1 UK packaging site
+packagingSiteDetails.headingMultipleSite = You added {} UK packaging sites
 packagingSiteDetails.heading2 = Do you want to add another UK packaging site?
-packagingSiteDetails.checkYourAnswersLabel = You added {0} UK packaging site
+packagingSiteDetails.hidden = packaging site
+packagingSiteDetails.checkYourAnswersLabel = Packaging sites
 packagingSiteDetails.error.required = Select yes if you want to add another UK packaging site
 packagingSiteDetails.change.hidden = Packaging sites
+
+howManyLitresGlobally.title = How many litres of your own brands of liable drinks have been packaged globally in the past 12 months?
+howManyLitresGlobally.checkYourAnswersLabel = How many litres of your own brands of liable drinks have been packaged globally in the past 12 months?
+howManyLitresGlobally.large = 1 million litres or more
+howManyLitresGlobally.small = Less than 1 million litres
+howManyLitresGlobally.xnot = None
+howManyLitresGlobally.error.required = Select how many litres of your own brands of liable drinks have been packaged globally in the past 12 months
+howManyLitresGlobally.change.hidden = How Many Litres Globally
+
+brandsPackaged.hint = This includes brands you own or have the rights to manufacture.
+whatDoesPackagedMean.summary = What does 'packaged' mean?
+whatDoesPackagedMean.content = A liable drink is packaged if it is bottled, canned, or otherwise packaged, so it is ready to either drink or dilute.
+whatIsALiableDrink.summary = What is a liable drink?
+whatIsALiableDrink.content = A drink is liable if it meets all of the following conditions
+whatIsALiableDrink.bullet1 = it has a content of 1.2% alcohol by volume or less
+whatIsALiableDrink.bullet2 = it is either ready to drink, or to be drunk it must be diluted with water, mixed with crushed ice or processed to make crushed ice, mixed with carbon dioxide, or a combination of these
+whatIsALiableDrink.bullet3 = it is packaged ready for sale
+whatIsALiableDrink.bullet4 = it has had sugar added during production, including pure cane sugars like sucrose and glucose, as well as substances (other than fruit juice, vegetable juice and milk) that contain sugar, such as honey
+whatIsALiableDrink.bullet5 = it contains at least 5 grams (g) of sugar per 100 millilitres (ml) in its ready to drink or diluted form
+whatDrinksAreExempt.summary = What drinks are exempt?
+whatDrinksAreExempt.content = A drink is exempt if it meets one of the following conditions:
+whatDrinksAreExempt.bullet1 = it contains at least 75% milk
+whatDrinksAreExempt.bullet2 = it is a milk-substitute which contains at least 120 milligrams of calcium per 100ml, for example soya or almond milk
+whatDrinksAreExempt.bullet3 = it is an alcohol replacement drink, for example de-alcoholised beer or wine
+whatDrinksAreExempt.bullet4 = it is infant formula, follow-on formula, baby foods, formulated food intended as a total diet replacement or dietary food used for special medical purposes
+
+doNotRegister.title = You do not need to register
+doNotRegister.heading = You do not need to register
+doNotRegister.paragraph = Based on your answers you do not need to register. You will need to register within 30 days of the:
+doNotRegister.b1 = end of the month if you have produced over 1 million litres of liable drinks in the past 12 months
+doNotRegister.b2 = date you know that you will produce over 1 million litres of liable drinks in the next 30 days
+doNotRegister.b3 = end of the month in which you packaged liable drinks for someone else
+doNotRegister.b4 = date you know you are going to package liable drinks for someone else
+doNotRegister.b5 = end of the month in which you brought liable drinks into the UK
+doNotRegister.b6 = date you know you are going to bring liable drinks into the UK
+doNotRegister.paragraph2 = If this is not right, you need to
+doNotRegister.paragraph2Link = go back and check your answers
+
+thirdPartyPackagers.title = Do you use any third parties in the UK to package liable drinks on your behalf?
+thirdPartyPackagers.heading = Do you use any third parties in the UK to package liable drinks on your behalf?
+thirdPartyPackagers.checkYourAnswersLabel = Reporting contract packed at your own site
+thirdPartyPackagers.error.required = Select yes if you use any third parties in the UK to package liable drinks on your behalf
+thirdPartyPackagers.change.hidden = ThirdPartyPackagers
+howManyThirdPartyPackers.title = How many litres will you package as a third party or contract packer in the next 12 months?
+howManyThirdPartyPackers.heading = How many litres will you package as a third party or contract packer in the next 12 months?
+howManyThirdPartyPackers.subtext = If you do not have the exact volumes you can enter an estimate.
+thirdPartyPackers.lowband.litres.hidden = change amount of litres in lowband for any third parties in the UK to package liable drinks on your behalf.
+thirdPartyPackers.highband.litres.hidden = change amount of litres in highband for any third parties in the UK to package liable drinks on your behalf.
+
+askSecondaryWarehouses.title = Do you want to register any of the UK warehouses you use to store liable drinks?
+askSecondaryWarehouses.heading = Do you want to register any of the UK warehouses you use to store liable drinks?
+askSecondaryWarehouses.detailsLink = Why should I register a warehouse?
+askSecondaryWarehouses.detailsContent = You can delay the point you will have to report liable drinks in a return and pay the levy on them if you register the warehouses you use to store them.
+askSecondaryWarehouses.checkYourAnswersLabel = Do you want to register any of the UK warehouses you use to store liable drinks?
+askSecondaryWarehouses.error.required = Select yes if you want to register any of the UK warehouses you use to store liable drinks
+askSecondaryWarehouses.change.hidden = AskSecondaryWarehouses
+

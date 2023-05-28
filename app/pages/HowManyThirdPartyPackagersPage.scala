@@ -14,26 +14,14 @@
  * limitations under the License.
  */
 
-package models
+package pages
 
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.JsPath
+import models.LitresInBands
 
-import java.time.LocalDate
+case object HowManyThirdPartyPackagersPage extends QuestionPage[LitresInBands] {
 
-case class Site(
-                 address: UkAddress,
-                 ref: Option[String],
-                 tradingName: Option[String],
-                 closureDate: Option[LocalDate]
-               ) {
-  def getLines: List[String] =
-    tradingName.fold(address.lines :+ address.postCode) { x =>
-      (x :: address.lines) :+ address.postCode
-    }
-}
+  override def path: JsPath = JsPath \ toString
 
-object Site {
-  implicit val format: Format[Site] = Json.format[Site]
-
-
+  override def toString: String = "howManyThirdPartyPackers"
 }

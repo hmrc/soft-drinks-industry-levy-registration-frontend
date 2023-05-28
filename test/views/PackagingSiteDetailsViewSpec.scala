@@ -37,8 +37,29 @@ class PackagingSiteDetailsViewSpec extends ViewSpecHelper {
     None,
     Some("Wild Lemonade Group"),
     None)
+  val address45Characters = Site(
+    UkAddress(List("29 Station Pl.", "The Railyard", "Cambridge"), "CB1 2FP"),
+    None,
+    None,
+    None)
+
+  val address47Characters = Site(
+    UkAddress(List("29 Station Place", "The Railyard", "Cambridge"), "CB1 2FP"),
+    Some("10"),
+    None,
+    None)
+
+  val address49Characters = Site(
+    UkAddress(List("29 Station PlaceDr", "The Railyard", "Cambridge"), "CB1 2FP"),
+    None,
+    None,
+    None)
+
+  val packagingSiteListWith3 = Map(("12345678", address45Characters), ("23456789", address47Characters), ("34567890", address49Characters))
 
   lazy val packagingSiteListWith1 = Map(("78941132", PackagingSite1))
+
+
 
   object Selectors {
     val heading = "govuk-fieldset__heading"
@@ -47,28 +68,76 @@ class PackagingSiteDetailsViewSpec extends ViewSpecHelper {
     val radioInput = "govuk-radios__input"
     val radioLables = "govuk-label govuk-radios__label"
     val body = "govuk-body"
+    val summaryList = "govuk-summary-list"
+    val summaryListRow = "govuk-summary-list__row"
+    val summaryListKey = "govuk-summary-list__key"
+    val summaryListValue = "govuk-summary-list__value  align-right"
+    val summaryListActions = "govuk-summary-list__value"
+    val hidden = "govuk-visually-hidden"
+    val link = "govuk-link"
     val errorSummaryTitle = "govuk-error-summary__title"
     val errorSummaryList = "govuk-list govuk-error-summary__list"
     val button = "govuk-button"
     val form = "form"
   }
 
+  def getDocument(packagingSites: Map[String, Site]) = {
+    val html = view(form, NormalMode, packagingSites)(request, messages(application))
+    doc(html)
+  }
   "View" - {
-    val html = view(form, NormalMode, packagingSiteListWith1)(request, messages(application))
-    val document = doc(html)
-    "should contain the expected title" in {
-      document.title() must include(Messages("packagingSiteDetails" + ".title", 1))
+    List(packagingSiteListWith1, packagingSiteListWith3).foreach { packagingSites =>
+      val numberOfPackagingSites = packagingSites.size
+      val document = getDocument(packagingSites)
+      s"when $numberOfPackagingSites packaging site has been added" - {
+        "should contain the expected title" in {
+          val expectedTitle = if (numberOfPackagingSites > 1) {
+            Messages("packagingSiteDetails.titleMultipleSites", numberOfPackagingSites)
+          } else {
+            Messages("packagingSiteDetails.title1Site")
+          }
+          document.title() must include(expectedTitle)
+        }
+
+        "should include the expected h1 heading" in {
+          val expectedHeading = if (numberOfPackagingSites > 1) {
+            Messages("packagingSiteDetails.headingMultipleSites", numberOfPackagingSites)
+          } else {
+            Messages("packagingSiteDetails.heading1Site")
+          }
+          val h1 = document.getElementsByTag("h1")
+          h1.size() mustBe 1
+          h1.text() mustEqual expectedHeading
+        }
+
+        "should include the expected summary list" - {
+          val summaryListRows = document.getElementsByClass(Selectors.summaryListRow)
+          s"that contains $numberOfPackagingSites rows" in {
+            summaryListRows.size() mustEqual numberOfPackagingSites
+          }
+
+          packagingSites.zipWithIndex.foreach { case ((id, site), index) =>
+            s"that includes a summary row for ${site.address.lines.head}" in {
+              val summaryRow = summaryListRows.get(index)
+              summaryRow.getElementsByTag("dt").text() must  include((site.address.lines :+ site.address.postCode).mkString(", "))
+              val action = summaryRow.getElementsByClass(Selectors.link)
+              if(numberOfPackagingSites > 1) {
+                action.text() mustBe "Remove packaging site"
+                action.attr("href") mustBe routes.IndexController.onPageLoad.url
+              } else {
+                action.size() mustEqual 0
+              }
+            }
+          }
+        }
+      }
     }
 
-    "should include the expected h1 heading" in {
-      val h1 = document.getElementsByTag("h1")
-      h1.size() mustBe 1
-      h1.text() mustEqual Messages("packagingSiteDetails.heading1", 1)
-    }
+    val document1PackagingSite = getDocument(packagingSiteListWith1)
 
 
     "should include the expected legend heading" in {
-      val legend = document.getElementsByClass(Selectors.legend)
+      val legend = document1PackagingSite.getElementsByClass(Selectors.legend)
       legend.size() mustBe 1
       legend.text() mustEqual Messages("packagingSiteDetails.heading2")
     }
@@ -76,7 +145,7 @@ class PackagingSiteDetailsViewSpec extends ViewSpecHelper {
     "when the form is not preoccupied and has no errors" - {
 
       "should have radio buttons" - {
-        val radioButtons = document.getElementsByClass(Selectors.radios)
+        val radioButtons = document1PackagingSite.getElementsByClass(Selectors.radios)
         "that has the option to select Yes and is unchecked" in {
           val radioButton1 = radioButtons
             .get(0)
@@ -178,7 +247,7 @@ class PackagingSiteDetailsViewSpec extends ViewSpecHelper {
     }
 
     "contain the correct button" - {
-      document.getElementsByClass(Selectors.button).text() mustBe Messages("site.continue")
+      document1PackagingSite.getElementsByClass(Selectors.button).text() mustBe Messages("site.continue")
     }
 
     "contains a form with the correct action" - {
@@ -222,7 +291,7 @@ class PackagingSiteDetailsViewSpec extends ViewSpecHelper {
       val documentWithErrors = doc(htmlWithErrors)
 
       "should have a title containing error" in {
-        val titleMessage = Messages("packagingSiteDetails.title", 1)
+        val titleMessage = Messages("packagingSiteDetails.title1Site", 1)
         documentWithErrors.title must include("Error: " + titleMessage)
       }
 
@@ -237,10 +306,10 @@ class PackagingSiteDetailsViewSpec extends ViewSpecHelper {
       }
     }
 
-    testBackLink(document)
-    validateTimeoutDialog(document)
-    validateTechnicalHelpLinkPresent(document)
-    validateAccessibilityStatementLinkPresent(document)
+    testBackLink(document1PackagingSite)
+    validateTimeoutDialog(document1PackagingSite)
+    validateTechnicalHelpLinkPresent(document1PackagingSite)
+    validateAccessibilityStatementLinkPresent(document1PackagingSite)
   }
 
 }
