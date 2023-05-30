@@ -46,9 +46,9 @@ trait ITCoreTestData extends TryValues {
   val date = LocalDate.of(year, month, day)
 
   val validDateJson = Json.obj(
-    "value.day" -> day.toString,
-    "value.month" -> month.toString,
-    "value.year" -> year.toString
+    "startDate.day" -> day.toString,
+    "startDate.month" -> month.toString,
+    "startDate.year" -> year.toString
   )
 
   val dateMap = Map("day" -> day, "month" -> month, "year" -> year)

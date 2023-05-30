@@ -32,9 +32,9 @@ class StartDateControllerISpec extends ControllerITTestHelper {
             page.title must include(Messages("startDate" + ".title"))
             val dateInputs = page.getElementsByClass("govuk-date-input__item")
             dateInputs.size() mustBe 3
-            dateInputs.get(0).getElementById("startDate.day").hasAttr("startDate") mustBe false
-            dateInputs.get(1).getElementById("startDate.month").hasAttr("startDate") mustBe false
-            dateInputs.get(2).getElementById("startDate.year").hasAttr("startDate") mustBe false
+            dateInputs.get(0).getElementById("startDate.day").hasAttr("value") mustBe false
+            dateInputs.get(1).getElementById("startDate.month").hasAttr("value") mustBe false
+            dateInputs.get(2).getElementById("startDate.year").hasAttr("value") mustBe false
           }
         }
       }
@@ -58,12 +58,12 @@ class StartDateControllerISpec extends ControllerITTestHelper {
             page.title must include(Messages("startDate" + ".title"))
             val dateInputs = page.getElementsByClass("govuk-date-input__item")
             dateInputs.size() mustBe 3
-            dateInputs.get(0).getElementById("value.day").hasAttr("value") mustBe true
-            dateInputs.get(0).getElementById("value.day").attr("value") mustBe day.toString
-            dateInputs.get(1).getElementById("value.month").hasAttr("value") mustBe true
-            dateInputs.get(1).getElementById("value.month").attr("value") mustBe month.toString
-            dateInputs.get(2).getElementById("value.year").hasAttr("value") mustBe true
-            dateInputs.get(2).getElementById("value.year").attr("value") mustBe year.toString
+            dateInputs.get(0).getElementById("startDate.day").hasAttr("value") mustBe true
+            dateInputs.get(0).getElementById("startDate.day").attr("value") mustBe day.toString
+            dateInputs.get(1).getElementById("startDate.month").hasAttr("value") mustBe true
+            dateInputs.get(1).getElementById("startDate.month").attr("value") mustBe month.toString
+            dateInputs.get(2).getElementById("startDate.year").hasAttr("value") mustBe true
+            dateInputs.get(2).getElementById("startDate.year").attr("value") mustBe year.toString
           }
         }
       }
@@ -91,9 +91,9 @@ class StartDateControllerISpec extends ControllerITTestHelper {
             page.title must include(Messages("startDate" + ".title"))
             val dateInputs = page.getElementsByClass("govuk-date-input__item")
             dateInputs.size() mustBe 3
-            dateInputs.get(0).getElementById("value.day").hasAttr("value") mustBe false
-            dateInputs.get(1).getElementById("value.month").hasAttr("value") mustBe false
-            dateInputs.get(2).getElementById("value.year").hasAttr("value") mustBe false
+            dateInputs.get(0).getElementById("startDate.day").hasAttr("value") mustBe false
+            dateInputs.get(1).getElementById("startDate.month").hasAttr("value") mustBe false
+            dateInputs.get(2).getElementById("startDate.year").hasAttr("value") mustBe false
           }
         }
       }
@@ -117,12 +117,12 @@ class StartDateControllerISpec extends ControllerITTestHelper {
             page.title must include(Messages("startDate" + ".title"))
             val dateInputs = page.getElementsByClass("govuk-date-input__item")
             dateInputs.size() mustBe 3
-            dateInputs.get(0).getElementById("value.day").hasAttr("value") mustBe true
-            dateInputs.get(0).getElementById("value.day").attr("value") mustBe day.toString
-            dateInputs.get(1).getElementById("value.month").hasAttr("value") mustBe true
-            dateInputs.get(1).getElementById("value.month").attr("value") mustBe month.toString
-            dateInputs.get(2).getElementById("value.year").hasAttr("value") mustBe true
-            dateInputs.get(2).getElementById("value.year").attr("value") mustBe year.toString
+            dateInputs.get(0).getElementById("startDate.day").hasAttr("value") mustBe true
+            dateInputs.get(0).getElementById("startDate.day").attr("value") mustBe day.toString
+            dateInputs.get(1).getElementById("startDate.month").hasAttr("value") mustBe true
+            dateInputs.get(1).getElementById("startDate.month").attr("value") mustBe month.toString
+            dateInputs.get(2).getElementById("startDate.year").hasAttr("value") mustBe true
+            dateInputs.get(2).getElementById("startDate.year").attr("value") mustBe year.toString
           }
         }
       }
@@ -143,7 +143,6 @@ class StartDateControllerISpec extends ControllerITTestHelper {
 
           setAnswers(emptyUserAnswers)
           WsTestClient.withClient { client =>
-
             val result = createClientRequestPOST(
               client, baseUrl + normalRoutePath, validDateJson
             )
