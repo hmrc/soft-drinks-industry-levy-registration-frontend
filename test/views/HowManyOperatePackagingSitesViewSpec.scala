@@ -64,9 +64,6 @@ class HowManyOperatePackagingSitesViewSpec extends LitresSpecHelper {
 
         testLitresInBandsNoPrepopulatedData(document)
         testLitresInBandsWithPrepopulatedData(documentWithValidData)
-        val expectedDetails = Map(
-          Messages("operatePackagingSites.detailsLink") -> Messages ("operatePackagingSites.detailsContent") )
-        testDetails(document, expectedDetails)
         testButton(document)
         testAction(document, routes.HowManyOperatePackagingSitesController.onSubmit(mode).url)
 

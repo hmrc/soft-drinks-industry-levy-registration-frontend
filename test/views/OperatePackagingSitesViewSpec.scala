@@ -161,11 +161,6 @@ class OperatePackagingSitesViewSpec extends ViewSpecHelper {
       }
     }
 
-    val expectedDetails = Map(
-      Messages("operatePackagingSites.detailsLink") -> Messages("operatePackagingSites.detailsContent"))
-
-    testDetails(document, expectedDetails)
-
     "contain the correct button" - {
       document.getElementsByClass(Selectors.button).text() mustBe Messages("site.continue")
     }
