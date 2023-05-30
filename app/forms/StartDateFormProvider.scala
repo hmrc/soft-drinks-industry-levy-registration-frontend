@@ -41,7 +41,7 @@ class StartDateFormProvider @Inject()(config:FrontendAppConfig) extends Mappings
         invalidMonth = "startDate.month.nan",
         invalidMonthLength = "startDate.month.length",
         invalidYear = "startDate.year.nan",
-        invalidYearLength = "startDate.year.length",
+        invalidYearLength = "startDate.year.length"
       ).verifying(
         minDate(config.sdilFoundingDate, "startDate.minimumDate"),
         maxDate(today, "startDate.error.maximumDate")

@@ -187,7 +187,6 @@ startDate.checkYourAnswersLabel = StartDate
 startDate.error.required.all = Enter the date you became liable to register
 startDate.error.required.two = The date you became liable to register must include a {0} and {1}
 startDate.error.required = The date you became liable to register must include a {0}
-
 startDate.month.nan = Month must only include numbers
 startDate.year.nan = Year must only include numbers
 startDate.day.nan = Day must only include numbers
