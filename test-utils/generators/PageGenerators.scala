@@ -21,6 +21,9 @@ import pages._
 
 trait PageGenerators {
 
+  implicit lazy val arbitraryOperatePackagingSitesPage: Arbitrary[OperatePackagingSitesPage.type] =
+    Arbitrary(OperatePackagingSitesPage)
+
   implicit lazy val arbitraryHowManyLitresGloballyPage: Arbitrary[HowManyLitresGloballyPage.type] =
     Arbitrary(HowManyLitresGloballyPage)
 

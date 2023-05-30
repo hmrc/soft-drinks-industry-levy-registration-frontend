@@ -26,7 +26,19 @@ import models._
 @Singleton
 class Navigator @Inject()() {
 
+  private def navigationForOperatePackagingSites(userAnswers: UserAnswers, mode: Mode): Call = {
+    if (userAnswers.get(page = OperatePackagingSitesPage).contains(true)) {
+      routes.HowManyOperatePackagingSitesController.onPageLoad(mode)
+    } else if(mode == CheckMode){
+        routes.CheckYourAnswersController.onPageLoad
+    } else {
+        routes.IndexController.onPageLoad
+    }
+  }
+
   private val normalRoutes: Page => UserAnswers => Call = {
+    case OperatePackagingSitesPage => userAnswers => navigationForOperatePackagingSites(userAnswers, NormalMode)
+    case HowManyOperatePackagingSitesPage => userAnswers => routes.IndexController.onPageLoad
     case AskSecondaryWarehousesPage => userAnswers => routes.IndexController.onPageLoad
     case ThirdPartyPackagersPage => userAnswers => routes.IndexController.onPageLoad
     case OrganisationTypePage => userAnswers => routes.IndexController.onPageLoad
@@ -34,6 +46,7 @@ class Navigator @Inject()() {
   }
 
   private val checkRouteMap: Page => UserAnswers => Call = {
+    case OperatePackagingSitesPage => userAnswers => navigationForOperatePackagingSites(userAnswers, CheckMode)
     case _ => _ => routes.CheckYourAnswersController.onPageLoad
   }
 

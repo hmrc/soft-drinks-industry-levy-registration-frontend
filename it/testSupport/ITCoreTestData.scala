@@ -10,6 +10,12 @@ import scala.concurrent.duration.DurationInt
 
 trait ITCoreTestData extends TryValues {
 
+  val userAnswersForOperatePackagingSitesPage: Map[String, UserAnswers] = {
+    val yesSelected = emptyUserAnswers.set(OperatePackagingSitesPage, true).success.value
+    val noSelected = emptyUserAnswers.set(OperatePackagingSitesPage, false).success.value
+    Map("yes" -> yesSelected, "no" -> noSelected)
+    }
+
   val userAnswersForAskSecondaryWarehousesPage: Map[String, UserAnswers] = {
     val yesSelected = emptyUserAnswers.set(AskSecondaryWarehousesPage, true).success.value
     val noSelected = emptyUserAnswers.set(AskSecondaryWarehousesPage, false).success.value
