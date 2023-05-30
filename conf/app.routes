@@ -25,7 +25,12 @@ POST       /organisation-type                            controllers.Organisatio
 GET        /change-organisation-type                     controllers.OrganisationTypeController.onPageLoad(mode: Mode = CheckMode)
 POST       /change-organisation-type                     controllers.OrganisationTypeController.onSubmit(mode: Mode = CheckMode)
 
-GET        /cannot-register-partnership                  controllers.CannotRegisterPartnershipController.onPageLoad()
+GET        /cannot-register-partnership                       controllers.CannotRegisterPartnershipController.onPageLoad()
+
+GET        /packaging-site-details                        controllers.PackagingSiteDetailsController.onPageLoad(mode: Mode = NormalMode)
+POST       /packaging-site-details                        controllers.PackagingSiteDetailsController.onSubmit(mode: Mode = NormalMode)
+GET        /change-packaging-site-details                  controllers.PackagingSiteDetailsController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-packaging-site-details                  controllers.PackagingSiteDetailsController.onSubmit(mode: Mode = CheckMode)
 
 GET        /how-many-litres-globally                     controllers.HowManyLitresGloballyController.onPageLoad(mode: Mode = NormalMode)
 POST       /how-many-litres-globally                     controllers.HowManyLitresGloballyController.onSubmit(mode: Mode = NormalMode)
@@ -43,3 +48,4 @@ GET        /ask-secondary-warehouses                        controllers.AskSecon
 POST       /ask-secondary-warehouses                        controllers.AskSecondaryWarehousesController.onSubmit(mode: Mode = NormalMode)
 GET        /change-ask-secondary-warehouses                  controllers.AskSecondaryWarehousesController.onPageLoad(mode: Mode = CheckMode)
 POST       /change-ask-secondary-warehouses                  controllers.AskSecondaryWarehousesController.onSubmit(mode: Mode = CheckMode)
+

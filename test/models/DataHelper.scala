@@ -16,6 +16,8 @@
 
 package models
 
+import models.backend.{Site, UkAddress}
+
 import java.time.LocalDate
 
 trait DataHelper {
@@ -99,25 +101,11 @@ trait DataHelper {
     email = email
   )
 
-  def testAddress(
-                   line1: String = "test line 1",
-                   line2: String = "test line 2",
-                   line3: String = "test line 3",
-                   line4: String = "test line 4",
-                   postcode: String = "AA111AA"
-                 ): Address = Address(
-    line1 = line1,
-    line2 = line2,
-    line3 = line3,
-    line4 = line4,
-    postcode = postcode
-  )
-
   def testWarehouse(
                      tradingName: String = "test trading name",
-                     address: Address
+                     address: UkAddress
                    ): Warehouse = Warehouse(
-    tradingName = tradingName,
+    tradingName = Some(tradingName),
     address = address
   )
 
