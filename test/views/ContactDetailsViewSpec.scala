@@ -18,20 +18,21 @@ package views
 
 import controllers.routes
 import forms.ContactDetailsFormProvider
-import models.{CheckMode, NormalMode, ContactDetails}
+import models.{CheckMode, ContactDetails, NormalMode}
+import play.api.data.Form
 import play.api.i18n.Messages
+import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.mvc.Request
 import play.api.test.FakeRequest
 import views.html.ContactDetailsView
-import play.api.libs.json.{JsObject, Json}
 
 
 
 class ContactDetailsViewSpec extends ViewSpecHelper {
 
-  val view = application.injector.instanceOf[ContactDetailsView]
+  val view: ContactDetailsView = application.injector.instanceOf[ContactDetailsView]
   val formProvider = new ContactDetailsFormProvider
-  val form = formProvider.apply()
+  val form: Form[ContactDetails] = formProvider.apply()
   implicit val request: Request[_] = FakeRequest()
 
   object Selectors {
@@ -43,8 +44,8 @@ class ContactDetailsViewSpec extends ViewSpecHelper {
     val form = "form"
   }
 
-  val Contactdetails = ContactDetails("Jane Doe", "CEO", "(07700) 099009", "name@example.com")
-  val ContactdetailsJsObject = Json.toJson(Contactdetails).as[JsObject].value
+  val Contactdetails: ContactDetails = ContactDetails("Jane Doe", "CEO", "(07700) 099009", "name@example.com")
+  val ContactdetailsJsObject: collection.Map[String, JsValue] = Json.toJson(Contactdetails).as[JsObject].value
   val ContactdetailsMap: collection.Map[String, String] =
   ContactdetailsJsObject.map { case (fName, fValue) => fName -> fValue.toString }
 
@@ -64,24 +65,45 @@ class ContactDetailsViewSpec extends ViewSpecHelper {
       questionItems.size() mustBe 4
     }
 
-    ContactdetailsMap.zipWithIndex.foreach { case ((fieldName, fieldValue), index) =>
-
       "when the form is not pre-populated and has no errors" - {
         "should include the expected question fields" - {
 
-          "that has the field " + fieldName in {
+          "that has the field fullName" in {
             val questionItem1 = questionItems
-              .get(index)
+              .get(0)
             questionItem1
               .getElementsByClass(Selectors.label)
-              .text() mustBe fieldName
+              .text() mustBe "Full name"
+          }
+
+          "that has the field position" in {
+            val questionItem1 = questionItems
+              .get(1)
+            questionItem1
+              .getElementsByClass(Selectors.label)
+              .text() mustBe "Job title"
+          }
+          "that has the field phoneNumber" in {
+            val questionItem1 = questionItems
+              .get(2)
+            questionItem1
+              .getElementsByClass(Selectors.label)
+              .text() mustBe "Telephone number"
+          }
+          "that has the field email" in {
+            val questionItem1 = questionItems
+              .get(3)
+            questionItem1
+              .getElementsByClass(Selectors.label)
+              .text() mustBe "Email address"
           }
         }
       }
-    }
+
 
     "contain the correct button" - {
       document.getElementsByClass(Selectors.button).text() mustBe Messages("site.continue")
+      //file fails to compile if this is changed directly to "Save and continue"
     }
 
     "contains a form with the correct action" - {
@@ -102,16 +124,13 @@ class ContactDetailsViewSpec extends ViewSpecHelper {
       }
     }
 
-
-    ContactdetailsMap.foreach { case (fieldName, _) =>
-      val fieldWithError = ContactdetailsMap + ((fieldName -> ""))
-      val htmlWithErrors = view(form.bind(fieldWithError.toMap), NormalMode)(request, messages(application))
-      val documentWithErrors = doc(htmlWithErrors)
-
-      "when " + fieldName + "is empty" - {
+      "when fullName is empty and valid information is entered" - {
+        val fieldWithError = ContactdetailsMap + (("fullName", ""), ("position", "CEO"), ("phoneNumber", "07700 099 990"), ("email", "name@example.com")
+        )
+        val htmlWithErrors = view(form.bind(fieldWithError.toMap), NormalMode)(request, messages(application))
+        val documentWithErrors = doc(htmlWithErrors)
         "should have a title containing error" in {
-          val titleMessage = Messages("contactDetails.title")
-          documentWithErrors.title must include("Error: " + titleMessage)
+          documentWithErrors.title mustBe "Error: Contact person details - soft-drinks-industry-levy - GOV.UK"
         }
 
         "contains a message that links to field with error" in {
@@ -120,9 +139,115 @@ class ContactDetailsViewSpec extends ViewSpecHelper {
             .first()
           errorSummary
             .select("a")
-            .attr("href") mustBe "#" + fieldName
-          errorSummary.text() mustBe Messages("contactDetails.error." + fieldName + ".required")
+            .attr("href") mustBe ("#" + "fullName")
+          errorSummary.text() mustBe "Enter full name"
         }
+      }
+
+    "when position is empty and valid information is entered" - {
+      val fieldWithError = ContactdetailsMap + (("fullName", "Jane Doe"), ("position", ""), ("phoneNumber", "07700 099 990"), ("email", "name@example.com")
+      )
+      val htmlWithErrors = view(form.bind(fieldWithError.toMap), NormalMode)(request, messages(application))
+      val documentWithErrors = doc(htmlWithErrors)
+
+      "contains a message that links to field with error" in {
+        val errorSummary = documentWithErrors
+          .getElementsByClass(Selectors.errorSummaryList)
+          .first()
+        errorSummary
+          .select("a")
+          .attr("href") mustBe ("#" + "position")
+        errorSummary.text() mustBe "Enter job title"
+      }
+    }
+
+    "when phoneNumber is empty and valid information is entered" - {
+      val fieldWithError = ContactdetailsMap + (("fullName", "Jane Doe"), ("position", "CEO"), ("phoneNumber", ""), ("email", "name@example.com")
+      )
+      val htmlWithErrors = view(form.bind(fieldWithError.toMap), NormalMode)(request, messages(application))
+      val documentWithErrors = doc(htmlWithErrors)
+
+      "contains a message that links to field with error" in {
+        val errorSummary = documentWithErrors
+          .getElementsByClass(Selectors.errorSummaryList)
+          .first()
+        errorSummary
+          .select("a")
+          .attr("href") mustBe ("#" + "phoneNumber")
+        errorSummary.text() mustBe "Enter telephone number"
+      }
+    }
+
+    "when email is empty and valid information is entered" - {
+      val fieldWithError = ContactdetailsMap + (("fullName", "Jane Doe"), ("position", "CEO"), ("phoneNumber", "07700 099 990"), ("email", "")
+      )
+      val htmlWithErrors = view(form.bind(fieldWithError.toMap), NormalMode)(request, messages(application))
+      val documentWithErrors = doc(htmlWithErrors)
+
+      "contains a message that links to field with error" in {
+        val errorSummary = documentWithErrors
+          .getElementsByClass(Selectors.errorSummaryList)
+          .first()
+        errorSummary
+          .select("a")
+          .attr("href") mustBe ("#" + "email")
+        errorSummary.text() mustBe "Enter email address"
+      }
+    }
+
+    "when fullName has invalid information entered" - {
+      val fieldWithError = ContactdetailsMap + (("fullName", "J@ne Doe2"), ("position", "CEO"), ("phoneNumber", "07700 099 990"), ("email", "name@example.com")
+      )
+      val htmlWithErrors = view(form.bind(fieldWithError.toMap), NormalMode)(request, messages(application))
+      val documentWithErrors = doc(htmlWithErrors)
+
+      "should display a message that contains a valid error" in {
+        val errorSummary = documentWithErrors
+          .getElementsByClass(Selectors.errorSummaryList)
+          .first()
+        errorSummary.text() mustBe "Full name must only include letters a to z, apostrophes, hyphens and spaces"
+      }
+    }
+
+    "when position has invalid information entered" - {
+      val fieldWithError = ContactdetailsMap + (("fullName", "Jane Doe"), ("position", "The Best 30+ CEO"), ("phoneNumber", "07700 099 990"), ("email", "name@example.com")
+      )
+      val htmlWithErrors = view(form.bind(fieldWithError.toMap), NormalMode)(request, messages(application))
+      val documentWithErrors = doc(htmlWithErrors)
+
+      "should display a message that contains a valid error" in {
+        val errorSummary = documentWithErrors
+          .getElementsByClass(Selectors.errorSummaryList)
+          .first()
+        errorSummary.text() mustBe "Job title must only include letters a to z, apostrophes, dashes, hyphens and spaces"
+      }
+    }
+
+    "when phoneNumber has invalid information entered" - {
+      val fieldWithError = ContactdetailsMap + (("fullName", "Jane Doe"), ("position", "CEO"), ("phoneNumber", "$07700 099 990"), ("email", "name@example.com")
+      )
+      val htmlWithErrors = view(form.bind(fieldWithError.toMap), NormalMode)(request, messages(application))
+      val documentWithErrors = doc(htmlWithErrors)
+
+      "should display a message that contains a valid error" in {
+        val errorSummary = documentWithErrors
+          .getElementsByClass(Selectors.errorSummaryList)
+          .first()
+        errorSummary.text() mustBe "Enter a telephone number, like 01632 960999 or 07700 900999"
+      }
+    }
+
+    "when email has invalid information entered" - {
+      val fieldWithError = ContactdetailsMap + (("fullName", "Jane Doe"), ("position", "CEO"), ("phoneNumber", "07700 099 990"), ("email", "name.example.com")
+      )
+      val htmlWithErrors = view(form.bind(fieldWithError.toMap), NormalMode)(request, messages(application))
+      val documentWithErrors = doc(htmlWithErrors)
+
+      "should display a message that contains a valid error" in {
+        val errorSummary = documentWithErrors
+          .getElementsByClass(Selectors.errorSummaryList)
+          .first()
+        errorSummary.text() mustBe "Enter a real email address, like name@example.com"
       }
     }
 

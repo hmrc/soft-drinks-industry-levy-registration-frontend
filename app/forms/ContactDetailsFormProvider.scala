@@ -36,9 +36,9 @@ class ContactDetailsFormProvider @Inject() extends Mappings {
       "fullName" -> text("contactDetails.error.fullName.required")
         .verifying(maxLength(40, "contactDetails.error.fullName.length"))
         .verifying(regexp(nameRegex, "contactDetails.error.fullName.invalid")),
-      "position" -> text("contactDetails.error.jobTitle.required")
-        .verifying(maxLength(155, "contactDetails.error.jobTitle.length"))
-        .verifying(regexp(position, "contactDetails.error.jobTitle.invalid")),
+      "position" -> text("contactDetails.error.position.required")
+        .verifying(maxLength(155, "contactDetails.error.position.length"))
+        .verifying(regexp(position, "contactDetails.error.position.invalid")),
       "phoneNumber" -> text("contactDetails.error.phoneNumber.required")
         .verifying(maxLength(24, "contactDetails.error.phoneNumber.length"))
         .verifying(regexp(phoneNumberRegex, "contactDetails.error.phoneNumber.invalid")),
