@@ -33,12 +33,12 @@
     @formHelper(action = routes.StartDateController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
-            @govukErrorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "value.day")))
+            @govukErrorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("startDate" -> "startDate.day")))
         }
 
         @govukDateInput(
             DateViewModel(
-                field  = form("value"),
+                field  = form("startDate"),
                 legend = LegendViewModel(messages("startDate.heading")).asPageHeading()
             )
             .withHint(HintViewModel(messages("startDate.hint")))

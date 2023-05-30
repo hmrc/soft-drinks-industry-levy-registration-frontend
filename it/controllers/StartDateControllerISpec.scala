@@ -32,9 +32,9 @@ class StartDateControllerISpec extends ControllerITTestHelper {
             page.title must include(Messages("startDate" + ".title"))
             val dateInputs = page.getElementsByClass("govuk-date-input__item")
             dateInputs.size() mustBe 3
-            dateInputs.get(0).getElementById("value.day").hasAttr("value") mustBe false
-            dateInputs.get(1).getElementById("value.month").hasAttr("value") mustBe false
-            dateInputs.get(2).getElementById("value.year").hasAttr("value") mustBe false
+            dateInputs.get(0).getElementById("startDate.day").hasAttr("startDate") mustBe false
+            dateInputs.get(1).getElementById("startDate.month").hasAttr("startDate") mustBe false
+            dateInputs.get(2).getElementById("startDate.year").hasAttr("startDate") mustBe false
           }
         }
       }
@@ -191,7 +191,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
           given
             .commonPrecondition
 
-          val invalidJson = Json.obj("value." + field -> value.toString)
+          val invalidJson = Json.obj("startDate." + field -> value.toString)
 
           setAnswers(emptyUserAnswers)
           WsTestClient.withClient { client =>
@@ -207,7 +207,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
                 .first()
               errorSummary
                 .select("a")
-                .attr("href") mustBe "#value.day"
+                .attr("href") mustBe "#startDate.day"
               errorSummary.text() mustBe Messages("startDate" + ".error.required.two", otherFields(0), otherFields(1)
               )
             }
@@ -219,7 +219,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
             .commonPrecondition
 
           val invalidJson = dateMapExculdingField.foldLeft(Json.obj()) { (a, b) =>
-            a ++ Json.obj("value." + b._1 -> b._2.toString)
+            a ++ Json.obj("startDate." + b._1 -> b._2.toString)
           }
 
           setAnswers(emptyUserAnswers)
@@ -236,7 +236,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
                 .first()
               errorSummary
                 .select("a")
-                .attr("href") mustBe "#value.day"
+                .attr("href") mustBe "#startDate.day"
               errorSummary.text() mustBe Messages("startDate" + ".error.required", field
               )
             }
@@ -249,7 +249,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
           .commonPrecondition
 
         val invalidJson = dateMap.foldLeft(Json.obj()) { (a, b) =>
-          a ++ Json.obj("value." + b._1 -> "")
+          a ++ Json.obj("startDate." + b._1 -> "")
         }
 
         setAnswers(emptyUserAnswers)
@@ -266,7 +266,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
               .first()
             errorSummary
               .select("a")
-              .attr("href") mustBe "#value.day"
+              .attr("href") mustBe "#startDate.day"
             errorSummary.text() mustBe Messages("startDate" + ".error.required.all"
             )
           }
@@ -278,7 +278,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
           .commonPrecondition
 
         val invalidJson = dateMap.foldLeft(Json.obj()) { (a, b) =>
-          a ++ Json.obj("value." + b._1 -> "30")
+          a ++ Json.obj("startDate." + b._1 -> "30")
         }
 
         setAnswers(emptyUserAnswers)
@@ -295,7 +295,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
               .first()
             errorSummary
               .select("a")
-              .attr("href") mustBe "#value.day"
+              .attr("href") mustBe "#startDate.day"
             errorSummary.text() mustBe Messages("startDate" + ".error.invalid"
             )
           }
@@ -363,7 +363,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
           given
             .commonPrecondition
 
-          val invalidJson = Json.obj("value." + field -> value.toString)
+          val invalidJson = Json.obj("startDate." + field -> value.toString)
 
           setAnswers(emptyUserAnswers)
           WsTestClient.withClient { client =>
@@ -379,7 +379,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
                 .first()
               errorSummary
                 .select("a")
-                .attr("href") mustBe "#value.day"
+                .attr("href") mustBe "#startDate.day"
               errorSummary.text() mustBe Messages("startDate" + ".error.required.two", otherFields(0), otherFields(1)
               )
             }
@@ -391,7 +391,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
             .commonPrecondition
 
           val invalidJson = dateMapExculdingField.foldLeft(Json.obj()) { (a, b) =>
-            a ++ Json.obj("value." + b._1 -> b._2.toString)
+            a ++ Json.obj("startDate." + b._1 -> b._2.toString)
           }
 
           setAnswers(emptyUserAnswers)
@@ -408,7 +408,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
                 .first()
               errorSummary
                 .select("a")
-                .attr("href") mustBe "#value.day"
+                .attr("href") mustBe "#startDate.day"
               errorSummary.text() mustBe Messages("startDate" + ".error.required", field
               )
             }
@@ -421,7 +421,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
           .commonPrecondition
 
         val invalidJson = dateMap.foldLeft(Json.obj()) { (a, b) =>
-          a ++ Json.obj("value." + b._1 -> "")
+          a ++ Json.obj("startDate." + b._1 -> "")
         }
 
         setAnswers(emptyUserAnswers)
@@ -438,7 +438,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
               .first()
             errorSummary
               .select("a")
-              .attr("href") mustBe "#value.day"
+              .attr("href") mustBe "#startDate.day"
             errorSummary.text() mustBe Messages("startDate" + ".error.required.all"
             )
           }
@@ -450,7 +450,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
           .commonPrecondition
 
         val invalidJson = dateMap.foldLeft(Json.obj()) { (a, b) =>
-          a ++ Json.obj("value." + b._1 -> "30")
+          a ++ Json.obj("startDate." + b._1 -> "30")
         }
 
         setAnswers(emptyUserAnswers)
@@ -467,7 +467,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
               .first()
             errorSummary
               .select("a")
-              .attr("href") mustBe "#value.day"
+              .attr("href") mustBe "#startDate.day"
             errorSummary.text() mustBe Messages("startDate" + ".error.invalid"
             )
           }

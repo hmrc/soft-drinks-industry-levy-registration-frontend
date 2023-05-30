@@ -16,6 +16,7 @@
 
 package views
 
+import config.FrontendAppConfig
 import controllers.routes
 import forms.StartDateFormProvider
 import models.{CheckMode, NormalMode}
@@ -32,7 +33,8 @@ class StartDateViewSpec extends ViewSpecHelper {
 
   val view = application.injector.instanceOf[StartDateView]
   val helperView = application.injector.instanceOf[howDoIKnowWhenIBecameLiable]
-  val formProvider = new StartDateFormProvider
+  val appConfig = application.injector.instanceOf[FrontendAppConfig]
+  val formProvider = new StartDateFormProvider(appConfig)
   val form = formProvider.apply()
   implicit val request: Request[_] = FakeRequest()
 
@@ -128,7 +130,7 @@ class StartDateViewSpec extends ViewSpecHelper {
           .first()
         errorSummary
           .select("a")
-          .attr("href") mustBe "#value.day"
+          .attr("href") mustBe "#startDate.day"
         errorSummary.text() mustBe Messages("startDate.error.required.all")
       }
     }

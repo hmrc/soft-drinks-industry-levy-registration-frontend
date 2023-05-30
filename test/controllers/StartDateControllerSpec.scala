@@ -17,6 +17,7 @@
 package controllers
 
 import base.SpecBase
+import config.FrontendAppConfig
 import errors.SessionDatabaseInsertError
 import helpers.LoggerHelper
 import utilities.GenericLogger
@@ -36,15 +37,18 @@ import views.html.StartDateView
 
 import scala.concurrent.Future
 import org.jsoup.Jsoup
+
 import java.time.{LocalDate, ZoneOffset}
 
 class StartDateControllerSpec extends SpecBase with MockitoSugar with LoggerHelper {
 
   def onwardRoute = Call("GET", "/foo")
 
-  val validAnswer = LocalDate.now(ZoneOffset.UTC)
+  val validAnswer = LocalDate.now(ZoneOffset.UTC).minusDays(1)
 
-  val formProvider = new StartDateFormProvider()
+  val appConfig = application.injector.instanceOf[FrontendAppConfig]
+
+  val formProvider = new StartDateFormProvider(appConfig)
   val form = formProvider()
 
   def getRequest: FakeRequest[AnyContentAsEmpty.type] =
@@ -52,12 +56,11 @@ class StartDateControllerSpec extends SpecBase with MockitoSugar with LoggerHelp
   )
 
   def postRequest: FakeRequest[AnyContentAsFormUrlEncoded] =
-    FakeRequest(POST, startDateRoute
-  )
+    FakeRequest(POST, startDateRoute)
   .withFormUrlEncodedBody(
-    "value.day" -> validAnswer.getDayOfMonth.toString,
-    "value.month" -> validAnswer.getMonthValue.toString,
-    "value.year" -> validAnswer.getYear.toString
+    "startDate.day" -> validAnswer.getDayOfMonth.toString,
+    "startDate.month" -> validAnswer.getMonthValue.toString,
+    "startDate.year" -> validAnswer.getYear.toString
   )
 
   lazy val startDateRoute = routes.StartDateController.onPageLoad(NormalMode).url
