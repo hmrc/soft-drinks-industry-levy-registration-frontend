@@ -25,9 +25,11 @@ trait ModelGenerators {
   implicit lazy val arbitraryContactDetails: Arbitrary[ContactDetails] =
     Arbitrary {
       for {
-        Full name <- arbitrary[String]
-        Job title <- arbitrary[String]
-      } yield ContactDetails(Full name, Job title)
+        fullName <- arbitrary[String]
+        position <- arbitrary[String]
+        phoneNumber <- arbitrary[String]
+        email <- arbitrary[String]
+      } yield ContactDetails(fullName, position, phoneNumber, email)
     }
 
   implicit lazy val arbitraryHowManyLitresGlobally: Arbitrary[HowManyLitresGlobally] =

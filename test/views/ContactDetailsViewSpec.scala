@@ -43,7 +43,7 @@ class ContactDetailsViewSpec extends ViewSpecHelper {
     val form = "form"
   }
 
-  val Contactdetails = ContactDetails("1", "2")
+  val Contactdetails = ContactDetails("Jane Doe", "CEO", "(07700) 099009", "name@example.com")
   val ContactdetailsJsObject = Json.toJson(Contactdetails).as[JsObject].value
   val ContactdetailsMap: collection.Map[String, String] =
   ContactdetailsJsObject.map { case (fName, fValue) => fName -> fValue.toString }
@@ -57,16 +57,16 @@ class ContactDetailsViewSpec extends ViewSpecHelper {
     }
 
     "should have the expected heading" in {
-      document.getElementsByClass(Selectors.heading).text() mustEqual Messages("contactDetails" + ".heading")
+      document.getElementsByClass(Selectors.heading).text() mustEqual Messages("contactDetails" + ".title")
     }
 
     "should contain" + ContactdetailsMap.size + " questions" in {
-      questionItems.size() mustBe ContactdetailsMap.size
+      questionItems.size() mustBe 4
     }
 
     ContactdetailsMap.zipWithIndex.foreach { case ((fieldName, fieldValue), index) =>
 
-      "when the form is not prepopulated and has no errors" - {
+      "when the form is not pre-populated and has no errors" - {
         "should include the expected question fields" - {
 
           "that has the field " + fieldName in {
