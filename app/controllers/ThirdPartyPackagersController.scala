@@ -18,11 +18,10 @@ package controllers
 
 import controllers.actions._
 import forms.ThirdPartyPackagersFormProvider
-
 import javax.inject.Inject
 import models.Mode
 import navigation.Navigator
-import pages.{HowManyThirdPartyPackagersPage, ThirdPartyPackagersPage}
+import pages.ThirdPartyPackagersPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SessionService
@@ -67,7 +66,7 @@ class ThirdPartyPackagersController @Inject()(
           Future.successful(BadRequest(view(formWithErrors, mode))),
 
         value => {
-          val updatedAnswers = request.userAnswers.setAndRemoveLitresIfReq(ThirdPartyPackagersPage, HowManyThirdPartyPackagersPage, value)
+          val updatedAnswers = request.userAnswers.set(ThirdPartyPackagersPage, value)
           updateDatabaseAndRedirect(updatedAnswers, ThirdPartyPackagersPage, mode)
         }
       )

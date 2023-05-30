@@ -145,12 +145,7 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
 
               whenReady(result) { res =>
                 res.status mustBe 303
-                val expectedLocation = if (yesSelected) {
-                  routes.HowManyThirdPartyPackagersController.onPageLoad(NormalMode)
-                } else {
-                  routes.IndexController.onPageLoad
-                }
-                res.header(HeaderNames.LOCATION) mustBe Some(expectedLocation.url)
+                res.header(HeaderNames.LOCATION) mustBe Some(routes.IndexController.onPageLoad.url)
                 val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(ThirdPartyPackagersPage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe yesSelected
@@ -171,12 +166,7 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
 
               whenReady(result) { res =>
                 res.status mustBe 303
-                val expectedLocation = if (yesSelected) {
-                  routes.HowManyThirdPartyPackagersController.onPageLoad(NormalMode)
-                } else {
-                  routes.IndexController.onPageLoad
-                }
-                res.header(HeaderNames.LOCATION) mustBe Some(expectedLocation.url)
+                res.header(HeaderNames.LOCATION) mustBe Some(routes.IndexController.onPageLoad.url)
                 val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(ThirdPartyPackagersPage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe yesSelected
@@ -233,12 +223,7 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
 
               whenReady(result) { res =>
                 res.status mustBe 303
-                val expectedLocation = if(yesSelected) {
-                  routes.HowManyThirdPartyPackagersController.onPageLoad(CheckMode)
-                } else {
-                  routes.CheckYourAnswersController.onPageLoad
-                }
-                res.header(HeaderNames.LOCATION) mustBe Some(expectedLocation.url)
+                res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
                 val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(ThirdPartyPackagersPage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe yesSelected
@@ -259,12 +244,7 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
 
               whenReady(result) { res =>
                 res.status mustBe 303
-                val expectedLocation = if (yesSelected) {
-                  routes.HowManyThirdPartyPackagersController.onPageLoad(CheckMode)
-                } else {
-                  routes.CheckYourAnswersController.onPageLoad
-                }
-                res.header(HeaderNames.LOCATION) mustBe Some(expectedLocation.url)
+                res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
                 val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(ThirdPartyPackagersPage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe yesSelected

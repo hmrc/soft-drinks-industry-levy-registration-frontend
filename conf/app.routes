@@ -49,7 +49,3 @@ POST       /ask-secondary-warehouses                        controllers.AskSecon
 GET        /change-ask-secondary-warehouses                  controllers.AskSecondaryWarehousesController.onPageLoad(mode: Mode = CheckMode)
 POST       /change-ask-secondary-warehouses                  controllers.AskSecondaryWarehousesController.onSubmit(mode: Mode = CheckMode)
 
-GET        /contract-packer-next-12-months                        controllers.HowManyThirdPartyPackagersController.onPageLoad(mode: Mode = NormalMode)
-POST       /contract-packer-next-12-months                        controllers.HowManyThirdPartyPackagersController.onSubmit(mode: Mode = NormalMode)
-GET        /change-contract-packer-next-12-months                  controllers.HowManyThirdPartyPackagersController.onPageLoad(mode: Mode = CheckMode)
-POST       /change-contract-packer-next-12-months                  controllers.HowManyThirdPartyPackagersController.onSubmit(mode: Mode = CheckMode)

@@ -17,14 +17,12 @@
 package views.summary
 
 import controllers.routes
-import models.{CheckMode, LitresInBands}
-import pages.{HowManyThirdPartyPackagersPage, QuestionPage, ThirdPartyPackagersPage}
+import models.CheckMode
+import pages.{QuestionPage, ThirdPartyPackagersPage}
 
-object ThirdPartyPackersSummary extends ReturnDetailsSummaryListWithLitres  {
+object ThirdPartyPackersSummary extends ReturnDetailsSummaryRowHelper  {
 
   override val page: QuestionPage[Boolean] = ThirdPartyPackagersPage
-  override val optLitresPage: Option[QuestionPage[LitresInBands]] = Some(HowManyThirdPartyPackagersPage)
-  override val summaryLitres: SummaryListRowLitresHelper = HowManyThirdPartyPackagersSummary
   override val key: String = "reportingthirdPartyPackers"
   override val action: String = routes.ThirdPartyPackagersController.onPageLoad(CheckMode).url
   override val actionId: String = "change-thirdPartyPackers"
