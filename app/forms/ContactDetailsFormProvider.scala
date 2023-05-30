@@ -29,7 +29,7 @@ class ContactDetailsFormProvider @Inject() extends Mappings {
     """^[a-zA-Z0-9\.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"""
   private val nameRegex = """^[a-zA-Z &`\\-\\'\\.^]{1,40}$"""
   private val position = """^[a-zA-Z &`\\-\\'\\.^]{1,155}$"""
-  private val phoneNumberRegex = """^[A-Z0-9 )/(\\-*#+]{1,24}$"""
+  private val phoneNumberRegex = """^[A-Z0-9 )/(\\#+*\-]{1,24}$"""
 
   def apply(): Form[ContactDetails] = Form(
      mapping(
@@ -41,10 +41,10 @@ class ContactDetailsFormProvider @Inject() extends Mappings {
         .verifying(regexp(position, "contactDetails.error.jobTitle.invalid")),
       "phoneNumber" -> text("contactDetails.error.phoneNumber.required")
         .verifying(maxLength(24, "contactDetails.error.phoneNumber.length"))
-        .verifying(regexp(phoneNumberRegex, "contactDetails.error.phoneNumber.invalid")),
+       .verifying(regexp(phoneNumberRegex, "contactDetails.error.phoneNumber.invalid")),
       "email" -> text("contactDetails.error.email.required")
         .verifying(maxLength(132, "contactDetails.error.email.length"))
-        .verifying(regexp(emailRegex, "contactDetails.error.email.invalid"))
+       .verifying(regexp(emailRegex, "contactDetails.error.email.invalid"))
     )(ContactDetails.apply)(ContactDetails.unapply)
    )
  }

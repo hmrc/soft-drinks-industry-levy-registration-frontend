@@ -36,9 +36,9 @@
 
         <h1 class="govuk-heading-m">@messages("contactDetails.title")</h1>
         <p class="govuk-body">@messages("contactDetails.info")</p>
+
         @govukInput(
             InputViewModel(
-
                 field = form("fullName"),
                 label = LabelViewModel(messages("contactDetails.fullName"))
             )
@@ -59,7 +59,6 @@
                 label = LabelViewModel(messages("contactDetails.phoneNumber"))
             )
                     .withWidth(TwoThirds)
-                    .withInputMode("numeric")
         )
 
         @govukInput(

@@ -211,7 +211,6 @@ contractPacking.lowband.litres.hidden = change amount of litres in lowband for c
 contractPacking.highband.litres.hidden = change amount of litres in highband for contractPacking
 
 contactDetails.title = Contact person details
-contactDetails.heading = Contact person details
 contactDetails.checkYourAnswersLabel = Contact person details
 contactDetails.fullName = Full name
 contactDetails.jobTitle = Job title
