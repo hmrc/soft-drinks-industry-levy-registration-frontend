@@ -16,26 +16,13 @@
 
 package models.backend
 
-import models.Warehouse
 import play.api.libs.json.{Format, Json}
 
-import java.time.LocalDate
 
-case class Site(
-                 address: UkAddress,
-                 ref: Option[String],
-                 tradingName: Option[String],
-                 closureDate: Option[LocalDate]
-               ) {
-  def getLines: List[String] =
-    tradingName.fold(address.lines :+ address.postCode) { x =>
-      (x :: address.lines) :+ address.postCode
-    }
-}
+case class UkAddress(lines: List[String],
+                     postCode: String,
+                     alfId: Option[String] = None)
 
-object Site {
-  implicit val format: Format[Site] = Json.format[Site]
-
-  def fromWarehouse(warehouse: Warehouse): Site =
-    Site(warehouse.address, None, warehouse.tradingName, None)
+object UkAddress {
+  implicit val ukAddressFormat: Format[UkAddress] = Json.format[UkAddress]
 }

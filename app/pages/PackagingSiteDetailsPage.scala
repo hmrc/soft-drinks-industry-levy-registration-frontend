@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package models
+package pages
 
-import models.backend.UkAddress
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.JsPath
 
-case class Warehouse(tradingName: Option[String],
-                      address: UkAddress)
+case object PackagingSiteDetailsPage extends QuestionPage[Boolean] {
 
-object Warehouse {
+  override def path: JsPath = JsPath \ toString
 
-  implicit val format: Format[Warehouse] = Json.format[Warehouse]
+  override def toString: String = "packagingSiteDetails"
 }

@@ -28,6 +28,11 @@ trait UserAnswersEntryGenerators extends PageGenerators with ModelGenerators {
     Arbitrary {
       for {
         page  <- arbitrary[OperatePackagingSitesPage.type]
+
+  implicit lazy val arbitraryPackagingSiteDetailsUserAnswersEntry: Arbitrary[(PackagingSiteDetailsPage.type, JsValue)] =
+    Arbitrary {
+      for {
+        page <- arbitrary[PackagingSiteDetailsPage.type]
         value <- arbitrary[Boolean].map(Json.toJson(_))
       } yield (page, value)
     }

@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-package models
+package forms
 
-import models.backend.UkAddress
-import play.api.libs.json.{Format, Json}
+import javax.inject.Inject
 
-case class Warehouse(tradingName: Option[String],
-                      address: UkAddress)
+import forms.mappings.Mappings
+import play.api.data.Form
 
-object Warehouse {
+class PackagingSiteDetailsFormProvider @Inject() extends Mappings {
 
-  implicit val format: Format[Warehouse] = Json.format[Warehouse]
+  def apply(): Form[Boolean] =
+    Form(
+      "value" -> boolean("packagingSiteDetails.error.required")
+    )
 }

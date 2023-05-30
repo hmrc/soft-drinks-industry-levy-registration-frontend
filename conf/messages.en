@@ -87,6 +87,17 @@ organisationType.change.hidden = Organisation Type
 cannotRegisterPartnership.title = You cannot register online as a partnership
 cannotRegisterPartnership.heading = You cannot register online as a partnership
 cannotRegisterPartnership.subText = You need to call {0} to register.
+
+packagingSiteDetails.title1Site = You added 1 UK packaging site
+packagingSiteDetails.titleMultipleSites = You added {0} UK packaging sites
+packagingSiteDetails.heading1Site = You added 1 UK packaging site
+packagingSiteDetails.headingMultipleSites = You added {0} UK packaging sites
+packagingSiteDetails.heading2 = Do you want to add another UK packaging site?
+packagingSiteDetails.hidden = packaging site
+packagingSiteDetails.checkYourAnswersLabel = Packaging sites
+packagingSiteDetails.error.required = Select yes if you want to add another UK packaging site
+packagingSiteDetails.change.hidden = Packaging sites
+
 howManyLitresGlobally.title = How many litres of your own brands of liable drinks have been packaged globally in the past 12 months?
 howManyLitresGlobally.checkYourAnswersLabel = How many litres of your own brands of liable drinks have been packaged globally in the past 12 months?
 howManyLitresGlobally.large = 1 million litres or more
@@ -126,7 +137,7 @@ doNotRegister.paragraph2Link = go back and check your answers
 
 thirdPartyPackagers.title = Do you use any third parties in the UK to package liable drinks on your behalf?
 thirdPartyPackagers.heading = Do you use any third parties in the UK to package liable drinks on your behalf?
-thirdPartyPackagers.checkYourAnswersLabel = Do you use any third parties in the UK to package liable drinks on your behalf?
+thirdPartyPackagers.checkYourAnswersLabel = Reporting contract packed at your own site
 thirdPartyPackagers.error.required = Select yes if you use any third parties in the UK to package liable drinks on your behalf
 thirdPartyPackagers.change.hidden = ThirdPartyPackagers
 
@@ -148,3 +159,4 @@ howManyOperatePackagingSites.heading = How many litres of our own brands will yo
 howManyOperatePackagingSites.subtext = If you do not have the exact volumes you can enter an estimate.
 operatePackagingSites.lowband.litres.hidden = change amount of litres in lowband for operatePackagingSites
 operatePackagingSites.highband.litres.hidden = change amount of litres in highband for operatePackagingSites
+

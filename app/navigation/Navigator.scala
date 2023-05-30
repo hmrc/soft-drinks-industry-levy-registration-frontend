@@ -41,6 +41,8 @@ class Navigator @Inject()() {
     case HowManyOperatePackagingSitesPage => userAnswers => routes.IndexController.onPageLoad
     case AskSecondaryWarehousesPage => userAnswers => routes.IndexController.onPageLoad
     case ThirdPartyPackagersPage => userAnswers => routes.IndexController.onPageLoad
+    case PackagingSiteDetailsPage => userAnswers => routes.IndexController.onPageLoad
+    case AskSecondaryWarehousesPage => userAnswers => routes.IndexController.onPageLoad
     case OrganisationTypePage => userAnswers => routes.IndexController.onPageLoad
     case _ => _ => routes.IndexController.onPageLoad
   }

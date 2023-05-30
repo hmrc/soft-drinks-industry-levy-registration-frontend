@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-package models
+package views.summary
 
-import models.backend.UkAddress
-import play.api.libs.json.{Format, Json}
+import controllers.routes
+import models.CheckMode
+import pages.{QuestionPage, ThirdPartyPackagersPage}
 
-case class Warehouse(tradingName: Option[String],
-                      address: UkAddress)
+object ThirdPartyPackersSummary extends ReturnDetailsSummaryRowHelper  {
 
-object Warehouse {
+  override val page: QuestionPage[Boolean] = ThirdPartyPackagersPage
+  override val key: String = "reportingthirdPartyPackers"
+  override val action: String = routes.ThirdPartyPackagersController.onPageLoad(CheckMode).url
+  override val actionId: String = "change-thirdPartyPackers"
+  override val hiddenText: String = "thirdPartyPackers"
 
-  implicit val format: Format[Warehouse] = Json.format[Warehouse]
 }

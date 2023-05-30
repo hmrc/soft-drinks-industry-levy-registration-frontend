@@ -25,7 +25,12 @@ POST       /organisation-type                            controllers.Organisatio
 GET        /change-organisation-type                     controllers.OrganisationTypeController.onPageLoad(mode: Mode = CheckMode)
 POST       /change-organisation-type                     controllers.OrganisationTypeController.onSubmit(mode: Mode = CheckMode)
 
-GET        /cannot-register-partnership                  controllers.CannotRegisterPartnershipController.onPageLoad()
+GET        /cannot-register-partnership                       controllers.CannotRegisterPartnershipController.onPageLoad()
+
+GET        /packaging-site-details                        controllers.PackagingSiteDetailsController.onPageLoad(mode: Mode = NormalMode)
+POST       /packaging-site-details                        controllers.PackagingSiteDetailsController.onSubmit(mode: Mode = NormalMode)
+GET        /change-packaging-site-details                  controllers.PackagingSiteDetailsController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-packaging-site-details                  controllers.PackagingSiteDetailsController.onSubmit(mode: Mode = CheckMode)
 
 GET        /how-many-litres-globally                     controllers.HowManyLitresGloballyController.onPageLoad(mode: Mode = NormalMode)
 POST       /how-many-litres-globally                     controllers.HowManyLitresGloballyController.onSubmit(mode: Mode = NormalMode)
@@ -52,3 +57,4 @@ GET        /own-brands-next-12-months                        controllers.HowMany
 POST       /own-brands-next-12-months                        controllers.HowManyOperatePackagingSitesController.onSubmit(mode: Mode = NormalMode)
 GET        /change-own-brands-next-12-months                  controllers.HowManyOperatePackagingSitesController.onPageLoad(mode: Mode = CheckMode)
 POST       /change-own-brands-next-12-months                  controllers.HowManyOperatePackagingSitesController.onSubmit(mode: Mode = CheckMode)
+
