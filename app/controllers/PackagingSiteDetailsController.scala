@@ -54,7 +54,6 @@ class PackagingSiteDetailsController @Inject()(
         case None => form
         case Some(value) => form.fill(value)
       }
-
       Ok(view(preparedForm, mode, request.userAnswers.packagingSiteList))
   }
 

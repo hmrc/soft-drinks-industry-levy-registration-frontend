@@ -12,7 +12,6 @@ import play.api.i18n.{Lang, MessagesApi, MessagesImpl}
 import play.api.inject._
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc.{CookieHeaderEncoding, MessagesControllerComponents, Session, SessionCookieBaker}
-import play.api.test.DefaultAwaitTimeout
 import play.api.test.Helpers._
 import play.api.{Application, Environment, Mode}
 import repositories.{SDILSessionCacheRepository, SessionRepository}
@@ -22,7 +21,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.filters.crypto.SessionCookieCrypto
 import uk.gov.hmrc.play.health.HealthController
 
 import java.time.{Clock, ZoneOffset}
-import scala.concurrent.{Await, ExecutionContext}
+import scala.concurrent.ExecutionContext
 import scala.jdk.CollectionConverters._
 
 trait TestConfiguration

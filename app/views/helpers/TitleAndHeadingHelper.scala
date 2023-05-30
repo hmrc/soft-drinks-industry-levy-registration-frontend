@@ -21,18 +21,18 @@ import play.api.i18n.Messages
 object TitleAndHeadingHelper {
 
   def getTitleForPackagingSiteDetails(numberOfSites: Int)(implicit messages: Messages): String = {
-    if(numberOfSites > 1) {
-      messages("packagingSiteDetails.titleMultipleSites", numberOfSites)
-    } else {
+    if(numberOfSites == 1) {
       messages("packagingSiteDetails.title1Site")
+    } else {
+      messages("packagingSiteDetails.titleMultipleSites", numberOfSites)
     }
   }
 
   def getHeaderForPackagingSiteDetails(numberOfSites: Int)(implicit messages: Messages): String = {
-    if (numberOfSites > 1) {
-      messages("packagingSiteDetails.headingMultipleSites", numberOfSites)
-    } else {
+    if (numberOfSites == 1) {
       messages("packagingSiteDetails.heading1Site")
+    } else {
+      messages("packagingSiteDetails.headingMultipleSites", numberOfSites)
     }
   }
 
