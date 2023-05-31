@@ -66,3 +66,8 @@ GET        /how-many-imports-next-12-months                        controllers.H
 POST       /how-many-imports-next-12-months                        controllers.HowManyImportsController.onSubmit(mode: Mode = NormalMode)
 GET        /change-how-many-imports-next-12-months                  controllers.HowManyImportsController.onPageLoad(mode: Mode = CheckMode)
 POST       /change-how-many-imports-next-12-months                  controllers.HowManyImportsController.onSubmit(mode: Mode = CheckMode)
+
+GET        /start-date                        controllers.StartDateController.onPageLoad(mode: Mode = NormalMode)
+POST       /start-date                        controllers.StartDateController.onSubmit(mode: Mode = NormalMode)
+GET        /change-start-date                  controllers.StartDateController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-start-date                  controllers.StartDateController.onSubmit(mode: Mode = CheckMode)

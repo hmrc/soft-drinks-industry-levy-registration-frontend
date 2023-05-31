@@ -33,6 +33,7 @@ trait UserAnswersGenerator extends TryValues {
     arbitrary[(HowManyLitresGloballyPage.type, JsValue)] ::
     arbitrary[(AskSecondaryWarehousesPage.type, JsValue)] ::
     arbitrary[(ThirdPartyPackagersPage.type, JsValue)] ::
+    arbitrary[(StartDatePage.type, JsValue)] ::
     arbitrary[(OrganisationTypePage.type, JsValue)] ::
     Nil
 

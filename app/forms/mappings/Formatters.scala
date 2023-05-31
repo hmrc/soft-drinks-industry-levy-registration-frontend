@@ -55,7 +55,7 @@ trait Formatters {
       def unbind(key: String, value: Boolean) = Map(key -> value.toString)
     }
 
-  private[mappings] def intFormatter(requiredKey: String, wholeNumberKey: String, nonNumericKey: String, args: Seq[String] = Seq.empty): Formatter[Int] =
+  private[mappings] def intFormatter(requiredKey: String, wholeNumberKey: String, nonNumericKey: String,invalidLength:String,  args: Seq[String] = Seq.empty): Formatter[Int] =
     new Formatter[Int] {
 
       val decimalRegexp = """^-?(\d*\.\d*)$"""
@@ -65,14 +65,19 @@ trait Formatters {
       override def bind(key: String, data: Map[String, String]) =
         baseFormatter
           .bind(key, data)
-          .right.map(_.replace(",", ""))
-          .right.flatMap {
-          case s if s.matches(decimalRegexp) =>
-            Left(Seq(FormError(key, wholeNumberKey, args)))
-          case s =>
-            nonFatalCatch
-              .either(s.toInt)
-              .left.map(_ => Seq(FormError(key, nonNumericKey, args)))
+          .map(_.replace(",", ""))
+          .flatMap {
+            case s if s.matches(decimalRegexp) =>
+              Left(Seq(FormError(key, wholeNumberKey, args)))
+
+            case s => Try(s.toInt) match {
+              case Failure(_) => Left(Seq(FormError(key, nonNumericKey, args)))
+              case Success(number) if (number > 31 && key == s"$key.day"
+                  || number > 12 && key == s"$key.month"
+                  || number.toString.length > 4 && key == s"$key.year") =>
+                Left(Seq(FormError(key, invalidLength, args)))
+              case Success(number) => Right(number)
+            }
         }
 
       override def unbind(key: String, value: Int) =

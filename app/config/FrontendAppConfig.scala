@@ -21,11 +21,14 @@ import play.api.mvc.RequestHeader
 import uk.gov.hmrc.play.bootstrap.binders.SafeRedirectUrl
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
+import java.time.LocalDate
+
 @Singleton
 class FrontendAppConfig @Inject() (configuration: ServicesConfig) {
 
   val host: String    = configuration.getConfString("soft-drinks-industry-levy-registration-frontend.host", throw new Exception("missing config soft-drinks-industry-levy-registration-frontend.host"))
   val appName: String = configuration.getString("appName")
+  val sdilFoundingDate: LocalDate =   LocalDate.of(configuration.getInt("sdilFoundingDate.year"), configuration.getInt("sdilFoundingDate.month"), configuration.getInt("sdilFoundingDate.day"))
 
   private val contactHost = configuration.getString("contact-frontend.host")
   private val contactFormServiceIdentifier = "soft-drinks-industry-levy-registration-frontend"
