@@ -20,7 +20,7 @@ import config.FrontendAppConfig
 import connectors.AddressLookupConnector
 import connectors.httpParsers.ResponseHttpParser.HttpResult
 import controllers.routes
-import models.alf.init.{ConfirmPageConfig, JourneyConfig, JourneyLabels, JourneyOptions, SelectPageConfig, TimeoutConfig}
+import models.alf.init.{AppLevelLabels, ConfirmPageConfig, JourneyConfig, JourneyLabels, JourneyOptions, LanguageLabels, SelectPageConfig, TimeoutConfig}
 import models.alf.{AlfAddress, AlfResponse}
 import models.backend.{Site, UkAddress}
 import models.{UserAnswers, Warehouse}
@@ -130,8 +130,20 @@ class AddressLookupService @Inject()(
 
  private def returnJourneyLabels(state: AddressLookupState)(implicit messages: Messages): Option[JourneyLabels] = {
     state match {
-      case PackingDetails => None
-      case WarehouseDetails => None
+      case PackingDetails => Some(
+        JourneyLabels(
+          en = Some(LanguageLabels(
+            appLevelLabels = Some(AppLevelLabels(
+              navTitle = Some(messages("service.name")),
+              phaseBannerHtml = None
+            ))))))
+      case WarehouseDetails => Some(
+        JourneyLabels(
+          en = Some(LanguageLabels(
+            appLevelLabels = Some(AppLevelLabels(
+              navTitle = Some(messages("service.name")),
+              phaseBannerHtml = None
+            ))))))
     }
   }
 

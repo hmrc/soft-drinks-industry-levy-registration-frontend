@@ -54,7 +54,7 @@ class RampOffControllerSpec extends SpecBase with MockitoSugar {
   }
   s"$WarehouseDetails off ramp" - {
     "should Redirect to the next page when ALF returns address successfully" in new Setup {
-      val application: Application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+      val app: Application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
         .overrides(
           bind[AddressLookupService].toInstance(mockAddressLookupService),
           bind[SessionRepository].toInstance(mockSessionRepository)
@@ -75,12 +75,12 @@ class RampOffControllerSpec extends SpecBase with MockitoSugar {
         ArgumentMatchers.eq(alfId)))
         .thenReturn(updatedUserAnswers)
       when(mockSessionRepository.set(ArgumentMatchers.eq(updatedUserAnswers)))
-        .thenReturn(Future.successful(Right(true)))
+        .thenReturn(Future.successful(true))
 
-      running(application) {
+      running(app) {
         val request = FakeRequest(GET, routes.RampOffController.secondaryWareHouseDetailsOffRamp(sdilId, alfId).url)
 
-        val result = route(application, request).value
+        val result = route(app, request).value
         status(result) mustBe SEE_OTHER
         redirectLocation(result).get mustBe controllers.routes.IndexController.onPageLoad.url
       }
@@ -184,7 +184,7 @@ class RampOffControllerSpec extends SpecBase with MockitoSugar {
         ArgumentMatchers.eq(alfId)))
         .thenReturn(updatedUserAnswers)
       when(mockSessionRepository.set(ArgumentMatchers.eq(updatedUserAnswers)))
-        .thenReturn(Future.successful(Right(true)))
+        .thenReturn(Future.successful(true))
 
       running(application) {
         val request = FakeRequest(GET, routes.RampOffController.packingSiteDetailsOffRamp(sdilId, alfId).url)

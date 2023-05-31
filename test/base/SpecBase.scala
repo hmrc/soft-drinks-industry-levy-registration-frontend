@@ -23,8 +23,8 @@ import models.{Contact, LitresInBands, RetrievedActivity, RetrievedSubscription,
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
-import org.scalatest.{OptionValues, TryValues}
-import play.api.Application
+import org.scalatest.{BeforeAndAfterEach, OptionValues, TryValues}
+import play.api.{Application, Play}
 import play.api.i18n.{Lang, Messages, MessagesApi, MessagesImpl}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
@@ -86,18 +86,22 @@ trait SpecBase
     with OptionValues
     with ScalaFutures
     with IntegrationPatience
-     {
+    with BeforeAndAfterEach {
 
   def identifier: String = "id"
   val sdilNumber: String = "XKSDIL000000022"
 
-  val application = applicationBuilder(userAnswers = None).build()
+  lazy val application = applicationBuilder(userAnswers = None).build()
   implicit lazy val messagesAPI = application.injector.instanceOf[MessagesApi]
   implicit lazy val messagesProvider = MessagesImpl(Lang("en"), messagesAPI)
   lazy val mcc = application.injector.instanceOf[MessagesControllerComponents]
   lazy val frontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
 
-  def emptyUserAnswers : UserAnswers = UserAnswers(identifier)
+  override def afterEach(): Unit = {
+    Play.stop(application)
+    super.afterEach()
+  }
+  val emptyUserAnswers : UserAnswers = UserAnswers(identifier)
 
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 
