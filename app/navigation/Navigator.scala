@@ -26,6 +26,16 @@ import models._
 @Singleton
 class Navigator @Inject()() {
 
+  private def navigationForContractPacking(userAnswers: UserAnswers, mode: Mode): Call = {
+    if (userAnswers.get(page = ContractPackingPage).contains(true)) {
+      routes.HowManyContractPackingController.onPageLoad(mode)
+    } else if(mode == CheckMode){
+        routes.CheckYourAnswersController.onPageLoad
+    } else {
+        routes.IndexController.onPageLoad
+    }
+  }
+
   private def navigationForImports(userAnswers: UserAnswers, mode: Mode): Call = {
     if (userAnswers.get(page = ImportsPage).contains(true)) {
       routes.HowManyImportsController.onPageLoad(mode)
@@ -47,6 +57,8 @@ class Navigator @Inject()() {
   }
 
   private val normalRoutes: Page => UserAnswers => Call = {
+    case ContractPackingPage => userAnswers => navigationForContractPacking(userAnswers, NormalMode)
+    case HowManyContractPackingPage => userAnswers => routes.IndexController.onPageLoad
     case ImportsPage => userAnswers => navigationForImports(userAnswers, NormalMode)
     case HowManyImportsPage => userAnswers => routes.IndexController.onPageLoad
     case AskSecondaryWarehousesPage => userAnswers => routes.IndexController.onPageLoad
@@ -62,6 +74,7 @@ class Navigator @Inject()() {
   }
 
   private val checkRouteMap: Page => UserAnswers => Call = {
+    case ContractPackingPage => userAnswers => navigationForContractPacking(userAnswers, CheckMode)
     case OperatePackagingSitesPage => userAnswers => navigationForOperatePackagingSites(userAnswers, CheckMode)
     case ImportsPage => userAnswers => navigationForImports(userAnswers, CheckMode)
     case _ => _ => routes.CheckYourAnswersController.onPageLoad

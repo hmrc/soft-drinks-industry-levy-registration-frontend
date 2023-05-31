@@ -198,3 +198,14 @@ startDate.minimumDate = The date you became liable to register must be after 5 A
 startDate.error.maximumDate = The date you became liable to register must be today or in the past
 startDate.change.hidden = StartDate
 startDate.day.nan = Day must only include numbers
+
+contractPacking.title = Do you operate any packaging sites in the UK to package liable drinks as a third party or contract packer?
+contractPacking.heading = Do you operate any packaging sites in the UK to package liable drinks as a third party or contract packer?
+contractPacking.error.required = Select yes if you operate any packaging sites in the UK to package liable drinks as a third party or contract packer
+contractPacking.checkYourAnswersLabel = Do you operate any packaging sites in the UK to package liable drinks as a third party or contract packer?
+contractPacking.change.hidden = Change do you operate any packaging sites in the UK to package liable drinks as a third party or contract packer?
+howManyContractPacking.title = How many litres will you package as a third party or contract packer in the next 12 months?
+howManyContractPacking.heading = How many litres will you package as a third party or contract packer in the next 12 months?
+howManyContractPacking.subtext = If you do not have the exact volumes you can enter an estimate.
+contractPacking.lowband.litres.hidden = change amount of litres in lowband for contractPacking
+contractPacking.highband.litres.hidden = change amount of litres in highband for contractPacking
