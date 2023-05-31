@@ -27,8 +27,8 @@ class ContactDetailsFormProvider @Inject() extends Mappings {
 
   private val emailRegex =
     """^[a-zA-Z0-9\.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$"""
-  private val nameRegex = """^[a-zA-Z &\.\`\'\-\^]+$"""// """^[a-zA-Z &`\\-\\'\\.^]{1,40}$"""
-  private val position = """^[a-zA-Z &`\\-\\'\\.^]+$"""
+  private val nameRegex = """^[a-zA-Z &\.\`\'\-\^]+$"""
+  private val position = """^[a-zA-Z &\.\`\'\-\^]+$"""
   private val phoneNumberRegex = """^[A-Z0-9 )/(\\#+*\-]+$"""
 
   def apply(): Form[ContactDetails] = Form(

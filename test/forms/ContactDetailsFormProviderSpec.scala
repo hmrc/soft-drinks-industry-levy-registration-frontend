@@ -66,61 +66,88 @@ class ContactDetailsFormProviderSpec extends StringFieldBehaviours {
       requiredError = FormError(fieldName, requiredKey)
     )
   }
-//
-//  ".position" - {
-//
-//    val fieldName = "position"
-//    val requiredKey = "contactDetails.error.position.required"
-//    val lengthKey = "contactDetails.error.position.length"
-//    val maxLength = 155
-//
-//    behave like fieldThatBindsValidData(
-//      form,
-//      fieldName,
-//      stringsWithMaxLength(maxLength)
-//    )
-//
-//    behave like fieldWithMaxLength(
-//      form,
-//      fieldName,
-//      maxLength = maxLength,
-//      lengthError = FormError(fieldName, lengthKey, Seq(maxLength))
-//    )
-//
-//    behave like mandatoryField(
-//      form,
-//      fieldName,
-//      requiredError = FormError(fieldName, requiredKey)
-//    )
-//  }
-//
-//  ".phoneNumber" - {
-//
-//    val fieldName = "phoneNumber"
-//    val requiredKey = "contactDetails.error.phoneNumber.required"
-//    val lengthKey = "contactDetails.error.phoneNumber.length"
-//    val maxLength = 24
-//
-//    behave like fieldThatBindsValidData(
-//      form,
-//      fieldName,
-//      stringsWithMaxLength(maxLength)
-//    )
-//
-//    behave like fieldWithMaxLength(
-//      form,
-//      fieldName,
-//      maxLength = maxLength,
-//      lengthError = FormError(fieldName, lengthKey, Seq(maxLength))
-//    )
-//
-//    behave like mandatoryField(
-//      form,
-//      fieldName,
-//      requiredError = FormError(fieldName, requiredKey)
-//    )
-//  }
-//
+
+  ".position" - {
+
+    val fieldName = "position"
+    val requiredKey = "contactDetails.error.position.required"
+    val lengthKey = "contactDetails.error.position.length"
+    val invalidKey = "contactDetails.error.position.invalid"
+    val validPositionList = List("'`&^-", "The best CEO & CTO", "Software`Dev", "Software^Dev", "Software'Dev", "Software&Dev",
+      " S o f t w a r e D e    v ", "&Software`Dev'", "'Software`Dev'", "a", "SOFTWARE DEV", "softwaredev", "software dev",
+      "The best that there ever was - in the whole wide world", "Bond. James Bond",
+      "The best that there ever was - in the whole wide world - but that isn't enough - maybe even the best in our whole Milky Way universe or even the multiverse")
+    val overMaxLengthPositionList = List(
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaasaaa",
+      "The best Software Dev that there ever was - in the whole wide world-but that isn't enough - maybe even the best in our whole Milky Way universe or even the multiverse"
+    )
+    val invalidPositionList = List("1", "Senior/Lead", "Senior:lead", "Senior\\lead", "Senior Lead The 1st", "CEO_and_CTO",
+      "The best that there ever was, in the whole wide world", "Bond, James Bond")
+    val positionRegex = """^[a-zA-Z &\.\`\'\-\^]+$"""
+
+    "should bind successfully with valid data" in {
+      validPositionList.foreach(position =>
+        form.bind(Map("fullName" -> "Jane Doe", "position" -> position, "phoneNumber" -> "07700 09900", "email" -> "example@example.com"))
+        .errors mustBe List.empty)
+    }
+
+    "should provide the correct Error key when the position is over 155 characters" in {
+      overMaxLengthPositionList.foreach(position =>
+        form.bind(Map("fullName" -> "Jane Doe", "position" -> position, "phoneNumber" -> "07700 09900", "email" -> "example@example.com"))
+        .errors mustBe List(FormError("position", List(lengthKey), ArraySeq(155))))
+    }
+
+    "should provide the correct Error key when the position is invalid" in {
+      invalidPositionList.foreach(position =>
+        form.bind(Map("fullName" -> "Jane Doe", "position" -> position, "phoneNumber" -> "07700 09900", "email" -> "example@example.com"))
+        .errors mustEqual List(FormError("position", List(invalidKey), ArraySeq(positionRegex))))
+    }
+    behave like mandatoryField(
+      form,
+      fieldName,
+      requiredError = FormError(fieldName, requiredKey)
+    )
+  }
+
+  ".phoneNumber" - {
+
+    val fieldName = "phoneNumber"
+    val requiredKey = "contactDetails.error.phoneNumber.required"
+    val lengthKey = "contactDetails.error.phoneNumber.length"
+    val invalidKey = "contactDetails.error.phoneNumber.invalid"
+      val validPhoneNumberList = List("#+*-()/\\", "01632 960999", "07700 900999", ")\\/(\\-\\*\\#\\+", "UKAAAAAAA 07700 900999",
+      "(+44) 01632 960999", "(+44) 0 1 6 3 2 9 6 0999", "- 44) 016329 60999", "THIS IS MY NUMBER", ")/(", "44/777/00", "44-777-00",
+      "44-777-00/TEST", "#44 +321*777-", "44\\777\\00")
+      val overMaxLengthPhoneNumberList = List(
+        "(+44) 0 1 6 3 2 9 6 0 999", "(+44) 0 1 6 3 2 9 6 09 9 9")
+      val invalidPhoneNumberList = List("(+44) 016329, 60999", "(& 44) 016329 60999", "This is my number 07700", "ukaaaaaaa 07700 900999")
+      val phoneNumberRegex = """^[A-Z0-9 )/(\\#+*\-]+$"""
+
+      "should bind successfully with valid data" in {
+        validPhoneNumberList.foreach(phoneNumber =>
+          form.bind(Map("fullName" -> "Jane Doe", "position" -> "CEO", "phoneNumber" -> phoneNumber, "email" -> "example@example.com"))
+          .errors mustBe List.empty)
+      }
+
+      "should provide the correct Error key when the phoneNumber is over 155 characters" in {
+        overMaxLengthPhoneNumberList.foreach(phoneNumber =>
+          form.bind(Map("fullName" -> "Jane Doe", "position" -> "CEO", "phoneNumber" -> phoneNumber, "email" -> "example@example.com"))
+          .errors mustBe List(FormError("phoneNumber", List(lengthKey), ArraySeq(24))))
+      }
+
+      "should provide the correct Error key when the phoneNumber is invalid" in {
+        invalidPhoneNumberList.foreach(phoneNumber =>
+          form.bind(Map("fullName" -> "Jane Doe", "position" -> "CEO", "phoneNumber" -> phoneNumber, "email" -> "example@example.com"))
+          .errors mustEqual List(FormError("phoneNumber", List(invalidKey), ArraySeq(phoneNumberRegex))))
+      }
+
+    behave like mandatoryField(
+      form,
+      fieldName,
+      requiredError = FormError(fieldName, requiredKey)
+    )
+  }
+
   ".email" - {
     val validEmailList = List("name@example.com", "test@test.com", "LongTestNameForEmailExample@example.com",
       "LongTestNameForEmailExampleWith55Characters@example.com", "LongTestNameForEmailExampleWith74Characters@WithALongDomainNameExample.com",
