@@ -30,20 +30,35 @@ class ContactDetailsFormProviderSpec extends StringFieldBehaviours {
     val fieldName = "fullName"
     val requiredKey = "contactDetails.error.fullName.required"
     val lengthKey = "contactDetails.error.fullName.length"
-    val maxLength = 40
+    val invalidKey = "contactDetails.error.fullName.invalid"
+    val validNameList = List("Jane Doe", "Jane.Doe", "Jane`Doe", "Jane^Doe", "Jane'Doe", "Jane&Doe",
+      " J a n e D o e", "&Jane Doe'", "'Jane Doe'", "Jane I have many first &middle names Doe", "a", "Jane Doe ")
+    val overMaxLengthNameList = List("Jane I have many first & middle names Doe")
+    val invalidNameList = List("1", "Jane/Doe", "Jane Parker:Doe", "Jane\\Doe", "Jane Doe The 1st")
+    val nameRegex = """^[a-zA-Z &\.\`\'\-\^]+$"""
 
-//    behave like fieldThatBindsValidData(
-//      form,
-//      fieldName,
-//      stringsWithMaxLength(maxLength)
-//    )
-//
-//    behave like fieldWithMaxLength(
-//      form,
-//      fieldName,
-//      maxLength = maxLength,
-//      lengthError = FormError(fieldName, lengthKey, Seq(maxLength))
-//    )
+
+    "should bind successfully with valid data" in {
+      validNameList.foreach(name => {
+        println(Console.YELLOW + "name " + name + Console.WHITE)
+        form.bind(Map("fullName" -> name, "position" -> "CEO", "phoneNumber" -> "07700 09900", "email" -> "example@example.com"))
+      }.errors mustBe List.empty)
+    }
+
+    "should provide the correct Error key when the full name is over 40 characters" in {
+      overMaxLengthNameList.foreach(name => {
+        println(Console.YELLOW + "name " + name + Console.WHITE)
+        form.bind(Map("fullName" -> name, "position" -> "CEO", "phoneNumber" -> "07700 09900", "email" -> "example@example.com"))
+      }.errors mustBe List(FormError("fullName", List(lengthKey), ArraySeq(40))))
+    }
+
+    "should provide the correct Error key when the full name is invalid" in {
+      invalidNameList.foreach(name => {
+        println(Console.YELLOW + "name " + name + Console.WHITE)
+        form.bind(Map("fullName" -> name, "position" -> "CEO", "phoneNumber" -> "07700 09900", "email" -> "example@example.com"))
+      }.errors mustEqual List(FormError("fullName", List(invalidKey), ArraySeq(nameRegex))))
+    }
+
 
     behave like mandatoryField(
       form,
@@ -110,19 +125,19 @@ class ContactDetailsFormProviderSpec extends StringFieldBehaviours {
     val validEmailList = List("name@example.com", "test@test.com", "LongTestNameForEmailExample@example.com",
       "LongTestNameForEmailExampleWith55Characters@example.com", "LongTestNameForEmailExampleWith74Characters@WithALongDomainNameExample.com",
       "LongNameWITHCAPITALSForEmailExampleWith82Characters@WithALongDomainNameExample.com", "a@a.a", "1@a.a", "1@1.1",
-      "lettersdigitsoranyofthefollowingspecialcharacters.!#$%&'*+/=?^_{|}~-@example.com",
+      "lettersdigitsoranyofthefollowingspecialcharacters.!#$%&'*+/=?^_{|}~-@example.com", "youCanPutTwoPeriodsAfterThe@example.com.com",
       "3232-21982.digits.are.allowed?Anywhere*within*the^text@example.com",
       "a@lettersordigitsfollowedbyoptionalhyphenandmorelettersdigits61.lettersordigitsfollowedbyoptionalhyphen-UpTo61CharsAreAllowed",
       "132Total@lettersordigitsfollowedbyoptionalhyphenandmorelettersdigits61.lettersordigitsfollowedbyoptionalhyphen-UpTo61CharsAreAllowed",
-      "lettersdigitsoranyofthefollowingspecialcharacters.!#$%&'*+/=?^_{|}~-AreAllowedButOnly1HypenAfterThe.portionTheBackPortions61Each@a.a")
+      "lettersdigitsoranyofthefollowingspecialcharacters.!#$%&'*+/=?^_{|}~-AreAllowed.portionTheBackPortions61Each@a.a", "canEndWithHypen-@example.com")
     val overMaxLengthEmailList = List(
       "lettersdigitsoranyofthefollowingspecialcharacters.!#$%&'*+/=?^_{|}~-AreAllowedButOnly1HypenAfterThe.portionTheBackPortions61Each@a.ab",
       "134IsTotal@lettersordigitsfollowedbyoptionalhyphenandmorelettersdigits61.lettersordigitsfollowedbyoptionalhyphen-UpTo61CharsAreAllowed",
       "aWayTooLong@lettersordigitsfollowedbyoptionalhyphenandmorelettersdigits61.lettersordigitsfollowedbyoptionalhyphen-UpTo61CharsAreAllowed",
       )
-    val invalidEmailList = List("1.com", "commas,are,not,allowed@example.com",
+    val invalidEmailList = List("1.com", "commas,are,not,allowed@example.com", "A@b@c@example.com", "a\"b(c)d,e:f;g<h>i[j\\k]l@example.com",
       "a@lettersordigitsfollowedbyoptionalhyphenandmoreletters.lettersordigitsfollowedbyoptionalhyphen-UpTo61CharsAreAllowedTooManyHere",
-      "invalid.IsNotAllowed@example.lettersordigitsfollowedby-optionalhyphen-UpTo61CharsAreAllowed@",
+      "invalid.IsNotAllowed@example.lettersordigitsfollowedby-optionalhyphen-UpTo61CharsAreAllowed@", "spaces cannotExistOutQuotes@example.com",
       "invalid.IsNotAllowed@example.lettersordigitsfollowedby-optionalhyphen-UpTo61CharsAreAllowed-")
 
     val fieldName = "email"
@@ -143,10 +158,9 @@ class ContactDetailsFormProviderSpec extends StringFieldBehaviours {
     }
 
     "should provide the correct Error key when the email address is invalid" in {
-     invalidEmailList.foreach(email => {
-        println(Console.YELLOW + "email " + email + Console.WHITE)
-        form.bind(Map("fullName" -> "Jane Doe", "position" -> "CEO", "phoneNumber" -> "07700 09900", "email" -> email))
-      }.errors mustEqual List(FormError("email", List(invalidKey), ArraySeq(emailRegEx))))
+      invalidEmailList.foreach(email => form.bind(Map("fullName" -> "Jane Doe", "position" -> "CEO", "phoneNumber" -> "07700 09900", "email" -> email))
+      .errors mustEqual List(FormError("email", List(invalidKey), ArraySeq(emailRegEx)))
+      )
     }
 
     behave like mandatoryField(
