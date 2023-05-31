@@ -16,22 +16,15 @@
 
 package forms
 
-import forms.mappings.Mappings
-import models.LitresInBands
-import play.api.data.Form
-import play.api.data.Forms._
-
 import javax.inject.Inject
 
-class HowManyLitresFormProvider @Inject() extends Mappings {
+import forms.mappings.Mappings
+import play.api.data.Form
 
-  def apply(): Form[LitresInBands] = Form(
-    mapping(
-      "lowBand" -> litres(
-        "lowBand"),
-      "highBand" -> litres(
-        "highBand")
-    )(LitresInBands.apply)(LitresInBands.unapply)
-   )
+class ImportsFormProvider @Inject() extends Mappings {
 
- }
+  def apply(): Form[Boolean] =
+    Form(
+      "value" -> boolean("imports.error.required")
+    )
+}

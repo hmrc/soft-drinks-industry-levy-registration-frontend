@@ -20,8 +20,8 @@ import models.Enumerable
 import play.api.data.FormError
 import play.api.data.format.Formatter
 
-import scala.util.Try
 import scala.util.control.Exception.nonFatalCatch
+import scala.util.{Failure, Success, Try}
 
 trait Formatters {
 
@@ -98,7 +98,8 @@ trait Formatters {
     }
 
   private[mappings] def litresFormatter(band: String,
-                                        args: Seq[String] = Seq.empty): Formatter[Long] =
+                                        args: Seq[String] = Seq.empty): Formatter[Long] = {
+
     new Formatter[Long] {
 
       val requiredKey = s"litres.error.$band.required"
@@ -106,21 +107,26 @@ trait Formatters {
       val negativeNumber = s"litres.error.$band.negative"
       val wholeNumberKey = s"litres.error.$band.wholeNumber"
       val nonNumericKey = s"litres.error.$band.nonNumeric"
-
+      val nonZeroTotal = "litres.error.minimum.total"
 
       val decimalRegexp = """^-?(\d*\.\d*)$"""
       val numberRegexp = """^\d+$*"""
       private val baseFormatter = stringFormatter(requiredKey, args)
 
-      override def bind(key: String, data: Map[String, String]) =
+      override def bind(key: String, data: Map[String, String]) = {
+
         baseFormatter
           .bind(key, data)
           .map(_.replace(",", ""))
           .flatMap {
             case s if s.matches(numberRegexp) =>
-              nonFatalCatch
-                .either(s.toLong)
-                .left.map(_ => Seq(FormError(key, outOfRangeKey, args)))
+              if (totalLitresLessThanOne(data)) {
+                Left(Seq(FormError(key, nonZeroTotal, args)))
+              } else {
+                nonFatalCatch
+                  .either(s.toLong)
+                  .left.map(_ => Seq(FormError(key, outOfRangeKey, args)))
+              }
             case s if s.startsWith("-") =>
               Left(Seq(FormError(key, negativeNumber, args)))
             case s if s.matches(decimalRegexp) =>
@@ -132,8 +138,23 @@ trait Formatters {
                 .either(s.toLong)
                 .left.map(_ => Seq(FormError(key, nonNumericKey, args)))
           }
-
+      }
       override def unbind(key: String, value: Long) =
         baseFormatter.unbind(key, value.toString)
     }
+  }
+
+  private def totalLitresLessThanOne(data: Map[String, String]): Boolean = {
+    val lowBand = Try(data.get("lowBand").getOrElse("0").toInt)
+    val highBand = Try(data.get("highBand").getOrElse("0").toInt)
+    val result = lowBand.flatMap(lb => highBand.map(hb => (lb + hb) < 1))
+    result match {
+      case Success(v) =>
+        Success(v).value
+      case Failure(_) =>
+        false
+    }
+  }
+
+
 }

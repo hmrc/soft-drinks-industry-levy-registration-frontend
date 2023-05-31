@@ -32,6 +32,7 @@ litres.error.lowBand.wholeNumber = Number of litres in the low band must be a wh
 litres.error.highBand.wholeNumber = Number of litres in the high band must be a whole number
 litres.error.lowBand.outOfMaxVal = Number of litres in the low band must be less than 100,000,000,000,000
 litres.error.highBand.outOfMaxVal = Number of litres in the high band must be less than 100,000,000,000,000
+litres.error.minimum.total = Number of litres must be 1 or more
 
 timeout.title = You’re about to be signed out
 timeout.message = For security reasons, you will be signed out of this service in
@@ -159,4 +160,15 @@ howManyOperatePackagingSites.heading = How many litres of our own brands will yo
 howManyOperatePackagingSites.subtext = If you do not have the exact volumes you can enter an estimate.
 operatePackagingSites.lowband.litres.hidden = change amount of litres in lowband for operatePackagingSites
 operatePackagingSites.highband.litres.hidden = change amount of litres in highband for operatePackagingSites
+
+imports.title = Do you bring liable drinks into the UK from anywhere outside of the UK?
+imports.heading = Do you bring liable drinks into the UK from anywhere outside of the UK?
+imports.error.required = Select yes if you bring liable drinks into the UK from anywhere outside of the UK
+imports.checkYourAnswersLabel = Do you bring liable drinks into the UK from anywhere outside of the UK?
+imports.change.hidden = Change do you bring liable drinks into the UK from anywhere outside of the UK?
+howManyImports.title = How many litres will you bring into the UK in the next 12 months?
+howManyImports.heading = How many litres will you bring into the UK in the next 12 months?
+howManyImports.subtext = If you do not have the exact volumes you can enter an estimate.
+imports.lowband.litres.hidden = change amount of litres in lowband for imports
+imports.highband.litres.hidden = change amount of litres in highband for imports
 

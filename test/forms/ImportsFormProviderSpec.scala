@@ -16,22 +16,30 @@
 
 package forms
 
-import forms.mappings.Mappings
-import models.LitresInBands
-import play.api.data.Form
-import play.api.data.Forms._
+import forms.behaviours.BooleanFieldBehaviours
+import play.api.data.FormError
 
-import javax.inject.Inject
+class ImportsFormProviderSpec extends BooleanFieldBehaviours {
 
-class HowManyLitresFormProvider @Inject() extends Mappings {
+  val requiredKey = "imports.error.required"
+  val invalidKey = "error.boolean"
 
-  def apply(): Form[LitresInBands] = Form(
-    mapping(
-      "lowBand" -> litres(
-        "lowBand"),
-      "highBand" -> litres(
-        "highBand")
-    )(LitresInBands.apply)(LitresInBands.unapply)
-   )
+  val form = new ImportsFormProvider()()
 
- }
+  ".value" - {
+
+    val fieldName = "value"
+
+    behave like booleanField(
+      form,
+      fieldName,
+      invalidError = FormError(fieldName, invalidKey)
+    )
+
+    behave like mandatoryField(
+      form,
+      fieldName,
+      requiredError = FormError(fieldName, requiredKey)
+    )
+  }
+}
