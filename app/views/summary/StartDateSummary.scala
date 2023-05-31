@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package viewmodels.summary
+package views.summary
 
 import java.time.format.DateTimeFormatter
 
