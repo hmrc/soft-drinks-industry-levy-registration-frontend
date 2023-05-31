@@ -97,8 +97,6 @@ trait SpecBase
   lazy val mcc = application.injector.instanceOf[MessagesControllerComponents]
   lazy val frontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
 
-
-
   def emptyUserAnswers : UserAnswers = UserAnswers(identifier)
 
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
