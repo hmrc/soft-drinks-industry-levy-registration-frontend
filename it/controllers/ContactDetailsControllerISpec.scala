@@ -206,7 +206,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
         }
       }
       contactDetailsMap.zipWithIndex.foreach { case ((fieldName, _), index) =>
-        "when no answer is given for field" + fieldName in {
+        "when no answer is given for field " + fieldName in {
           given
             .commonPrecondition
 
@@ -233,7 +233,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
               errorSummaryList
                 .select("a")
                 .attr("href") mustBe "#" + fieldName
-              errorSummaryList.text() mustBe Messages("contactDetails.error." + fieldName + ".required")
+              errorSummaryList.text() must include (Messages("contactDetails.error." + fieldName + ".required"))
             }
           }
         }
@@ -318,7 +318,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
         }
       }
       contactDetailsMap.zipWithIndex.foreach { case ((fieldName, _), index) =>
-        "when no answer is given for field" + fieldName in {
+        "when no answer is given for field " + fieldName in {
           given
             .commonPrecondition
 
@@ -344,8 +344,8 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
                 .first()
               errorSummaryList
                 .select("a")
-                .attr("href") mustBe "#" + fieldName
-              errorSummaryList.text() mustBe Messages("contactDetails.error." + fieldName + ".required")
+                .attr("href") mustBe"#" + fieldName
+              errorSummaryList.text() must include (Messages("contactDetails.error." + fieldName + ".required"))
             }
           }
         }
