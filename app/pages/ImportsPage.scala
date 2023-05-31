@@ -14,24 +14,13 @@
  * limitations under the License.
  */
 
-package forms
+package pages
 
-import forms.mappings.Mappings
-import models.LitresInBands
-import play.api.data.Form
-import play.api.data.Forms._
+import play.api.libs.json.JsPath
 
-import javax.inject.Inject
+case object ImportsPage extends QuestionPage[Boolean] {
 
-class HowManyLitresFormProvider @Inject() extends Mappings {
+  override def path: JsPath = JsPath \ toString
 
-  def apply(): Form[LitresInBands] = Form(
-    mapping(
-      "lowBand" -> litres(
-        "lowBand"),
-      "highBand" -> litres(
-        "highBand")
-    )(LitresInBands.apply)(LitresInBands.unapply)
-   )
-
- }
+  override def toString: String = "imports"
+}

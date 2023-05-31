@@ -14,24 +14,16 @@
  * limitations under the License.
  */
 
-package forms
+package views.summary
 
-import forms.mappings.Mappings
-import models.LitresInBands
-import play.api.data.Form
-import play.api.data.Forms._
+import controllers.routes
+import models.CheckMode
+import views.summary.SummaryListRowLitresHelper
 
-import javax.inject.Inject
+object HowManyImportsSummary extends SummaryListRowLitresHelper {
 
-class HowManyLitresFormProvider @Inject() extends Mappings {
+  override val actionUrl: String = routes.HowManyImportsController.onPageLoad(CheckMode).url
+  override val bandActionIdKey: String = "imports"
+  override val bandHiddenKey: String = "imports"
 
-  def apply(): Form[LitresInBands] = Form(
-    mapping(
-      "lowBand" -> litres(
-        "lowBand"),
-      "highBand" -> litres(
-        "highBand")
-    )(LitresInBands.apply)(LitresInBands.unapply)
-   )
-
- }
+}

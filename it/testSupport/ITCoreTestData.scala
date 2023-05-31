@@ -22,6 +22,12 @@ trait ITCoreTestData extends TryValues {
     Map("yes" -> yesSelected, "no" -> noSelected)
   }
 
+  val userAnswersForImportsPage: Map[String, UserAnswers] = {
+    val yesSelected = emptyUserAnswers.set(ImportsPage, true).success.value
+    val noSelected = emptyUserAnswers.set(ImportsPage, false).success.value
+    Map("yes" -> yesSelected, "no" -> noSelected)
+    }
+
   val userAnswersForAskSecondaryWarehousesPage: Map[String, UserAnswers] = {
     val yesSelected = emptyUserAnswers.set(AskSecondaryWarehousesPage, true).success.value
     val noSelected = emptyUserAnswers.set(AskSecondaryWarehousesPage, false).success.value

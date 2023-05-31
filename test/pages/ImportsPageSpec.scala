@@ -14,24 +14,18 @@
  * limitations under the License.
  */
 
-package forms
+package pages
 
-import forms.mappings.Mappings
-import models.LitresInBands
-import play.api.data.Form
-import play.api.data.Forms._
+import pages.behaviours.PageBehaviours
 
-import javax.inject.Inject
+class ImportsPageSpec extends PageBehaviours {
 
-class HowManyLitresFormProvider @Inject() extends Mappings {
+  "ImportsPage" - {
 
-  def apply(): Form[LitresInBands] = Form(
-    mapping(
-      "lowBand" -> litres(
-        "lowBand"),
-      "highBand" -> litres(
-        "highBand")
-    )(LitresInBands.apply)(LitresInBands.unapply)
-   )
+    beRetrievable[Boolean](ImportsPage)
 
- }
+    beSettable[Boolean](ImportsPage)
+
+    beRemovable[Boolean](ImportsPage)
+  }
+}

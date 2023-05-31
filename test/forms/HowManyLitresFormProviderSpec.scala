@@ -17,9 +17,13 @@
 package forms
 
 import forms.behaviours.LongFieldBehaviour
-import play.api.data.FormError
+import models.LitresInBands
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.must.Matchers
+import play.api.data.{Form, FormError}
+import play.api.libs.json.Json
 
-class HowManyLitresFormProviderSpec extends LongFieldBehaviour{
+class HowManyLitresFormProviderSpec extends LongFieldBehaviour with Matchers {
 
   val form = new HowManyLitresFormProvider().apply()
 
@@ -101,4 +105,22 @@ class HowManyLitresFormProviderSpec extends LongFieldBehaviour{
     )
   }
 
+  "must return total litres less than 1" in {
+    val result = form.bind(Map("lowBand" -> "0", "highBand" -> "0"))
+    assert(result.errors.contains(FormError("lowBand",List("litres.error.minimum.total"))))
+    assert(result.errors.contains(FormError("highBand",List("litres.error.minimum.total"))))
+  }
+
+  "must return not contain total less than 1 error if low band value is 0 and the high band is non-numeric" in {
+    val result = form.bind(Map("lowBand" -> "0", "highBand" -> "foo"))
+    result.errors must not contain(FormError("lowBand", List("litres.error.minimum.total")))
+    assert(result.errors.contains(FormError("highBand", List("litres.error.highBand.nonNumeric"))))
+  }
+
+  "must return not contain total less than 1 error if high band value is 0 and the low band is non-numeric" in {
+    val result = form.bind(Map("lowBand" -> "foo", "highBand" -> "0"))
+    result.errors must not contain (FormError("highBand", List("litres.error.minimum.total")))
+    assert(result.errors.contains(FormError("lowBand", List("litres.error.lowBand.nonNumeric"))))
+  }
+  
 }
