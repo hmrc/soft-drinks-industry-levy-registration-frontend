@@ -42,7 +42,7 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title() must include(expectedPageTitle + " - soft-drinks-industry-levy - GOV.UK")
+            page.title() must include(expectedPageTitle + " - Soft Drinks Industry Levy - GOV.UK")
           }
         }
       }
@@ -60,7 +60,7 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title() mustBe (expectedPageTitle + " - soft-drinks-industry-levy - GOV.UK")
+            page.title() mustBe (expectedPageTitle + " - Soft Drinks Industry Levy - GOV.UK")
           }
         }
       }
@@ -153,7 +153,7 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
           whenReady(result1) { res =>
             res.status mustBe 500
             val page = Jsoup.parse(res.body)
-            page.title() mustBe "Sorry, we are experiencing technical difficulties - 500 - soft-drinks-industry-levy - GOV.UK"
+            page.title() mustBe "Sorry, we are experiencing technical difficulties - 500 - Soft Drinks Industry Levy - GOV.UK"
           }
         }
       }

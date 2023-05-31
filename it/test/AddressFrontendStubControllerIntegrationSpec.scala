@@ -1,18 +1,18 @@
 package test
 
-import org.scalatest.TryValues
+import controllers.ControllerITTestHelper
+import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.libs.json.Json
 import play.api.libs.ws.DefaultWSCookie
 import play.api.test.Helpers.{CONTENT_TYPE, JSON, LOCATION}
 import play.api.test.WsTestClient
 
-class AddressFrontendStubControllerIntegrationSpec extends Specifications
-  with TestConfiguration with ITCoreTestData with TryValues {
+class AddressFrontendStubControllerIntegrationSpec extends ControllerITTestHelper {
 
   val initialisePath = "/test-only/api/init"
   val addressesPath = "/test-only/api/confirmed?id=1234567890"
 
-  s"POST $initialisePath" should {
+  s"POST $initialisePath should" - {
     "return Accepted with a rampOn url in the header" in {
       WsTestClient.withClient { client =>
         val result1 = client.url(s"$baseUrl$initialisePath")
@@ -29,14 +29,10 @@ class AddressFrontendStubControllerIntegrationSpec extends Specifications
     }
   }
 
-
-  s"GET $addressesPath" should {
+  s"GET $addressesPath should" - {
     "return Ok with the confirmed address" in {
       WsTestClient.withClient { client =>
-        val result1 = client.url(s"$baseUrl$addressesPath")
-          .withFollowRedirects(false)
-          .addCookies(DefaultWSCookie("mdtp", authAndSessionCookie))
-          .get()
+        val result1 = createClientRequestGet(client,s"$baseUrl$addressesPath")
 
         val addressConfirmed =
           "{\"auditRef\":\"bed4bd24-72da-42a7-9338-f43431b7ed72\"," +

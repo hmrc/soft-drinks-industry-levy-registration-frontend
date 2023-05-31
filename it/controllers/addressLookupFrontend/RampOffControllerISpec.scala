@@ -5,7 +5,6 @@ import models.backend.{Site, UkAddress}
 import models.{NormalMode, Warehouse}
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.http.Status.{INTERNAL_SERVER_ERROR, SEE_OTHER}
-import play.api.libs.ws.DefaultWSCookie
 import play.api.test.WsTestClient
 import play.mvc.Http.HeaderNames
 import services.{PackingDetails, WarehouseDetails}
@@ -24,10 +23,7 @@ class RampOffControllerISpec extends ControllerITTestHelper {
         setAnswers(emptyUserAnswers)
 
         WsTestClient.withClient { client =>
-          val result = client.url(s"$baseUrl/off-ramp/secondary-warehouses/$sdilId?id=$alfId")
-            .withFollowRedirects(false)
-            .addCookies(DefaultWSCookie("mdtp", authAndSessionCookie))
-            .get()
+          val result = createClientRequestGet(client, s"$baseUrl/off-ramp/secondary-warehouses/$sdilId?id=$alfId")
 
           whenReady(result) { res =>
             val updatedUserAnswers = getAnswers(emptyUserAnswers.id).get
@@ -54,10 +50,7 @@ class RampOffControllerISpec extends ControllerITTestHelper {
         setAnswers(userAnswersBefore)
 
         WsTestClient.withClient { client =>
-          val result = client.url(s"$baseUrl/off-ramp/secondary-warehouses/$sdilId?id=$alfId")
-            .withFollowRedirects(false)
-            .addCookies(DefaultWSCookie("mdtp", authAndSessionCookie))
-            .get()
+          val result = createClientRequestGet(client, s"$baseUrl/off-ramp/secondary-warehouses/$sdilId?id=$alfId")
 
           whenReady(result) { res =>
             val updatedUserAnswers = getAnswers(emptyUserAnswers.id).get
@@ -69,7 +62,7 @@ class RampOffControllerISpec extends ControllerITTestHelper {
             updatedUserAnswers.warehouseList mustBe Map(sdilId -> Warehouse(Some("soft drinks ltd"), UkAddress(List("line 1", "line 2", "line 3", "line 4"), "aa1 1aa", alfId = Some(alfId))))
 
             res.status mustBe SEE_OTHER
-            res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.IndexController.onPageLoad().url)
+            res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.IndexController.onPageLoad.url)
           }
         }
       }
@@ -84,10 +77,7 @@ class RampOffControllerISpec extends ControllerITTestHelper {
         setAnswers(emptyUserAnswers)
 
         WsTestClient.withClient { client =>
-          val result = client.url(s"$baseUrl/off-ramp/secondary-warehouses/$sdilId?id=$alfId")
-            .withFollowRedirects(false)
-            .addCookies(DefaultWSCookie("mdtp", authAndSessionCookie))
-            .get()
+          val result = createClientRequestGet(client, s"$baseUrl/off-ramp/secondary-warehouses/$sdilId?id=$alfId")
 
           whenReady(result) { res =>
             res.status mustBe INTERNAL_SERVER_ERROR
@@ -115,10 +105,7 @@ class RampOffControllerISpec extends ControllerITTestHelper {
         setAnswers(emptyUserAnswers)
 
         WsTestClient.withClient { client =>
-          val result = client.url(s"$baseUrl/off-ramp/packing-site-details/$sdilId?id=$alfId")
-            .withFollowRedirects(false)
-            .addCookies(DefaultWSCookie("mdtp", authAndSessionCookie))
-            .get()
+          val result = createClientRequestGet(client, s"$baseUrl/off-ramp/packing-site-details/$sdilId?id=$alfId")
 
           whenReady(result) { res =>
             val updatedUserAnswers = getAnswers(emptyUserAnswers.id).get
@@ -146,10 +133,7 @@ class RampOffControllerISpec extends ControllerITTestHelper {
         setAnswers(userAnswersBefore)
 
         WsTestClient.withClient { client =>
-          val result = client.url(s"$baseUrl/off-ramp/packing-site-details/$sdilId?id=$alfId")
-            .withFollowRedirects(false)
-            .addCookies(DefaultWSCookie("mdtp", authAndSessionCookie))
-            .get()
+          val result = createClientRequestGet(client, s"$baseUrl/off-ramp/packing-site-details/$sdilId?id=$alfId")
 
           whenReady(result) { res =>
             val updatedUserAnswers = getAnswers(emptyUserAnswers.id).get
@@ -177,10 +161,7 @@ class RampOffControllerISpec extends ControllerITTestHelper {
         setAnswers(emptyUserAnswers)
 
         WsTestClient.withClient { client =>
-          val result = client.url(s"$baseUrl/off-ramp/packing-site-details/$sdilId?id=$alfId")
-            .withFollowRedirects(false)
-            .addCookies(DefaultWSCookie("mdtp", authAndSessionCookie))
-            .get()
+          val result = createClientRequestGet(client, s"$baseUrl/off-ramp/packing-site-details/$sdilId?id=$alfId")
 
           whenReady(result) { res =>
             res.status mustBe INTERNAL_SERVER_ERROR
