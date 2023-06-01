@@ -17,14 +17,25 @@
 package navigation
 
 import javax.inject.{Inject, Singleton}
-
 import play.api.mvc.Call
 import controllers.routes
+import models.OrganisationType.Partnership
 import pages._
 import models._
 
 @Singleton
 class Navigator @Inject()() {
+
+  private def navigationForOrganisationType(userAnswers: UserAnswers, mode: Mode): Call = {
+    (userAnswers.get(page = OrganisationTypePage),mode) match {
+      case (Some(organisationType),_) if organisationType == Partnership =>
+        routes.CannotRegisterPartnershipController.onPageLoad()
+      case (_, CheckMode) =>
+        routes.CheckYourAnswersController.onPageLoad
+      case (_,_) =>
+        routes.HowManyLitresGloballyController.onPageLoad(mode)
+    }
+  }
 
   private def navigationForContractPacking(userAnswers: UserAnswers, mode: Mode): Call = {
     if (userAnswers.get(page = ContractPackingPage).contains(true)) {
@@ -69,7 +80,7 @@ class Navigator @Inject()() {
     case PackagingSiteDetailsPage => userAnswers => routes.IndexController.onPageLoad
     case AskSecondaryWarehousesPage => userAnswers => routes.IndexController.onPageLoad
     case StartDatePage => userAnswers => routes.IndexController.onPageLoad
-    case OrganisationTypePage => userAnswers => routes.IndexController.onPageLoad
+    case OrganisationTypePage => userAnswers => navigationForOrganisationType(userAnswers, NormalMode)
     case _ => _ => routes.IndexController.onPageLoad
   }
 
@@ -77,6 +88,7 @@ class Navigator @Inject()() {
     case ContractPackingPage => userAnswers => navigationForContractPacking(userAnswers, CheckMode)
     case OperatePackagingSitesPage => userAnswers => navigationForOperatePackagingSites(userAnswers, CheckMode)
     case ImportsPage => userAnswers => navigationForImports(userAnswers, CheckMode)
+    case OrganisationTypePage => userAnswers => navigationForOrganisationType(userAnswers, CheckMode)
     case _ => _ => routes.CheckYourAnswersController.onPageLoad
   }
 

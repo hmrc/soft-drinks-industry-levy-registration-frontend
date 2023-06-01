@@ -18,7 +18,6 @@ package connectors
 
 import config.FrontendAppConfig
 import models._
-import models.backend.RosmRegistration
 import repositories.{SDILSessionCache, SDILSessionKeys}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
