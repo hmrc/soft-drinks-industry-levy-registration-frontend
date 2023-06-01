@@ -36,7 +36,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include("Contact person details - soft-drinks-industry-levy - GOV.UK")
+            page.title must include("Contact person details - Soft Drinks Industry Levy - GOV.UK")
             val inputFields = page.getElementsByClass("govuk-form-group")
             inputFields.size() mustBe 4
             contactDetailsMap.zipWithIndex.foreach { case ((fieldName, _), index) =>
@@ -61,7 +61,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include("Contact person details - soft-drinks-industry-levy - GOV.UK")
+            page.title must include("Contact person details - Soft Drinks Industry Levy - GOV.UK")
             val inputFields = page.getElementsByClass("govuk-form-group")
             inputFields.size() mustBe 4
             contactDetailsMap.zipWithIndex.foreach { case ((fieldName, fieldValue), index) =>
@@ -92,7 +92,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include("Contact person details - soft-drinks-industry-levy - GOV.UK")
+            page.title must include("Contact person details - Soft Drinks Industry Levy - GOV.UK")
             val inputFields = page.getElementsByClass("govuk-form-group")
             inputFields.size() mustBe 4
             contactDetailsMap.zipWithIndex.foreach { case ((fieldName, _), index) =>
@@ -117,7 +117,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include("Contact person details - soft-drinks-industry-levy - GOV.UK")
+            page.title must include("Contact person details - Soft Drinks Industry Levy - GOV.UK")
             val inputFields = page.getElementsByClass("govuk-form-group")
             inputFields.size() mustBe 4
             contactDetailsMap.zipWithIndex.foreach { case ((fieldName, fieldValue), index) =>
@@ -192,7 +192,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: Contact person details - soft-drinks-industry-levy - GOV.UK")
+            page.title must include("Error: Contact person details - Soft Drinks Industry Levy - GOV.UK")
             val errorSummaryList = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first().getElementsByTag("li")
             errorSummaryList.size() mustBe 4
@@ -228,7 +228,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
             whenReady(result) { res =>
               res.status mustBe 400
               val page = Jsoup.parse(res.body)
-              page.title must include("Error: Contact person details - soft-drinks-industry-levy - GOV.UK")
+              page.title must include("Error: Contact person details - Soft Drinks Industry Levy - GOV.UK")
               val errorSummaryList = page.getElementsByClass("govuk-list govuk-error-summary__list")
                 .first()
               errorSummaryList
@@ -306,7 +306,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: Contact person details - soft-drinks-industry-levy - GOV.UK")
+            page.title must include("Error: Contact person details - Soft Drinks Industry Levy - GOV.UK")
             val errorSummaryList = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first().getElementsByTag("li")
             errorSummaryList.size() mustBe 4
@@ -342,7 +342,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
             whenReady(result) { res =>
               res.status mustBe 400
               val page = Jsoup.parse(res.body)
-              page.title must include("Error: Contact person details - soft-drinks-industry-levy - GOV.UK")
+              page.title must include("Error: Contact person details - Soft Drinks Industry Levy - GOV.UK")
               val errorSummaryList = page.getElementsByClass("govuk-list govuk-error-summary__list")
                 .first()
               errorSummaryList

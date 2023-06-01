@@ -18,44 +18,45 @@ package controllers
 
 import base.SpecBase
 import errors.SessionDatabaseInsertError
-import helpers.LoggerHelper
-import utilities.GenericLogger
 import forms.PackagingSiteDetailsFormProvider
-import models.backend.{Site, UkAddress}
+import helpers.LoggerHelper
 import models.{NormalMode, UserAnswers}
+import models.backend.{Site, UkAddress}
 import navigation.{FakeNavigator, Navigator}
+import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.PackagingSiteDetailsPage
+import play.api.data.Form
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.SessionService
+import utilities.GenericLogger
 import views.html.PackagingSiteDetailsView
 
 import scala.concurrent.Future
-import org.jsoup.Jsoup
 
 class PackagingSiteDetailsControllerSpec extends SpecBase with MockitoSugar with LoggerHelper {
 
-  def onwardRoute = Call("GET", "/foo")
+  def onwardRoute: Call = Call("GET", "/foo")
 
   val formProvider = new PackagingSiteDetailsFormProvider()
-  val form = formProvider()
+  val form: Form[Boolean] = formProvider()
 
-  val PackagingSite1 = Site(
+  val PackagingSite1: Site = Site(
     UkAddress(List("33 Rhes Priordy", "East London"), "E73 2RP"),
     None,
     Some("Wild Lemonade Group"),
     None)
 
-  lazy val packagingSiteListWith1 = Map(("78941132", PackagingSite1))
+  lazy val packagingSiteListWith1: Map[String, Site] = Map(("78941132", PackagingSite1))
 
-  lazy val packagingSiteDetailsRoute = routes.PackagingSiteDetailsController.onPageLoad(NormalMode).url
+  lazy val packagingSiteDetailsRoute: String = routes.PackagingSiteDetailsController.onPageLoad(NormalMode).url
 
-  val userAnswersWithPackagingSite = emptyUserAnswers.copy(packagingSiteList = packagingSiteListWith1)
+  val userAnswersWithPackagingSite: UserAnswers = emptyUserAnswers.copy(packagingSiteList = packagingSiteListWith1)
 
   "PackagingSiteDetails Controller" - {
 

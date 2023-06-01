@@ -39,24 +39,21 @@ class ContactDetailsFormProviderSpec extends StringFieldBehaviours {
 
 
     "should bind successfully with valid data" in {
-      validNameList.foreach(name => {
-        println(Console.YELLOW + "name " + name + Console.WHITE)
+      validNameList.foreach(name =>
         form.bind(Map("fullName" -> name, "position" -> "CEO", "phoneNumber" -> "07700 09900", "email" -> "example@example.com"))
-      }.errors mustBe List.empty)
+        .errors mustBe List.empty)
     }
 
     "should provide the correct Error key when the full name is over 40 characters" in {
-      overMaxLengthNameList.foreach(name => {
-        println(Console.YELLOW + "name " + name + Console.WHITE)
+      overMaxLengthNameList.foreach(name =>
         form.bind(Map("fullName" -> name, "position" -> "CEO", "phoneNumber" -> "07700 09900", "email" -> "example@example.com"))
-      }.errors mustBe List(FormError("fullName", List(lengthKey), ArraySeq(40))))
+        .errors mustBe List(FormError("fullName", List(lengthKey), ArraySeq(40))))
     }
 
     "should provide the correct Error key when the full name is invalid" in {
-      invalidNameList.foreach(name => {
-        println(Console.YELLOW + "name " + name + Console.WHITE)
+      invalidNameList.foreach(name =>
         form.bind(Map("fullName" -> name, "position" -> "CEO", "phoneNumber" -> "07700 09900", "email" -> "example@example.com"))
-      }.errors mustEqual List(FormError("fullName", List(invalidKey), ArraySeq(nameRegex))))
+        .errors mustEqual List(FormError("fullName", List(invalidKey), ArraySeq(nameRegex))))
     }
 
 
