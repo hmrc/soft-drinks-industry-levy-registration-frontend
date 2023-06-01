@@ -37,7 +37,7 @@ class RegistrationController @Inject()(identify: IdentifierAction,
     implicit request =>
       val defaultUserAnswers = new UserAnswers(request.internalId)
       sessionService.set(defaultUserAnswers).map{
-        case Right(_) => Redirect(routes.IndexController.onPageLoad)
+        case Right(_) => Redirect(routes.IndexController.onPageLoad())
         case Left(_) => InternalServerError(errorHandler.internalServerErrorTemplate)
       }
   }

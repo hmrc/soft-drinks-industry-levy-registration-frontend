@@ -43,26 +43,25 @@ trait Formatters {
 
       private val baseFormatter = stringFormatter(requiredKey, args)
 
-      override def bind(key: String, data: Map[String, String]) =
+      override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], Boolean] =
         baseFormatter
           .bind(key, data)
-          .right.flatMap {
+          .flatMap {
           case "true"  => Right(true)
           case "false" => Right(false)
           case _       => Left(Seq(FormError(key, invalidKey, args)))
         }
 
-      def unbind(key: String, value: Boolean) = Map(key -> value.toString)
+      def unbind(key: String, value: Boolean): Map[String, String] = Map(key -> value.toString)
     }
 
-  private[mappings] def intFormatter(requiredKey: String, wholeNumberKey: String, nonNumericKey: String,invalidLength:String,  args: Seq[String] = Seq.empty): Formatter[Int] =
+  private[mappings] def intFormatter(requiredKey: String, wholeNumberKey: String, nonNumericKey: String,invalidLength:String,
+                                     args: Seq[String] = Seq.empty): Formatter[Int] =
     new Formatter[Int] {
-
       val decimalRegexp = """^-?(\d*\.\d*)$"""
-
       private val baseFormatter = stringFormatter(requiredKey, args)
 
-      override def bind(key: String, data: Map[String, String]) =
+      override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], Int] =
         baseFormatter
           .bind(key, data)
           .map(_.replace(",", ""))
@@ -80,18 +79,19 @@ trait Formatters {
             }
         }
 
-      override def unbind(key: String, value: Int) =
+      override def unbind(key: String, value: Int): Map[String, String] =
         baseFormatter.unbind(key, value.toString)
     }
 
 
-  private[mappings] def enumerableFormatter[A](requiredKey: String, invalidKey: String, args: Seq[String] = Seq.empty)(implicit ev: Enumerable[A]): Formatter[A] =
+  private[mappings] def enumerableFormatter[A](requiredKey: String, invalidKey: String, args: Seq[String] = Seq.empty)
+                                              (implicit ev: Enumerable[A]): Formatter[A] =
     new Formatter[A] {
 
       private val baseFormatter = stringFormatter(requiredKey, args)
 
       override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], A] =
-        baseFormatter.bind(key, data).right.flatMap {
+        baseFormatter.bind(key, data).flatMap {
           str =>
             ev.withName(str)
               .map(Right.apply)
@@ -118,7 +118,7 @@ trait Formatters {
       val numberRegexp = """^\d+$*"""
       private val baseFormatter = stringFormatter(requiredKey, args)
 
-      override def bind(key: String, data: Map[String, String]) = {
+      override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], Long] = {
 
         baseFormatter
           .bind(key, data)
@@ -144,14 +144,14 @@ trait Formatters {
                 .left.map(_ => Seq(FormError(key, nonNumericKey, args)))
           }
       }
-      override def unbind(key: String, value: Long) =
+      override def unbind(key: String, value: Long): Map[String, String] =
         baseFormatter.unbind(key, value.toString)
     }
   }
 
   private def totalLitresLessThanOne(data: Map[String, String]): Boolean = {
-    val lowBand = Try(data.get("lowBand").getOrElse("0").toInt)
-    val highBand = Try(data.get("highBand").getOrElse("0").toInt)
+    val lowBand = Try(data.getOrElse("lowBand", "0").toInt)
+    val highBand = Try(data.getOrElse("highBand", "0").toInt)
     val result = lowBand.flatMap(lb => highBand.map(hb => (lb + hb) < 1))
     result match {
       case Success(v) =>

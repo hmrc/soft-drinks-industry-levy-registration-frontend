@@ -2,7 +2,7 @@
 
 ->          /hmrc-frontend                               hmrcfrontend.Routes
 
-GET         /                                            controllers.IndexController.onPageLoad
+GET         /                                            controllers.IndexController.onPageLoad()
 
 GET         /start                                       controllers.RegistrationController.start
 
@@ -12,13 +12,13 @@ GET         /refresh-session                             controllers.KeepAliveCo
 
 GET         /there-is-a-problem                          controllers.JourneyRecoveryController.onPageLoad(continueUrl: Option[RedirectUrl] ?= None)
 
-GET         /check-your-answers                          controllers.CheckYourAnswersController.onPageLoad
+GET         /check-your-answers                          controllers.CheckYourAnswersController.onPageLoad()
 
-GET         /account/sign-out-survey                     controllers.auth.AuthController.signOut
-GET         /account/sign-out                            controllers.auth.AuthController.signOutNoSurvey
-GET         /account/signed-out                          controllers.auth.SignedOutController.onPageLoad
+GET         /account/sign-out-survey                     controllers.auth.AuthController.signOut()
+GET         /account/sign-out                            controllers.auth.AuthController.signOutNoSurvey()
+GET         /account/signed-out                          controllers.auth.SignedOutController.onPageLoad()
 
-GET         /unauthorised                                controllers.UnauthorisedController.onPageLoad
+GET         /unauthorised                                controllers.UnauthorisedController.onPageLoad()
 
 GET        /organisation-type                            controllers.OrganisationTypeController.onPageLoad(mode: Mode = NormalMode)
 POST       /organisation-type                            controllers.OrganisationTypeController.onSubmit(mode: Mode = NormalMode)
@@ -42,7 +42,7 @@ POST       /third-party-packagers                        controllers.ThirdPartyP
 GET        /change-third-party-packagers                 controllers.ThirdPartyPackagersController.onPageLoad(mode: Mode = CheckMode)
 POST       /change-third-party-packagers                 controllers.ThirdPartyPackagersController.onSubmit(mode: Mode = CheckMode)
 
-GET        /do-not-register                              controllers.DoNotRegisterController.onPageLoad
+GET        /do-not-register                              controllers.DoNotRegisterController.onPageLoad()
 
 GET        /ask-secondary-warehouses                     controllers.AskSecondaryWarehousesController.onPageLoad(mode: Mode = NormalMode)
 POST       /ask-secondary-warehouses                     controllers.AskSecondaryWarehousesController.onSubmit(mode: Mode = NormalMode)
