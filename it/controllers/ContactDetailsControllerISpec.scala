@@ -19,6 +19,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
     contactDetailsJsObject.map { case (fName, fValue) => fName -> fValue.as[String] }
   }
 
+  val fieldNameToLabels = Map("fullName" -> "Full name", "position" -> "Job title", "phoneNumber" -> "Telephone number", "email" -> "Email address")
   val userAnswers: UserAnswers = emptyUserAnswers.set(ContactDetailsPage, contactDetails).success.value
 
   "GET " + normalRoutePath - {
@@ -39,7 +40,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
             val inputFields = page.getElementsByClass("govuk-form-group")
             inputFields.size() mustBe 4
             contactDetailsMap.zipWithIndex.foreach { case ((fieldName, _), index) =>
-              inputFields.get(index).text() mustBe fieldName
+              inputFields.get(index).text() mustBe fieldNameToLabels(fieldName)
               inputFields.get(index).getElementById(fieldName).hasAttr("value") mustBe false
             }
           }
@@ -64,7 +65,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
             val inputFields = page.getElementsByClass("govuk-form-group")
             inputFields.size() mustBe 4
             contactDetailsMap.zipWithIndex.foreach { case ((fieldName, fieldValue), index) =>
-              inputFields.get(index).text() mustBe fieldName
+              inputFields.get(index).text() mustBe fieldNameToLabels(fieldName)
               inputFields.get(index).getElementById(fieldName).hasAttr("value") mustBe true
               inputFields.get(index).getElementById(fieldName).attr("value") mustBe fieldValue
             }
@@ -95,7 +96,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
             val inputFields = page.getElementsByClass("govuk-form-group")
             inputFields.size() mustBe 4
             contactDetailsMap.zipWithIndex.foreach { case ((fieldName, _), index) =>
-              inputFields.get(index).text() mustBe fieldName
+              inputFields.get(index).text() mustBe fieldNameToLabels(fieldName)
               inputFields.get(index).getElementById(fieldName).hasAttr("value") mustBe false
             }
           }
@@ -120,7 +121,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
             val inputFields = page.getElementsByClass("govuk-form-group")
             inputFields.size() mustBe 4
             contactDetailsMap.zipWithIndex.foreach { case ((fieldName, fieldValue), index) =>
-              inputFields.get(index).text() mustBe fieldName
+              inputFields.get(index).text() mustBe fieldNameToLabels(fieldName)
               inputFields.get(index).getElementById(fieldName).hasAttr("value") mustBe true
               inputFields.get(index).getElementById(fieldName).attr("value") mustBe fieldValue
             }
@@ -215,7 +216,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
             val fieldValue = if (fn == fieldName) {
               ""
             } else {
-              fn
+              fv
             }
             current ++ Json.obj(fn -> fieldValue)
           }
@@ -231,8 +232,10 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
               val errorSummaryList = page.getElementsByClass("govuk-list govuk-error-summary__list")
                 .first()
               errorSummaryList
+
                 .select("a")
                 .attr("href") mustBe "#" + fieldName
+
               errorSummaryList.text() must include (Messages("contactDetails.error." + fieldName + ".required"))
             }
           }
@@ -327,7 +330,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
             val fieldValue = if (fn == fieldName) {
               ""
             } else {
-              fn
+              fv
             }
             current ++ Json.obj(fn -> fieldValue)
           }
@@ -344,7 +347,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
                 .first()
               errorSummaryList
                 .select("a")
-                .attr("href") mustBe"#" + fieldName
+                .attr("href") mustBe "#" + fieldName
               errorSummaryList.text() must include (Messages("contactDetails.error." + fieldName + ".required"))
             }
           }

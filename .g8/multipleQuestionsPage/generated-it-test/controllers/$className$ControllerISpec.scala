@@ -218,7 +218,7 @@ class $className$ControllerISpec extends ControllerITTestHelper {
             val fieldValue = if (fn == fieldName) {
               ""
             } else {
-              fn
+              fv
             }
             current ++ Json.obj(fn -> fieldValue)
           }
@@ -330,7 +330,7 @@ class $className$ControllerISpec extends ControllerITTestHelper {
             val fieldValue = if (fn == fieldName) {
               ""
             } else {
-              fn
+              fv
             }
             current ++ Json.obj(fn -> fieldValue)
           }
