@@ -1,6 +1,7 @@
 package controllers
 
-import models.OrganisationType
+import models.{NormalMode, OrganisationType}
+import models.OrganisationType.{LimitedCompany, Partnership}
 import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
 import pages.OrganisationTypePage
@@ -138,52 +139,99 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
   }
 
   s"POST " + normalRoutePath - {
-    OrganisationType.values.foreach { case radio =>
-      "when the user selects " + radio.toString - {
-        "should update the session with the new value and redirect to the index controller" - {
-          "when the session contains no data for page" in {
-            given
-              .commonPrecondition
+    OrganisationType.values.foreach {
+      case radio if radio != Partnership=>
+        "when the user selects " + radio.toString - {
+          "should update the session with the new value and redirect to the how many litres globally" - {
+            "when the session contains no data for page" in {
+              given
+                .commonPrecondition
 
-            setAnswers(emptyUserAnswers)
+              setAnswers(emptyUserAnswers)
 
-            WsTestClient.withClient { client =>
-              val result = createClientRequestPOST(
-                client, baseUrl + normalRoutePath, Json.obj("value" -> radio)
-              )
-              whenReady(result) { res =>
-                res.status mustBe 303
-                res.header(HeaderNames.LOCATION) mustBe Some(routes.IndexController.onPageLoad.url)
-                val dataStoredForPage = getAnswers(identifier).fold[Option[OrganisationType]](None)(_.get(OrganisationTypePage))
-                dataStoredForPage.nonEmpty mustBe true
-                dataStoredForPage.get mustBe radio
+              WsTestClient.withClient { client =>
+                val result = createClientRequestPOST(
+                  client, baseUrl + normalRoutePath, Json.obj("value" -> radio)
+                )
+                whenReady(result) { res =>
+                  res.status mustBe 303
+                  res.header(HeaderNames.LOCATION) mustBe Some(routes.HowManyLitresGloballyController.onPageLoad(NormalMode).url)
+                  val dataStoredForPage = getAnswers(identifier).fold[Option[OrganisationType]](None)(_.get(OrganisationTypePage))
+                  dataStoredForPage.nonEmpty mustBe true
+                  dataStoredForPage.get mustBe radio
+                }
               }
             }
-          }
 
-          "when the session already contains data for page" in {
-            given
-              .commonPrecondition
+            "when the session already contains data for page" in {
+              given
+                .commonPrecondition
 
-            val userAnswers = emptyUserAnswers.set(OrganisationTypePage, radio).success.value
+              val userAnswers = emptyUserAnswers.set(OrganisationTypePage, radio).success.value
 
-            setAnswers(userAnswers)
-            WsTestClient.withClient { client =>
-              val result = createClientRequestPOST(
-                client, baseUrl + normalRoutePath, Json.obj("value" -> radio)
-              )
+              setAnswers(userAnswers)
+              WsTestClient.withClient { client =>
+                val result = createClientRequestPOST(
+                  client, baseUrl + normalRoutePath, Json.obj("value" -> radio)
+                )
 
-              whenReady(result) { res =>
-                res.status mustBe 303
-                res.header(HeaderNames.LOCATION) mustBe Some(routes.IndexController.onPageLoad.url)
-                val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[OrganisationType]](None)(_.get(OrganisationTypePage))
-                dataStoredForPage.nonEmpty mustBe true
-                dataStoredForPage.get mustBe radio
+                whenReady(result) { res =>
+                  res.status mustBe 303
+                  res.header(HeaderNames.LOCATION) mustBe Some(routes.HowManyLitresGloballyController.onPageLoad(NormalMode).url)
+                  val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[OrganisationType]](None)(_.get(OrganisationTypePage))
+                  dataStoredForPage.nonEmpty mustBe true
+                  dataStoredForPage.get mustBe radio
+                }
               }
             }
           }
         }
-      }
+      case radio if radio == Partnership =>
+        "when the user selects " + radio.toString - {
+          "should update the session with the new value and redirect to the how many litres globally" - {
+            "when the session contains no data for page" in {
+              given
+                .commonPrecondition
+
+              setAnswers(emptyUserAnswers)
+
+              WsTestClient.withClient { client =>
+                val result = createClientRequestPOST(
+                  client, baseUrl + normalRoutePath, Json.obj("value" -> radio)
+                )
+                whenReady(result) { res =>
+                  res.status mustBe 303
+                  res.header(HeaderNames.LOCATION) mustBe Some(routes.CannotRegisterPartnershipController.onPageLoad().url)
+                  val dataStoredForPage = getAnswers(identifier).fold[Option[OrganisationType]](None)(_.get(OrganisationTypePage))
+                  dataStoredForPage.nonEmpty mustBe true
+                  dataStoredForPage.get mustBe radio
+                }
+              }
+            }
+
+            "when the session already contains data for page" in {
+              given
+                .commonPrecondition
+
+              val userAnswers = emptyUserAnswers.set(OrganisationTypePage, radio).success.value
+
+              setAnswers(userAnswers)
+              WsTestClient.withClient { client =>
+                val result = createClientRequestPOST(
+                  client, baseUrl + normalRoutePath, Json.obj("value" -> radio)
+                )
+
+                whenReady(result) { res =>
+                  res.status mustBe 303
+                  res.header(HeaderNames.LOCATION) mustBe Some(routes.CannotRegisterPartnershipController.onPageLoad().url)
+                  val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[OrganisationType]](None)(_.get(OrganisationTypePage))
+                  dataStoredForPage.nonEmpty mustBe true
+                  dataStoredForPage.get mustBe radio
+                }
+              }
+            }
+          }
+        }
     }
 
     "when the user does not select an option" - {
@@ -216,52 +264,97 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
   }
 
   s"POST " + checkRoutePath - {
-    OrganisationType.values.foreach { case radio =>
-      "when the user selects " + radio.toString - {
-        "should update the session with the new value and redirect to the checkAnswers controller" - {
-          "when the session contains no data for page" in {
-            given
-              .commonPrecondition
+    OrganisationType.values.foreach {
+      case radio if radio != Partnership=>
+        "when the user selects " + radio.toString - {
+          "should update the session with the new value and redirect to the checkAnswers controller" - {
+            "when the session contains no data for page" in {
+              given
+                .commonPrecondition
 
-            setAnswers(emptyUserAnswers)
-            WsTestClient.withClient { client =>
-              val result = createClientRequestPOST(
-                client, baseUrl + checkRoutePath, Json.obj("value" -> Json.toJson(radio))
-              )
-
-              whenReady(result) { res =>
-                res.status mustBe 303
-                res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
-                val dataStoredForPage = getAnswers(identifier).fold[Option[OrganisationType]](None)(_.get(OrganisationTypePage))
-                dataStoredForPage.nonEmpty mustBe true
-                dataStoredForPage.get mustBe radio
+              setAnswers(emptyUserAnswers)
+              WsTestClient.withClient { client =>
+                val result = createClientRequestPOST(
+                  client, baseUrl + checkRoutePath, Json.obj("value" -> Json.toJson(radio))
+                )
+                whenReady(result) { res =>
+                  res.status mustBe 303
+                  res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
+                  val dataStoredForPage = getAnswers(identifier).fold[Option[OrganisationType]](None)(_.get(OrganisationTypePage))
+                  dataStoredForPage.nonEmpty mustBe true
+                  dataStoredForPage.get mustBe radio
+                }
               }
             }
-          }
 
-          "when the session already contains data for page" in {
-            given
-              .commonPrecondition
+            "when the session already contains data for page" in {
+              given
+                .commonPrecondition
 
-            val userAnswers = emptyUserAnswers.set(OrganisationTypePage, radio).success.value
+              val userAnswers = emptyUserAnswers.set(OrganisationTypePage, radio).success.value
 
-            setAnswers(userAnswers)
-            WsTestClient.withClient { client =>
-              val result = createClientRequestPOST(
-                client, baseUrl + checkRoutePath, Json.obj("value" -> Json.toJson(radio))
-              )
+              setAnswers(userAnswers)
+              WsTestClient.withClient { client =>
+                val result = createClientRequestPOST(
+                  client, baseUrl + checkRoutePath, Json.obj("value" -> Json.toJson(radio))
+                )
 
-              whenReady(result) { res =>
-                res.status mustBe 303
-                res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
-                val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[OrganisationType]](None)(_.get(OrganisationTypePage))
-                dataStoredForPage.nonEmpty mustBe true
-                dataStoredForPage.get mustBe radio
+                whenReady(result) { res =>
+                  res.status mustBe 303
+                  res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
+                  val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[OrganisationType]](None)(_.get(OrganisationTypePage))
+                  dataStoredForPage.nonEmpty mustBe true
+                  dataStoredForPage.get mustBe radio
+                }
               }
             }
           }
         }
-      }
+      case radio if radio == Partnership =>
+        "when the user selects " + radio.toString - {
+          "should update the session with the new value and redirect to the checkAnswers controller" - {
+            "when the session contains no data for page" in {
+              given
+                .commonPrecondition
+
+              setAnswers(emptyUserAnswers)
+              WsTestClient.withClient { client =>
+                val result = createClientRequestPOST(
+                  client, baseUrl + checkRoutePath, Json.obj("value" -> Json.toJson(radio))
+                )
+                whenReady(result) { res =>
+                  res.status mustBe 303
+                  res.header(HeaderNames.LOCATION) mustBe Some(routes.CannotRegisterPartnershipController.onPageLoad.url)
+                  val dataStoredForPage = getAnswers(identifier).fold[Option[OrganisationType]](None)(_.get(OrganisationTypePage))
+                  dataStoredForPage.nonEmpty mustBe true
+                  dataStoredForPage.get mustBe radio
+                }
+              }
+            }
+
+            "when the session already contains data for page" in {
+              given
+                .commonPrecondition
+
+              val userAnswers = emptyUserAnswers.set(OrganisationTypePage, radio).success.value
+
+              setAnswers(userAnswers)
+              WsTestClient.withClient { client =>
+                val result = createClientRequestPOST(
+                  client, baseUrl + checkRoutePath, Json.obj("value" -> Json.toJson(radio))
+                )
+
+                whenReady(result) { res =>
+                  res.status mustBe 303
+                  res.header(HeaderNames.LOCATION) mustBe Some(routes.CannotRegisterPartnershipController.onPageLoad.url)
+                  val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[OrganisationType]](None)(_.get(OrganisationTypePage))
+                  dataStoredForPage.nonEmpty mustBe true
+                  dataStoredForPage.get mustBe radio
+                }
+              }
+            }
+          }
+        }
     }
 
     "when the user does not select an option" - {
