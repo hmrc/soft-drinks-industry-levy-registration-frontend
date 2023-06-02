@@ -1,7 +1,7 @@
 package controllers
 
+import models.OrganisationType.Partnership
 import models.{NormalMode, OrganisationType}
-import models.OrganisationType.{LimitedCompany, Partnership}
 import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
 import pages.OrganisationTypePage
@@ -279,7 +279,7 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
                 )
                 whenReady(result) { res =>
                   res.status mustBe 303
-                  res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
+                  res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad().url)
                   val dataStoredForPage = getAnswers(identifier).fold[Option[OrganisationType]](None)(_.get(OrganisationTypePage))
                   dataStoredForPage.nonEmpty mustBe true
                   dataStoredForPage.get mustBe radio
@@ -301,7 +301,7 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
 
                 whenReady(result) { res =>
                   res.status mustBe 303
-                  res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
+                  res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad().url)
                   val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[OrganisationType]](None)(_.get(OrganisationTypePage))
                   dataStoredForPage.nonEmpty mustBe true
                   dataStoredForPage.get mustBe radio
@@ -324,7 +324,7 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
                 )
                 whenReady(result) { res =>
                   res.status mustBe 303
-                  res.header(HeaderNames.LOCATION) mustBe Some(routes.CannotRegisterPartnershipController.onPageLoad.url)
+                  res.header(HeaderNames.LOCATION) mustBe Some(routes.CannotRegisterPartnershipController.onPageLoad().url)
                   val dataStoredForPage = getAnswers(identifier).fold[Option[OrganisationType]](None)(_.get(OrganisationTypePage))
                   dataStoredForPage.nonEmpty mustBe true
                   dataStoredForPage.get mustBe radio
@@ -346,7 +346,7 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
 
                 whenReady(result) { res =>
                   res.status mustBe 303
-                  res.header(HeaderNames.LOCATION) mustBe Some(routes.CannotRegisterPartnershipController.onPageLoad.url)
+                  res.header(HeaderNames.LOCATION) mustBe Some(routes.CannotRegisterPartnershipController.onPageLoad().url)
                   val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[OrganisationType]](None)(_.get(OrganisationTypePage))
                   dataStoredForPage.nonEmpty mustBe true
                   dataStoredForPage.get mustBe radio

@@ -22,6 +22,16 @@ import org.scalacheck.{Arbitrary, Gen}
 
 trait ModelGenerators {
 
+  implicit lazy val arbitraryContactDetails: Arbitrary[ContactDetails] =
+    Arbitrary {
+      for {
+        fullName <- arbitrary[String]
+        position <- arbitrary[String]
+        phoneNumber <- arbitrary[String]
+        email <- arbitrary[String]
+      } yield ContactDetails(fullName, position, phoneNumber, email)
+    }
+
   implicit lazy val arbitraryHowManyLitresGlobally: Arbitrary[HowManyLitresGlobally] =
     Arbitrary {
       Gen.oneOf(HowManyLitresGlobally.values.toSeq)

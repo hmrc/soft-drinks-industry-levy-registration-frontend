@@ -1,30 +1,30 @@
 package controllers
 
-import models.NormalMode
-import models.$className$
+import models.{ContactDetails, UserAnswers}
 import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
-import pages.$className$Page
+import pages.ContactDetailsPage
 import play.api.http.HeaderNames
 import play.api.i18n.Messages
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.test.WsTestClient
 
-class $className$ControllerISpec extends ControllerITTestHelper {
+class ContactDetailsControllerISpec extends ControllerITTestHelper {
 
-  val normalRoutePath = "/$url$"
-  val checkRoutePath = "/change-$url$"
+  val normalRoutePath = "/contact-details"
+  val checkRoutePath = "/change-contact-details"
 
-  val $className;format="decap"$JsObject = Json.toJson($className;format="decap"$).as[JsObject].value
-  val $className;format="decap"$Map: collection.Map[String, String] = {
-    $className;format="decap"$JsObject.map { case (fName, fValue) => fName -> fValue.as[String] }
+  val contactDetailsJsObject: collection.Map[String, JsValue] = Json.toJson(contactDetails).as[JsObject].value
+  val contactDetailsMap: collection.Map[String, String] = {
+    contactDetailsJsObject.map { case (fName, fValue) => fName -> fValue.as[String] }
   }
 
-  val userAnswers = emptyUserAnswers.set($className$Page, $className;format="decap"$).success.value
+  val fieldNameToLabels = Map("fullName" -> "Full name", "position" -> "Job title", "phoneNumber" -> "Telephone number", "email" -> "Email address")
+  val userAnswers: UserAnswers = emptyUserAnswers.set(ContactDetailsPage, contactDetails).success.value
 
   "GET " + normalRoutePath - {
     "when the userAnswers contains no data" - {
-      "should return OK and render the $className$ page with no data populated" in {
+      "should return OK and render the ContactDetails page with no data populated" in {
         given
           .commonPrecondition
 
@@ -36,11 +36,11 @@ class $className$ControllerISpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include(Messages("$className;format="decap"$" + ".title"))
+            page.title must include("Contact person details - Soft Drinks Industry Levy - GOV.UK")
             val inputFields = page.getElementsByClass("govuk-form-group")
-            inputFields.size() mustBe 2
-            $className;format="decap"$Map.zipWithIndex.foreach { case ((fieldName, _), index) =>
-              inputFields.get(index).text() mustBe fieldName
+            inputFields.size() mustBe 4
+            contactDetailsMap.zipWithIndex.foreach { case ((fieldName, _), index) =>
+              inputFields.get(index).text() mustBe fieldNameToLabels(fieldName)
               inputFields.get(index).getElementById(fieldName).hasAttr("value") mustBe false
             }
           }
@@ -61,11 +61,11 @@ class $className$ControllerISpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include(Messages("$className;format="decap"$" + ".title"))
+            page.title must include("Contact person details - Soft Drinks Industry Levy - GOV.UK")
             val inputFields = page.getElementsByClass("govuk-form-group")
-            inputFields.size() mustBe 2
-            $className;format="decap"$Map.zipWithIndex.foreach { case ((fieldName, fieldValue), index) =>
-              inputFields.get(index).text() mustBe fieldName
+            inputFields.size() mustBe 4
+            contactDetailsMap.zipWithIndex.foreach { case ((fieldName, fieldValue), index) =>
+              inputFields.get(index).text() mustBe fieldNameToLabels(fieldName)
               inputFields.get(index).getElementById(fieldName).hasAttr("value") mustBe true
               inputFields.get(index).getElementById(fieldName).attr("value") mustBe fieldValue
             }
@@ -73,16 +73,14 @@ class $className$ControllerISpec extends ControllerITTestHelper {
         }
       }
     }
-    testOtherSuccessUserTypes(baseUrl + normalRoutePath, Messages("$className;format="
-    decap"$" + ".title"
-    ) )
+    testOtherSuccessUserTypes(baseUrl + normalRoutePath, Messages("contactDetails" + ".title"))
     testUnauthorisedUser(baseUrl + normalRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)
   }
 
   "GET " + checkRoutePath - {
     "when the userAnswers contains no data" - {
-      "should return OK and render the $className$ page with no data populated" in {
+      "should return OK and render the ContactDetails page with no data populated" in {
         given
           .commonPrecondition
 
@@ -94,11 +92,11 @@ class $className$ControllerISpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include(Messages("$className;format="decap"$" + ".title"))
+            page.title must include("Contact person details - Soft Drinks Industry Levy - GOV.UK")
             val inputFields = page.getElementsByClass("govuk-form-group")
-            inputFields.size() mustBe 2
-            $className;format="decap"$Map.zipWithIndex.foreach { case ((fieldName, _), index) =>
-              inputFields.get(index).text() mustBe fieldName
+            inputFields.size() mustBe 4
+            contactDetailsMap.zipWithIndex.foreach { case ((fieldName, _), index) =>
+              inputFields.get(index).text() mustBe fieldNameToLabels(fieldName)
               inputFields.get(index).getElementById(fieldName).hasAttr("value") mustBe false
             }
           }
@@ -119,11 +117,11 @@ class $className$ControllerISpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include(Messages("$className;format="decap"$" + ".title"))
+            page.title must include("Contact person details - Soft Drinks Industry Levy - GOV.UK")
             val inputFields = page.getElementsByClass("govuk-form-group")
-            inputFields.size() mustBe 2
-            $className;format="decap"$Map.zipWithIndex.foreach { case ((fieldName, fieldValue), index) =>
-              inputFields.get(index).text() mustBe fieldName
+            inputFields.size() mustBe 4
+            contactDetailsMap.zipWithIndex.foreach { case ((fieldName, fieldValue), index) =>
+              inputFields.get(index).text() mustBe fieldNameToLabels(fieldName)
               inputFields.get(index).getElementById(fieldName).hasAttr("value") mustBe true
               inputFields.get(index).getElementById(fieldName).attr("value") mustBe fieldValue
             }
@@ -145,15 +143,15 @@ class $className$ControllerISpec extends ControllerITTestHelper {
           setAnswers(emptyUserAnswers)
           WsTestClient.withClient { client =>
             val result = createClientRequestPOST(
-              client, baseUrl + normalRoutePath, Json.toJson($className;format="decap"$Diff)
+              client, baseUrl + normalRoutePath, Json.toJson(contactDetailsDiff)
             )
 
             whenReady(result) { res =>
               res.status mustBe 303
-              res.header(HeaderNames.LOCATION) mustBe Some($nextPage$.url)
-              val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[$className$]](None)(_.get($className$Page))
+              res.header(HeaderNames.LOCATION) mustBe Some(routes.IndexController.onPageLoad.url)
+              val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[ContactDetails]](None)(_.get(ContactDetailsPage))
               dataStoredForPage.nonEmpty mustBe true
-              dataStoredForPage.get mustBe $className;format="decap"$Diff
+              dataStoredForPage.get mustBe contactDetailsDiff
             }
           }
         }
@@ -165,15 +163,15 @@ class $className$ControllerISpec extends ControllerITTestHelper {
           setAnswers(userAnswers)
           WsTestClient.withClient { client =>
             val result = createClientRequestPOST(
-              client, baseUrl + normalRoutePath, Json.toJson($className;format="decap"$Diff)
+              client, baseUrl + normalRoutePath, Json.toJson(contactDetailsDiff)
             )
 
             whenReady(result) { res =>
               res.status mustBe 303
-              res.header(HeaderNames.LOCATION) mustBe Some($nextPage$.url)
-              val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[$className$]](None)(_.get($className$Page))
+              res.header(HeaderNames.LOCATION) mustBe Some(routes.IndexController.onPageLoad.url)
+              val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[ContactDetails]](None)(_.get(ContactDetailsPage))
               dataStoredForPage.nonEmpty mustBe true
-              dataStoredForPage.get mustBe $className;format="decap"$Diff
+              dataStoredForPage.get mustBe contactDetailsDiff
             }
           }
         }
@@ -188,33 +186,33 @@ class $className$ControllerISpec extends ControllerITTestHelper {
         setAnswers(emptyUserAnswers)
         WsTestClient.withClient { client =>
           val result = createClientRequestPOST(
-            client, baseUrl + normalRoutePath, Json.toJson($className$("", ""))
+            client, baseUrl + normalRoutePath, Json.toJson(ContactDetails("", "", "", ""))
           )
 
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + Messages("$className;format="decap"$" + ".title"))
+            page.title must include("Error: Contact person details - Soft Drinks Industry Levy - GOV.UK")
             val errorSummaryList = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first().getElementsByTag("li")
-            errorSummaryList.size() mustBe $className;format="decap"$Map.size
-            $className;format="decap"$Map.zipWithIndex.foreach { case ((fieldName, _), index) =>
+            errorSummaryList.size() mustBe 4
+            contactDetailsMap.zipWithIndex.foreach { case ((fieldName, _), index) =>
               val errorSummary = errorSummaryList.get(index)
               errorSummary
                 .select("a")
                 .attr("href") mustBe "#" + fieldName
-              errorSummary.text() mustBe Messages("$className;format="decap"$.error." + fieldName + ".required")
+              errorSummary.text() mustBe Messages("contactDetails.error." + fieldName + ".required")
             }
           }
         }
       }
-      $className;format="decap"$Map.zipWithIndex.foreach { case ((fieldName, _), index) =>
-        "when no answer is given for field" + fieldName in {
+      contactDetailsMap.zipWithIndex.foreach { case ((fieldName, _), index) =>
+        "when no answer is given for field " + fieldName in {
           given
             .commonPrecondition
 
           setAnswers(emptyUserAnswers)
-          val invalidJson = $className;format="decap"$Map.foldLeft(Json.obj()) { case (current, (fn, fv)) =>
+          val invalidJson = contactDetailsMap.foldLeft(Json.obj()) { case (current, (fn, fv)) =>
             val fieldValue = if (fn == fieldName) {
               ""
             } else {
@@ -230,13 +228,15 @@ class $className$ControllerISpec extends ControllerITTestHelper {
             whenReady(result) { res =>
               res.status mustBe 400
               val page = Jsoup.parse(res.body)
-              page.title must include("Error: " + Messages("$className;format="decap"$" + ".title"))
+              page.title must include("Error: Contact person details - Soft Drinks Industry Levy - GOV.UK")
               val errorSummaryList = page.getElementsByClass("govuk-list govuk-error-summary__list")
                 .first()
               errorSummaryList
+
                 .select("a")
                 .attr("href") mustBe "#" + fieldName
-              errorSummaryList.text() mustBe Messages("$className;format="decap"$.error." + fieldName + ".required")
+
+              errorSummaryList.text() must include (Messages("contactDetails.error." + fieldName + ".required"))
             }
           }
         }
@@ -257,15 +257,15 @@ class $className$ControllerISpec extends ControllerITTestHelper {
           setAnswers(emptyUserAnswers)
           WsTestClient.withClient { client =>
             val result = createClientRequestPOST(
-              client, baseUrl + checkRoutePath, Json.toJson($className;format="decap"$Diff)
+              client, baseUrl + checkRoutePath, Json.toJson(contactDetailsDiff)
             )
 
             whenReady(result) { res =>
               res.status mustBe 303
               res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
-              val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[$className$]](None)(_.get($className$Page))
+              val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[ContactDetails]](None)(_.get(ContactDetailsPage))
               dataStoredForPage.nonEmpty mustBe true
-              dataStoredForPage.get mustBe $className;format="decap"$Diff
+              dataStoredForPage.get mustBe contactDetailsDiff
             }
           }
         }
@@ -277,15 +277,15 @@ class $className$ControllerISpec extends ControllerITTestHelper {
           setAnswers(userAnswers)
           WsTestClient.withClient { client =>
             val result = createClientRequestPOST(
-              client, baseUrl + checkRoutePath, Json.toJson($className;format="decap"$Diff)
+              client, baseUrl + checkRoutePath, Json.toJson(contactDetailsDiff)
             )
 
             whenReady(result) { res =>
               res.status mustBe 303
               res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
-              val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[$className$]](None)(_.get($className$Page))
+              val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[ContactDetails]](None)(_.get(ContactDetailsPage))
               dataStoredForPage.nonEmpty mustBe true
-              dataStoredForPage.get mustBe $className;format="decap"$Diff
+              dataStoredForPage.get mustBe contactDetailsDiff
             }
           }
         }
@@ -300,33 +300,33 @@ class $className$ControllerISpec extends ControllerITTestHelper {
         setAnswers(emptyUserAnswers)
         WsTestClient.withClient { client =>
           val result = createClientRequestPOST(
-            client, baseUrl + checkRoutePath, Json.toJson($className$("", ""))
+            client, baseUrl + checkRoutePath, Json.toJson(ContactDetails("", "", "", ""))
           )
 
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + Messages("$className;format="decap"$" + ".title"))
+            page.title must include("Error: Contact person details - Soft Drinks Industry Levy - GOV.UK")
             val errorSummaryList = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first().getElementsByTag("li")
-            errorSummaryList.size() mustBe $className;format="decap"$Map.size
-            $className;format="decap"$Map.zipWithIndex.foreach { case ((fieldName, _), index) =>
+            errorSummaryList.size() mustBe 4
+            contactDetailsMap.zipWithIndex.foreach { case ((fieldName, _), index) =>
               val errorSummary = errorSummaryList.get(index)
               errorSummary
                 .select("a")
                 .attr("href") mustBe "#" + fieldName
-              errorSummary.text() mustBe Messages("$className;format="decap"$.error." + fieldName + ".required")
+              errorSummary.text() mustBe Messages("contactDetails.error." + fieldName + ".required")
             }
           }
         }
       }
-      $className;format="decap"$Map.zipWithIndex.foreach { case ((fieldName, _), index) =>
-        "when no answer is given for field" + fieldName in {
+      contactDetailsMap.zipWithIndex.foreach { case ((fieldName, _), index) =>
+        "when no answer is given for field " + fieldName in {
           given
             .commonPrecondition
 
           setAnswers(emptyUserAnswers)
-          val invalidJson = $className;format="decap"$Map.foldLeft(Json.obj()) { case (current, (fn, fv)) =>
+          val invalidJson = contactDetailsMap.foldLeft(Json.obj()) { case (current, (fn, fv)) =>
             val fieldValue = if (fn == fieldName) {
               ""
             } else {
@@ -342,13 +342,13 @@ class $className$ControllerISpec extends ControllerITTestHelper {
             whenReady(result) { res =>
               res.status mustBe 400
               val page = Jsoup.parse(res.body)
-              page.title must include("Error: " + Messages("$className;format="decap"$" + ".title"))
+              page.title must include("Error: Contact person details - Soft Drinks Industry Levy - GOV.UK")
               val errorSummaryList = page.getElementsByClass("govuk-list govuk-error-summary__list")
                 .first()
               errorSummaryList
                 .select("a")
                 .attr("href") mustBe "#" + fieldName
-              errorSummaryList.text() mustBe Messages("$className;format="decap"$.error." + fieldName + ".required")
+              errorSummaryList.text() must include (Messages("contactDetails.error." + fieldName + ".required"))
             }
           }
         }

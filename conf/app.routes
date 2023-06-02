@@ -2,7 +2,7 @@
 
 ->          /hmrc-frontend                               hmrcfrontend.Routes
 
-GET         /                                            controllers.IndexController.onPageLoad
+GET         /                                            controllers.IndexController.onPageLoad()
 
 GET         /start                                       controllers.RegistrationController.start
 
@@ -12,25 +12,25 @@ GET         /refresh-session                             controllers.KeepAliveCo
 
 GET         /there-is-a-problem                          controllers.JourneyRecoveryController.onPageLoad(continueUrl: Option[RedirectUrl] ?= None)
 
-GET         /check-your-answers                          controllers.CheckYourAnswersController.onPageLoad
+GET         /check-your-answers                          controllers.CheckYourAnswersController.onPageLoad()
 
-GET         /account/sign-out-survey                     controllers.auth.AuthController.signOut
-GET         /account/sign-out                            controllers.auth.AuthController.signOutNoSurvey
-GET         /account/signed-out                          controllers.auth.SignedOutController.onPageLoad
+GET         /account/sign-out-survey                     controllers.auth.AuthController.signOut()
+GET         /account/sign-out                            controllers.auth.AuthController.signOutNoSurvey()
+GET         /account/signed-out                          controllers.auth.SignedOutController.onPageLoad()
 
-GET         /unauthorised                                controllers.UnauthorisedController.onPageLoad
+GET         /unauthorised                                controllers.UnauthorisedController.onPageLoad()
 
 GET        /organisation-type                            controllers.OrganisationTypeController.onPageLoad(mode: Mode = NormalMode)
 POST       /organisation-type                            controllers.OrganisationTypeController.onSubmit(mode: Mode = NormalMode)
 GET        /change-organisation-type                     controllers.OrganisationTypeController.onPageLoad(mode: Mode = CheckMode)
 POST       /change-organisation-type                     controllers.OrganisationTypeController.onSubmit(mode: Mode = CheckMode)
 
-GET        /cannot-register-partnership                       controllers.CannotRegisterPartnershipController.onPageLoad()
+GET        /cannot-register-partnership                  controllers.CannotRegisterPartnershipController.onPageLoad()
 
-GET        /packaging-site-details                        controllers.PackagingSiteDetailsController.onPageLoad(mode: Mode = NormalMode)
-POST       /packaging-site-details                        controllers.PackagingSiteDetailsController.onSubmit(mode: Mode = NormalMode)
-GET        /change-packaging-site-details                  controllers.PackagingSiteDetailsController.onPageLoad(mode: Mode = CheckMode)
-POST       /change-packaging-site-details                  controllers.PackagingSiteDetailsController.onSubmit(mode: Mode = CheckMode)
+GET        /packaging-site-details                       controllers.PackagingSiteDetailsController.onPageLoad(mode: Mode = NormalMode)
+POST       /packaging-site-details                       controllers.PackagingSiteDetailsController.onSubmit(mode: Mode = NormalMode)
+GET        /change-packaging-site-details                controllers.PackagingSiteDetailsController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-packaging-site-details                controllers.PackagingSiteDetailsController.onSubmit(mode: Mode = CheckMode)
 
 GET        /how-many-litres-globally                     controllers.HowManyLitresGloballyController.onPageLoad(mode: Mode = NormalMode)
 POST       /how-many-litres-globally                     controllers.HowManyLitresGloballyController.onSubmit(mode: Mode = NormalMode)
@@ -39,47 +39,52 @@ POST       /change-how-many-litres-globally              controllers.HowManyLitr
 
 GET        /third-party-packagers                        controllers.ThirdPartyPackagersController.onPageLoad(mode: Mode = NormalMode)
 POST       /third-party-packagers                        controllers.ThirdPartyPackagersController.onSubmit(mode: Mode = NormalMode)
-GET        /change-third-party-packagers                  controllers.ThirdPartyPackagersController.onPageLoad(mode: Mode = CheckMode)
-POST       /change-third-party-packagers                  controllers.ThirdPartyPackagersController.onSubmit(mode: Mode = CheckMode)
+GET        /change-third-party-packagers                 controllers.ThirdPartyPackagersController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-third-party-packagers                 controllers.ThirdPartyPackagersController.onSubmit(mode: Mode = CheckMode)
 
-GET        /do-not-register                        controllers.DoNotRegisterController.onPageLoad
+GET        /do-not-register                              controllers.DoNotRegisterController.onPageLoad()
 
-GET        /ask-secondary-warehouses                        controllers.AskSecondaryWarehousesController.onPageLoad(mode: Mode = NormalMode)
-POST       /ask-secondary-warehouses                        controllers.AskSecondaryWarehousesController.onSubmit(mode: Mode = NormalMode)
-GET        /change-ask-secondary-warehouses                  controllers.AskSecondaryWarehousesController.onPageLoad(mode: Mode = CheckMode)
-POST       /change-ask-secondary-warehouses                  controllers.AskSecondaryWarehousesController.onSubmit(mode: Mode = CheckMode)
+GET        /ask-secondary-warehouses                     controllers.AskSecondaryWarehousesController.onPageLoad(mode: Mode = NormalMode)
+POST       /ask-secondary-warehouses                     controllers.AskSecondaryWarehousesController.onSubmit(mode: Mode = NormalMode)
+GET        /change-ask-secondary-warehouses              controllers.AskSecondaryWarehousesController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-ask-secondary-warehouses              controllers.AskSecondaryWarehousesController.onSubmit(mode: Mode = CheckMode)
 
-GET        /operate-packaging-sites                        controllers.OperatePackagingSitesController.onPageLoad(mode: Mode = NormalMode)
-POST       /operate-packaging-sites                        controllers.OperatePackagingSitesController.onSubmit(mode: Mode = NormalMode)
-GET        /change-operate-packaging-sites                  controllers.OperatePackagingSitesController.onPageLoad(mode: Mode = CheckMode)
-POST       /change-operate-packaging-sites                  controllers.OperatePackagingSitesController.onSubmit(mode: Mode = CheckMode)
-GET        /own-brands-next-12-months                        controllers.HowManyOperatePackagingSitesController.onPageLoad(mode: Mode = NormalMode)
-POST       /own-brands-next-12-months                        controllers.HowManyOperatePackagingSitesController.onSubmit(mode: Mode = NormalMode)
-GET        /change-own-brands-next-12-months                  controllers.HowManyOperatePackagingSitesController.onPageLoad(mode: Mode = CheckMode)
-POST       /change-own-brands-next-12-months                  controllers.HowManyOperatePackagingSitesController.onSubmit(mode: Mode = CheckMode)
+GET        /contact-details                              controllers.ContactDetailsController.onPageLoad(mode: Mode = NormalMode)
+POST       /contact-details                              controllers.ContactDetailsController.onSubmit(mode: Mode = NormalMode)
+GET        /change-contact-details                       controllers.ContactDetailsController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-contact-details                       controllers.ContactDetailsController.onSubmit(mode: Mode = CheckMode)
 
-GET        /contract-packing                                controllers.ContractPackingController.onPageLoad(mode: Mode = NormalMode)
-POST       /contract-packing                                controllers.ContractPackingController.onSubmit(mode: Mode = NormalMode)
-GET        /change-contract-packing                         controllers.ContractPackingController.onPageLoad(mode: Mode = CheckMode)
-POST       /change-contract-packing                           controllers.ContractPackingController.onSubmit(mode: Mode = CheckMode)
-GET        /contract-packing-next-12-months                        controllers.HowManyContractPackingController.onPageLoad(mode: Mode = NormalMode)
-POST       /contract-packing-next-12-months                        controllers.HowManyContractPackingController.onSubmit(mode: Mode = NormalMode)
-GET        /change-contract-packing-next-12-months                  controllers.HowManyContractPackingController.onPageLoad(mode: Mode = CheckMode)
-POST       /change-contract-packing-next-12-months                  controllers.HowManyContractPackingController.onSubmit(mode: Mode = CheckMode)
+GET        /operate-packaging-sites                      controllers.OperatePackagingSitesController.onPageLoad(mode: Mode = NormalMode)
+POST       /operate-packaging-sites                      controllers.OperatePackagingSitesController.onSubmit(mode: Mode = NormalMode)
+GET        /change-operate-packaging-sites               controllers.OperatePackagingSitesController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-operate-packaging-sites               controllers.OperatePackagingSitesController.onSubmit(mode: Mode = CheckMode)
+GET        /own-brands-next-12-months                    controllers.HowManyOperatePackagingSitesController.onPageLoad(mode: Mode = NormalMode)
+POST       /own-brands-next-12-months                    controllers.HowManyOperatePackagingSitesController.onSubmit(mode: Mode = NormalMode)
+GET        /change-own-brands-next-12-months             controllers.HowManyOperatePackagingSitesController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-own-brands-next-12-months             controllers.HowManyOperatePackagingSitesController.onSubmit(mode: Mode = CheckMode)
 
-GET        /imports                        controllers.ImportsController.onPageLoad(mode: Mode = NormalMode)
-POST       /imports                        controllers.ImportsController.onSubmit(mode: Mode = NormalMode)
-GET        /change-imports                  controllers.ImportsController.onPageLoad(mode: Mode = CheckMode)
-POST       /change-imports                  controllers.ImportsController.onSubmit(mode: Mode = CheckMode)
-GET        /how-many-imports-next-12-months                        controllers.HowManyImportsController.onPageLoad(mode: Mode = NormalMode)
-POST       /how-many-imports-next-12-months                        controllers.HowManyImportsController.onSubmit(mode: Mode = NormalMode)
-GET        /change-how-many-imports-next-12-months                  controllers.HowManyImportsController.onPageLoad(mode: Mode = CheckMode)
-POST       /change-how-many-imports-next-12-months                  controllers.HowManyImportsController.onSubmit(mode: Mode = CheckMode)
+GET        /contract-packing                             controllers.ContractPackingController.onPageLoad(mode: Mode = NormalMode)
+POST       /contract-packing                             controllers.ContractPackingController.onSubmit(mode: Mode = NormalMode)
+GET        /change-contract-packing                      controllers.ContractPackingController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-contract-packing                      controllers.ContractPackingController.onSubmit(mode: Mode = CheckMode)
+GET        /contract-packing-next-12-months              controllers.HowManyContractPackingController.onPageLoad(mode: Mode = NormalMode)
+POST       /contract-packing-next-12-months              controllers.HowManyContractPackingController.onSubmit(mode: Mode = NormalMode)
+GET        /change-contract-packing-next-12-months       controllers.HowManyContractPackingController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-contract-packing-next-12-months       controllers.HowManyContractPackingController.onSubmit(mode: Mode = CheckMode)
 
-GET        /start-date                        controllers.StartDateController.onPageLoad(mode: Mode = NormalMode)
-POST       /start-date                        controllers.StartDateController.onSubmit(mode: Mode = NormalMode)
-GET        /change-start-date                  controllers.StartDateController.onPageLoad(mode: Mode = CheckMode)
-POST       /change-start-date                  controllers.StartDateController.onSubmit(mode: Mode = CheckMode)
+GET        /imports                                      controllers.ImportsController.onPageLoad(mode: Mode = NormalMode)
+POST       /imports                                      controllers.ImportsController.onSubmit(mode: Mode = NormalMode)
+GET        /change-imports                               controllers.ImportsController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-imports                               controllers.ImportsController.onSubmit(mode: Mode = CheckMode)
+GET        /how-many-imports-next-12-months              controllers.HowManyImportsController.onPageLoad(mode: Mode = NormalMode)
+POST       /how-many-imports-next-12-months              controllers.HowManyImportsController.onSubmit(mode: Mode = NormalMode)
+GET        /change-how-many-imports-next-12-months       controllers.HowManyImportsController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-how-many-imports-next-12-months       controllers.HowManyImportsController.onSubmit(mode: Mode = CheckMode)
 
-GET       /off-ramp/secondary-warehouses/:sdilId                       controllers.addressLookupFrontend.RampOffController.secondaryWareHouseDetailsOffRamp(sdilId: String, id: String)
-GET       /off-ramp/packing-site-details/:sdilId                       controllers.addressLookupFrontend.RampOffController.packingSiteDetailsOffRamp(sdilId: String, id: String)
+GET        /start-date                                   controllers.StartDateController.onPageLoad(mode: Mode = NormalMode)
+POST       /start-date                                   controllers.StartDateController.onSubmit(mode: Mode = NormalMode)
+GET        /change-start-date                            controllers.StartDateController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-start-date                            controllers.StartDateController.onSubmit(mode: Mode = CheckMode)
+
+GET       /off-ramp/secondary-warehouses/:sdilId         controllers.addressLookupFrontend.RampOffController.secondaryWareHouseDetailsOffRamp(sdilId: String, id: String)
+GET       /off-ramp/packing-site-details/:sdilId         controllers.addressLookupFrontend.RampOffController.packingSiteDetailsOffRamp(sdilId: String, id: String)

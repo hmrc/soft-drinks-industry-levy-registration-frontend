@@ -31,7 +31,7 @@ class Navigator @Inject()() {
       case (Some(organisationType),_) if organisationType == Partnership =>
         routes.CannotRegisterPartnershipController.onPageLoad()
       case (_, CheckMode) =>
-        routes.CheckYourAnswersController.onPageLoad
+        routes.CheckYourAnswersController.onPageLoad()
       case (_,_) =>
         routes.HowManyLitresGloballyController.onPageLoad(mode)
     }
@@ -41,9 +41,9 @@ class Navigator @Inject()() {
     if (userAnswers.get(page = ContractPackingPage).contains(true)) {
       routes.HowManyContractPackingController.onPageLoad(mode)
     } else if(mode == CheckMode){
-        routes.CheckYourAnswersController.onPageLoad
+        routes.CheckYourAnswersController.onPageLoad()
     } else {
-        routes.IndexController.onPageLoad
+        routes.IndexController.onPageLoad()
     }
   }
 
@@ -51,9 +51,9 @@ class Navigator @Inject()() {
     if (userAnswers.get(page = ImportsPage).contains(true)) {
       routes.HowManyImportsController.onPageLoad(mode)
     } else if(mode == CheckMode){
-        routes.CheckYourAnswersController.onPageLoad
+        routes.CheckYourAnswersController.onPageLoad()
     } else {
-        routes.IndexController.onPageLoad
+        routes.IndexController.onPageLoad()
     }
   }
 
@@ -61,27 +61,28 @@ class Navigator @Inject()() {
     if (userAnswers.get(page = OperatePackagingSitesPage).contains(true)) {
       routes.HowManyOperatePackagingSitesController.onPageLoad(mode)
     } else if(mode == CheckMode){
-        routes.CheckYourAnswersController.onPageLoad
+        routes.CheckYourAnswersController.onPageLoad()
     } else {
-        routes.IndexController.onPageLoad
+        routes.IndexController.onPageLoad()
     }
   }
 
   private val normalRoutes: Page => UserAnswers => Call = {
+    case ContactDetailsPage => userAnswers => routes.IndexController.onPageLoad()
     case ContractPackingPage => userAnswers => navigationForContractPacking(userAnswers, NormalMode)
-    case HowManyContractPackingPage => userAnswers => routes.IndexController.onPageLoad
+    case HowManyContractPackingPage => userAnswers => routes.IndexController.onPageLoad()
     case ImportsPage => userAnswers => navigationForImports(userAnswers, NormalMode)
-    case HowManyImportsPage => userAnswers => routes.IndexController.onPageLoad
-    case AskSecondaryWarehousesPage => userAnswers => routes.IndexController.onPageLoad
+    case HowManyImportsPage => userAnswers => routes.IndexController.onPageLoad()
+    case AskSecondaryWarehousesPage => userAnswers => routes.IndexController.onPageLoad()
     case OperatePackagingSitesPage => userAnswers => navigationForOperatePackagingSites(userAnswers, NormalMode)
-    case HowManyOperatePackagingSitesPage => userAnswers => routes.IndexController.onPageLoad
-    case AskSecondaryWarehousesPage => userAnswers => routes.IndexController.onPageLoad
-    case ThirdPartyPackagersPage => userAnswers => routes.IndexController.onPageLoad
-    case PackagingSiteDetailsPage => userAnswers => routes.IndexController.onPageLoad
-    case AskSecondaryWarehousesPage => userAnswers => routes.IndexController.onPageLoad
-    case StartDatePage => userAnswers => routes.IndexController.onPageLoad
+    case HowManyOperatePackagingSitesPage => userAnswers => routes.IndexController.onPageLoad()
+    case AskSecondaryWarehousesPage => userAnswers => routes.IndexController.onPageLoad()
+    case ThirdPartyPackagersPage => userAnswers => routes.IndexController.onPageLoad()
+    case PackagingSiteDetailsPage => userAnswers => routes.IndexController.onPageLoad()
+    case AskSecondaryWarehousesPage => userAnswers => routes.IndexController.onPageLoad()
+    case StartDatePage => userAnswers => routes.IndexController.onPageLoad()
     case OrganisationTypePage => userAnswers => navigationForOrganisationType(userAnswers, NormalMode)
-    case _ => _ => routes.IndexController.onPageLoad
+    case _ => _ => routes.IndexController.onPageLoad()
   }
 
   private val checkRouteMap: Page => UserAnswers => Call = {
@@ -89,7 +90,7 @@ class Navigator @Inject()() {
     case OperatePackagingSitesPage => userAnswers => navigationForOperatePackagingSites(userAnswers, CheckMode)
     case ImportsPage => userAnswers => navigationForImports(userAnswers, CheckMode)
     case OrganisationTypePage => userAnswers => navigationForOrganisationType(userAnswers, CheckMode)
-    case _ => _ => routes.CheckYourAnswersController.onPageLoad
+    case _ => _ => routes.CheckYourAnswersController.onPageLoad()
   }
 
   def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call = mode match {

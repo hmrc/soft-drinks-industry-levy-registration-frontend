@@ -18,79 +18,80 @@ package controllers
 
 import base.SpecBase
 import errors.SessionDatabaseInsertError
-import forms.PackagingSiteDetailsFormProvider
 import helpers.LoggerHelper
-import models.{NormalMode, UserAnswers}
-import models.backend.{Site, UkAddress}
+import utilities.GenericLogger
+import forms.ContactDetailsFormProvider
+import models.{ContactDetails, NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
-import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.PackagingSiteDetailsPage
-import play.api.data.Form
+import pages.ContactDetailsPage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.SessionService
-import utilities.GenericLogger
-import views.html.PackagingSiteDetailsView
+import views.html.ContactDetailsView
 
 import scala.concurrent.Future
+import org.jsoup.Jsoup
+import play.api.data.Form
+import play.api.libs.json.Json
 
-class PackagingSiteDetailsControllerSpec extends SpecBase with MockitoSugar with LoggerHelper {
+class ContactDetailsControllerSpec extends SpecBase with MockitoSugar with LoggerHelper {
 
   def onwardRoute: Call = Call("GET", "/foo")
 
-  val formProvider = new PackagingSiteDetailsFormProvider()
-  val form: Form[Boolean] = formProvider()
+  val formProvider = new ContactDetailsFormProvider()
+  val form: Form[ContactDetails] = formProvider()
 
-  val PackagingSite1: Site = Site(
-    UkAddress(List("33 Rhes Priordy", "East London"), "E73 2RP"),
-    None,
-    Some("Wild Lemonade Group"),
-    None)
+  lazy val contactDetailsRoute: String = routes.ContactDetailsController.onPageLoad(NormalMode).url
 
-  lazy val packagingSiteListWith1: Map[String, Site] = Map(("78941132", PackagingSite1))
+  val userAnswers: UserAnswers = UserAnswers(
+    identifier,
+    Json.obj(
+      ContactDetailsPage.toString -> Json.obj(
+        "fullName" -> "Jane Doe",
+        "position" -> "CEO",
+        "phoneNumber" -> "07700 099 990",
+        "email" -> "name@example.com"
+      )
+    )
+  )
 
-  lazy val packagingSiteDetailsRoute: String = routes.PackagingSiteDetailsController.onPageLoad(NormalMode).url
-
-  val userAnswersWithPackagingSite: UserAnswers = emptyUserAnswers.copy(packagingSiteList = packagingSiteListWith1)
-
-  "PackagingSiteDetails Controller" - {
+  "ContactDetails Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = Some(userAnswersWithPackagingSite)).build()
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, packagingSiteDetailsRoute)
+        val request = FakeRequest(GET, contactDetailsRoute)
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[PackagingSiteDetailsView]
+        val view = application.injector.instanceOf[ContactDetailsView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, packagingSiteListWith1)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = userAnswersWithPackagingSite.set(PackagingSiteDetailsPage, true).success.value
-
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, packagingSiteDetailsRoute)
+        val request = FakeRequest(GET, contactDetailsRoute)
 
-        val view = application.injector.instanceOf[PackagingSiteDetailsView]
+        val view = application.injector.instanceOf[ContactDetailsView]
 
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode, packagingSiteListWith1)(request, messages(application)).toString
+        contentAsString(result) mustEqual
+          view(form.fill(ContactDetails("Jane Doe", "CEO", "07700 099 990", "name@example.com")), NormalMode)(request, messages(application)).toString
       }
     }
 
@@ -101,7 +102,7 @@ class PackagingSiteDetailsControllerSpec extends SpecBase with MockitoSugar with
       when(mockSessionService.set(any())) thenReturn Future.successful(Right(true))
 
       val application =
-        applicationBuilder(userAnswers = Some(userAnswersWithPackagingSite))
+        applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionService].toInstance(mockSessionService)
@@ -110,8 +111,8 @@ class PackagingSiteDetailsControllerSpec extends SpecBase with MockitoSugar with
 
       running(application) {
         val request =
-          FakeRequest(POST, packagingSiteDetailsRoute)
-        .withFormUrlEncodedBody(("value", "true"))
+          FakeRequest(POST, contactDetailsRoute)
+        .withFormUrlEncodedBody(("fullName", "Jane Doe"), ("position", "CEO"), ("phoneNumber", "07700 099 990"), ("email", "name@example.com"))
 
         val result = route(application, request).value
 
@@ -122,21 +123,22 @@ class PackagingSiteDetailsControllerSpec extends SpecBase with MockitoSugar with
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(userAnswers = Some(userAnswersWithPackagingSite)).build()
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
         val request =
-          FakeRequest(POST, packagingSiteDetailsRoute)
-        .withFormUrlEncodedBody(("value", ""))
+          FakeRequest(POST, contactDetailsRoute
+        )
+        .withFormUrlEncodedBody(("value", "invalid value"))
 
-        val boundForm = form.bind(Map("value" -> ""))
+        val boundForm = form.bind(Map("value" -> "invalid value"))
 
-        val view = application.injector.instanceOf[PackagingSiteDetailsView]
+        val view = application.injector.instanceOf[ContactDetailsView]
 
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, packagingSiteListWith1)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
       }
     }
 
@@ -145,7 +147,7 @@ class PackagingSiteDetailsControllerSpec extends SpecBase with MockitoSugar with
       val application = applicationBuilder(userAnswers = None).build()
 
       running(application) {
-        val request = FakeRequest(GET, packagingSiteDetailsRoute)
+        val request = FakeRequest(GET, contactDetailsRoute)
 
         val result = route(application, request).value
 
@@ -160,8 +162,9 @@ class PackagingSiteDetailsControllerSpec extends SpecBase with MockitoSugar with
 
       running(application) {
         val request =
-          FakeRequest(POST, packagingSiteDetailsRoute)
-        .withFormUrlEncodedBody(("value", "true"))
+          FakeRequest(POST, contactDetailsRoute
+        )
+        .withFormUrlEncodedBody(("fullName", "Jane Doe"), ("position", "CEO"), ("phoneNumber", "07700 099 990"), ("email", "name@example.com"))
 
         val result = route(application, request).value
 
@@ -176,9 +179,9 @@ class PackagingSiteDetailsControllerSpec extends SpecBase with MockitoSugar with
 
       running(application) {
         val request =
-          FakeRequest(POST, packagingSiteDetailsRoute
+          FakeRequest(POST, contactDetailsRoute
         )
-        .withFormUrlEncodedBody(("value", "true"))
+        .withFormUrlEncodedBody(("fullName", "Jane Doe"), ("position", "CEO"), ("phoneNumber", "07700 099 990"), ("email", "name@example.com"))
 
         val result = route(application, request).value
 
@@ -204,14 +207,15 @@ class PackagingSiteDetailsControllerSpec extends SpecBase with MockitoSugar with
       running(application) {
         withCaptureOfLoggingFrom(application.injector.instanceOf[GenericLogger].logger) { events =>
           val request =
-            FakeRequest(POST, packagingSiteDetailsRoute)
-          .withFormUrlEncodedBody(("value", "true"))
+            FakeRequest(POST, contactDetailsRoute
+          )
+          .withFormUrlEncodedBody(("fullName", "Jane Doe"), ("position", "CEO"), ("phoneNumber", "07700 099 990"), ("email", "name@example.com"))
 
           await(route(application, request).value)
           events.collectFirst {
             case event =>
               event.getLevel.levelStr mustBe "ERROR"
-              event.getMessage mustEqual "Failed to set value in session repository while attempting set on packagingSiteDetails"
+              event.getMessage mustEqual "Failed to set value in session repository while attempting set on contactDetails"
           }.getOrElse(fail("No logging captured"))
         }
       }

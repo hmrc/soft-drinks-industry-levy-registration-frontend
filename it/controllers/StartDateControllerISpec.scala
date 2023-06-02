@@ -1,6 +1,5 @@
 package controllers
 
-import models.NormalMode
 import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
 import pages.StartDatePage
@@ -8,6 +7,7 @@ import play.api.http.HeaderNames
 import play.api.i18n.Messages
 import play.api.libs.json.Json
 import play.api.test.WsTestClient
+
 import java.time.LocalDate
 
 class StartDateControllerISpec extends ControllerITTestHelper {

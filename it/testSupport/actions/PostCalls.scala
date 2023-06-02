@@ -18,7 +18,7 @@ class PostCalls(baseUrl: String) {
   private def declarationData = {
     """{
       |"fullName": "John",
-      |"jobTitle": "Director",
+      |"position": "Director",
       |"isUseGgEmail": true,
       |"ggEmail": "user@test.com"
       |}

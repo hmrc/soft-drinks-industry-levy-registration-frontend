@@ -40,7 +40,8 @@ class AuthenticatedIdentifierAction @Inject()(
                                                val parser: BodyParsers.Default,
                                                sdilConnector: SoftDrinksIndustryLevyConnector,
                                                errorHandler: ErrorHandler)
-                                             (implicit val executionContext: ExecutionContext) extends IdentifierAction with AuthorisedFunctions with ActionHelpers {
+                                             (implicit val executionContext: ExecutionContext)
+  extends IdentifierAction with AuthorisedFunctions with ActionHelpers {
 
   override protected def refine[A](request: Request[A]): Future[Either[Result, IdentifierRequest[A]]] = {
     implicit val req: Request[A] = request
@@ -48,13 +49,15 @@ class AuthenticatedIdentifierAction @Inject()(
 
     authorised(AuthProviders(GovernmentGateway)).retrieve(registrationRetrieval) {
       case enrolments ~ role ~ id ~ affinity =>
-        id.fold[Future[Either[Result, IdentifierRequest[A]]]](Future.successful(Left(InternalServerError(errorHandler.internalServerErrorTemplate)))) { internalId =>
+        id.fold[Future[Either[Result, IdentifierRequest[A]]]](Future.successful(Left(InternalServerError(errorHandler.internalServerErrorTemplate))))
+          { internalId =>
           val maybeUtr = getUtr(enrolments)
           val maybeSdil = getSdilEnrolment(enrolments)
           (maybeUtr, maybeSdil) match {
             case (Some(utr), _) => handleUserWithUTR(internalId, utr, maybeSdil.isDefined, hasCTEnrolment(enrolments))
             case (None, Some(sdil)) => handleUserWithNoUTRAndSDILEnrolment(internalId, sdil, hasCTEnrolment(enrolments))
-            case _ if hasValidRoleAndAffinityGroup(role, affinity) => Future.successful(Right(IdentifierRequest(request, internalId, hasCTEnrolment(enrolments), None)))
+            case _ if hasValidRoleAndAffinityGroup(role, affinity) =>
+              Future.successful(Right(IdentifierRequest(request, internalId, hasCTEnrolment(enrolments), None)))
             case _ => Future.successful(Left(Redirect(config.sdilFrontendBaseUrl)))
           }
         }
@@ -62,7 +65,7 @@ class AuthenticatedIdentifierAction @Inject()(
       case _: NoActiveSession =>
         Left(Redirect(config.loginUrl, Map("continue" -> Seq(config.loginContinueUrl))))
       case _: AuthorisationException =>
-        Left(Redirect(routes.UnauthorisedController.onPageLoad))
+        Left(Redirect(routes.UnauthorisedController.onPageLoad()))
     }
   }
 

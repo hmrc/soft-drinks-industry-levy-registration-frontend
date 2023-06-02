@@ -94,7 +94,7 @@ class AddressLookupService @Inject()(
       options = JourneyOptions(
         continueUrl = returnContinueUrl(state, sdilId),
         homeNavHref = None,
-        signOutHref = Some(controllers.auth.routes.AuthController.signOut.url),
+        signOutHref = Some(controllers.auth.routes.AuthController.signOut().url),
         accessibilityFooterUrl = None,
         phaseFeedbackLink = Some(frontendAppConfig.feedbackUrl(requestHeader)),
         deskProServiceName = None,
@@ -117,10 +117,10 @@ class AddressLookupService @Inject()(
         )),
         timeoutConfig = Some(TimeoutConfig(
           timeoutAmount = frontendAppConfig.timeout,
-          timeoutUrl = controllers.auth.routes.AuthController.signOut.url,
+          timeoutUrl = controllers.auth.routes.AuthController.signOut().url,
           timeoutKeepAliveUrl = Some(routes.KeepAliveController.keepAlive.url)
         )),
-        serviceHref = Some(routes.IndexController.onPageLoad.url),
+        serviceHref = Some(routes.IndexController.onPageLoad().url),
         pageHeadingStyle = Some("govuk-heading-m")
       ),
       labels = returnJourneyLabels(state),

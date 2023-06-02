@@ -11,6 +11,9 @@ import scala.concurrent.duration.DurationInt
 
 trait ITCoreTestData extends TryValues {
 
+  val contactDetails: ContactDetails = ContactDetails("test", "test", "89432789234", "test@example.com")
+  val contactDetailsDiff: ContactDetails = ContactDetails("diff", "diff", "8793820901", "sample@example.com")
+
   val userAnswersForContractPackingPage: Map[String, UserAnswers] = {
     val yesSelected = emptyUserAnswers.set(ContractPackingPage, true).success.value
     val noSelected = emptyUserAnswers.set(ContractPackingPage, false).success.value
