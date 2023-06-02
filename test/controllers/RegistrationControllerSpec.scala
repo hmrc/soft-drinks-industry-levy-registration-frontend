@@ -58,7 +58,7 @@ class RegistrationControllerSpec extends SpecBase with SummaryListFluency with M
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result) mustEqual Some(routes.IndexController.onPageLoad.url)
+            redirectLocation(result) mustEqual Some(routes.IndexController.onPageLoad().url)
           }
         }
       }

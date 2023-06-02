@@ -18,6 +18,7 @@ package navigation
 
 import base.SpecBase
 import controllers.routes
+import models.HowManyLitresGlobally.{Large, Small}
 import models.OrganisationType.{LimitedCompany, LimitedLiabilityPartnership, Partnership, SoleTrader, UnincorporatedBody}
 import pages._
 import models._
@@ -37,46 +38,65 @@ class NavigatorSpec extends SpecBase {
         navigator.nextPage(UnknownPage, NormalMode, UserAnswers("id")) mustBe routes.IndexController.onPageLoad
       }
 
-      "must navigate to cannot register partnership page when on organisation type page and partnership is selected" in {
-        val result = navigator.nextPage(OrganisationTypePage, NormalMode,
-          UserAnswers("id", Json.obj(OrganisationTypePage.toString -> Partnership.toString)))
-        result mustBe routes.CannotRegisterPartnershipController.onPageLoad
+      "when on organisation type page" - {
+        "must navigate to cannot register partnership page and partnership is selected" in {
+          val result = navigator.nextPage(OrganisationTypePage, NormalMode,
+            UserAnswers("id", Json.obj(OrganisationTypePage.toString -> Partnership.toString)))
+          result mustBe routes.CannotRegisterPartnershipController.onPageLoad
+        }
+
+        "must navigate to how many litres globally page and limited company is selected" in {
+          val result = navigator.nextPage(OrganisationTypePage, NormalMode,
+            UserAnswers("id", Json.obj(OrganisationTypePage.toString -> LimitedCompany.toString)))
+          result mustBe routes.HowManyLitresGloballyController.onPageLoad(NormalMode)
+        }
+
+        "must navigate to how many litres globally page and limited liability partnership is selected" in {
+          val result = navigator.nextPage(OrganisationTypePage, NormalMode,
+            UserAnswers("id", Json.obj(OrganisationTypePage.toString -> LimitedLiabilityPartnership.toString)))
+          result mustBe routes.HowManyLitresGloballyController.onPageLoad(NormalMode)
+        }
+
+        "must navigate to how many litres globally page and unincorporated body is selected" in {
+          val result = navigator.nextPage(OrganisationTypePage, NormalMode,
+            UserAnswers("id", Json.obj(OrganisationTypePage.toString -> UnincorporatedBody.toString)))
+          result mustBe routes.HowManyLitresGloballyController.onPageLoad(NormalMode)
+        }
+
+        "must navigate to how many litres globally page and sole trader is selected" in {
+          val result = navigator.nextPage(OrganisationTypePage, NormalMode,
+            UserAnswers("id", Json.obj(OrganisationTypePage.toString -> SoleTrader.toString)))
+          result mustBe routes.HowManyLitresGloballyController.onPageLoad(NormalMode)
+        }
+
       }
 
-      "must navigate to cannot register partnership page when on organisation type page in check mode" in {
-        val result = navigator.nextPage(OrganisationTypePage, CheckMode,
-          UserAnswers("id", Json.obj(OrganisationTypePage.toString -> Partnership.toString)))
-        result mustBe routes.CannotRegisterPartnershipController.onPageLoad
-      }
+      "when on how many litres globally page" - {
 
-      "must navigate to how many litres globally page when on organisation type page and limited company is selected" in {
-        val result = navigator.nextPage(OrganisationTypePage, NormalMode,
-          UserAnswers("id", Json.obj(OrganisationTypePage.toString -> LimitedCompany.toString)))
-        result mustBe routes.HowManyLitresGloballyController.onPageLoad(NormalMode)
-      }
+        "must navigate to third party packagers page when less than 1 million litres is selected" in {
+          val result = navigator.nextPage(HowManyLitresGloballyPage, NormalMode,
+            UserAnswers("id", Json.obj(HowManyLitresGloballyPage.toString -> Large.toString)))
+          result mustBe routes.OperatePackagingSitesController.onPageLoad(NormalMode)
+        }
 
-      "must navigate to how many litres globally page when on organisation type page and limited liability partnership is selected" in {
-        val result = navigator.nextPage(OrganisationTypePage, NormalMode,
-          UserAnswers("id", Json.obj(OrganisationTypePage.toString -> LimitedLiabilityPartnership.toString)))
-        result mustBe routes.HowManyLitresGloballyController.onPageLoad(NormalMode)
-      }
+        "must navigate to third party packagers page when less than less than 1 million litres is selected" in {
+          val result = navigator.nextPage(HowManyLitresGloballyPage, NormalMode,
+            UserAnswers("id", Json.obj(HowManyLitresGloballyPage.toString -> Small.toString)))
+          result mustBe routes.ThirdPartyPackagersController.onPageLoad(NormalMode)
+        }
 
-      "must navigate to how many litres globally page when on organisation type page and unincorporated body is selected" in {
-        val result = navigator.nextPage(OrganisationTypePage, NormalMode,
-          UserAnswers("id", Json.obj(OrganisationTypePage.toString -> UnincorporatedBody.toString)))
-        result mustBe routes.HowManyLitresGloballyController.onPageLoad(NormalMode)
-      }
+        "must navigate to third party packagers page when None is selected" in {
+          val result = navigator.nextPage(HowManyLitresGloballyPage, NormalMode,
+            UserAnswers("id", Json.obj(HowManyLitresGloballyPage.toString -> HowManyLitresGlobally.None.toString)))
+          result mustBe routes.ContractPackingController.onPageLoad(NormalMode)
+        }
 
-      "must navigate to how many litres globally page when on organisation type page and sole trader is selected" in {
-        val result = navigator.nextPage(OrganisationTypePage, NormalMode,
-          UserAnswers("id", Json.obj(OrganisationTypePage.toString -> SoleTrader.toString)))
-        result mustBe routes.HowManyLitresGloballyController.onPageLoad(NormalMode)
-      }
+        "must navigate to index controller page when no answer available in user answers" in {
+          val result = navigator.nextPage(HowManyLitresGloballyPage, NormalMode,
+            UserAnswers("id", Json.obj()))
+          result mustBe routes.IndexController.onPageLoad()
+        }
 
-      "must navigate to check your answers page when on organisation type page in check mode" in {
-        val result = navigator.nextPage(OrganisationTypePage, CheckMode,
-          UserAnswers("id", Json.obj(OrganisationTypePage.toString -> LimitedCompany.toString)))
-        result mustBe routes.CheckYourAnswersController.onPageLoad
       }
 
     }
@@ -87,6 +107,48 @@ class NavigatorSpec extends SpecBase {
 
         case object UnknownPage extends Page
         navigator.nextPage(UnknownPage, CheckMode, UserAnswers("id")) mustBe routes.CheckYourAnswersController.onPageLoad
+      }
+
+      "when on organisation type page" - {
+
+        "must navigate to cannot register partnership page in check mode" in {
+          val result = navigator.nextPage(OrganisationTypePage, CheckMode,
+            UserAnswers("id", Json.obj(OrganisationTypePage.toString -> Partnership.toString)))
+          result mustBe routes.CannotRegisterPartnershipController.onPageLoad
+        }
+
+        "must navigate to check your answers page in check mode" in {
+          val result = navigator.nextPage(OrganisationTypePage, CheckMode,
+            UserAnswers("id", Json.obj(OrganisationTypePage.toString -> LimitedCompany.toString)))
+          result mustBe routes.CheckYourAnswersController.onPageLoad
+        }
+      }
+
+      "when on how many litres globally page" - {
+
+        "must navigate to third party packagers page when less than 1 million litres is selected in check mode" in {
+          val result = navigator.nextPage(HowManyLitresGloballyPage, CheckMode,
+            UserAnswers("id", Json.obj(HowManyLitresGloballyPage.toString -> Large.toString)))
+          result mustBe routes.OperatePackagingSitesController.onPageLoad(CheckMode)
+        }
+
+        "must navigate to third party packagers page when less than less than 1 million litres is selected in check mode" in {
+          val result = navigator.nextPage(HowManyLitresGloballyPage, CheckMode,
+            UserAnswers("id", Json.obj(HowManyLitresGloballyPage.toString -> Small.toString)))
+          result mustBe routes.ThirdPartyPackagersController.onPageLoad(CheckMode)
+        }
+
+        "must navigate to third party packagers page when None is selected in check mode" in {
+          val result = navigator.nextPage(HowManyLitresGloballyPage, CheckMode,
+            UserAnswers("id", Json.obj(HowManyLitresGloballyPage.toString -> HowManyLitresGlobally.None.toString)))
+          result mustBe routes.ContractPackingController.onPageLoad(CheckMode)
+        }
+
+        "must navigate to index controller page when no answer available in user answers" in {
+          val result = navigator.nextPage(HowManyLitresGloballyPage, CheckMode,
+            UserAnswers("id", Json.obj()))
+          result mustBe routes.IndexController.onPageLoad()
+        }
       }
     }
   }

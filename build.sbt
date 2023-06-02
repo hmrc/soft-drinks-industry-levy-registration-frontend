@@ -8,9 +8,9 @@ lazy val appName: String = "soft-drinks-industry-levy-registration-frontend"
 lazy val root = (project in file("."))
   .enablePlugins(PlayScala, SbtAutoBuildPlugin, SbtDistributablesPlugin)
   .disablePlugins(JUnitXmlReportPlugin) //Required to prevent https://github.com/scalatest/scalatest/issues/1427
-  .settings(inConfig(Test)(testSettings) *)
+  .settings(inConfig(Test)(testSettings): _*)
   .configs(IntegrationTest)
-  .settings(inConfig(IntegrationTest)(itSettings) *)
+  .settings(inConfig(IntegrationTest)(itSettings): _*)
   .settings(majorVersion := 0, libraryDependencySchemes += "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always)
     // libraryDependencySchemes added to get around the scoverage compile errors for scala 2.13.10
   .settings(ThisBuild / useSuperShell := false)
@@ -55,7 +55,7 @@ lazy val root = (project in file("."))
           "javascripts/app.js"
         ))
     ),
-    //scalacOptions += "-deprecation",
+    scalacOptions += "-deprecation",
     scalacOptions ++= Seq("-Ypatmat-exhaust-depth", "off"),
     // prevent removal of unused code which generates warning errors due to use of third-party libs
     uglifyCompressOptions := Seq("unused=false", "dead_code=false"),

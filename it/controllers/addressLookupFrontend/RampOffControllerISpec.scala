@@ -35,7 +35,7 @@ class RampOffControllerISpec extends ControllerITTestHelper {
             updatedUserAnswers.warehouseList mustBe Map(sdilId -> Warehouse(Some("soft drinks ltd"), UkAddress(List("line 1", "line 2", "line 3", "line 4"), "aa1 1aa", alfId = Some(alfId))))
 
             res.status mustBe SEE_OTHER
-            res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.IndexController.onPageLoad.url)
+            res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.IndexController.onPageLoad().url)
           }
 
         }
@@ -62,7 +62,7 @@ class RampOffControllerISpec extends ControllerITTestHelper {
             updatedUserAnswers.warehouseList mustBe Map(sdilId -> Warehouse(Some("soft drinks ltd"), UkAddress(List("line 1", "line 2", "line 3", "line 4"), "aa1 1aa", alfId = Some(alfId))))
 
             res.status mustBe SEE_OTHER
-            res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.IndexController.onPageLoad.url)
+            res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.IndexController.onPageLoad().url)
           }
         }
       }

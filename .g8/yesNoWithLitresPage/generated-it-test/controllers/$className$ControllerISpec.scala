@@ -237,7 +237,7 @@ class $className$ControllerISpec extends ControllerITTestHelper {
                 val expectedLocation = if(yesSelected) {
                   routes.HowMany$className$Controller.onPageLoad(CheckMode).url
                 } else {
-                  routes.CheckYourAnswersController.onPageLoad.url
+                  routes.CheckYourAnswersController.onPageLoad().url
                 }
                 res.header(HeaderNames.LOCATION) mustBe Some(expectedLocation)
                 val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get($className$Page))
@@ -263,7 +263,7 @@ class $className$ControllerISpec extends ControllerITTestHelper {
                 val expectedLocation = if (yesSelected) {
                   routes.HowMany$className$Controller.onPageLoad(CheckMode).url
                 } else {
-                  routes.CheckYourAnswersController.onPageLoad.url
+                  routes.CheckYourAnswersController.onPageLoad().url
                 }
                 res.header(HeaderNames.LOCATION) mustBe Some(expectedLocation)
                 val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get($className$Page))

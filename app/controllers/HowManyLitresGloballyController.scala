@@ -66,8 +66,9 @@ class HowManyLitresGloballyController @Inject()(
           Future.successful(BadRequest(view(formWithErrors, mode))),
 
         value => {
+          val previousValue = request.userAnswers.get(HowManyLitresGloballyPage).map(litres => litres.toString)
           val updatedAnswers = request.userAnswers.set(HowManyLitresGloballyPage, value)
-          updateDatabaseAndRedirect(updatedAnswers, HowManyLitresGloballyPage, mode)
+          updateDatabaseAndRedirect(updatedAnswers, HowManyLitresGloballyPage, mode, previousValue)
         }
       )
   }
