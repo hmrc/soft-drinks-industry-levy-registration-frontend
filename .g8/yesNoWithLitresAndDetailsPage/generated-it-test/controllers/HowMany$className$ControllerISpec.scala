@@ -21,7 +21,7 @@ class HowMany$className$ControllerISpec extends LitresISpecHelper {
     val (path, redirectLocation) = if(mode == NormalMode) {
       (normalRoutePath, $nextPage$.url)
     } else {
-      (checkRoutePath, routes.CheckYourAnswersController.onPageLoad.url)
+      (checkRoutePath, routes.CheckYourAnswersController.onPageLoad().url)
     }
 
     "GET " + path - {

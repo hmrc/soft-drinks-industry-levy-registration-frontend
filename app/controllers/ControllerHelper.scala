@@ -38,14 +38,14 @@ trait ControllerHelper extends FrontendBaseController with I18nSupport {
   private val internalServerErrorBaseMessage = "Failed to set value in session repository"
   private def sessionRepo500ErrorMessage(page: Page): String = s"$internalServerErrorBaseMessage while attempting set on ${page.toString}"
 
-  def updateDatabaseAndRedirect(updatedAnswers: Try[UserAnswers], page: Page, mode: Mode)
+  def updateDatabaseAndRedirect(updatedAnswers: Try[UserAnswers], page: Page, mode: Mode, previousAnswer: Option[String] = None)
                                (implicit ec: ExecutionContext, request: Request[AnyContent]): Future[Result] = {
     updatedAnswers match {
       case Failure(_) =>
         genericLogger.logger.error(s"Failed to resolve user answers while on ${page.toString}")
         Future.successful(InternalServerError(errorHandler.internalServerErrorTemplate))
       case Success(answers) => sessionService.set(answers).map {
-        case Right(_) => Redirect(navigator.nextPage(page, mode, answers))
+        case Right(_) => Redirect(navigator.nextPage(page, mode, answers, previousAnswer))
         case Left(_) =>
           genericLogger.logger.error(sessionRepo500ErrorMessage(page))
           InternalServerError(errorHandler.internalServerErrorTemplate)

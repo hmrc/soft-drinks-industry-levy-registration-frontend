@@ -21,7 +21,7 @@ class RegistrationControllerISpec extends ControllerITTestHelper {
 
           whenReady(result1) { res =>
             res.status mustBe 303
-            res.header(HeaderNames.LOCATION) mustBe Some(routes.IndexController.onPageLoad.url)
+            res.header(HeaderNames.LOCATION) mustBe Some(routes.IndexController.onPageLoad().url)
             getAnswers(identifier) mustBe defined
           }
         }

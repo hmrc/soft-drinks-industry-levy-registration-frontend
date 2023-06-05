@@ -52,7 +52,7 @@ class DoNotRegisterViewSpec extends ViewSpecHelper {
       document.getElementsByTag(Selectors.li).get(5).text() mustEqual "date you know you are going to bring liable drinks into the UK"
 
       document.getElementsByClass(Selectors.body).get(1).text() mustEqual "If this is not right, you need to go back and check your answers"
-      document.getElementById("goBackCheckAnswers").attr("href") mustBe controllers.routes.IndexController.onPageLoad.url
+      document.getElementById("goBackCheckAnswers").attr("href") mustBe controllers.routes.IndexController.onPageLoad().url
       document.getElementById("goBackCheckAnswers").text() mustEqual "go back and check your answers"
     }
 

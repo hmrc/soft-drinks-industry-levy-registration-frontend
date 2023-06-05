@@ -149,7 +149,7 @@ class ImportsControllerISpec extends ControllerITTestHelper {
                 val expectedLocation = if (yesSelected) {
                   routes.HowManyImportsController.onPageLoad(NormalMode).url
                 } else {
-                  routes.IndexController.onPageLoad.url
+                  routes.IndexController.onPageLoad().url
                 }
                 res.header(HeaderNames.LOCATION) mustBe Some(expectedLocation)
                 val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(ImportsPage))
@@ -175,7 +175,7 @@ class ImportsControllerISpec extends ControllerITTestHelper {
                 val expectedLocation = if (yesSelected) {
                   routes.HowManyImportsController.onPageLoad(NormalMode).url
                 } else {
-                  routes.IndexController.onPageLoad.url
+                  routes.IndexController.onPageLoad().url
                 }
                 res.header(HeaderNames.LOCATION) mustBe Some(expectedLocation)
                 val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(ImportsPage))
@@ -237,7 +237,7 @@ class ImportsControllerISpec extends ControllerITTestHelper {
                 val expectedLocation = if(yesSelected) {
                   routes.HowManyImportsController.onPageLoad(CheckMode).url
                 } else {
-                  routes.CheckYourAnswersController.onPageLoad.url
+                  routes.CheckYourAnswersController.onPageLoad().url
                 }
                 res.header(HeaderNames.LOCATION) mustBe Some(expectedLocation)
                 val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(ImportsPage))
@@ -263,7 +263,7 @@ class ImportsControllerISpec extends ControllerITTestHelper {
                 val expectedLocation = if (yesSelected) {
                   routes.HowManyImportsController.onPageLoad(CheckMode).url
                 } else {
-                  routes.CheckYourAnswersController.onPageLoad.url
+                  routes.CheckYourAnswersController.onPageLoad().url
                 }
                 res.header(HeaderNames.LOCATION) mustBe Some(expectedLocation)
                 val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(ImportsPage))
