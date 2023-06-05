@@ -50,7 +50,7 @@ class ThirdPartyPackagersControllerSpec extends SpecBase with MockitoSugar with 
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration).build()
 
       running(application) {
         val request = FakeRequest(GET, thirdPartyPackagersRoute)
@@ -68,7 +68,7 @@ class ThirdPartyPackagersControllerSpec extends SpecBase with MockitoSugar with 
 
       val userAnswers = UserAnswers(identifier).set(ThirdPartyPackagersPage, true).success.value
 
-      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(userAnswers), rosmRegistration = rosmRegistration).build()
 
       running(application) {
         val request = FakeRequest(GET, thirdPartyPackagersRoute)
@@ -89,7 +89,7 @@ class ThirdPartyPackagersControllerSpec extends SpecBase with MockitoSugar with 
       when(mockSessionService.set(any())) thenReturn Future.successful(Right(true))
 
       val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration)
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionService].toInstance(mockSessionService)
@@ -110,7 +110,7 @@ class ThirdPartyPackagersControllerSpec extends SpecBase with MockitoSugar with 
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration).build()
 
       running(application) {
         val request =
@@ -130,7 +130,7 @@ class ThirdPartyPackagersControllerSpec extends SpecBase with MockitoSugar with 
 
     "must redirect to Journey Recovery for a GET if no existing data is found" in {
 
-      val application = applicationBuilder(userAnswers = None).build()
+      val application = applicationBuilder(userAnswers = None, rosmRegistration = rosmRegistration).build()
 
       running(application) {
         val request = FakeRequest(GET, thirdPartyPackagersRoute)
@@ -144,7 +144,7 @@ class ThirdPartyPackagersControllerSpec extends SpecBase with MockitoSugar with 
 
     "must redirect to Journey Recovery for a POST if no existing data is found" in {
 
-      val application = applicationBuilder(userAnswers = None).build()
+      val application = applicationBuilder(userAnswers = None, rosmRegistration = rosmRegistration).build()
 
       running(application) {
         val request =
@@ -160,7 +160,7 @@ class ThirdPartyPackagersControllerSpec extends SpecBase with MockitoSugar with 
 
     "must fail if the setting of userAnswers fails" in {
 
-      val application = applicationBuilder(userAnswers = Some(userDetailsWithSetMethodsReturningFailure)).build()
+      val application = applicationBuilder(userAnswers = Some(userDetailsWithSetMethodsReturningFailure), rosmRegistration = rosmRegistration).build()
 
       running(application) {
         val request =
@@ -182,7 +182,7 @@ class ThirdPartyPackagersControllerSpec extends SpecBase with MockitoSugar with 
       when(mockSessionService.set(any())) thenReturn Future.successful(Left(SessionDatabaseInsertError))
 
       val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration)
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionService].toInstance(mockSessionService)

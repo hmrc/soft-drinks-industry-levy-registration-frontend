@@ -20,65 +20,65 @@ import base.SpecBase
 import errors.SessionDatabaseInsertError
 import helpers.LoggerHelper
 import utilities.GenericLogger
-import forms.ImportsFormProvider
+import forms.PackAtBusinessAddressFormProvider
 import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.ImportsPage
+import pages.PackAtBusinessAddressPage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.SessionService
-import views.html.ImportsView
+import views.html.PackAtBusinessAddressView
 
 import scala.concurrent.Future
 import org.jsoup.Jsoup
 
-class ImportsControllerSpec extends SpecBase with MockitoSugar with LoggerHelper {
+class PackAtBusinessAddressControllerSpec extends SpecBase with MockitoSugar with LoggerHelper {
 
   def onwardRoute = Call("GET", "/foo")
 
-  val formProvider = new ImportsFormProvider()
+  val formProvider = new PackAtBusinessAddressFormProvider()
   val form = formProvider()
 
-  lazy val importsRoute = routes.ImportsController.onPageLoad(NormalMode).url
+  lazy val packAtBusinessAddressRoute = routes.PackAtBusinessAddressController.onPageLoad(NormalMode).url
 
-  "Imports Controller" - {
+  "PackAtBusinessAddress Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration).build()
 
       running(application) {
-        val request = FakeRequest(GET, importsRoute)
+        val request = FakeRequest(GET, packAtBusinessAddressRoute)
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[ImportsView]
+        val view = application.injector.instanceOf[PackAtBusinessAddressView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, rosmRegistration,  NormalMode)(request, messages(application)).toString
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(identifier).set(ImportsPage, true).success.value
+      val userAnswers = UserAnswers(identifier).set(PackAtBusinessAddressPage, true).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers), rosmRegistration = rosmRegistration).build()
 
       running(application) {
-        val request = FakeRequest(GET, importsRoute)
+        val request = FakeRequest(GET, packAtBusinessAddressRoute)
 
-        val view = application.injector.instanceOf[ImportsView]
+        val view = application.injector.instanceOf[PackAtBusinessAddressView]
 
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(true), rosmRegistration, NormalMode)(request, messages(application)).toString
       }
     }
 
@@ -98,8 +98,8 @@ class ImportsControllerSpec extends SpecBase with MockitoSugar with LoggerHelper
 
       running(application) {
         val request =
-          FakeRequest(POST, importsRoute)
-            .withFormUrlEncodedBody(("value", "true"))
+          FakeRequest(POST, packAtBusinessAddressRoute)
+        .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
 
@@ -114,17 +114,17 @@ class ImportsControllerSpec extends SpecBase with MockitoSugar with LoggerHelper
 
       running(application) {
         val request =
-          FakeRequest(POST, importsRoute)
-            .withFormUrlEncodedBody(("value", ""))
+          FakeRequest(POST, packAtBusinessAddressRoute)
+        .withFormUrlEncodedBody(("value", ""))
 
         val boundForm = form.bind(Map("value" -> ""))
 
-        val view = application.injector.instanceOf[ImportsView]
+        val view = application.injector.instanceOf[PackAtBusinessAddressView]
 
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, rosmRegistration, NormalMode)(request, messages(application)).toString
       }
     }
 
@@ -133,7 +133,7 @@ class ImportsControllerSpec extends SpecBase with MockitoSugar with LoggerHelper
       val application = applicationBuilder(userAnswers = None, rosmRegistration = rosmRegistration).build()
 
       running(application) {
-        val request = FakeRequest(GET, importsRoute)
+        val request = FakeRequest(GET, packAtBusinessAddressRoute)
 
         val result = route(application, request).value
 
@@ -148,8 +148,8 @@ class ImportsControllerSpec extends SpecBase with MockitoSugar with LoggerHelper
 
       running(application) {
         val request =
-          FakeRequest(POST, importsRoute)
-            .withFormUrlEncodedBody(("value", "true"))
+          FakeRequest(POST, packAtBusinessAddressRoute)
+        .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
 
@@ -164,7 +164,7 @@ class ImportsControllerSpec extends SpecBase with MockitoSugar with LoggerHelper
 
       running(application) {
         val request =
-          FakeRequest(POST, importsRoute
+          FakeRequest(POST, packAtBusinessAddressRoute
         )
         .withFormUrlEncodedBody(("value", "true"))
 
@@ -172,7 +172,7 @@ class ImportsControllerSpec extends SpecBase with MockitoSugar with LoggerHelper
 
         status(result) mustEqual INTERNAL_SERVER_ERROR
         val page = Jsoup.parse(contentAsString(result))
-        page.title() mustBe "Sorry, we are experiencing technical difficulties - 500 - Soft Drinks Industry Levy - GOV.UK"
+        page.title() mustBe "Sorry, we are experiencing technical difficulties - 500 - soft-drinks-industry-levy - GOV.UK"
       }
     }
 
@@ -192,14 +192,14 @@ class ImportsControllerSpec extends SpecBase with MockitoSugar with LoggerHelper
       running(application) {
         withCaptureOfLoggingFrom(application.injector.instanceOf[GenericLogger].logger) { events =>
           val request =
-            FakeRequest(POST, importsRoute)
-              .withFormUrlEncodedBody(("value", "true"))
+            FakeRequest(POST, packAtBusinessAddressRoute)
+          .withFormUrlEncodedBody(("value", "true"))
 
           await(route(application, request).value)
           events.collectFirst {
             case event =>
               event.getLevel.levelStr mustBe "ERROR"
-              event.getMessage mustEqual "Failed to set value in session repository while attempting set on imports"
+              event.getMessage mustEqual "Failed to set value in session repository while attempting set on packAtBusinessAddress"
           }.getOrElse(fail("No logging captured"))
         }
       }

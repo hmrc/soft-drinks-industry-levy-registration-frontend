@@ -50,7 +50,7 @@ class AuthActionSpec extends SpecBase {
 
       "must redirect the user to log in " in {
 
-        val application = applicationBuilder(userAnswers = None).build()
+        val application = applicationBuilder(userAnswers = None, rosmRegistration = rosmRegistration).build()
 
         running(application) {
           val authAction = new AuthenticatedIdentifierAction(new FakeFailingAuthConnector(new MissingBearerToken), appConfig, bodyParsers, sdilConnector, errorHandler)
@@ -67,7 +67,7 @@ class AuthActionSpec extends SpecBase {
 
       "must redirect the user to log in " in {
 
-        val application = applicationBuilder(userAnswers = None).build()
+        val application = applicationBuilder(userAnswers = None, rosmRegistration = rosmRegistration).build()
 
         running(application) {
 
@@ -85,7 +85,7 @@ class AuthActionSpec extends SpecBase {
 
       "must redirect the user to the unauthorised page" in {
 
-        val application = applicationBuilder(userAnswers = None).build()
+        val application = applicationBuilder(userAnswers = None, rosmRegistration = rosmRegistration).build()
 
         running(application) {
 
@@ -103,7 +103,7 @@ class AuthActionSpec extends SpecBase {
 
       "must redirect the user to the unauthorised page" in {
 
-        val application = applicationBuilder(userAnswers = None).build()
+        val application = applicationBuilder(userAnswers = None, rosmRegistration = rosmRegistration).build()
 
         running(application) {
 
@@ -121,7 +121,7 @@ class AuthActionSpec extends SpecBase {
 
       "must redirect the user to the unauthorised page" in {
 
-        val application = applicationBuilder(userAnswers = None).build()
+        val application = applicationBuilder(userAnswers = None, rosmRegistration = rosmRegistration).build()
 
         running(application) {
 
@@ -139,7 +139,7 @@ class AuthActionSpec extends SpecBase {
 
       "must redirect the user to the unauthorised page" in {
 
-        val application = applicationBuilder(userAnswers = None).build()
+        val application = applicationBuilder(userAnswers = None, rosmRegistration = rosmRegistration).build()
 
         running(application) {
 
@@ -157,7 +157,7 @@ class AuthActionSpec extends SpecBase {
 
       "must redirect the user to the unauthorised page" in {
 
-        val application = applicationBuilder(userAnswers = None).build()
+        val application = applicationBuilder(userAnswers = None, rosmRegistration = rosmRegistration).build()
 
         running(application) {
 

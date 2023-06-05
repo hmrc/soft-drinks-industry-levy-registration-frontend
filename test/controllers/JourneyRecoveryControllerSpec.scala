@@ -17,6 +17,10 @@
 package controllers
 
 import base.SpecBase
+import controllers.actions.{DataRequiredAction, DataRequiredActionImpl, DataRetrievalAction, FakeDataRequiredAction, FakeDataRetrievalAction, FakeIdentifierAction, IdentifierAction}
+import models.{RosmRegistration, UserAnswers}
+import play.api.inject.bind
+import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl
@@ -30,7 +34,7 @@ class JourneyRecoveryControllerSpec extends SpecBase {
 
       "must return OK and the continue view" in {
 
-        val application = applicationBuilder(userAnswers = None).build()
+        val application = applicationBuilder(userAnswers = None, rosmRegistration = rosmRegistration).build()
 
         running(application) {
           val continueUrl = RedirectUrl("/foo")
@@ -50,7 +54,7 @@ class JourneyRecoveryControllerSpec extends SpecBase {
 
       "must return OK and the start again view" in {
 
-        val application = applicationBuilder(userAnswers = None).build()
+        val application = applicationBuilder(userAnswers = None, rosmRegistration = rosmRegistration).build()
 
         running(application) {
           val continueUrl = RedirectUrl("https://foo.com")
@@ -70,7 +74,7 @@ class JourneyRecoveryControllerSpec extends SpecBase {
 
       "must return OK and the start again view" in {
 
-        val application = applicationBuilder(userAnswers = None).build()
+        val application = applicationBuilder(userAnswers = None, rosmRegistration = rosmRegistration).build()
 
         running(application) {
           val request = FakeRequest(GET, routes.JourneyRecoveryController.onPageLoad().url)

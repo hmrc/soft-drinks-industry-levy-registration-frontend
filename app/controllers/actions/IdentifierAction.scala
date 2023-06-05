@@ -21,6 +21,7 @@ import config.FrontendAppConfig
 import connectors.SoftDrinksIndustryLevyConnector
 import controllers.routes
 import handlers.ErrorHandler
+import models.RosmRegistration
 import models.requests.IdentifierRequest
 import play.api.mvc.Results._
 import play.api.mvc._

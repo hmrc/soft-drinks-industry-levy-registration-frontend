@@ -16,17 +16,19 @@
 
 package models.requests
 
-import models.UserAnswers
+import models.{RosmRegistration, UserAnswers}
 import play.api.mvc.{Request, WrappedRequest}
 
 case class OptionalDataRequest[A] (request: Request[A],
                                    internalId: String,
                                    hasCTEnrolment: Boolean = false,
-                                   utr: Option[String] = None,
-                                   userAnswers: Option[UserAnswers]) extends WrappedRequest[A](request)
+                                   authUtr: Option[String] = None,
+                                   userAnswers: Option[UserAnswers]
+                                   ) extends WrappedRequest[A](request)
 
 case class DataRequest[A] (request: Request[A],
                            internalId: String,
                            hasCTEnrolment: Boolean = false,
-                           utr: Option[String] = None,
-                           userAnswers: UserAnswers) extends WrappedRequest[A](request)
+                           authUtr: Option[String] = None,
+                           userAnswers: UserAnswers,
+                           rosmRegistration: RosmRegistration) extends WrappedRequest[A](request)

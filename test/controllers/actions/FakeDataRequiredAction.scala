@@ -16,16 +16,23 @@
 
 package controllers.actions
 
-import models.UserAnswers
-import models.requests.{IdentifierRequest, OptionalDataRequest}
+import controllers.routes
+import models.requests.{DataRequest, OptionalDataRequest}
+import models.{RosmRegistration, UserAnswers}
 import play.api.mvc.Result
+import play.api.mvc.Results.Redirect
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class FakeDataRetrievalAction(userAnswers: Option[UserAnswers]) extends DataRetrievalAction {
+class FakeDataRequiredAction(rosmRegistration: RosmRegistration, userAnswers: Option[UserAnswers]) extends DataRequiredAction {
 
-  override protected def refine[A](request: IdentifierRequest[A]): Future[Either[Result, OptionalDataRequest[A]]] =
-    Future(Right(OptionalDataRequest(request.request, request.internalId, request.hasCTEnrolment, request.utr, userAnswers, None)))
+  override protected def refine[A](request: OptionalDataRequest[A]): Future[Either[Result, DataRequest[A]]] = {
+    userAnswers match {
+      case None => Future(Left(Redirect(routes.JourneyRecoveryController.onPageLoad())))
+      case Some(userAnswers) => Future(Right(DataRequest(request, request.internalId, request.hasCTEnrolment, request.authUtr, userAnswers = userAnswers, rosmRegistration)))
+    }
+  }
+
 
 
   override protected implicit val executionContext: ExecutionContext =
