@@ -35,14 +35,14 @@ class NavigatorSpec extends SpecBase {
       "must go from a page that doesn't exist in the route map to Index" in {
 
         case object UnknownPage extends Page
-        navigator.nextPage(UnknownPage, NormalMode, UserAnswers("id")) mustBe routes.IndexController.onPageLoad
+        navigator.nextPage(UnknownPage, NormalMode, UserAnswers("id")) mustBe routes.IndexController.onPageLoad()
       }
 
       "when on organisation type page" - {
         "must navigate to cannot register partnership page and partnership is selected" in {
           val result = navigator.nextPage(OrganisationTypePage, NormalMode,
             UserAnswers("id", Json.obj(OrganisationTypePage.toString -> Partnership.toString)))
-          result mustBe routes.CannotRegisterPartnershipController.onPageLoad
+          result mustBe routes.CannotRegisterPartnershipController.onPageLoad()
         }
 
         "must navigate to how many litres globally page and limited company is selected" in {
@@ -99,6 +99,21 @@ class NavigatorSpec extends SpecBase {
 
       }
 
+      "when on how many third party packagers page" - {
+
+        "must navigate to operate packaging sites page when yes is selected" in {
+          val result = navigator.nextPage(ThirdPartyPackagersPage, NormalMode,
+            UserAnswers("id", Json.obj(ThirdPartyPackagersPage.toString -> true)))
+          result mustBe routes.OperatePackagingSitesController.onPageLoad(NormalMode)
+        }
+
+        "must navigate to operate packaging sites page when no is selected" in {
+          val result = navigator.nextPage(ThirdPartyPackagersPage, NormalMode,
+            UserAnswers("id", Json.obj(ThirdPartyPackagersPage.toString -> false)))
+          result mustBe routes.OperatePackagingSitesController.onPageLoad(NormalMode)
+        }
+      }
+
     }
 
     "in Check mode" - {
@@ -106,7 +121,7 @@ class NavigatorSpec extends SpecBase {
       "must go from a page that doesn't exist in the edit route map to CheckYourAnswers" in {
 
         case object UnknownPage extends Page
-        navigator.nextPage(UnknownPage, CheckMode, UserAnswers("id")) mustBe routes.CheckYourAnswersController.onPageLoad
+        navigator.nextPage(UnknownPage, CheckMode, UserAnswers("id")) mustBe routes.CheckYourAnswersController.onPageLoad()
       }
 
       "when on organisation type page" - {
@@ -114,13 +129,13 @@ class NavigatorSpec extends SpecBase {
         "must navigate to cannot register partnership page in check mode" in {
           val result = navigator.nextPage(OrganisationTypePage, CheckMode,
             UserAnswers("id", Json.obj(OrganisationTypePage.toString -> Partnership.toString)))
-          result mustBe routes.CannotRegisterPartnershipController.onPageLoad
+          result mustBe routes.CannotRegisterPartnershipController.onPageLoad()
         }
 
         "must navigate to check your answers page in check mode" in {
           val result = navigator.nextPage(OrganisationTypePage, CheckMode,
             UserAnswers("id", Json.obj(OrganisationTypePage.toString -> LimitedCompany.toString)))
-          result mustBe routes.CheckYourAnswersController.onPageLoad
+          result mustBe routes.CheckYourAnswersController.onPageLoad()
         }
       }
 
@@ -148,6 +163,21 @@ class NavigatorSpec extends SpecBase {
           val result = navigator.nextPage(HowManyLitresGloballyPage, CheckMode,
             UserAnswers("id", Json.obj()))
           result mustBe routes.IndexController.onPageLoad()
+        }
+      }
+
+      "when on how many third party packagers page" - {
+
+        "must navigate to operate packaging sites page when yes is selected" in {
+          val result = navigator.nextPage(ThirdPartyPackagersPage, CheckMode,
+            UserAnswers("id", Json.obj(ThirdPartyPackagersPage.toString -> true)))
+          result mustBe routes.CheckYourAnswersController.onPageLoad()
+        }
+
+        "must navigate to operate packaging sites page when no is selected" in {
+          val result = navigator.nextPage(ThirdPartyPackagersPage, CheckMode,
+            UserAnswers("id", Json.obj(ThirdPartyPackagersPage.toString -> false)))
+          result mustBe routes.CheckYourAnswersController.onPageLoad()
         }
       }
     }
