@@ -72,7 +72,6 @@ class NavigatorSpec extends SpecBase {
       }
 
       "when on how many litres globally page" - {
-
         "must navigate to third party packagers page when less than 1 million litres is selected" in {
           val result = navigator.nextPage(HowManyLitresGloballyPage, NormalMode,
             UserAnswers("id", Json.obj(HowManyLitresGloballyPage.toString -> Large.toString)))
@@ -100,7 +99,6 @@ class NavigatorSpec extends SpecBase {
       }
 
       "when on how many third party packagers page" - {
-
         "must navigate to operate packaging sites page when yes is selected" in {
           val result = navigator.nextPage(ThirdPartyPackagersPage, NormalMode,
             UserAnswers("id", Json.obj(ThirdPartyPackagersPage.toString -> true)))
@@ -115,7 +113,6 @@ class NavigatorSpec extends SpecBase {
       }
 
       "when on operate packaging sites page" - {
-
         "must navigate to how many litres will be packaged in next 12 months when yes is selected" in {
           val result = navigator.nextPage(OperatePackagingSitesPage, NormalMode,
             UserAnswers("id", Json.obj(OperatePackagingSitesPage.toString -> true)))
@@ -138,6 +135,28 @@ class NavigatorSpec extends SpecBase {
         }
       }
 
+      "when on contract packing page" - {
+        "must navigate to how many litres contract packing in next 12 months when yes is selected" in {
+          val result = navigator.nextPage(ContractPackingPage, NormalMode,
+            UserAnswers("id", Json.obj(ContractPackingPage.toString -> true)))
+          result mustBe routes.HowManyContractPackingController.onPageLoad(NormalMode)
+        }
+
+        "must navigate to imports when no is selected" in {
+          val result = navigator.nextPage(ContractPackingPage, NormalMode,
+            UserAnswers("id", Json.obj(ContractPackingPage.toString -> false)))
+          result mustBe routes.ImportsController.onPageLoad(NormalMode)
+        }
+      }
+
+      "when on contract packer in the next 12 months page" - {
+        "must navigate to imports page in case of valid litreage" in {
+          val result = navigator.nextPage(HowManyContractPackingPage, NormalMode,
+            UserAnswers("id", Json.obj(HowManyContractPackingPage.toString -> Json.obj("lowBand" -> "123", "highBand" -> "123"))))
+          result mustBe routes.ImportsController.onPageLoad(NormalMode)
+        }
+      }
+
     }
 
     "in Check mode" - {
@@ -149,7 +168,6 @@ class NavigatorSpec extends SpecBase {
       }
 
       "when on organisation type page" - {
-
         "must navigate to cannot register partnership page in check mode" in {
           val result = navigator.nextPage(OrganisationTypePage, CheckMode,
             UserAnswers("id", Json.obj(OrganisationTypePage.toString -> Partnership.toString)))
@@ -164,7 +182,6 @@ class NavigatorSpec extends SpecBase {
       }
 
       "when on how many litres globally page" - {
-
         "must navigate to third party packagers page when less than 1 million litres is selected in check mode" in {
           val result = navigator.nextPage(HowManyLitresGloballyPage, CheckMode,
             UserAnswers("id", Json.obj(HowManyLitresGloballyPage.toString -> Large.toString)))
@@ -191,7 +208,6 @@ class NavigatorSpec extends SpecBase {
       }
 
       "when on how many third party packagers page" - {
-
         "must navigate to operate packaging sites page when yes is selected" in {
           val result = navigator.nextPage(ThirdPartyPackagersPage, CheckMode,
             UserAnswers("id", Json.obj(ThirdPartyPackagersPage.toString -> true)))
@@ -206,14 +222,13 @@ class NavigatorSpec extends SpecBase {
       }
 
       "when on operate packaging sites page" - {
-
         "must navigate to how many litres will be packaged in next 12 months when yes is selected" in {
           val result = navigator.nextPage(OperatePackagingSitesPage, CheckMode,
             UserAnswers("id", Json.obj(OperatePackagingSitesPage.toString -> true)))
           result mustBe routes.HowManyOperatePackagingSitesController.onPageLoad(CheckMode)
         }
 
-        "must navigate to third party or co packing when no is selected" in {
+        "must navigate to check your answers when no is selected" in {
           val result = navigator.nextPage(OperatePackagingSitesPage, CheckMode,
             UserAnswers("id", Json.obj(OperatePackagingSitesPage.toString -> false)))
           result mustBe routes.CheckYourAnswersController.onPageLoad()
@@ -221,10 +236,31 @@ class NavigatorSpec extends SpecBase {
       }
 
       "when on operate how many own brands in the next 12 months page" - {
-
         "must navigate to check your answers controller in case of valid litreage" in {
           val result = navigator.nextPage(HowManyOperatePackagingSitesPage, CheckMode,
             UserAnswers("id", Json.obj(HowManyOperatePackagingSitesPage.toString -> Json.obj("lowBand" -> "123", "highBand" -> "123"))))
+          result mustBe routes.CheckYourAnswersController.onPageLoad()
+        }
+      }
+
+      "when on contract packing sites page" - {
+        "must navigate to how many litres will be packaged in next 12 months when yes is selected" in {
+          val result = navigator.nextPage(ContractPackingPage, CheckMode,
+            UserAnswers("id", Json.obj(ContractPackingPage.toString -> true)))
+          result mustBe routes.HowManyContractPackingController.onPageLoad(CheckMode)
+        }
+
+        "must navigate to check your answers when no is selected" in {
+          val result = navigator.nextPage(ContractPackingPage, CheckMode,
+            UserAnswers("id", Json.obj(ContractPackingPage.toString -> false)))
+          result mustBe routes.CheckYourAnswersController.onPageLoad()
+        }
+      }
+
+      "when on contract packing how many litres in the next 12 months page" - {
+        "must navigate to check your answers controller in case of valid litreage" in {
+          val result = navigator.nextPage(HowManyContractPackingPage, CheckMode,
+            UserAnswers("id", Json.obj(HowManyContractPackingPage.toString -> Json.obj("lowBand" -> "123", "highBand" -> "123"))))
           result mustBe routes.CheckYourAnswersController.onPageLoad()
         }
       }
