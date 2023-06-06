@@ -92,7 +92,7 @@ class Navigator @Inject()() {
     } else if(mode == CheckMode){
         routes.CheckYourAnswersController.onPageLoad()
     } else {
-        routes.IndexController.onPageLoad()
+        routes.ContractPackingController.onPageLoad(mode)
     }
   }
 
@@ -104,8 +104,7 @@ class Navigator @Inject()() {
     case HowManyImportsPage => userAnswers => routes.IndexController.onPageLoad()
     case AskSecondaryWarehousesPage => userAnswers => routes.IndexController.onPageLoad()
     case OperatePackagingSitesPage => userAnswers => navigationForOperatePackagingSites(userAnswers, NormalMode)
-    case HowManyOperatePackagingSitesPage => userAnswers => routes.IndexController.onPageLoad()
-    case AskSecondaryWarehousesPage => userAnswers => routes.IndexController.onPageLoad()
+    case HowManyOperatePackagingSitesPage => userAnswers => routes.ContractPackingController.onPageLoad(NormalMode)
     case ThirdPartyPackagersPage => userAnswers => routes.OperatePackagingSitesController.onPageLoad(NormalMode)
     case PackagingSiteDetailsPage => userAnswers => routes.IndexController.onPageLoad()
     case StartDatePage => userAnswers => routes.IndexController.onPageLoad()

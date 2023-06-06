@@ -1,13 +1,14 @@
 package controllers
 
-import models.{CheckMode, NormalMode}
+import models.{CheckMode, LitresInBands, NormalMode, UserAnswers}
 import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
-import pages.OperatePackagingSitesPage
+import pages.{HowManyOperatePackagingSitesPage, OperatePackagingSitesPage}
 import play.api.http.HeaderNames
 import play.api.i18n.Messages
 import play.api.libs.json.Json
 import play.api.test.WsTestClient
+import uk.gov.hmrc.auth.core.User
 
 class OperatePackagingSitesControllerISpec extends ControllerITTestHelper {
 
@@ -132,7 +133,7 @@ class OperatePackagingSitesControllerISpec extends ControllerITTestHelper {
   s"POST " + normalRoutePath - {
     userAnswersForOperatePackagingSitesPage.foreach { case (key, userAnswers) =>
       "when the user selects " + key - {
-        "should update the session with the new value and redirect to the index controller" - {
+        "should update the session with the new value and redirect to the OperatePackagingSites/ContractPacker controller" - {
           "when the session contains no data for page" in {
             given
               .commonPrecondition
@@ -149,7 +150,7 @@ class OperatePackagingSitesControllerISpec extends ControllerITTestHelper {
                 val expectedLocation = if (yesSelected) {
                   routes.HowManyOperatePackagingSitesController.onPageLoad(NormalMode).url
                 } else {
-                  routes.IndexController.onPageLoad().url
+                  routes.ContractPackingController.onPageLoad(NormalMode).url
                 }
                 res.header(HeaderNames.LOCATION) mustBe Some(expectedLocation)
                 val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(OperatePackagingSitesPage))
@@ -175,7 +176,7 @@ class OperatePackagingSitesControllerISpec extends ControllerITTestHelper {
                 val expectedLocation = if (yesSelected) {
                   routes.HowManyOperatePackagingSitesController.onPageLoad(NormalMode).url
                 } else {
-                  routes.IndexController.onPageLoad().url
+                  routes.ContractPackingController.onPageLoad(NormalMode).url
                 }
                 res.header(HeaderNames.LOCATION) mustBe Some(expectedLocation)
                 val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(OperatePackagingSitesPage))
@@ -304,4 +305,29 @@ class OperatePackagingSitesControllerISpec extends ControllerITTestHelper {
     testUnauthorisedUser(baseUrl + checkRoutePath, Some(Json.obj("value" -> "true")))
     testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath, Some(Json.obj("value" -> "true")))
   }
+
+  "POST must clear litres data when the session already contained data but no is selected" in {
+    given
+      .commonPrecondition
+
+    val previouslyFilledAnswers =
+      UserAnswers("some-id", Json.obj(
+        OperatePackagingSitesPage.toString -> true,
+        HowManyOperatePackagingSitesPage.toString -> Json.obj("lowBand" -> "123", "highBand" -> "123")))
+
+    setAnswers(previouslyFilledAnswers)
+    WsTestClient.withClient { client =>
+      val result = createClientRequestPOST(
+        client, baseUrl + normalRoutePath, Json.obj("value" -> false)
+      )
+
+      whenReady(result) { res =>
+        res.status mustBe 303
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.ContractPackingController.onPageLoad(NormalMode).url)
+        val litresData = getAnswers(previouslyFilledAnswers.id).fold[Option[LitresInBands]](None)(_.get(HowManyOperatePackagingSitesPage))
+        litresData mustBe None
+      }
+    }
+  }
+
 }
