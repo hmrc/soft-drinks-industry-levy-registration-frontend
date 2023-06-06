@@ -1,9 +1,9 @@
 package controllers
 
-import models.{CheckMode, NormalMode}
+import models.{CheckMode, LitresInBands, NormalMode, UserAnswers}
 import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
-import pages.ContractPackingPage
+import pages.{ContractPackingPage, HowManyContractPackingPage}
 import play.api.http.HeaderNames
 import play.api.i18n.Messages
 import play.api.libs.json.Json
@@ -149,7 +149,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
                 val expectedLocation = if (yesSelected) {
                   routes.HowManyContractPackingController.onPageLoad(NormalMode).url
                 } else {
-                  routes.IndexController.onPageLoad().url
+                  routes.ImportsController.onPageLoad(NormalMode).url
                 }
                 res.header(HeaderNames.LOCATION) mustBe Some(expectedLocation)
                 val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(ContractPackingPage))
@@ -175,7 +175,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
                 val expectedLocation = if (yesSelected) {
                   routes.HowManyContractPackingController.onPageLoad(NormalMode).url
                 } else {
-                  routes.IndexController.onPageLoad().url
+                  routes.ImportsController.onPageLoad(NormalMode).url
                 }
                 res.header(HeaderNames.LOCATION) mustBe Some(expectedLocation)
                 val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(ContractPackingPage))
@@ -304,4 +304,29 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
     testUnauthorisedUser(baseUrl + checkRoutePath, Some(Json.obj("value" -> "true")))
     testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath, Some(Json.obj("value" -> "true")))
   }
+
+  "POST must clear litres data when the session already contained data but no is selected" in {
+    given
+      .commonPrecondition
+
+    val previouslyFilledAnswers =
+      UserAnswers("some-id", Json.obj(
+        ContractPackingPage.toString -> true,
+        HowManyContractPackingPage.toString -> Json.obj("lowBand" -> "123", "highBand" -> "123")))
+
+    setAnswers(previouslyFilledAnswers)
+    WsTestClient.withClient { client =>
+      val result = createClientRequestPOST(
+        client, baseUrl + normalRoutePath, Json.obj("value" -> false)
+      )
+
+      whenReady(result) { res =>
+        res.status mustBe 303
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.ImportsController.onPageLoad(NormalMode).url)
+        val litresData = getAnswers(previouslyFilledAnswers.id).fold[Option[LitresInBands]](None)(_.get(HowManyContractPackingPage))
+        litresData mustBe None
+      }
+    }
+  }
+
 }

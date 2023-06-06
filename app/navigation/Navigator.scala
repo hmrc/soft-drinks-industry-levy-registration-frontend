@@ -72,7 +72,7 @@ class Navigator @Inject()() {
     } else if(mode == CheckMode){
         routes.CheckYourAnswersController.onPageLoad()
     } else {
-        routes.IndexController.onPageLoad()
+        routes.ImportsController.onPageLoad(mode)
     }
   }
 
@@ -99,7 +99,7 @@ class Navigator @Inject()() {
   private val normalRoutes: Page => UserAnswers => Call = {
     case ContactDetailsPage => userAnswers => routes.IndexController.onPageLoad()
     case ContractPackingPage => userAnswers => navigationForContractPacking(userAnswers, NormalMode)
-    case HowManyContractPackingPage => userAnswers => routes.IndexController.onPageLoad()
+    case HowManyContractPackingPage => userAnswers => routes.ImportsController.onPageLoad(NormalMode)
     case ImportsPage => userAnswers => navigationForImports(userAnswers, NormalMode)
     case HowManyImportsPage => userAnswers => routes.IndexController.onPageLoad()
     case AskSecondaryWarehousesPage => userAnswers => routes.IndexController.onPageLoad()
