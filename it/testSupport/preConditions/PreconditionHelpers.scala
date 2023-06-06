@@ -7,6 +7,7 @@ trait PreconditionHelpers {
   def commonPrecondition = {
     builder
       .user.isAuthorisedAndEnrolled
+      .sdilBackend.retrieveRosm("0000001611")
       .sdilBackend.retrieveSubscriptionNone("utr", "0000001611")
   }
 
@@ -14,6 +15,7 @@ trait PreconditionHelpers {
     builder
       .user.isAuthorisedAndEnrolled
       .sdilBackend.retrieveSubscriptionWithDeRegDate("utr", "0000001611")
+      .sdilBackend.retrieveRosm("0000001611")
   }
 
   def authorisedButNoEnrolmentsPrecondition = {
@@ -28,6 +30,14 @@ trait PreconditionHelpers {
     builder
       .user.isAuthorisedAndEnrolled
       .sdilBackend.retrieveSubscription("utr", "0000001611")
+      .sdilBackend.retrieveRosm("0000001611")
+  }
+
+  def authorisedWithSdilSubscriptionNoRosm = {
+    builder
+      .user.isAuthorisedAndEnrolled
+      .sdilBackend.retrieveSubscription("utr", "0000001611")
+      .sdilBackend.retrieveRosmNone("0000001611")
   }
 
   def authorisedWithInvalidRolePrecondition  = {

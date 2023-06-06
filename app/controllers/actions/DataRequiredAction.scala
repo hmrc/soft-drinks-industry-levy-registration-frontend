@@ -36,8 +36,10 @@ class DataRequiredActionImpl @Inject()(sdilConnector: SoftDrinksIndustryLevyConn
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
     sdilConnector.retreiveRosmSubscription(utr, request.internalId).map(result => result match {
-      case Some(result) => Right(DataRequest(request, request.internalId, request.hasCTEnrolment, request.authUtr, data, result))
-      case None => Left(Redirect(routes.IndexController.onPageLoad))
+      case Some(result) =>
+        Right(DataRequest(request, request.internalId, request.hasCTEnrolment, request.authUtr, data, result))
+      case None =>
+        Left(Redirect(routes.IndexController.onPageLoad))
     })
   }
 

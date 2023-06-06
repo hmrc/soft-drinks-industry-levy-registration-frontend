@@ -126,6 +126,8 @@ class OrganisationTypeControllerSpec extends SpecBase with MockitoSugar with Log
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration).build()
+
       running(application) {
         val request =
           FakeRequest(POST, organisationTypeRoute)

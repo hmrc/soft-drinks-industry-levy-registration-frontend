@@ -1,7 +1,9 @@
 package controllers
 
+import models.UserAnswers
 import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
+import pages.{ContactDetailsPage, HowManyLitresGloballyPage, StartDatePage}
 import play.api.i18n.Messages
 import play.api.test.WsTestClient
 
@@ -11,10 +13,12 @@ class CannotRegisterPartnershipControllerISpec extends ControllerITTestHelper {
 
   "GET " + normalRoutePath - {
     "should return OK and render the CannotRegisterPartnership page" in {
-      given
-        .commonPrecondition
+      given.commonPrecondition
 
-      setAnswers(emptyUserAnswers)
+      val userAnswers = emptyUserAnswers.set(StartDatePage, date).success.value
+      setAnswers(userAnswers)
+
+
 
       WsTestClient.withClient { client =>
         val result1 = createClientRequestGet(client, baseUrl + normalRoutePath)
