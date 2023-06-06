@@ -114,6 +114,30 @@ class NavigatorSpec extends SpecBase {
         }
       }
 
+      "when on operate packaging sites page" - {
+
+        "must navigate to how many litres will be packaged in next 12 months when yes is selected" in {
+          val result = navigator.nextPage(OperatePackagingSitesPage, NormalMode,
+            UserAnswers("id", Json.obj(OperatePackagingSitesPage.toString -> true)))
+          result mustBe routes.HowManyOperatePackagingSitesController.onPageLoad(NormalMode)
+        }
+
+        "must navigate to third party or co packing when no is selected" in {
+          val result = navigator.nextPage(OperatePackagingSitesPage, NormalMode,
+            UserAnswers("id", Json.obj(OperatePackagingSitesPage.toString -> false)))
+          result mustBe routes.ContractPackingController.onPageLoad(NormalMode)
+        }
+      }
+
+      "when on operate how many own brands in the next 12 months page" - {
+
+        "must navigate to third party of co-packing in case of valid litreage" in {
+          val result = navigator.nextPage(HowManyOperatePackagingSitesPage, NormalMode,
+            UserAnswers("id", Json.obj(HowManyOperatePackagingSitesPage.toString -> Json.obj("lowBand"-> "123" , "highBand"-> "123"))))
+          result mustBe routes.ContractPackingController.onPageLoad(NormalMode)
+        }
+      }
+
     }
 
     "in Check mode" - {
@@ -177,6 +201,30 @@ class NavigatorSpec extends SpecBase {
         "must navigate to operate packaging sites page when no is selected" in {
           val result = navigator.nextPage(ThirdPartyPackagersPage, CheckMode,
             UserAnswers("id", Json.obj(ThirdPartyPackagersPage.toString -> false)))
+          result mustBe routes.CheckYourAnswersController.onPageLoad()
+        }
+      }
+
+      "when on operate packaging sites page" - {
+
+        "must navigate to how many litres will be packaged in next 12 months when yes is selected" in {
+          val result = navigator.nextPage(OperatePackagingSitesPage, CheckMode,
+            UserAnswers("id", Json.obj(OperatePackagingSitesPage.toString -> true)))
+          result mustBe routes.HowManyOperatePackagingSitesController.onPageLoad(CheckMode)
+        }
+
+        "must navigate to third party or co packing when no is selected" in {
+          val result = navigator.nextPage(OperatePackagingSitesPage, CheckMode,
+            UserAnswers("id", Json.obj(OperatePackagingSitesPage.toString -> false)))
+          result mustBe routes.CheckYourAnswersController.onPageLoad()
+        }
+      }
+
+      "when on operate how many own brands in the next 12 months page" - {
+
+        "must navigate to check your answers controller in case of valid litreage" in {
+          val result = navigator.nextPage(HowManyOperatePackagingSitesPage, CheckMode,
+            UserAnswers("id", Json.obj(HowManyOperatePackagingSitesPage.toString -> Json.obj("lowBand" -> "123", "highBand" -> "123"))))
           result mustBe routes.CheckYourAnswersController.onPageLoad()
         }
       }
