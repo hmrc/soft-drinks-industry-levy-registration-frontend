@@ -1,5 +1,6 @@
 package controllers
 
+import models.NormalMode
 import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
 import pages.ThirdPartyPackagersPage
@@ -130,7 +131,7 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
   s"POST " + normalRoutePath - {
     userAnswersForThirdPartyPackagersPage.foreach { case (key, userAnswers) =>
       "when the user selects " + key - {
-        "should update the session with the new value and redirect to the index controller" - {
+        "should update the session with the new value and redirect to operate packaging sites controller" - {
           "when the session contains no data for page" in {
             given
               .commonPrecondition
@@ -144,7 +145,7 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
 
               whenReady(result) { res =>
                 res.status mustBe 303
-                res.header(HeaderNames.LOCATION) mustBe Some(routes.IndexController.onPageLoad().url)
+                res.header(HeaderNames.LOCATION) mustBe Some(routes.OperatePackagingSitesController.onPageLoad(NormalMode).url)
                 val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(ThirdPartyPackagersPage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe yesSelected
@@ -165,7 +166,7 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
 
               whenReady(result) { res =>
                 res.status mustBe 303
-                res.header(HeaderNames.LOCATION) mustBe Some(routes.IndexController.onPageLoad().url)
+                res.header(HeaderNames.LOCATION) mustBe Some(routes.OperatePackagingSitesController.onPageLoad(NormalMode).url)
                 val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(ThirdPartyPackagersPage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe yesSelected
