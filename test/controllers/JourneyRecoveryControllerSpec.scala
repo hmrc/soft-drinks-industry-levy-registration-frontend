@@ -17,10 +17,6 @@
 package controllers
 
 import base.SpecBase
-import controllers.actions.{DataRequiredAction, DataRequiredActionImpl, DataRetrievalAction, FakeDataRequiredAction, FakeDataRetrievalAction, FakeIdentifierAction, IdentifierAction}
-import models.{RosmRegistration, UserAnswers}
-import play.api.inject.bind
-import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.play.bootstrap.binders.RedirectUrl

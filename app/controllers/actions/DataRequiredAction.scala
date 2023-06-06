@@ -39,7 +39,7 @@ class DataRequiredActionImpl @Inject()(sdilConnector: SoftDrinksIndustryLevyConn
       case Some(result) =>
         Right(DataRequest(request, request.internalId, request.hasCTEnrolment, request.authUtr, data, result))
       case None =>
-        Left(Redirect(routes.IndexController.onPageLoad))
+        Left(Redirect(routes.IndexController.onPageLoad()))
     })
   }
 
@@ -54,7 +54,7 @@ class DataRequiredActionImpl @Inject()(sdilConnector: SoftDrinksIndustryLevyConn
                   case (None, Some(utr)) => findRosm(utr,  request, data)
                   case (Some(utr),  _) => findRosm(utr,  request, data)
                   case (None, None) =>
-                    Future.successful(Left(Redirect(routes.IndexController.onPageLoad)))
+                    Future.successful(Left(Redirect(routes.IndexController.onPageLoad())))
       }
     }
   }

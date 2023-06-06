@@ -17,7 +17,7 @@
 package connectors
 
 import base.SpecBase
-import models.{OptRetrievedSubscription, RetrievedSubscription}
+import models.{OptRetrievedSubscription, OptRosmRegistration, RetrievedSubscription, RosmRegistration}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatest.concurrent.ScalaFutures
@@ -44,6 +44,48 @@ class SoftDrinksIndustryLevyConnectorSpec extends SpecBase with MockitoSugar wit
   val identifierMap = Map("sdil" -> sdilNumber, "utr" -> utr)
 
   "SoftDrinksIndustryLevyConnector" - {
+
+    s"should not call the backend and return the rosm registration" in{
+      when(mockSDILSessionCache.fetchEntry[OptRosmRegistration](any(), any())(any()))
+      .thenReturn(Future.successful(Some(OptRosmRegistration(Some(rosmRegistration)))))
+
+      val res = softDrinksIndustryLevyConnector.retreiveRosmSubscription(utr = utr, rosmRegistration.safeId)
+      whenReady(
+        res
+      ) {
+        response =>
+          response mustEqual (Some(rosmRegistration))
+      }
+    }
+
+    s"should not call the backend and return None" in{
+      when(mockSDILSessionCache.fetchEntry[OptRosmRegistration](any(), any())(any()))
+        .thenReturn(Future.successful(Some(OptRosmRegistration(None))))
+
+      val res = softDrinksIndustryLevyConnector.retreiveRosmSubscription(sdilNumber, rosmRegistration.safeId)
+      whenReady(
+        res
+      ) {
+        response =>
+          response mustEqual (None)
+      }
+    }
+
+    "should call the backend, update the cache" - {
+      "and return the rosm when one is returned" in {
+        when(mockSDILSessionCache.fetchEntry[OptRosmRegistration](any(), any())(any())).thenReturn(Future.successful(None))
+        when(mockHttp.GET[Option[RosmRegistration]](any(),any(), any())(any(), any(), any())).thenReturn(Future.successful(Some(rosmRegistration)))
+        when(mockSDILSessionCache.save[OptRosmRegistration](any, any, any)(any())).thenReturn(Future.successful(CacheMap("test", Map("ROSM_REGISTRATION" -> Json.toJson(OptRosmRegistration(Some(rosmRegistration)))))))
+        val res = softDrinksIndustryLevyConnector.retreiveRosmSubscription(utr = utr, rosmRegistration.safeId)
+        whenReady(
+          res
+        ) {
+          response =>
+            response mustEqual Some(rosmRegistration)
+        }
+      }
+    }
+
     identifierMap.foreach { case (identifierType, identiferValue) =>
       s"when the identifier type is $identifierType" - {
         "and the cache contains an entry for subscription" - {

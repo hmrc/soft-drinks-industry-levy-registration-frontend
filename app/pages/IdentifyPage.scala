@@ -16,7 +16,7 @@
 
 package pages
 
-import models.{HowManyLitresGlobally, Identify}
+import models.Identify
 import play.api.libs.json.JsPath
 
 object IdentifyPage extends QuestionPage[Identify] {
