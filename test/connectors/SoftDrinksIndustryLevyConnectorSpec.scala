@@ -46,22 +46,22 @@ class SoftDrinksIndustryLevyConnectorSpec extends SpecBase with MockitoSugar wit
   "SoftDrinksIndustryLevyConnector" - {
 
     s"should not call the backend and return the rosm registration" in{
-      when(mockSDILSessionCache.fetchEntry[OptRosmRegistration](any(), any())(any()))
-      .thenReturn(Future.successful(Some(OptRosmRegistration(Some(rosmRegistration)))))
+      when(mockSDILSessionCache.fetchEntry[RosmRegistration](any(), any())(any()))
+      .thenReturn(Future.successful(Some(rosmRegistration)))
 
       val res = softDrinksIndustryLevyConnector.retreiveRosmSubscription(utr = utr, rosmRegistration.safeId)
       whenReady(
         res
       ) {
         response =>
-          response mustEqual (Some(rosmRegistration))
+          response mustEqual Some(rosmRegistration)
       }
     }
 
     s"should not call the backend and return None" in{
-      when(mockSDILSessionCache.fetchEntry[OptRosmRegistration](any(), any())(any()))
-        .thenReturn(Future.successful(Some(OptRosmRegistration(None))))
-
+      when(mockSDILSessionCache.fetchEntry[RosmRegistration](any(), any())(any()))
+        .thenReturn(Future.successful(None))
+      when(mockHttp.GET[Option[RosmRegistration]](any(),any(), any())(any(), any(), any())).thenReturn(Future.successful(None))
       val res = softDrinksIndustryLevyConnector.retreiveRosmSubscription(sdilNumber, rosmRegistration.safeId)
       whenReady(
         res
@@ -73,9 +73,9 @@ class SoftDrinksIndustryLevyConnectorSpec extends SpecBase with MockitoSugar wit
 
     "should call the backend, update the cache" - {
       "and return the rosm when one is returned" in {
-        when(mockSDILSessionCache.fetchEntry[OptRosmRegistration](any(), any())(any())).thenReturn(Future.successful(None))
+        when(mockSDILSessionCache.fetchEntry[RosmRegistration](any(), any())(any())).thenReturn(Future.successful(None))
         when(mockHttp.GET[Option[RosmRegistration]](any(),any(), any())(any(), any(), any())).thenReturn(Future.successful(Some(rosmRegistration)))
-        when(mockSDILSessionCache.save[OptRosmRegistration](any, any, any)(any())).thenReturn(Future.successful(CacheMap("test", Map("ROSM_REGISTRATION" -> Json.toJson(OptRosmRegistration(Some(rosmRegistration)))))))
+        when(mockSDILSessionCache.save[RosmRegistration](any, any, any)(any())).thenReturn(Future.successful(CacheMap("test", Map("ROSM_REGISTRATION" -> Json.toJson(OptRosmRegistration(Some(rosmRegistration)))))))
         val res = softDrinksIndustryLevyConnector.retreiveRosmSubscription(utr = utr, rosmRegistration.safeId)
         whenReady(
           res

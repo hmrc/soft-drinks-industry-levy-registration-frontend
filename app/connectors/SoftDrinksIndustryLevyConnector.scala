@@ -37,14 +37,18 @@ class SoftDrinksIndustryLevyConnector @Inject()(
 
   def retreiveRosmSubscription(utr: String, internalId: String)
                               (implicit hc: HeaderCarrier): Future[Option[RosmRegistration]] = {
-    sdilSessionCache.fetchEntry[OptRosmRegistration](internalId, SDILSessionKeys.ROSM_REGISTRATION).flatMap{
-      case Some(optRosmRegistration) => Future.successful(optRosmRegistration.optRosmRegistration)
+    sdilSessionCache.fetchEntry[RosmRegistration](internalId, SDILSessionKeys.ROSM_REGISTRATION).flatMap{
+      case Some(rosmRegistration) => Future.successful(rosmRegistration).map{_ =>
+        Some(rosmRegistration)
+      }
       case None =>
         http.GET[Option[RosmRegistration]](getRosmRegistration(utr)).flatMap {
-          optRosmRegistration =>
-            sdilSessionCache.save(internalId, SDILSessionKeys.ROSM_REGISTRATION, OptRosmRegistration(optRosmRegistration))
+          case Some(rosmReg) =>
+            sdilSessionCache.save(internalId, SDILSessionKeys.ROSM_REGISTRATION, OptRosmRegistration(Some(rosmReg)))
               .map{_ =>
-                optRosmRegistration}
+                Some(rosmReg)
+              }
+          case None => Future.successful(None)
         }
     }
   }
