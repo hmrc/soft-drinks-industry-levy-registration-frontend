@@ -18,16 +18,14 @@ package controllers.actions
 
 import base.SpecBase
 import connectors.SoftDrinksIndustryLevyConnector
-import handlers.ErrorHandler
+import models.requests.{DataRequest, OptionalDataRequest}
 import models.{LitresInBands, UserAnswers}
-import models.requests.{DataRequest, IdentifierRequest, OptionalDataRequest}
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.HowManyContractPackingPage
 import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers.running
-import services.SessionService
 import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.ExecutionContext.Implicits.global

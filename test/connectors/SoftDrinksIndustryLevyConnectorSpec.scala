@@ -17,7 +17,7 @@
 package connectors
 
 import base.SpecBase
-import models.{OptRetrievedSubscription, OptRosmRegistration, RetrievedSubscription, RosmRegistration}
+import models.{OptRetrievedSubscription, RetrievedSubscription, RosmRegistration}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatest.concurrent.ScalaFutures
@@ -75,7 +75,7 @@ class SoftDrinksIndustryLevyConnectorSpec extends SpecBase with MockitoSugar wit
       "and return the rosm when one is returned" in {
         when(mockSDILSessionCache.fetchEntry[RosmRegistration](any(), any())(any())).thenReturn(Future.successful(None))
         when(mockHttp.GET[Option[RosmRegistration]](any(),any(), any())(any(), any(), any())).thenReturn(Future.successful(Some(rosmRegistration)))
-        when(mockSDILSessionCache.save[RosmRegistration](any, any, any)(any())).thenReturn(Future.successful(CacheMap("test", Map("ROSM_REGISTRATION" -> Json.toJson(OptRosmRegistration(Some(rosmRegistration)))))))
+        when(mockSDILSessionCache.save[RosmRegistration](any, any, any)(any())).thenReturn(Future.successful(CacheMap("test", Map("ROSM_REGISTRATION" -> Json.toJson(rosmRegistration)))))
         val res = softDrinksIndustryLevyConnector.retreiveRosmSubscription(utr = utr, rosmRegistration.safeId)
         whenReady(
           res

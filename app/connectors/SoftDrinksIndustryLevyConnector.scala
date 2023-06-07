@@ -44,8 +44,8 @@ class SoftDrinksIndustryLevyConnector @Inject()(
       case None =>
         http.GET[Option[RosmRegistration]](getRosmRegistration(utr)).flatMap {
           case Some(rosmReg) =>
-            sdilSessionCache.save(internalId, SDILSessionKeys.ROSM_REGISTRATION, OptRosmRegistration(Some(rosmReg)))
-              .map{_ =>
+            sdilSessionCache.save(internalId, SDILSessionKeys.ROSM_REGISTRATION,
+              RosmRegistration(rosmReg.safeId,rosmReg.organisation,rosmReg.individual,rosmReg.address)).map{_ =>
                 Some(rosmReg)
               }
           case None => Future.successful(None)
