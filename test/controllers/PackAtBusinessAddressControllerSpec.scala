@@ -36,6 +36,7 @@ import views.html.PackAtBusinessAddressView
 
 import scala.concurrent.Future
 import org.jsoup.Jsoup
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 
 class PackAtBusinessAddressControllerSpec extends SpecBase with MockitoSugar with LoggerHelper {
 
@@ -60,7 +61,7 @@ class PackAtBusinessAddressControllerSpec extends SpecBase with MockitoSugar wit
         val view = application.injector.instanceOf[PackAtBusinessAddressView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, rosmRegistration,  NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, HtmlContent("Super Lemonade Plc<br/>105B Godfrey Marchant Grove<br/>Guildford<br/>GU14 8NL"),  NormalMode)(request, messages(application)).toString
       }
     }
 
@@ -78,7 +79,7 @@ class PackAtBusinessAddressControllerSpec extends SpecBase with MockitoSugar wit
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), rosmRegistration, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(true), HtmlContent("Super Lemonade Plc<br/>105B Godfrey Marchant Grove<br/>Guildford<br/>GU14 8NL"), NormalMode)(request, messages(application)).toString
       }
     }
 
@@ -124,7 +125,7 @@ class PackAtBusinessAddressControllerSpec extends SpecBase with MockitoSugar wit
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, rosmRegistration, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, HtmlContent("Super Lemonade Plc<br/>105B Godfrey Marchant Grove<br/>Guildford<br/>GU14 8NL"), NormalMode)(request, messages(application)).toString
       }
     }
 

@@ -23,7 +23,7 @@
     govukButton: GovukButton
 )
 
-@(form: Form[_], rosmRegistration: RosmRegistration, mode: Mode)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], formattedAddress:HtmlContent, mode: Mode)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("packAtBusinessAddress.title"))) {
 
@@ -33,9 +33,7 @@
 
         @govukInsetText(InsetText(
         id = Some("utrNo"),
-        content = HtmlContent(s"""<span>${rosmRegistration.organisation.map(value => value.organisationName).get} <br>
-                                        ${rosmRegistration.address.lines.map(address => address)} <br>
-                                        ${rosmRegistration.address.postCode}</span>"""),
+        content = formattedAddress,
         classes = "govuk-!-margin-top-0"
         ))
 

@@ -18,8 +18,22 @@ package viewmodels
 
 import models.backend.UkAddress
 import play.twirl.api.{Html, HtmlFormat}
+import uk.gov.hmrc.govukfrontend.views.Aliases.HtmlContent
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.Value
+
+
+  // this could be passed into view maybe and uses
+
+
 
 object AddressFormattingHelper {
+
+  def formatBusinessAddress(ukAddress: UkAddress, tradingName: Option[String]): HtmlContent = {
+    HtmlContent( tradingName.fold("")(tradingName => tradingName + "<br/>") +
+                 ukAddress.lines.map(line  => if(line.isEmpty){""}else{HtmlFormat.escape(line).toString() + "<br/>"}).mkString +
+                 ukAddress.postCode)
+  }
+
   def addressFormatting(address: UkAddress, tradingName: Option[String]): Html = {
     val addressFormat = determineAddressFormat(address, tradingName)
 

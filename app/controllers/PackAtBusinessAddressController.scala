@@ -27,6 +27,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SessionService
 import utilities.GenericLogger
 import views.html.PackAtBusinessAddressView
+import viewmodels.AddressFormattingHelper
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -54,15 +55,21 @@ class PackAtBusinessAddressController @Inject()(
         case None => form
         case Some(value) => form.fill(value)
       }
-      Ok(view(preparedForm, request.rosmRegistration, mode))
+
+      println(s" rosm Registration ----> ${request.rosmRegistration}")
+      val formattedAddress =  AddressFormattingHelper.formatBusinessAddress(request.rosmRegistration.address, request.rosmRegistration.organisation.map(name => name.organisationName))
+
+      Ok(view(preparedForm, formattedAddress , mode))
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
 
+      val formattedAddress =  AddressFormattingHelper.formatBusinessAddress(request.rosmRegistration.address, request.rosmRegistration.organisation.map(name => name.organisationName))
+
       form.bindFromRequest().fold(
         formWithErrors =>
-          Future.successful(BadRequest(view(formWithErrors,request.rosmRegistration, mode))),
+          Future.successful(BadRequest(view(formWithErrors, formattedAddress, mode))),
 
         value => {
           val updatedAnswers = request.userAnswers.set(PackAtBusinessAddressPage, value)
