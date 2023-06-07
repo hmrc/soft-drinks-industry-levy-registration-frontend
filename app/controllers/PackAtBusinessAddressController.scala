@@ -56,7 +56,6 @@ class PackAtBusinessAddressController @Inject()(
         case Some(value) => form.fill(value)
       }
 
-      println(s" rosm Registration ----> ${request.rosmRegistration}")
       val formattedAddress =  AddressFormattingHelper.formatBusinessAddress(request.rosmRegistration.address, request.rosmRegistration.organisation.map(name => name.organisationName))
 
       Ok(view(preparedForm, formattedAddress , mode))
