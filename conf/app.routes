@@ -88,3 +88,8 @@ POST       /change-start-date                            controllers.StartDateCo
 
 GET       /off-ramp/secondary-warehouses/:sdilId         controllers.addressLookupFrontend.RampOffController.secondaryWareHouseDetailsOffRamp(sdilId: String, id: String)
 GET       /off-ramp/packing-site-details/:sdilId         controllers.addressLookupFrontend.RampOffController.packingSiteDetailsOffRamp(sdilId: String, id: String)
+
+GET       /third-party-packagers                         controllers.ThirdPartyPackagersController.onPageLoad(mode: Mode = NormalMode)
+POST      /third-party-packagers                         controllers.ThirdPartyPackagersController.onSubmit(mode: Mode = NormalMode)
+GET       /change-third-party-packagers                  controllers.ThirdPartyPackagersController.onPageLoad(mode: Mode = CheckMode)
+POST      /change-third-party-packagers                  controllers.ThirdPartyPackagersController.onSubmit(mode: Mode = CheckMode)

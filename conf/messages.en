@@ -233,3 +233,9 @@ contactDetails.fullName.change.hidden = Full name
 contactDetails.position.change.hidden = Job title
 contactDetails.phoneNumber.change.hidden = Telephone Number
 contactDetails.email.change.hidden = Email
+
+thirdPartyPackagers.title = Do you use any third parties in the UK to package liable drinks on your behalf?
+thirdPartyPackagers.heading = Do you use any third parties in the UK to package liable drinks on your behalf?
+thirdPartyPackagers.checkYourAnswersLabel = Do you use any third parties in the UK to package liable drinks on your behalf?
+thirdPartyPackagers.error.required = Select yes if you use any third parties in the UK to package liable drinks on your behalf
+thirdPartyPackagers.change.hidden = ThirdPartyPackagers

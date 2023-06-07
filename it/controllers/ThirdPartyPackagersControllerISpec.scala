@@ -131,7 +131,7 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
   s"POST " + normalRoutePath - {
     userAnswersForThirdPartyPackagersPage.foreach { case (key, userAnswers) =>
       "when the user selects " + key - {
-        "should update the session with the new value and redirect to operate packaging sites controller" - {
+        "should update the session with the new value and redirect to the index controller" - {
           "when the session contains no data for page" in {
             given
               .commonPrecondition
