@@ -39,7 +39,7 @@ class KeepAliveControllerSpec extends SpecBase with MockitoSugar {
         when(mockSessionRepository.keepAlive(any())) thenReturn Future.successful(true)
 
         val application =
-          applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration)
             .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
             .build()
 
@@ -63,7 +63,7 @@ class KeepAliveControllerSpec extends SpecBase with MockitoSugar {
         when(mockSessionRepository.keepAlive(any())) thenReturn Future.successful(true)
 
         val application =
-          applicationBuilder()
+          applicationBuilder(rosmRegistration = rosmRegistration)
             .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
             .build()
 

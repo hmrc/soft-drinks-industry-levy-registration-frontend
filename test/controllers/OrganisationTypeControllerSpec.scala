@@ -51,7 +51,7 @@ class OrganisationTypeControllerSpec extends SpecBase with MockitoSugar with Log
 
     "must return OK and the correct view with 4 radio buttons for a GET if CTEnrollment is true" in {
 
-      val application = applicationBuilder(hasCTEnrolment = true, userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(hasCTEnrolment = true, userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration).build()
       running(application) {
         val request = FakeRequest(GET, organisationTypeRoute)
 
@@ -66,7 +66,7 @@ class OrganisationTypeControllerSpec extends SpecBase with MockitoSugar with Log
 
     "must return OK and the correct view with 5 radio buttons for a GET if CTEnrollment is false" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration).build()
 
       running(application) {
         val request = FakeRequest(GET, organisationTypeRoute)
@@ -84,7 +84,7 @@ class OrganisationTypeControllerSpec extends SpecBase with MockitoSugar with Log
 
       val userAnswers = UserAnswers(sdilNumber).set(OrganisationTypePage, OrganisationType.values.head).success.value
 
-      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(userAnswers), rosmRegistration = rosmRegistration).build()
 
       running(application) {
         val request = FakeRequest(GET, organisationTypeRoute)
@@ -105,7 +105,7 @@ class OrganisationTypeControllerSpec extends SpecBase with MockitoSugar with Log
       when(mockSessionService.set(any())) thenReturn Future.successful(Right(true))
 
       val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration)
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionService].toInstance(mockSessionService)
@@ -126,7 +126,7 @@ class OrganisationTypeControllerSpec extends SpecBase with MockitoSugar with Log
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration).build()
 
       running(application) {
         val request =
@@ -146,7 +146,7 @@ class OrganisationTypeControllerSpec extends SpecBase with MockitoSugar with Log
 
     "must redirect to Journey Recovery for a GET if no existing data is found" in {
 
-      val application = applicationBuilder(userAnswers = None).build()
+      val application = applicationBuilder(userAnswers = None, rosmRegistration = rosmRegistration).build()
 
       running(application) {
         val request = FakeRequest(GET, organisationTypeRoute)
@@ -160,7 +160,7 @@ class OrganisationTypeControllerSpec extends SpecBase with MockitoSugar with Log
 
     "redirect to Journey Recovery for a POST if no existing data is found" in {
 
-      val application = applicationBuilder(userAnswers = None).build()
+      val application = applicationBuilder(userAnswers = None, rosmRegistration = rosmRegistration).build()
 
       running(application) {
         val request =
@@ -177,7 +177,7 @@ class OrganisationTypeControllerSpec extends SpecBase with MockitoSugar with Log
 
     "must fail if the setting of userAnswers fails" in {
 
-      val application = applicationBuilder(userAnswers = Some(userDetailsWithSetMethodsReturningFailure)).build()
+      val application = applicationBuilder(userAnswers = Some(userDetailsWithSetMethodsReturningFailure), rosmRegistration = rosmRegistration).build()
 
       running(application) {
         val request =
@@ -199,7 +199,7 @@ class OrganisationTypeControllerSpec extends SpecBase with MockitoSugar with Log
       when(mockSessionService.set(any())) thenReturn Future.successful(Left(SessionDatabaseInsertError))
 
       val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration)
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionService].toInstance(mockSessionService)

@@ -2,7 +2,7 @@ package testSupport.preConditions
 
 import com.github.tomakehurst.wiremock.client.WireMock._
 import models.backend.{Site, UkAddress}
-import models.{Contact, RetrievedActivity, RetrievedSubscription}
+import models.{Contact, IndividualDetails, OrganisationDetails, RetrievedActivity, RetrievedSubscription, RosmRegistration}
 import play.api.libs.json.Json
 
 import java.time.LocalDate
@@ -49,6 +49,13 @@ case class SdilBackendStub()
     deregDate = None
   )
 
+  val rosmRegistration = RosmRegistration(
+    safeId = "safeid",
+    organisation = Some(OrganisationDetails(organisationName = "Super Lemonade Plc")),
+    individual = Some(IndividualDetails(firstName = "Ava" , lastName = "Adams")),
+    address = UkAddress(List("105B Godfrey Marchant Grove", "Guildford"), "GU14 8NL")
+  )
+
   val aSubscriptionWithDeRegDate = aSubscription.copy(
     deregDate = Some(LocalDate.of(2022, 2, 11)))
 
@@ -59,6 +66,24 @@ case class SdilBackendStub()
         urlPathMatching(s"/subscription/$identifier/$refNum"))
         .willReturn(
           ok(Json.toJson(aSubscription).toString())))
+    builder
+  }
+
+  def retrieveRosm(utr: String)= {
+    stubFor(
+      get(
+        urlPathMatching(s"/rosm-registration/lookup/$utr"))
+        .willReturn(
+          ok(Json.toJson(rosmRegistration).toString())))
+    builder
+  }
+
+  def retrieveRosmNone(utr: String)= {
+    stubFor(
+      get(
+        urlPathMatching(s"/rosm-registration/lookup/$utr"))
+        .willReturn(
+          notFound()))
     builder
   }
 

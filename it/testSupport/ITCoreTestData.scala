@@ -14,6 +14,12 @@ trait ITCoreTestData extends TryValues {
   val contactDetails: ContactDetails = ContactDetails("test", "test", "89432789234", "test@example.com")
   val contactDetailsDiff: ContactDetails = ContactDetails("diff", "diff", "8793820901", "sample@example.com")
 
+  val userAnswersForPackAtBusinessAddressPage: Map[String, UserAnswers] = {
+    val yesSelected = emptyUserAnswers.set(PackAtBusinessAddressPage, true).success.value
+    val noSelected = emptyUserAnswers.set(PackAtBusinessAddressPage, false).success.value
+    Map("yes" -> yesSelected, "no" -> noSelected)
+    }
+
   val userAnswersForContractPackingPage: Map[String, UserAnswers] = {
     val yesSelected = emptyUserAnswers.set(ContractPackingPage, true).success.value
     val noSelected = emptyUserAnswers.set(ContractPackingPage, false).success.value

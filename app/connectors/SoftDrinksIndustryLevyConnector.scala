@@ -32,6 +32,27 @@ class SoftDrinksIndustryLevyConnector @Inject()(
 
   lazy val sdilUrl: String = frontendAppConfig.sdilBaseUrl
 
+  private def getRosmRegistration(utr: String):String = s"$sdilUrl/rosm-registration/lookup/$utr"
+
+
+  def retreiveRosmSubscription(utr: String, internalId: String)
+                              (implicit hc: HeaderCarrier): Future[Option[RosmRegistration]] = {
+    sdilSessionCache.fetchEntry[RosmRegistration](internalId, SDILSessionKeys.ROSM_REGISTRATION).flatMap{
+      case Some(rosmRegistration) => Future.successful(rosmRegistration).map{_ =>
+        Some(rosmRegistration)
+      }
+      case None =>
+        http.GET[Option[RosmRegistration]](getRosmRegistration(utr)).flatMap {
+          case Some(rosmReg) =>
+            sdilSessionCache.save(internalId, SDILSessionKeys.ROSM_REGISTRATION,
+              RosmRegistration(rosmReg.safeId,rosmReg.organisation,rosmReg.individual,rosmReg.address)).map{_ =>
+                Some(rosmReg)
+              }
+          case None => Future.successful(None)
+        }
+    }
+  }
+
   private def getSubscriptionUrl(identifierValue: String, identifierType: String): String = s"$sdilUrl/subscription/$identifierType/$identifierValue"
 
   def retrieveSubscription(identifierValue: String, identifierType: String, internalId: String)

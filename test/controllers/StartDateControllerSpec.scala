@@ -69,7 +69,7 @@ class StartDateControllerSpec extends SpecBase with MockitoSugar with LoggerHelp
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration).build()
 
       running(application) {
 
@@ -86,7 +86,7 @@ class StartDateControllerSpec extends SpecBase with MockitoSugar with LoggerHelp
 
       val userAnswers = UserAnswers(identifier).set(StartDatePage, validAnswer).success.value
 
-      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(userAnswers), rosmRegistration = rosmRegistration).build()
 
       running(application) {
 
@@ -106,7 +106,7 @@ class StartDateControllerSpec extends SpecBase with MockitoSugar with LoggerHelp
       when(mockSessionService.set(any())) thenReturn Future.successful(Right(true))
 
       val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration)
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionService].toInstance(mockSessionService)
@@ -124,7 +124,7 @@ class StartDateControllerSpec extends SpecBase with MockitoSugar with LoggerHelp
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration).build()
 
       running(application) {
         val request =
@@ -147,7 +147,7 @@ class StartDateControllerSpec extends SpecBase with MockitoSugar with LoggerHelp
 
     "must redirect to Journey Recovery for a GET if no existing data is found" in {
 
-      val application = applicationBuilder(userAnswers = None).build()
+      val application = applicationBuilder(userAnswers = None, rosmRegistration = rosmRegistration).build()
 
       running(application) {
         val result = route(application, getRequest).value
@@ -159,7 +159,7 @@ class StartDateControllerSpec extends SpecBase with MockitoSugar with LoggerHelp
 
     "must redirect to Journey Recovery for a POST if no existing data is found" in {
 
-      val application = applicationBuilder(userAnswers = None).build()
+      val application = applicationBuilder(userAnswers = None, rosmRegistration = rosmRegistration).build()
 
       running(application) {
         val result = route(application, postRequest).value
@@ -175,7 +175,7 @@ class StartDateControllerSpec extends SpecBase with MockitoSugar with LoggerHelp
       when(mockSessionService.set(any())) thenReturn Future.successful(Right(true))
 
       val application =
-        applicationBuilder(userAnswers = Some(userDetailsWithSetMethodsReturningFailure))
+        applicationBuilder(userAnswers = Some(userDetailsWithSetMethodsReturningFailure), rosmRegistration = rosmRegistration)
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionService].toInstance(mockSessionService)
@@ -197,7 +197,7 @@ class StartDateControllerSpec extends SpecBase with MockitoSugar with LoggerHelp
       when(mockSessionService.set(any())) thenReturn Future.successful(Left(SessionDatabaseInsertError))
 
       val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration)
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionService].toInstance(mockSessionService)

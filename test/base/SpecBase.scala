@@ -19,7 +19,7 @@ package base
 import config.FrontendAppConfig
 import controllers.actions._
 import models.backend.{Site, UkAddress}
-import models.{Contact, LitresInBands, RetrievedActivity, RetrievedSubscription, UserAnswers}
+import models.{Contact, IndividualDetails, LitresInBands, OrganisationDetails, RetrievedActivity, RetrievedSubscription, RosmRegistration, UserAnswers}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -91,11 +91,19 @@ trait SpecBase
   def identifier: String = "id"
   val sdilNumber: String = "XKSDIL000000022"
 
-  lazy val application = applicationBuilder(userAnswers = None).build()
+  lazy val application = applicationBuilder(userAnswers = None, rosmRegistration = rosmRegistration).build()
   implicit lazy val messagesAPI = application.injector.instanceOf[MessagesApi]
   implicit lazy val messagesProvider = MessagesImpl(Lang("en"), messagesAPI)
   lazy val mcc = application.injector.instanceOf[MessagesControllerComponents]
   lazy val frontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
+  val rosmRegistration = RosmRegistration(
+    safeId = "safeid",
+    organisation = Some(OrganisationDetails(organisationName = "Super Lemonade Plc")),
+    individual = Some(IndividualDetails(firstName = "Ava" , lastName = "Adams")),
+    address = UkAddress(List("105B Godfrey Marchant Grove", "Guildford"), "GU14 8NL")
+  )
+
+
 
   override def afterEach(): Unit = {
     Play.stop(application)
@@ -105,14 +113,15 @@ trait SpecBase
 
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 
-  protected def applicationBuilder(hasCTEnrolment: Boolean = false, utr: Option[String] = None, userAnswers: Option[UserAnswers] = None):
+  protected def applicationBuilder(hasCTEnrolment: Boolean = false, utr: Option[String] = None, userAnswers: Option[UserAnswers] = None, rosmRegistration:RosmRegistration = rosmRegistration):
   GuiceApplicationBuilder = {
     val bodyParsers = stubControllerComponents().parsers.defaultBodyParser
     new GuiceApplicationBuilder()
       .overrides(
         bind[IdentifierAction].toInstance(new FakeIdentifierAction(bodyParsers, hasCTEnrolment, utr)),
         bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(userAnswers)),
-        bind[DataRequiredAction].to[DataRequiredActionImpl])
+        bind[DataRequiredAction].toInstance(new FakeDataRequiredAction(rosmRegistration, userAnswers))
+      )
   }
 
   val aSubscription = RetrievedSubscription(

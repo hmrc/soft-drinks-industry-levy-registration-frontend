@@ -19,9 +19,48 @@ package viewmodels
 import base.SpecBase
 import models.backend.UkAddress
 import play.twirl.api.Html
+import uk.gov.hmrc.govukfrontend.views.Aliases.HtmlContent
 
 class AddressFormattingHelperSpec extends SpecBase {
   "AddressFormattingHelper" - {
+
+    "formatBusinessAddress" - {
+      "should place a break after a trading name if a trading name is used" in {
+        val addressWith3AddressLines = UkAddress(List("The house", "The Road", "ugzhkxcajkcjfrqsgkjruzlmsxytwhg vdg"), "NW88 8II")
+        val tradingName = Some("Test trading name 1")
+
+        val result = AddressFormattingHelper.formatBusinessAddress(addressWith3AddressLines, tradingName)
+        val expectedAddressContent = HtmlContent("Test trading name 1<br/>The house<br/>The Road<br/>ugzhkxcajkcjfrqsgkjruzlmsxytwhg vdg<br/>NW88 8II")
+
+        result mustBe expectedAddressContent
+      }
+
+      "should place a break before the post code" in {
+        val address44Characters = UkAddress(List("29 Station Rd", "The Railyard", "Cambridge"), "CB1 2FP")
+        val result = AddressFormattingHelper.formatBusinessAddress(address44Characters, None)
+        val expectedAddressContent = HtmlContent("29 Station Rd<br/>The Railyard<br/>Cambridge<br/>CB1 2FP")
+
+        result mustBe expectedAddressContent
+      }
+
+      "should place a break before each address line" in {
+        val address44Characters = UkAddress(List("29 Station Rd", "The Railyard", "Cambridge", "London"), "CB1 2FP")
+        val result = AddressFormattingHelper.formatBusinessAddress(address44Characters, None)
+        val expectedAddressContent = HtmlContent("29 Station Rd<br/>The Railyard<br/>Cambridge<br/>London<br/>CB1 2FP")
+
+        result mustBe expectedAddressContent
+      }
+
+      "should not place a break if missing address lines" in {
+        val address44Characters = UkAddress(List("29 Station Rd"), "CB1 2FP")
+        val result = AddressFormattingHelper.formatBusinessAddress(address44Characters, None)
+        val expectedAddressContent = HtmlContent("29 Station Rd<br/>CB1 2FP")
+
+        result mustBe expectedAddressContent
+      }
+
+    }
+
     "address formatting" - {
       "should place a break after a trading name if a trading name is used" in {
         val addressWith3AddressLines = UkAddress(List("The house", "The Road", "ugzhkxcajkcjfrqsgkjruzlmsxytwhg vdg"), "NW88 8II")
