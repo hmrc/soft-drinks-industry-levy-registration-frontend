@@ -12,8 +12,8 @@ import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
 
 class HowManyOperatePackagingSitesControllerISpec extends LitresISpecHelper {
 
-  val normalRoutePath = "/own-brands-next-12-months"
-  val checkRoutePath = "/change-own-brands-next-12-months"
+  val normalRoutePath = "/how-many-own-brands-next-12-months"
+  val checkRoutePath = "/change-how-many-own-brands-next-12-months"
 
   val userAnswers = emptyUserAnswers.set(HowManyOperatePackagingSitesPage, litresInBands).success.value
 
