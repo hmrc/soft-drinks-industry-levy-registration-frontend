@@ -1,9 +1,9 @@
 package controllers
 
-import models.{CheckMode, NormalMode}
+import models.{CheckMode, LitresInBands, NormalMode}
 import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
-import pages.ImportsPage
+import pages.{HowManyImportsPage, ImportsPage}
 import play.api.http.HeaderNames
 import play.api.i18n.Messages
 import play.api.libs.json.Json
@@ -132,7 +132,7 @@ class ImportsControllerISpec extends ControllerITTestHelper {
   s"POST " + normalRoutePath - {
     userAnswersForImportsPage.foreach { case (key, userAnswers) =>
       "when the user selects " + key - {
-        "should update the session with the new value and redirect to the index controller" - {
+        "should update the session and redirect to next page" - {
           "when the session contains no data for page" in {
             given
               .commonPrecondition
@@ -149,12 +149,16 @@ class ImportsControllerISpec extends ControllerITTestHelper {
                 val expectedLocation = if (yesSelected) {
                   routes.HowManyImportsController.onPageLoad(NormalMode).url
                 } else {
-                  routes.IndexController.onPageLoad().url
+                  routes.StartDateController.onPageLoad(NormalMode).url
                 }
                 res.header(HeaderNames.LOCATION) mustBe Some(expectedLocation)
-                val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(ImportsPage))
+                val dataStoredForPage = getAnswers(emptyUserAnswers.id).fold[Option[Boolean]](None)(_.get(ImportsPage))
+
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe yesSelected
+                val dataStoreForNextPage = getAnswers(emptyUserAnswers.id).fold[Option[LitresInBands]](None)(_.get(HowManyImportsPage))
+                dataStoreForNextPage mustBe None
+
               }
             }
           }
@@ -175,12 +179,18 @@ class ImportsControllerISpec extends ControllerITTestHelper {
                 val expectedLocation = if (yesSelected) {
                   routes.HowManyImportsController.onPageLoad(NormalMode).url
                 } else {
-                  routes.IndexController.onPageLoad().url
+                  routes.StartDateController.onPageLoad(NormalMode).url
                 }
                 res.header(HeaderNames.LOCATION) mustBe Some(expectedLocation)
                 val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(ImportsPage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe yesSelected
+                val dataStoreForNextPage = getAnswers(userAnswers.id).fold[Option[LitresInBands]](None)(_.get(HowManyImportsPage))
+                if(yesSelected) {
+                  dataStoreForNextPage.isDefined mustBe true
+                } else {
+                  dataStoreForNextPage mustBe None
+                }
               }
             }
           }
@@ -240,9 +250,12 @@ class ImportsControllerISpec extends ControllerITTestHelper {
                   routes.CheckYourAnswersController.onPageLoad().url
                 }
                 res.header(HeaderNames.LOCATION) mustBe Some(expectedLocation)
-                val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(ImportsPage))
+                val dataStoredForPage = getAnswers(emptyUserAnswers.id).fold[Option[Boolean]](None)(_.get(ImportsPage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe yesSelected
+                val dataStoreForNextPage = getAnswers(emptyUserAnswers.id).fold[Option[LitresInBands]](None)(_.get(HowManyImportsPage))
+                dataStoreForNextPage mustBe None
+
               }
             }
           }
@@ -269,6 +282,12 @@ class ImportsControllerISpec extends ControllerITTestHelper {
                 val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(ImportsPage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe yesSelected
+                val dataStoreForNextPage = getAnswers(userAnswers.id).fold[Option[LitresInBands]](None)(_.get(HowManyImportsPage))
+                if(yesSelected) {
+                  dataStoreForNextPage.isDefined mustBe true
+                } else {
+                  dataStoreForNextPage mustBe None
+                }
               }
             }
           }

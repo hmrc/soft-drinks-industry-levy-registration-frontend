@@ -19,7 +19,7 @@ class HowManyImportsControllerISpec extends LitresISpecHelper {
 
   List(NormalMode, CheckMode).foreach { mode =>
     val (path, redirectLocation) = if(mode == NormalMode) {
-      (normalRoutePath, routes.IndexController.onPageLoad().url)
+      (normalRoutePath, routes.StartDateController.onPageLoad(NormalMode).url)
     } else {
       (checkRoutePath, routes.CheckYourAnswersController.onPageLoad().url)
     }

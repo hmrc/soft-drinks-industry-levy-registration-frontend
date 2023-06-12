@@ -77,12 +77,10 @@ class Navigator @Inject()() {
   }
 
   private def navigationForImports(userAnswers: UserAnswers, mode: Mode): Call = {
-    if (userAnswers.get(page = ImportsPage).contains(true)) {
-      routes.HowManyImportsController.onPageLoad(mode)
-    } else if(mode == CheckMode){
-        routes.CheckYourAnswersController.onPageLoad()
-    } else {
-        routes.IndexController.onPageLoad()
+    userAnswers.get(page = ImportsPage).contains(true) match {
+      case true => routes.HowManyImportsController.onPageLoad(mode)
+      case false if mode == NormalMode => routes.StartDateController.onPageLoad(mode)
+      case false if mode == CheckMode => routes.CheckYourAnswersController.onPageLoad()
     }
   }
 
@@ -102,7 +100,7 @@ class Navigator @Inject()() {
     case ContractPackingPage => userAnswers => navigationForContractPacking(userAnswers, NormalMode)
     case HowManyContractPackingPage => userAnswers => routes.ImportsController.onPageLoad(NormalMode)
     case ImportsPage => userAnswers => navigationForImports(userAnswers, NormalMode)
-    case HowManyImportsPage => userAnswers => routes.IndexController.onPageLoad()
+    case HowManyImportsPage => userAnswers => routes.StartDateController.onPageLoad(NormalMode)
     case AskSecondaryWarehousesPage => userAnswers => routes.IndexController.onPageLoad()
     case OperatePackagingSitesPage => userAnswers => navigationForOperatePackagingSites(userAnswers, NormalMode)
     case HowManyOperatePackagingSitesPage => userAnswers => routes.ContractPackingController.onPageLoad(NormalMode)
@@ -118,6 +116,7 @@ class Navigator @Inject()() {
     case ContractPackingPage => userAnswers => _ => navigationForContractPacking(userAnswers, CheckMode)
     case OperatePackagingSitesPage => userAnswers => _ =>  navigationForOperatePackagingSites(userAnswers, CheckMode)
     case ImportsPage => userAnswers => _ => navigationForImports(userAnswers, CheckMode)
+    case HowManyImportsPage => _ => _ => routes.CheckYourAnswersController.onPageLoad()
     case OrganisationTypePage => userAnswers => _ => navigationForOrganisationType(userAnswers, CheckMode)
     case HowManyLitresGloballyPage => userAnswers => previousAnswer => navigationForHowManyLitresGloballyCheckMode(userAnswers, previousAnswer)
     case _ => _ => _ => routes.CheckYourAnswersController.onPageLoad()
