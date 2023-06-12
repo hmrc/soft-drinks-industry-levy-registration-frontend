@@ -1,5 +1,5 @@
 
-# Soft Drinks Industry Levy Returns Frontend
+# Soft Drinks Industry Levy Registration Frontend
 
 ## About
 The Soft Drinks Industry Levy (SDIL) digital service is split into a number of different microservices all serving specific functions which are listed below:
