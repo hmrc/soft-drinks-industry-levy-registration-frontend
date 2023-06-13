@@ -239,3 +239,11 @@ packAtBusinessAddress.heading2 = Is your registered business address a UK packag
 packAtBusinessAddress.checkYourAnswersLabel = Is your registered business address a UK packaging site that you operate to produce liable drinks?
 packAtBusinessAddress.error.required = Select yes if packAtBusinessAddress
 packAtBusinessAddress.change.hidden = PackAtBusinessAddress
+
+warehouseDetails.title.heading = You added {0} UK warehouse{1}
+wareshousDetails.add.another = Do you want to register another UK warehouse?
+warehouseDetails.checkYourAnswersLabel = You added {0} UK warehouse{1}
+warehouseDetails.error.required = Select yes if you want to register another UK warehouse
+warehouseDetails.remove.hidden = remove UK warehouse
+warehouseDetails.change.hidden = Change warehouses
+warehouseDetails.subtext = You don''t have any registered warehouses.
