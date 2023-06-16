@@ -67,7 +67,7 @@ class AddressLookupService @Inject()(
 
     addressLookupState match {
       case BusinessAddress =>
-        userAnswers.copy(address = List(convertedAddress))
+        userAnswers.copy(address = Some(convertedAddress))
 
       case PackingDetails =>
         userAnswers.copy(packagingSiteList =

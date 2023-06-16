@@ -76,12 +76,12 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
       val addressLookupState = BusinessAddress
       val sdilId: String = "foo"
       val alfId: String = "bar"
-      val addressList = List(UkAddress(List("line 1", "line 2", "line 3", "line 4"), "aa1 1aa", alfId = Some(alfId)))
-      val addedAddress = List(UkAddress(List("line 1", "line 2", "line 3", "line 4"), "aa1 1aa", alfId = Some(alfId)))
+      val address = Some(UkAddress(List("line 1", "line 2", "line 3", "line 4"), "aa1 1aa", alfId = Some(alfId)))
+      val addedAddress = Some(UkAddress(List("line 1", "line 2", "line 3", "line 4"), "aa1 1aa", alfId = Some(alfId)))
 
       val res = service.addAddressUserAnswers(addressLookupState = addressLookupState,
         address = customerAddressMax.address,
-        userAnswers = emptyUserAnswers.copy(address = addressList),
+        userAnswers = emptyUserAnswers.copy(address = address),
         sdilId = sdilId,
         alfId = alfId)
 
@@ -92,22 +92,22 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
       val addressLookupState = BusinessAddress
       val sdilId: String = "foo"
       val alfId: String = "bar"
-      val addressList = List(UkAddress(List("line 1", "line 2", "line 3", "line 4"), "aa1 1aa", alfId = Some(alfId)))
+      val address = Some(UkAddress(List("line 1", "line 2", "line 3", "line 4"), "aa1 1aa", alfId = Some(alfId)))
 
       val res = service.addAddressUserAnswers(addressLookupState = addressLookupState,
         address = customerAddressMax.address,
-        userAnswers = emptyUserAnswers.copy(address = addressList),
+        userAnswers = emptyUserAnswers.copy(address = address),
         sdilId = sdilId,
         alfId = alfId)
 
-      res.address mustBe addressList
+      res.address mustBe address
     }
 
     s"add to the cache the address of a $BusinessAddress when a user returns from address lookup frontend with missing address lines" in {
       val addressLookupState = BusinessAddress
       val sdilId: String = "foo"
       val alfId: String = "bar"
-      val addressListMissingLines = List(UkAddress(List("line 1", "line 2"), "aa1 1aa", alfId = Some(alfId)))
+      val addressMissingLines = Some(UkAddress(List("line 1", "line 2"), "aa1 1aa", alfId = Some(alfId)))
       val customerAddressMissingLines: AlfAddress =
         AlfAddress(
           Some(organisation),
@@ -118,11 +118,11 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
 
       val res = service.addAddressUserAnswers(addressLookupState = addressLookupState,
         address = customerAddressMissingLines,
-        userAnswers = emptyUserAnswers.copy(address = addressListMissingLines),
+        userAnswers = emptyUserAnswers.copy(address = addressMissingLines),
         sdilId = sdilId,
         alfId = alfId)
 
-      res.address mustBe addressListMissingLines
+      res.address mustBe addressMissingLines
     }
 
     s"add to the cache the address of a $BusinessAddress when a user returns from address lookup frontend with full address lines" +
@@ -130,7 +130,7 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
       val addressLookupState = BusinessAddress
       val sdilId: String = "foo"
       val alfId: String = "bar"
-      val addressList = List(UkAddress(List("33 Rhes Priordy", "East London"), "E73 2RP"))
+      val address = Some(UkAddress(List("33 Rhes Priordy", "East London"), "E73 2RP"))
 
       val res = service.addAddressUserAnswers(addressLookupState = addressLookupState,
         address = AlfAddress(Some(organisation),
@@ -138,11 +138,11 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
           Some(postcode),
           Some(countryCode)
         ),
-        userAnswers = emptyUserAnswers.copy(address = addressList),
+        userAnswers = emptyUserAnswers.copy(address = address),
         alfId = alfId,
         sdilId = sdilId)
 
-      res.address mustBe List(UkAddress(List(addressLine1, addressLine2, addressLine3, addressLine4), postcode, alfId = Some(alfId)))
+      res.address mustBe Some(UkAddress(List(addressLine1, addressLine2, addressLine3, addressLine4), postcode, alfId = Some(alfId)))
     }
 
     s"add to the cache the address of a $WarehouseDetails when a user returns from address lookup frontend where sdilId DOESN'T exist" in {

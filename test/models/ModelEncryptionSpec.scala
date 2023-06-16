@@ -18,7 +18,7 @@ package models
 
 import base.SpecBase
 import models.backend.{Site, UkAddress}
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json.{JsObject, Json, Reads}
 import repositories.DatedCacheMap
 import services.Encryption
 
@@ -33,7 +33,7 @@ class ModelEncryptionSpec extends SpecBase {
       val alfId: String = "bar"
       val userAnswers = UserAnswers("id",
         Json.obj("foo" -> "bar"),
-        List(UkAddress(List("Line 1", "Line 2", "Line 3", "Line 4"),"aa1 1aa", alfId = Some(alfId))),
+        Some(UkAddress(List("Line 1", "Line 2", "Line 3", "Line 4"),"aa1 1aa", alfId = Some(alfId))),
         List(SmallProducer("foo", "bar", (1,1))),
         Map("foo" -> Site(UkAddress(List("foo"),"foo", Some("foo")),Some("foo"), Some("foo"),Some(LocalDate.now()))),
         Map("foo" -> Warehouse(Some("foo"),UkAddress(List("foo"),"foo", Some("foo")))),
@@ -43,7 +43,7 @@ class ModelEncryptionSpec extends SpecBase {
       val result = ModelEncryption.encryptUserAnswers(userAnswers)
       result._1 mustBe userAnswers.id
       Json.parse(encryption.crypto.decrypt(result._2, userAnswers.id)).as[JsObject] mustBe userAnswers.data
-      Json.parse(encryption.crypto.decrypt(result._3, userAnswers.id)).as[List[UkAddress]] mustBe userAnswers.address
+      Json.fromJson[Option[UkAddress]](Json.parse(encryption.crypto.decrypt(result._3, userAnswers.id)))(Reads.optionWithNull[UkAddress]).get mustBe userAnswers.address
       Json.parse(encryption.crypto.decrypt(result._4, userAnswers.id)).as[List[SmallProducer]] mustBe userAnswers.smallProducerList
       Json.parse(encryption.crypto.decrypt(result._5.head._2, userAnswers.id)).as[Site] mustBe userAnswers.packagingSiteList.head._2
       result._5.head._1 mustBe userAnswers.packagingSiteList.head._1
@@ -58,7 +58,7 @@ class ModelEncryptionSpec extends SpecBase {
       val alfId: String = "bar"
       val userAnswers = UserAnswers("id",
         Json.obj("foo" -> "bar"),
-        List(UkAddress(List("Line 1", "Line 2", "Line 3", "Line 4"),"aa1 1aa", alfId = Some(alfId))),
+        Some(UkAddress(List("Line 1", "Line 2", "Line 3", "Line 4"),"aa1 1aa", alfId = Some(alfId))),
         List(SmallProducer("foo", "bar", (1,1))),
         Map("foo" -> Site(UkAddress(List("foo"),"foo", Some("foo")),Some("foo"), Some("foo"),Some(LocalDate.now()))),
         Map("foo" -> Warehouse(Some("foo"),UkAddress(List("foo"),"foo", Some("foo")))),

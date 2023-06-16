@@ -30,7 +30,7 @@ import scala.util.{Failure, Success, Try}
 case class UserAnswers(
                               id: String,
                               data: JsObject = Json.obj(),
-                              address: List[UkAddress] = List.empty,
+                              address: Option[UkAddress] = None,
                               smallProducerList: List[SmallProducer] = List.empty,
                               packagingSiteList: Map[String, Site] = Map.empty,
                               warehouseList: Map[String, Warehouse] = Map.empty,

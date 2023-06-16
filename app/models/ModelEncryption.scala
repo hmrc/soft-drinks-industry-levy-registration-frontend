@@ -65,7 +65,7 @@ object ModelEncryption {
     UserAnswers(
       id = id,
       data = Json.parse(encryption.crypto.decrypt(data, id)).as[JsObject],
-      address = Json.parse(encryption.crypto.decrypt(address, id)).as[List[UkAddress]],
+      address = Json.fromJson[Option[UkAddress]](Json.parse(encryption.crypto.decrypt(address, id)))(Reads.optionWithNull[UkAddress]).get,
       smallProducerList = Json.parse(encryption.crypto.decrypt(smallProducerList, id)).as[List[SmallProducer]],
       packagingSiteList = packagingSiteList.map(site => site._1 -> Json.parse(encryption.crypto.decrypt(site._2, id)).as[Site]),
       warehouseList = warehouseList.map(warehouse => warehouse._1 -> Json.parse(encryption.crypto.decrypt(warehouse._2, id)).as[Warehouse]),
