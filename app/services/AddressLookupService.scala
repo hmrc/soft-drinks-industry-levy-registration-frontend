@@ -156,7 +156,7 @@ class AddressLookupService @Inject()(
                 line2Label = Some(messages("addressLookupFrontend.businessAddress.editPageLabels.line2Label")),
                 line3Label = Some(messages("addressLookupFrontend.businessAddress.editPageLabels.line3Label")),
                 townLabel = Some(messages("addressLookupFrontend.businessAddress.editPageLabels.townLabel")),
-                postcodeLabel= Some(messages("addressLookupFrontend.businessAddress.editPageLabels.postcodeLabel")),
+                postcodeLabel= Some(messages("addressLookupFrontend.businessAddress.editPageLabels.postcodeLabel"))
                 )
             ),
             confirmPageLabels = None,
