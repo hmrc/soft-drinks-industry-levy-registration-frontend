@@ -97,3 +97,8 @@ GET        /pack-at-business-address                        controllers.PackAtBu
 POST       /pack-at-business-address                        controllers.PackAtBusinessAddressController.onSubmit(mode: Mode = NormalMode)
 GET        /change-pack-at-business-address                  controllers.PackAtBusinessAddressController.onPageLoad(mode: Mode = CheckMode)
 POST       /change-pack-at-business-address                  controllers.PackAtBusinessAddressController.onSubmit(mode: Mode = CheckMode)
+
+GET        /warehouses                        controllers.WarehouseDetailsController.onPageLoad(mode: Mode = NormalMode)
+POST       /warehouses                        controllers.WarehouseDetailsController.onSubmit(mode: Mode = NormalMode)
+GET        /change-warehouses                  controllers.WarehouseDetailsController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-warehouses                  controllers.WarehouseDetailsController.onSubmit(mode: Mode = CheckMode)

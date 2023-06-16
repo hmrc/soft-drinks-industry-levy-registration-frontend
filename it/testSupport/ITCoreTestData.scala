@@ -11,6 +11,16 @@ import scala.concurrent.duration.DurationInt
 
 trait ITCoreTestData extends TryValues {
 
+  val userAnswersForWarehouseDetailsPage: Map[String, UserAnswers] = {
+    val yesSelected = emptyUserAnswers
+      .set(WarehouseDetailsPage, true).success.value
+      .copy(warehouseList = warehouseListWith1)
+    val noSelected = emptyUserAnswers
+      .set(WarehouseDetailsPage, false).success.value
+      .copy(warehouseList = warehouseListWith1)
+    Map("yes" -> yesSelected,"no" -> noSelected)
+  }
+
   val contactDetails: ContactDetails = ContactDetails("test", "test", "89432789234", "test@example.com")
   val contactDetailsDiff: ContactDetails = ContactDetails("diff", "diff", "8793820901", "sample@example.com")
 
@@ -110,4 +120,12 @@ trait ITCoreTestData extends TryValues {
 
 
   def userAnswersWith1PackingSite = emptyUserAnswers.copy(packagingSiteList = packagingSiteListWith1)
+
+
+  def warehouse1 = Warehouse(Some("Warehouse One"), UkAddress(List("29 Station Place", "The Railyard", "Cambridge"), "CB1 2FP"))
+  def warehouse2 = Warehouse(Some("Warehouse Two"), UkAddress(List("42 Hitch Place", "The Railyard", "Cambridge"), "CB1 2FF"))
+  def warehouseListWith1 = Map("78941132" -> warehouse1)
+  def warehouseListWith2 = Map("78941132" -> warehouse1, "11111111" -> warehouse2)
+  def userAnswersWith1Warehouse = emptyUserAnswers.copy(warehouseList = warehouseListWith1)
+  def userAnswersWith2Warehouses = emptyUserAnswers.copy(warehouseList = warehouseListWith2)
 }
