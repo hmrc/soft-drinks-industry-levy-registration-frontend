@@ -9,7 +9,7 @@ import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{BeforeAndAfterEach, OptionValues}
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
-import play.api.libs.json.{Format, JsObject, Json}
+import play.api.libs.json.{Format, JsObject, Json, Reads}
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 import services.Encryption
 import uk.gov.hmrc.crypto.EncryptedValue
@@ -47,7 +47,12 @@ class SessionRepositoryISpec
 
   ".set" - {
     "must set the last updated time on the supplied user answers to `now`, and save them" in {
-      val userAnswersBefore = UserAnswers("id", Json.obj("foo" -> "bar"), List(), lastUpdated = Instant.ofEpochSecond(1))
+      val alfId: String = "bar"
+      val userAnswersBefore = UserAnswers(
+        "id", Json.obj("foo" -> "bar"),
+        Some(UkAddress(List("line 1", "line 2", "line 3", "line 4"), "aa1 1aa", alfId = Some(alfId))),
+        lastUpdated = Instant.ofEpochSecond(1)
+      )
       val timeBeforeTest = Instant.now()
       val setResult     = await(repository.set(userAnswersBefore))
       val updatedRecord = await(repository.get(userAnswersBefore.id)).get
@@ -60,14 +65,17 @@ class SessionRepositoryISpec
       updatedRecord.id mustBe userAnswersBefore.id
       updatedRecord.submitted mustBe userAnswersBefore.submitted
       updatedRecord.data mustBe userAnswersBefore.data
+      updatedRecord.address mustBe userAnswersBefore.address
       updatedRecord.smallProducerList mustBe userAnswersBefore.smallProducerList
       updatedRecord.warehouseList mustBe userAnswersBefore.warehouseList
       updatedRecord.packagingSiteList mustBe userAnswersBefore.packagingSiteList
     }
 
     "correctly encrypt the records data" in {
+      val alfId: String = "bar"
       val userAnswersBefore = UserAnswers("id",
         Json.obj("foo" -> "bar"),
+        Some(UkAddress(List("Line 1", "Line 2", "Line 3", "Line 4"),"aa1 1aa", alfId = Some(alfId))),
         List(SmallProducer("foo", "bar", (1,1))),
         Map("foo" -> Site(UkAddress(List("foo"),"foo", Some("foo")),Some("foo"), Some("foo"),Some(LocalDate.now()))),
         Map("foo" -> Warehouse(Some("foo"),UkAddress(List("foo"),"foo", Some("foo")))),
@@ -79,6 +87,9 @@ class SessionRepositoryISpec
       val resultParsedToJson = Json.parse(updatedRecord.toJson).as[JsObject]
       val dataDecrypted = {
         Json.parse(encryption.crypto.decrypt((resultParsedToJson \ "data").as[EncryptedValue],userAnswersBefore.id)).as[JsObject]
+      }
+      val businessAddressDecrypted = {
+        Json.fromJson[Option[UkAddress]](Json.parse(encryption.crypto.decrypt((resultParsedToJson \ "address").as[EncryptedValue],userAnswersBefore.id)))(Reads.optionWithNull[UkAddress]).get
       }
       val smallProducerListDecrypted = {
         Json.parse(encryption.crypto.decrypt((resultParsedToJson \ "smallProducerList").as[EncryptedValue],userAnswersBefore.id)).as[List[SmallProducer]]
@@ -94,6 +105,7 @@ class SessionRepositoryISpec
 
       dataDecrypted mustBe userAnswersBefore.data
       smallProducerListDecrypted mustBe userAnswersBefore.smallProducerList
+      businessAddressDecrypted mustBe userAnswersBefore.address
       packagingSiteListDecrypted mustBe userAnswersBefore.packagingSiteList
       warehouseListDecrypted mustBe userAnswersBefore.warehouseList
       (resultParsedToJson \ "submitted").get.as[Boolean] mustBe userAnswersBefore.submitted
@@ -105,7 +117,11 @@ class SessionRepositoryISpec
     "when there is a record for this id" - {
 
       "must update the lastUpdated time and get the record" in {
-        val userAnswersBefore = UserAnswers("id", Json.obj("foo" -> "bar"), List(), lastUpdated = Instant.ofEpochSecond(1))
+        val alfId: String = "bar"
+        val userAnswersBefore = UserAnswers("id", Json.obj("foo" -> "bar"),
+          Some(UkAddress(List("Line 1", "Line 2", "Line 3", "Line 4"),"aa1 1aa", alfId = Some(alfId))),
+          lastUpdated = Instant.ofEpochSecond(1)
+        )
         await(repository.set(userAnswersBefore))
 
         val timeBeforeTest = Instant.now()
@@ -118,6 +134,7 @@ class SessionRepositoryISpec
         updatedRecord.id mustBe userAnswersBefore.id
         updatedRecord.submitted mustBe userAnswersBefore.submitted
         updatedRecord.data mustBe userAnswersBefore.data
+        updatedRecord.address mustBe userAnswersBefore.address
         updatedRecord.smallProducerList mustBe userAnswersBefore.smallProducerList
         updatedRecord.warehouseList mustBe userAnswersBefore.warehouseList
         updatedRecord.packagingSiteList mustBe userAnswersBefore.packagingSiteList
@@ -136,7 +153,11 @@ class SessionRepositoryISpec
   ".clear" - {
 
     "must remove a record" in {
-      val userAnswersBefore = UserAnswers("id", Json.obj("foo" -> "bar"), List(), lastUpdated = Instant.ofEpochSecond(1))
+      val alfId: String = "bar"
+      val userAnswersBefore = UserAnswers("id", Json.obj("foo" -> "bar"),
+        Some(UkAddress(List("Line 1", "Line 2", "Line 3", "Line 4"),"aa1 1aa", alfId = Some(alfId))),
+        lastUpdated = Instant.ofEpochSecond(1)
+      )
       repository.set(userAnswersBefore).futureValue
 
       val result = repository.clear(userAnswersBefore.id).futureValue
@@ -157,7 +178,11 @@ class SessionRepositoryISpec
     "when there is a record for this id" - {
 
       "must update its lastUpdated to `now` and return true" in {
-        val userAnswersBefore = UserAnswers("id", Json.obj("foo" -> "bar"), List(), lastUpdated = Instant.ofEpochSecond(1))
+        val alfId: String = "bar"
+        val userAnswersBefore = UserAnswers("id", Json.obj("foo" -> "bar"),
+          Some(UkAddress(List("Line 1", "Line 2", "Line 3", "Line 4"),"aa1 1aa", alfId = Some(alfId))),
+          lastUpdated = Instant.ofEpochSecond(1)
+        )
         await(repository.set(userAnswersBefore))
         val timeBeforeTest = Instant.now()
         val result = await(repository.keepAlive(userAnswersBefore.id))
@@ -171,6 +196,7 @@ class SessionRepositoryISpec
         updatedRecord.id mustBe userAnswersBefore.id
         updatedRecord.submitted mustBe userAnswersBefore.submitted
         updatedRecord.data mustBe userAnswersBefore.data
+        updatedRecord.address mustBe userAnswersBefore.address
         updatedRecord.smallProducerList mustBe userAnswersBefore.smallProducerList
         updatedRecord.warehouseList mustBe userAnswersBefore.warehouseList
         updatedRecord.packagingSiteList mustBe userAnswersBefore.packagingSiteList

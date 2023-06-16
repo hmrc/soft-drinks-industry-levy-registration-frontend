@@ -1,9 +1,8 @@
 package controllers
 
-import models.UserAnswers
 import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
-import pages.{ContactDetailsPage, HowManyLitresGloballyPage, StartDatePage}
+import pages.StartDatePage
 import play.api.i18n.Messages
 import play.api.test.WsTestClient
 

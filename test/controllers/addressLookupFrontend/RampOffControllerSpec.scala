@@ -43,7 +43,7 @@ import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
-import services.{AddressLookupService, PackingDetails, WarehouseDetails}
+import services.{AddressLookupService, BusinessAddress, PackingDetails, WarehouseDetails}
 
 import scala.concurrent.Future
 
@@ -52,6 +52,117 @@ class RampOffControllerSpec extends SpecBase with MockitoSugar {
     val mockAddressLookupService: AddressLookupService = mock[AddressLookupService]
     val mockSessionRepository: SessionRepository = mock[SessionRepository]
   }
+
+  s"$BusinessAddress off ramp" - {
+    "should Redirect to the next page when ALF returns address successfully" in new Setup {
+      val app: Application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(
+          bind[AddressLookupService].toInstance(mockAddressLookupService),
+          bind[SessionRepository].toInstance(mockSessionRepository)
+        )
+        .build()
+      val sdilId: String = "foo"
+      val alfId: String = "bar"
+      val responseFromGetAddress: AlfResponse = AlfResponse(AlfAddress(Some("foo"), List.empty, None, None))
+      val updatedUserAnswers: UserAnswers = emptyUserAnswers.copy(id = "foobarwizz")
+
+      when(mockAddressLookupService.getAddress(ArgumentMatchers.eq(alfId))(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(responseFromGetAddress))
+      when(mockAddressLookupService.addAddressUserAnswers(
+        ArgumentMatchers.eq(BusinessAddress),
+        ArgumentMatchers.eq(responseFromGetAddress.address),
+        ArgumentMatchers.eq(emptyUserAnswers),
+        ArgumentMatchers.eq(sdilId),
+        ArgumentMatchers.eq(alfId)))
+        .thenReturn(updatedUserAnswers)
+      when(mockSessionRepository.set(ArgumentMatchers.eq(updatedUserAnswers)))
+        .thenReturn(Future.successful(true))
+
+      running(app) {
+        val request = FakeRequest(GET, routes.RampOffController.businessAddressOffRamp(sdilId, alfId).url)
+
+        val result = route(app, request).value
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).get mustBe controllers.routes.IndexController.onPageLoad().url
+      }
+    }
+    s"should return exception to the next page when ALF doesnt return Address successfully" in new Setup {
+      val application: Application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(
+          bind[AddressLookupService].toInstance(mockAddressLookupService),
+          bind[SessionRepository].toInstance(mockSessionRepository)
+        )
+        .build()
+      val sdilId: String = "foo"
+      val alfId: String = "bar"
+
+      when(mockAddressLookupService.getAddress(ArgumentMatchers.eq(alfId))(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.failed(new Exception("woopsie")))
+
+      running(application) {
+        val request = FakeRequest(GET, routes.RampOffController.businessAddressOffRamp(sdilId, alfId).url)
+
+        intercept[Exception](await(route(application, request).value))
+      }
+    }
+    s"should return exception to the next page when ALF returns address, but it can't be converted" in new Setup {
+      val application: Application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(
+          bind[AddressLookupService].toInstance(mockAddressLookupService),
+          bind[SessionRepository].toInstance(mockSessionRepository)
+        )
+        .build()
+      val sdilId: String = "foo"
+      val alfId: String = "bar"
+      val responseFromGetAddress: AlfResponse = AlfResponse(AlfAddress(Some("foo"), List.empty, None, None))
+
+      when(mockAddressLookupService.getAddress(ArgumentMatchers.eq(alfId))(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(responseFromGetAddress))
+      when(mockAddressLookupService.addAddressUserAnswers(
+        ArgumentMatchers.eq(BusinessAddress),
+        ArgumentMatchers.eq(responseFromGetAddress.address),
+        ArgumentMatchers.eq(emptyUserAnswers),
+        ArgumentMatchers.eq(sdilId),
+        ArgumentMatchers.eq(alfId)))
+        .thenThrow(new RuntimeException("foo"))
+
+      running(application) {
+        val request = FakeRequest(GET, routes.RampOffController.businessAddressOffRamp(sdilId, alfId).url)
+
+        intercept[Exception](await(route(application, request).value))
+      }
+    }
+    s"should return exception to the next page when ALF returns address, it can be converted but fails to update db" in new Setup {
+      val application: Application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(
+          bind[AddressLookupService].toInstance(mockAddressLookupService),
+          bind[SessionRepository].toInstance(mockSessionRepository)
+        )
+        .build()
+      val sdilId: String = "foo"
+      val alfId: String = "bar"
+      val responseFromGetAddress: AlfResponse = AlfResponse(AlfAddress(Some("foo"), List.empty, None, None))
+      val updatedUserAnswers: UserAnswers = emptyUserAnswers.copy(id = "foobarwizz")
+
+      when(mockAddressLookupService.getAddress(ArgumentMatchers.eq(alfId))(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(responseFromGetAddress))
+      when(mockAddressLookupService.addAddressUserAnswers(
+        ArgumentMatchers.eq(BusinessAddress),
+        ArgumentMatchers.eq(responseFromGetAddress.address),
+        ArgumentMatchers.eq(emptyUserAnswers),
+        ArgumentMatchers.eq(sdilId),
+        ArgumentMatchers.eq(alfId)))
+        .thenReturn(updatedUserAnswers)
+      when(mockSessionRepository.set(ArgumentMatchers.eq(updatedUserAnswers)))
+        .thenReturn(Future.failed(new Exception("woopsie")))
+
+      running(application) {
+        val request = FakeRequest(GET, routes.RampOffController.businessAddressOffRamp(sdilId, alfId).url)
+        intercept[Exception](await(route(application, request).value))
+      }
+    }
+  }
+
   s"$WarehouseDetails off ramp" - {
     "should Redirect to the next page when ALF returns address successfully" in new Setup {
       val app: Application = applicationBuilder(userAnswers = Some(emptyUserAnswers))

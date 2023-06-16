@@ -247,3 +247,33 @@ warehouseDetails.error.required = Select yes if you want to register another UK 
 warehouseDetails.remove.hidden = remove UK warehouse
 warehouseDetails.change.hidden = Change warehouses
 warehouseDetails.subtext = You don''t have any registered warehouses.
+
+
+addressLookupFrontend.warehouseDetails.lookupPageLabels.title = Find UK warehouse address
+addressLookupFrontend.warehouseDetails.lookupPageLabels.postcodeLabel = Postcode
+addressLookupFrontend.warehouseDetails.editPageLabels.title = Enter the UK warehouse address
+addressLookupFrontend.warehouseDetails.editPageLabels.line1Label = Address line 1
+addressLookupFrontend.warehouseDetails.editPageLabels.line2Label = Address line 2
+addressLookupFrontend.warehouseDetails.editPageLabels.line3Label = Address line 3 (optional)
+addressLookupFrontend.warehouseDetails.editPageLabels.townLabel = Address line 4 (optional)
+addressLookupFrontend.warehouseDetails.editPageLabels.postcodeLabel = Postcode
+addressLookupFrontend.warehouseDetails.editPageLabels.organisationLabel = Trading name (optional)
+
+addressLookupFrontend.packingDetails.lookupPageLabels.title = Find UK packaging site address
+addressLookupFrontend.packingDetails.lookupPageLabels.postcodeLabel = Postcode
+addressLookupFrontend.packingDetails.editPageLabels.title = Enter the UK packaging site address
+addressLookupFrontend.packingDetails.editPageLabels.line1Label = Address line 1
+addressLookupFrontend.packingDetails.editPageLabels.line2Label = Address line 2
+addressLookupFrontend.packingDetails.editPageLabels.line3Label = Address line 3 (optional)
+addressLookupFrontend.packingDetails.editPageLabels.townLabel = Address line 4 (optional)
+addressLookupFrontend.packingDetails.editPageLabels.postcodeLabel = Postcode
+addressLookupFrontend.packingDetails.editPageLabels.organisationLabel = Packaging site name (optional)
+
+addressLookupFrontend.businessAddress.lookupPageLabels.title = Find UK contact address
+addressLookupFrontend.businessAddress.lookupPageLabels.postcodeLabel = Postcode
+addressLookupFrontend.businessAddress.editPageLabels.title = Update your registered business address for the Soft Drinks Industry Levy
+addressLookupFrontend.businessAddress.editPageLabels.line1Label = Address line 1
+addressLookupFrontend.businessAddress.editPageLabels.line2Label = Address line 2
+addressLookupFrontend.businessAddress.editPageLabels.line3Label = Address line 3 (optional)
+addressLookupFrontend.businessAddress.editPageLabels.townLabel = Address line 4 (optional)
+addressLookupFrontend.businessAddress.editPageLabels.postcodeLabel = Postcode

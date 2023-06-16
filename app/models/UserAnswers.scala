@@ -16,7 +16,7 @@
 
 package models
 
-import models.backend.Site
+import models.backend.{Site, UkAddress}
 import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json._
 import queries.{Gettable, Settable}
@@ -30,6 +30,7 @@ import scala.util.{Failure, Success, Try}
 case class UserAnswers(
                               id: String,
                               data: JsObject = Json.obj(),
+                              address: Option[UkAddress] = None,
                               smallProducerList: List[SmallProducer] = List.empty,
                               packagingSiteList: Map[String, Site] = Map.empty,
                               warehouseList: Map[String, Warehouse] = Map.empty,
@@ -123,6 +124,7 @@ object UserAnswers {
         (
           (__ \ "_id").read[String] and
             (__ \ "data").read[EncryptedValue] and
+            (__ \ "address").read[EncryptedValue] and
             (__ \ "smallProducerList").read[EncryptedValue] and
             (__ \ "packagingSiteList").read[Map[String, EncryptedValue]] and
             (__ \ "warehouseList").read[Map[String, EncryptedValue]] and
@@ -133,17 +135,18 @@ object UserAnswers {
 
       def writes(implicit encryption: Encryption): OWrites[UserAnswers] = new OWrites[UserAnswers] {
         override def writes(userAnswers: UserAnswers): JsObject = {
-          val encryptedValue: (String, EncryptedValue, EncryptedValue, Map[String, EncryptedValue], Map[String, EncryptedValue], Boolean, Instant) = {
+          val encryptedValue: (String, EncryptedValue, EncryptedValue, EncryptedValue, Map[String, EncryptedValue], Map[String, EncryptedValue], Boolean, Instant) = {
             ModelEncryption.encryptUserAnswers(userAnswers)
           }
           Json.obj(
             "id" -> encryptedValue._1,
             "data" -> encryptedValue._2,
-            "smallProducerList" -> encryptedValue._3,
-            "packagingSiteList" -> encryptedValue._4,
-            "warehouseList" -> encryptedValue._5,
-            "submitted" -> encryptedValue._6,
-            "lastUpdated" -> encryptedValue._7
+            "address" -> encryptedValue._3,
+            "smallProducerList" -> encryptedValue._4,
+            "packagingSiteList" -> encryptedValue._5,
+            "warehouseList" -> encryptedValue._6,
+            "submitted" -> encryptedValue._7,
+            "lastUpdated" -> encryptedValue._8
           )
         }
       }

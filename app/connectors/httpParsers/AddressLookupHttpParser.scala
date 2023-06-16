@@ -20,7 +20,8 @@ import connectors.httpParsers.ResponseHttpParser.HttpResult
 import models.alf.AlfResponse
 import models.core.ErrorModel
 import play.api.http.Status
-import uk.gov.hmrc.http.{HttpReads, HttpResponse}
+import uk.gov.hmrc.http.HttpReads
+import uk.gov.hmrc.http.HttpResponse
 import play.api.Logger
 import play.mvc.Http.HeaderNames
 

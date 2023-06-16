@@ -19,7 +19,6 @@ package viewmodels
 import models.backend.UkAddress
 import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.govukfrontend.views.Aliases.HtmlContent
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.Value
 
 
   // this could be passed into view maybe and uses
