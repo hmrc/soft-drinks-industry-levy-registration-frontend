@@ -20,7 +20,7 @@ import config.FrontendAppConfig
 import connectors.AddressLookupConnector
 import connectors.httpParsers.ResponseHttpParser.HttpResult
 import controllers.routes
-import models.alf.init.{AppLevelLabels, ConfirmPageConfig, JourneyConfig, JourneyLabels, JourneyOptions, LanguageLabels, SelectPageConfig, TimeoutConfig}
+import models.alf.init.{AppLevelLabels, ConfirmPageConfig, EditPageLabels, JourneyConfig, JourneyLabels, JourneyOptions, LanguageLabels, LookupPageLabels, SelectPageConfig, TimeoutConfig}
 import models.alf.{AlfAddress, AlfResponse}
 import models.backend.{Site, UkAddress}
 import models.{UserAnswers, Warehouse}
@@ -66,9 +66,13 @@ class AddressLookupService @Inject()(
     val convertedAddress: UkAddress = addressChecker(address, alfId)
 
     addressLookupState match {
+      case BusinessAddress =>
+        userAnswers.copy(address = List(convertedAddress))
+
       case PackingDetails =>
         userAnswers.copy(packagingSiteList =
           userAnswers.packagingSiteList.filterNot(_._1 == sdilId) ++ Map(sdilId -> Site(convertedAddress, None, address.organisation, None)))
+
       case WarehouseDetails =>
         userAnswers.copy(warehouseList =
           userAnswers.warehouseList.filterNot(_._1 == sdilId) ++ Map(sdilId -> Warehouse(address.organisation, convertedAddress)))
@@ -130,25 +134,99 @@ class AddressLookupService @Inject()(
 
  private def returnJourneyLabels(state: AddressLookupState)(implicit messages: Messages): Option[JourneyLabels] = {
     state match {
+
+      case BusinessAddress => Some(
+        JourneyLabels(
+          en = Some(LanguageLabels(
+            appLevelLabels = Some(AppLevelLabels(
+              navTitle = Some(messages("service.name")),
+              phaseBannerHtml = None
+            )),
+            selectPageLabels = None,
+            lookupPageLabels = Some(
+              LookupPageLabels(
+                title = Some(messages("addressLookupFrontend.businessAddress.lookupPageLabels.title")),
+                heading = Some(messages("addressLookupFrontend.businessAddress.lookupPageLabels.title")),
+                postcodeLabel = Some(messages("addressLookupFrontend.businessAddress.lookupPageLabels.postcodeLabel")))),
+            editPageLabels = Some(
+              EditPageLabels(
+                title = Some(messages("addressLookupFrontend.businessAddress.editPageLabels.title")),
+                heading = Some(messages("addressLookupFrontend.businessAddress.editPageLabels.title")),
+                line1Label = Some(messages("addressLookupFrontend.businessAddress.editPageLabels.line1Label")),
+                line2Label = Some(messages("addressLookupFrontend.businessAddress.editPageLabels.line2Label")),
+                line3Label = Some(messages("addressLookupFrontend.businessAddress.editPageLabels.line3Label")),
+                townLabel = Some(messages("addressLookupFrontend.businessAddress.editPageLabels.townLabel")),
+                postcodeLabel= Some(messages("addressLookupFrontend.businessAddress.editPageLabels.postcodeLabel")),
+                )
+            ),
+            confirmPageLabels = None,
+            countryPickerLabels = None
+          ))
+        ))
+
       case PackingDetails => Some(
         JourneyLabels(
           en = Some(LanguageLabels(
             appLevelLabels = Some(AppLevelLabels(
               navTitle = Some(messages("service.name")),
               phaseBannerHtml = None
-            ))))))
+            )),
+            selectPageLabels = None,
+            lookupPageLabels = Some(
+              LookupPageLabels(
+                title = Some(messages("addressLookupFrontend.packingDetails.lookupPageLabels.title")),
+                heading = Some(messages("addressLookupFrontend.packingDetails.lookupPageLabels.title")),
+                postcodeLabel = Some(messages("addressLookupFrontend.packingDetails.lookupPageLabels.postcodeLabel")))),
+            editPageLabels = Some(
+              EditPageLabels(
+                title = Some(messages("addressLookupFrontend.packingDetails.editPageLabels.title")),
+                heading = Some(messages("addressLookupFrontend.packingDetails.editPageLabels.title")),
+                line1Label = Some(messages("addressLookupFrontend.packingDetails.editPageLabels.line1Label")),
+                line2Label = Some(messages("addressLookupFrontend.packingDetails.editPageLabels.line2Label")),
+                line3Label = Some(messages("addressLookupFrontend.packingDetails.editPageLabels.line3Label")),
+                townLabel = Some(messages("addressLookupFrontend.packingDetails.editPageLabels.townLabel")),
+                postcodeLabel= Some(messages("addressLookupFrontend.packingDetails.editPageLabels.postcodeLabel")),
+                organisationLabel = Some(messages("addressLookupFrontend.packingDetails.editPageLabels.organisationLabel")))
+            ),
+            confirmPageLabels = None,
+            countryPickerLabels = None
+          ))
+        ))
+
       case WarehouseDetails => Some(
         JourneyLabels(
           en = Some(LanguageLabels(
             appLevelLabels = Some(AppLevelLabels(
               navTitle = Some(messages("service.name")),
               phaseBannerHtml = None
-            ))))))
+            )),
+            selectPageLabels = None,
+            lookupPageLabels = Some(
+              LookupPageLabels(
+                title = Some(messages("addressLookupFrontend.warehouseDetails.lookupPageLabels.title")),
+                heading = Some(messages("addressLookupFrontend.warehouseDetails.lookupPageLabels.title")),
+                postcodeLabel = Some(messages("addressLookupFrontend.warehouseDetails.lookupPageLabels.postcodeLabel")))),
+            editPageLabels = Some(
+              EditPageLabels(
+                title = Some(messages("addressLookupFrontend.warehouseDetails.editPageLabels.title")),
+                heading = Some(messages("addressLookupFrontend.warehouseDetails.editPageLabels.title")),
+                line1Label = Some(messages("addressLookupFrontend.warehouseDetails.editPageLabels.line1Label")),
+                line2Label = Some(messages("addressLookupFrontend.warehouseDetails.editPageLabels.line2Label")),
+                line3Label = Some(messages("addressLookupFrontend.warehouseDetails.editPageLabels.line3Label")),
+                townLabel = Some(messages("addressLookupFrontend.warehouseDetails.editPageLabels.townLabel")),
+                postcodeLabel= Some(messages("addressLookupFrontend.warehouseDetails.editPageLabels.postcodeLabel")),
+                organisationLabel = Some(messages("addressLookupFrontend.warehouseDetails.editPageLabels.organisationLabel")))
+            ),
+            confirmPageLabels = None,
+            countryPickerLabels = None
+          ))
+        ))
     }
   }
 
   private def returnContinueUrl(state: AddressLookupState, sdilId: String): String = {
     state match {
+      case BusinessAddress => frontendAppConfig.AddressLookupConfig.BusinessAddress.offRampUrl(sdilId)
       case WarehouseDetails => frontendAppConfig.AddressLookupConfig.WarehouseDetails.offRampUrl(sdilId)
       case PackingDetails => frontendAppConfig.AddressLookupConfig.PackingDetails.offRampUrl(sdilId)
     }

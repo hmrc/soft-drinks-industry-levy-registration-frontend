@@ -86,6 +86,7 @@ POST       /start-date                                   controllers.StartDateCo
 GET        /change-start-date                            controllers.StartDateController.onPageLoad(mode: Mode = CheckMode)
 POST       /change-start-date                            controllers.StartDateController.onSubmit(mode: Mode = CheckMode)
 
+GET       /off-ramp/new-contact-address/:sdilId         controllers.addressLookupFrontend.RampOffController.businessAddressOffRamp(sdilId: String, id: String)
 GET       /off-ramp/secondary-warehouses/:sdilId         controllers.addressLookupFrontend.RampOffController.secondaryWareHouseDetailsOffRamp(sdilId: String, id: String)
 GET       /off-ramp/packing-site-details/:sdilId         controllers.addressLookupFrontend.RampOffController.packingSiteDetailsOffRamp(sdilId: String, id: String)
 GET        /start-date                        controllers.StartDateController.onPageLoad(mode: Mode = NormalMode)

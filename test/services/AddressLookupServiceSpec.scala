@@ -71,6 +71,80 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
   }
 
   "addAddressUserAnswers" - {
+
+    s"add to the cache the address of a $BusinessAddress when a user returns from address lookup frontend where sdilId DOESN'T exist" in {
+      val addressLookupState = BusinessAddress
+      val sdilId: String = "foo"
+      val alfId: String = "bar"
+      val addressList = List(UkAddress(List("line 1", "line 2", "line 3", "line 4"), "aa1 1aa", alfId = Some(alfId)))
+      val addedAddress = List(UkAddress(List("line 1", "line 2", "line 3", "line 4"), "aa1 1aa", alfId = Some(alfId)))
+
+      val res = service.addAddressUserAnswers(addressLookupState = addressLookupState,
+        address = customerAddressMax.address,
+        userAnswers = emptyUserAnswers.copy(address = addressList),
+        sdilId = sdilId,
+        alfId = alfId)
+
+      res.address mustBe addedAddress
+    }
+
+    s"add to the cache the address of a $BusinessAddress when a user returns from address lookup frontend where sdilId DOES exist" in {
+      val addressLookupState = BusinessAddress
+      val sdilId: String = "foo"
+      val alfId: String = "bar"
+      val addressList = List(UkAddress(List("line 1", "line 2", "line 3", "line 4"), "aa1 1aa", alfId = Some(alfId)))
+
+      val res = service.addAddressUserAnswers(addressLookupState = addressLookupState,
+        address = customerAddressMax.address,
+        userAnswers = emptyUserAnswers.copy(address = addressList),
+        sdilId = sdilId,
+        alfId = alfId)
+
+      res.address mustBe addressList
+    }
+
+    s"add to the cache the address of a $BusinessAddress when a user returns from address lookup frontend with missing address lines" in {
+      val addressLookupState = BusinessAddress
+      val sdilId: String = "foo"
+      val alfId: String = "bar"
+      val addressListMissingLines = List(UkAddress(List("line 1", "line 2"), "aa1 1aa", alfId = Some(alfId)))
+      val customerAddressMissingLines: AlfAddress =
+        AlfAddress(
+          Some(organisation),
+          List(addressLine1, addressLine2),
+          Some(postcode),
+          Some(countryCode)
+        )
+
+      val res = service.addAddressUserAnswers(addressLookupState = addressLookupState,
+        address = customerAddressMissingLines,
+        userAnswers = emptyUserAnswers.copy(address = addressListMissingLines),
+        sdilId = sdilId,
+        alfId = alfId)
+
+      res.address mustBe addressListMissingLines
+    }
+
+    s"add to the cache the address of a $BusinessAddress when a user returns from address lookup frontend with full address lines" +
+      "overwrite existing address so only one can ever exist"in {
+      val addressLookupState = BusinessAddress
+      val sdilId: String = "foo"
+      val alfId: String = "bar"
+      val addressList = List(UkAddress(List("33 Rhes Priordy", "East London"), "E73 2RP"))
+
+      val res = service.addAddressUserAnswers(addressLookupState = addressLookupState,
+        address = AlfAddress(Some(organisation),
+          List(addressLine1, addressLine2, addressLine3, addressLine4),
+          Some(postcode),
+          Some(countryCode)
+        ),
+        userAnswers = emptyUserAnswers.copy(address = addressList),
+        alfId = alfId,
+        sdilId = sdilId)
+
+      res.address mustBe List(UkAddress(List(addressLine1, addressLine2, addressLine3, addressLine4), postcode, alfId = Some(alfId)))
+    }
+
     s"add to the cache the address of a $WarehouseDetails when a user returns from address lookup frontend where sdilId DOESN'T exist" in {
       val addressLookupState = WarehouseDetails
       val sdilId: String = "foo"
@@ -88,6 +162,7 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
 
       res.warehouseList mustBe addedWarehouse
     }
+
     s"add to the cache the address of a $WarehouseDetails when a user returns from address lookup frontend where sdilId DOES exist" in {
       val addressLookupState = WarehouseDetails
       val sdilId: String = "foo"
@@ -288,7 +363,7 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
           )),
           timeoutConfig = Some(TimeoutConfig(
             timeoutAmount = frontendAppConfig.timeout,
-            timeoutUrl = controllers.auth.routes.AuthController.signOut.url,
+            timeoutUrl = controllers.auth.routes.AuthController.signOut().url,
             timeoutKeepAliveUrl = Some(routes.KeepAliveController.keepAlive.url)
           )),
           serviceHref = Some(routes.IndexController.onPageLoad().url),
@@ -302,8 +377,22 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
                 phaseBannerHtml = None
               )),
               selectPageLabels = None,
-              lookupPageLabels = None,
-              editPageLabels = None,
+              lookupPageLabels = Some(
+                LookupPageLabels(
+                  title = Some("Find UK packaging site address"),
+                  heading = Some("Find UK packaging site address"),
+                  postcodeLabel = Some("Postcode"))),
+              editPageLabels = Some(
+                EditPageLabels(
+                  title = Some("Enter the UK packaging site address"),
+                  heading = Some("Enter the UK packaging site address"),
+                  line1Label = Some("Address line 1"),
+                  line2Label = Some("Address line 2"),
+                  line3Label = Some("Address line 3 (optional)"),
+                  townLabel = Some("Address line 4 (optional)"),
+                  postcodeLabel= Some("Postcode"),
+                  organisationLabel = Some("Packaging site name (optional)"))
+              ),
               confirmPageLabels = None,
               countryPickerLabels = None
             ))
@@ -361,8 +450,22 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
                 phaseBannerHtml = None
               )),
               selectPageLabels = None,
-              lookupPageLabels = None,
-              editPageLabels = None,
+              lookupPageLabels = Some(
+                LookupPageLabels(
+                  title = Some("Find UK warehouse address"),
+                  heading = Some("Find UK warehouse address"),
+                  postcodeLabel = Some("Postcode"))),
+              editPageLabels = Some(
+                EditPageLabels(
+                  title = Some("Enter the UK warehouse address"),
+                  heading = Some("Enter the UK warehouse address"),
+                  line1Label = Some("Address line 1"),
+                  line2Label = Some("Address line 2"),
+                  line3Label = Some("Address line 3 (optional)"),
+                  townLabel = Some("Address line 4 (optional)"),
+                  postcodeLabel= Some("Postcode"),
+                  organisationLabel = Some("Trading name (optional)"))
+              ),
               confirmPageLabels = None,
               countryPickerLabels = None
             ))
@@ -373,6 +476,80 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
       when(mockALFConnector.initJourney(ArgumentMatchers.eq(expectedJourneyConfigToBePassedToConnector))(ArgumentMatchers.any(),ArgumentMatchers.any()))
         .thenReturn(Future.successful(Right("foo")))
       whenReady(service.initJourneyAndReturnOnRampUrl(WarehouseDetails, sdilId)(implicitly, implicitly, implicitly, FakeRequest("foo", "bar"))) {
+        res => res mustBe "foo"
+      }
+    }
+
+    s"should return Successful future when connector returns success for $BusinessAddress" in {
+      val sdilId = "Foobar"
+      val expectedJourneyConfigToBePassedToConnector = JourneyConfig(
+        version = 2,
+        options = JourneyOptions(
+          continueUrl = s"http://localhost:8706/soft-drinks-industry-levy-registration/off-ramp/new-contact-address/$sdilId",
+          homeNavHref = None,
+          signOutHref = Some(controllers.auth.routes.AuthController.signOut().url),
+          accessibilityFooterUrl = None,
+          phaseFeedbackLink = Some(s"http://localhost:9250/contact/beta-feedback?service=soft-drinks-industry-levy-registration-frontend&backUrl=http%3A%2F%2Flocalhost%3A8706bar"),
+          deskProServiceName = None,
+          showPhaseBanner = Some(false),
+          alphaPhase = Some(frontendAppConfig.AddressLookupConfig.alphaPhase),
+          includeHMRCBranding = Some(true),
+          ukMode = Some(true),
+          selectPageConfig = Some(SelectPageConfig(
+            proposalListLimit = Some(10),
+            showSearchAgainLink = Some(true)
+          )),
+          showBackButtons = Some(true),
+          disableTranslations = Some(true),
+          allowedCountryCodes = None,
+          confirmPageConfig = Some(ConfirmPageConfig(
+            showSearchAgainLink = Some(true),
+            showSubHeadingAndInfo = Some(true),
+            showChangeLink = Some(true),
+            showConfirmChangeText = Some(true)
+          )),
+          timeoutConfig = Some(TimeoutConfig(
+            timeoutAmount = frontendAppConfig.timeout,
+            timeoutUrl = controllers.auth.routes.AuthController.signOut().url,
+            timeoutKeepAliveUrl = Some(routes.KeepAliveController.keepAlive.url)
+          )),
+          serviceHref = Some(routes.IndexController.onPageLoad().url),
+          pageHeadingStyle = Some("govuk-heading-m")
+        ),
+        labels = Some(
+          JourneyLabels(
+            en = Some(LanguageLabels(
+              appLevelLabels = Some(AppLevelLabels(
+                navTitle = Some("Soft Drinks Industry Levy"),
+                phaseBannerHtml = None
+              )),
+              selectPageLabels = None,
+              lookupPageLabels = Some(
+                LookupPageLabels(
+                  title = Some("Find UK contact address"),
+                  heading = Some("Find UK contact address"),
+                  postcodeLabel = Some("Postcode"))),
+              editPageLabels = Some(
+                EditPageLabels(
+                  title = Some("Update your registered business address for the Soft Drinks Industry Levy"),
+                  heading = Some("Update your registered business address for the Soft Drinks Industry Levy"),
+                  line1Label = Some("Address line 1"),
+                  line2Label = Some("Address line 2"),
+                  line3Label = Some("Address line 3 (optional)"),
+                  townLabel = Some("Address line 4 (optional)"),
+                  postcodeLabel= Some("Postcode")
+                  )
+              ),
+              confirmPageLabels = None,
+              countryPickerLabels = None
+            ))
+          )),
+        requestedVersion = None
+      )
+
+      when(mockALFConnector.initJourney(ArgumentMatchers.eq(expectedJourneyConfigToBePassedToConnector))(ArgumentMatchers.any(),ArgumentMatchers.any()))
+        .thenReturn(Future.successful(Right("foo")))
+      whenReady(service.initJourneyAndReturnOnRampUrl(BusinessAddress, sdilId)(implicitly, implicitly, implicitly, FakeRequest("foo", "bar"))) {
         res => res mustBe "foo"
       }
     }
@@ -432,8 +609,22 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
                 phaseBannerHtml = None
               )),
               selectPageLabels = None,
-              lookupPageLabels = None,
-              editPageLabels = None,
+              lookupPageLabels = Some(
+                LookupPageLabels(
+                  title = Some("Find UK warehouse address"),
+                  heading = Some("Find UK warehouse address"),
+                  postcodeLabel = Some("Postcode"))),
+              editPageLabels = Some(
+                EditPageLabels(
+                  title = Some("Enter the UK warehouse address"),
+                  heading = Some("Enter the UK warehouse address"),
+                  line1Label = Some("Address line 1"),
+                  line2Label = Some("Address line 2"),
+                  line3Label = Some("Address line 3 (optional)"),
+                  townLabel = Some("Address line 4 (optional)"),
+                  postcodeLabel= Some("Postcode"),
+                  organisationLabel = Some("Trading name (optional)"))
+              ),
               confirmPageLabels = None,
               countryPickerLabels = None
             ))
@@ -490,8 +681,22 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
                 phaseBannerHtml = None
               )),
               selectPageLabels = None,
-              lookupPageLabels = None,
-              editPageLabels = None,
+              lookupPageLabels = Some(
+                LookupPageLabels(
+                  title = Some("Find UK packaging site address"),
+                  heading = Some("Find UK packaging site address"),
+                  postcodeLabel = Some("Postcode"))),
+              editPageLabels = Some(
+                EditPageLabels(
+                  title = Some("Enter the UK packaging site address"),
+                  heading = Some("Enter the UK packaging site address"),
+                  line1Label = Some("Address line 1"),
+                  line2Label = Some("Address line 2"),
+                  line3Label = Some("Address line 3 (optional)"),
+                  townLabel = Some("Address line 4 (optional)"),
+                  postcodeLabel= Some("Postcode"),
+                  organisationLabel = Some("Packaging site name (optional)"))
+              ),
               confirmPageLabels = None,
               countryPickerLabels = None
             ))

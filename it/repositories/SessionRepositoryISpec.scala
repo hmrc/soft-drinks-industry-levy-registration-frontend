@@ -66,8 +66,10 @@ class SessionRepositoryISpec
     }
 
     "correctly encrypt the records data" in {
+      val alfId: String = "bar"
       val userAnswersBefore = UserAnswers("id",
         Json.obj("foo" -> "bar"),
+        List(UkAddress(List("Line 1", "Line 2", "Line 3", "Line 4"),"aa1 1aa", alfId = Some(alfId))),
         List(SmallProducer("foo", "bar", (1,1))),
         Map("foo" -> Site(UkAddress(List("foo"),"foo", Some("foo")),Some("foo"), Some("foo"),Some(LocalDate.now()))),
         Map("foo" -> Warehouse(Some("foo"),UkAddress(List("foo"),"foo", Some("foo")))),
@@ -79,6 +81,9 @@ class SessionRepositoryISpec
       val resultParsedToJson = Json.parse(updatedRecord.toJson).as[JsObject]
       val dataDecrypted = {
         Json.parse(encryption.crypto.decrypt((resultParsedToJson \ "data").as[EncryptedValue],userAnswersBefore.id)).as[JsObject]
+      }
+      val businessAddressDecrypted = {
+        Json.parse(encryption.crypto.decrypt((resultParsedToJson \ "address").as[EncryptedValue],userAnswersBefore.id)).as[List[UkAddress]]
       }
       val smallProducerListDecrypted = {
         Json.parse(encryption.crypto.decrypt((resultParsedToJson \ "smallProducerList").as[EncryptedValue],userAnswersBefore.id)).as[List[SmallProducer]]
@@ -94,6 +99,7 @@ class SessionRepositoryISpec
 
       dataDecrypted mustBe userAnswersBefore.data
       smallProducerListDecrypted mustBe userAnswersBefore.smallProducerList
+      businessAddressDecrypted mustBe userAnswersBefore.address
       packagingSiteListDecrypted mustBe userAnswersBefore.packagingSiteList
       warehouseListDecrypted mustBe userAnswersBefore.warehouseList
       (resultParsedToJson \ "submitted").get.as[Boolean] mustBe userAnswersBefore.submitted
@@ -118,6 +124,7 @@ class SessionRepositoryISpec
         updatedRecord.id mustBe userAnswersBefore.id
         updatedRecord.submitted mustBe userAnswersBefore.submitted
         updatedRecord.data mustBe userAnswersBefore.data
+        updatedRecord.address mustBe userAnswersBefore.address
         updatedRecord.smallProducerList mustBe userAnswersBefore.smallProducerList
         updatedRecord.warehouseList mustBe userAnswersBefore.warehouseList
         updatedRecord.packagingSiteList mustBe userAnswersBefore.packagingSiteList
@@ -171,6 +178,7 @@ class SessionRepositoryISpec
         updatedRecord.id mustBe userAnswersBefore.id
         updatedRecord.submitted mustBe userAnswersBefore.submitted
         updatedRecord.data mustBe userAnswersBefore.data
+        updatedRecord.address mustBe userAnswersBefore.address
         updatedRecord.smallProducerList mustBe userAnswersBefore.smallProducerList
         updatedRecord.warehouseList mustBe userAnswersBefore.warehouseList
         updatedRecord.packagingSiteList mustBe userAnswersBefore.packagingSiteList
