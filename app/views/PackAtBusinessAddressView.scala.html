@@ -25,7 +25,7 @@
 
 @(form: Form[_], formattedAddress:HtmlContent, mode: Mode)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("packAtBusinessAddress.title"))) {
+@layout(pageTitle = title(form, messages("packAtBusinessAddress.heading"))) {
 
     @formHelper(action = routes.PackAtBusinessAddressController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 

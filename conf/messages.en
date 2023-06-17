@@ -235,6 +235,7 @@ contactDetails.phoneNumber.change.hidden = Telephone Number
 contactDetails.email.change.hidden = Email
 
 packAtBusinessAddress.heading = Your business address
+packAtBusinessAddress.title = Your business address
 packAtBusinessAddress.heading2 = Is your registered business address a UK packaging site that you operate to produce liable drinks?
 packAtBusinessAddress.checkYourAnswersLabel = Is your registered business address a UK packaging site that you operate to produce liable drinks?
 packAtBusinessAddress.error.required = Select yes if packAtBusinessAddress
