@@ -94,6 +94,14 @@ class Navigator @Inject()() {
     }
   }
 
+  private def navigationForStartDate(userAnswers: UserAnswers, mode: Mode): Call = {
+    if(userAnswers.get(page = StartDatePage).isDefined && mode == NormalMode) {
+      routes.PackAtBusinessAddressController.onPageLoad(mode)
+    } else {
+      routes.CheckYourAnswersController.onPageLoad()
+    }
+  }
+
   private val normalRoutes: Page => UserAnswers => Call = {
     case WarehouseDetailsPage => userAnswers => routes.IndexController.onPageLoad
     case ContactDetailsPage => userAnswers => routes.IndexController.onPageLoad()
@@ -107,13 +115,14 @@ class Navigator @Inject()() {
     case HowManyOperatePackagingSitesPage => userAnswers => routes.ContractPackingController.onPageLoad(NormalMode)
     case ThirdPartyPackagersPage => userAnswers => routes.OperatePackagingSitesController.onPageLoad(NormalMode)
     case PackagingSiteDetailsPage => userAnswers => routes.IndexController.onPageLoad()
-    case StartDatePage => userAnswers => routes.IndexController.onPageLoad()
+    case StartDatePage => userAnswers => navigationForStartDate(userAnswers, NormalMode)
     case OrganisationTypePage => userAnswers => navigationForOrganisationType(userAnswers, NormalMode)
     case HowManyLitresGloballyPage => userAnswers => navigationForHowManyLitresGloballyNormalMode(userAnswers)
     case _ => _ => routes.IndexController.onPageLoad()
   }
 
   private val checkRouteMap: Page => UserAnswers => Option[String] => Call = {
+    case StartDatePage => userAnswers => _ => navigationForStartDate(userAnswers, CheckMode)
     case ContractPackingPage => userAnswers => _ => navigationForContractPacking(userAnswers, CheckMode)
     case OperatePackagingSitesPage => userAnswers => _ =>  navigationForOperatePackagingSites(userAnswers, CheckMode)
     case ImportsPage => userAnswers => _ => navigationForImports(userAnswers, CheckMode)
