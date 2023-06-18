@@ -277,3 +277,8 @@ addressLookupFrontend.businessAddress.editPageLabels.line2Label = Address line 2
 addressLookupFrontend.businessAddress.editPageLabels.line3Label = Address line 3 (optional)
 addressLookupFrontend.businessAddress.editPageLabels.townLabel = Address line 4 (optional)
 addressLookupFrontend.businessAddress.editPageLabels.postcodeLabel = Postcode
+
+removePackagingSiteDetails.title = Are you sure you want to remove this packaging site?
+removePackagingSiteDetails.heading = Are you sure you want to remove this packaging site?
+removePackagingSiteDetails.error.required = Select yes if you want to remove this packaging site
+removePackagingSiteDetails.change.hidden = Confirm remove this packaging site
