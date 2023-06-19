@@ -18,6 +18,7 @@ package base
 
 import config.FrontendAppConfig
 import controllers.actions._
+import controllers.routes
 import models.backend.{Site, UkAddress}
 import models.{Contact, IndividualDetails, LitresInBands, OrganisationDetails, RetrievedActivity, RetrievedSubscription, RosmRegistration, RosmWithUtr, UserAnswers}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
@@ -29,7 +30,7 @@ import play.api.i18n.{Lang, Messages, MessagesApi, MessagesImpl}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Writes
-import play.api.mvc.MessagesControllerComponents
+import play.api.mvc.{Call, MessagesControllerComponents}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.stubControllerComponents
 import queries.Settable
@@ -87,6 +88,8 @@ trait SpecBase
     with ScalaFutures
     with IntegrationPatience
     with BeforeAndAfterEach {
+
+  def recoveryCall: Call = routes.JourneyRecoveryController.onPageLoad()
 
   def identifier: String = "id"
   val sdilNumber: String = "XKSDIL000000022"

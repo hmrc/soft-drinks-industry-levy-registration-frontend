@@ -135,34 +135,34 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
               }
             }
           }
-//
-//          "when the session already contains data for page" in {
-//            given
-//              .commonPrecondition
-//
-//            setAnswers(userAnswers)
-//            getAnswers(userAnswers.id).get.warehouseList.size mustBe 1
-//            WsTestClient.withClient { client =>
-//              val yesSelected = key == "yes"
-//              val result = createClientRequestPOST(
-//                client, baseUrl + normalRoutePath(indexOfWarehouseToBeRemoved), Json.obj("value" -> yesSelected.toString)
-//              )
-//
-//              whenReady(result) { res =>
-//                res.status mustBe 303
-//                res.header(HeaderNames.LOCATION) mustBe Some(defaultCall.url)
-//                val userAnswersAfterTest = getAnswers(userAnswers.id)
-//                val dataStoredForPage = userAnswersAfterTest.fold[Option[Boolean]](None)(_.get(RemoveWarehouseDetailsPage))
-//                if(yesSelected) {
-//                  userAnswersAfterTest.get.warehouseList.size mustBe 0
-//                } else {
-//                  userAnswersAfterTest.get.warehouseList.size mustBe 1
-//                }
-//                dataStoredForPage.nonEmpty mustBe true
-//                dataStoredForPage.get mustBe yesSelected
-//              }
-//            }
-//          }
+
+          "when the session already contains data for page" in {
+            given
+              .commonPrecondition
+
+            setAnswers(userAnswers)
+            getAnswers(userAnswers.id).get.warehouseList.size mustBe 1
+            WsTestClient.withClient { client =>
+              val yesSelected = key == "yes"
+              val result = createClientRequestPOST(
+                client, baseUrl + normalRoutePath(indexOfWarehouseToBeRemoved), Json.obj("value" -> yesSelected.toString)
+              )
+
+              whenReady(result) { res =>
+                res.status mustBe 303
+                res.header(HeaderNames.LOCATION) mustBe Some(defaultCall.url)
+                val userAnswersAfterTest = getAnswers(userAnswers.id)
+                val dataStoredForPage = userAnswersAfterTest.fold[Option[Boolean]](None)(_.get(RemoveWarehouseDetailsPage))
+                if(yesSelected) {
+                  userAnswersAfterTest.get.warehouseList.size mustBe 0
+                } else {
+                  userAnswersAfterTest.get.warehouseList.size mustBe 1
+                }
+                dataStoredForPage.nonEmpty mustBe true
+                dataStoredForPage.get mustBe yesSelected
+              }
+            }
+          }
         }
       }
     }

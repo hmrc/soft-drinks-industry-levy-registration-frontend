@@ -1,5 +1,6 @@
 package testSupport
 
+import controllers.routes
 import models._
 import models.backend.{Site, UkAddress}
 import org.scalatest.TryValues
@@ -99,6 +100,8 @@ trait ITCoreTestData extends TryValues {
   val producerName = Some("Super Cola Ltd")
 
   def identifier = "some-id"
+
+  val defaultCall = routes.IndexController.onPageLoad
 
   implicit val duration = 5.seconds
   def emptyUserAnswers = UserAnswers(identifier, Json.obj())
