@@ -20,11 +20,6 @@ import models.backend.UkAddress
 import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.govukfrontend.views.Aliases.HtmlContent
 
-
-  // this could be passed into view maybe and uses
-
-
-
 object AddressFormattingHelper {
 
   def formatBusinessAddress(ukAddress: UkAddress, tradingName: Option[String]): HtmlContent = {

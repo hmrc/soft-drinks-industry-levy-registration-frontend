@@ -3,6 +3,7 @@ package testSupport.preConditions
 import com.github.tomakehurst.wiremock.client.WireMock._
 import models.backend.{Site, UkAddress}
 import models.{Contact, IndividualDetails, OrganisationDetails, RetrievedActivity, RetrievedSubscription, RosmRegistration}
+import play.api.http.Status.ACCEPTED
 import play.api.libs.json.Json
 
 import java.time.LocalDate
@@ -59,13 +60,36 @@ case class SdilBackendStub()
   val aSubscriptionWithDeRegDate = aSubscription.copy(
     deregDate = Some(LocalDate.of(2022, 2, 11)))
 
-
   def retrieveSubscription(identifier: String, refNum: String) = {
     stubFor(
       get(
         urlPathMatching(s"/subscription/$identifier/$refNum"))
         .willReturn(
           ok(Json.toJson(aSubscription).toString())))
+    builder
+  }
+  def checkPendingQueueDoesntExist(utr: String) = {
+    stubFor(
+      get(
+      urlPathMatching(s"/check-enrolment-status/$utr"))
+      .willReturn(notFound())
+    )
+    builder
+  }
+  def checkPendingQueuePending(utr: String) = {
+    stubFor(
+      get(
+        urlPathMatching(s"/check-enrolment-status/$utr"))
+        .willReturn(status(ACCEPTED))
+    )
+    builder
+  }
+  def checkPendingQueueRegistered(utr: String) = {
+    stubFor(
+      get(
+        urlPathMatching(s"/check-enrolment-status/$utr"))
+        .willReturn(ok())
+    )
     builder
   }
 

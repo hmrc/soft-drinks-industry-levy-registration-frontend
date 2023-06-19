@@ -106,3 +106,9 @@ POST       /change-warehouses                  controllers.WarehouseDetailsContr
 
 GET        /packaging-site-details/remove/:ref                        controllers.RemovePackagingSiteDetailsController.onPageLoad(ref: String)
 POST       /packaging-site-details/remove/:ref                        controllers.RemovePackagingSiteDetailsController.onSubmit(ref: String)
+
+GET        /verify                        controllers.VerifyController.onPageLoad(mode: Mode = NormalMode)
+POST       /verify                        controllers.VerifyController.onSubmit(mode: Mode = NormalMode)
+GET        /change-verify                  controllers.VerifyController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-verify                  controllers.VerifyController.onSubmit(mode: Mode = CheckMode)
+

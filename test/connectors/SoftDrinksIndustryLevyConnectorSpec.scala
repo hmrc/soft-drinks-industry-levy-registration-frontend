@@ -17,14 +17,16 @@
 package connectors
 
 import base.SpecBase
-import models.{OptRetrievedSubscription, RetrievedSubscription, RosmRegistration}
+import models.{OptRetrievedSubscription, RetrievedSubscription, RosmRegistration, RosmWithUtr}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.http.Status.{ACCEPTED, NOT_FOUND, OK}
 import play.api.libs.json.Json
 import repositories.{CacheMap, SDILSessionCache}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
+import utilities.GenericLogger
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -35,7 +37,7 @@ class SoftDrinksIndustryLevyConnectorSpec extends SpecBase with MockitoSugar wit
 
   val mockHttp = mock[HttpClient]
   val mockSDILSessionCache = mock[SDILSessionCache]
-  val softDrinksIndustryLevyConnector = new SoftDrinksIndustryLevyConnector(http =mockHttp, frontendAppConfig, mockSDILSessionCache)
+  val softDrinksIndustryLevyConnector = new SoftDrinksIndustryLevyConnector(http = mockHttp, frontendAppConfig, mockSDILSessionCache, application.injector.instanceOf[GenericLogger])
 
   implicit val hc = HeaderCarrier()
 
@@ -46,10 +48,10 @@ class SoftDrinksIndustryLevyConnectorSpec extends SpecBase with MockitoSugar wit
   "SoftDrinksIndustryLevyConnector" - {
 
     s"should not call the backend and return the rosm registration" in{
-      when(mockSDILSessionCache.fetchEntry[RosmRegistration](any(), any())(any()))
+      when(mockSDILSessionCache.fetchEntry[RosmWithUtr](any(), any())(any()))
       .thenReturn(Future.successful(Some(rosmRegistration)))
 
-      val res = softDrinksIndustryLevyConnector.retreiveRosmSubscription(utr = utr, rosmRegistration.safeId)
+      val res = softDrinksIndustryLevyConnector.retreiveRosmSubscription(utr = utr, "foo")
       whenReady(
         res
       ) {
@@ -62,7 +64,7 @@ class SoftDrinksIndustryLevyConnectorSpec extends SpecBase with MockitoSugar wit
       when(mockSDILSessionCache.fetchEntry[RosmRegistration](any(), any())(any()))
         .thenReturn(Future.successful(None))
       when(mockHttp.GET[Option[RosmRegistration]](any(),any(), any())(any(), any(), any())).thenReturn(Future.successful(None))
-      val res = softDrinksIndustryLevyConnector.retreiveRosmSubscription(sdilNumber, rosmRegistration.safeId)
+      val res = softDrinksIndustryLevyConnector.retreiveRosmSubscription("utr here", "foo")
       whenReady(
         res
       ) {
@@ -74,12 +76,11 @@ class SoftDrinksIndustryLevyConnectorSpec extends SpecBase with MockitoSugar wit
     "should call the backend, update the cache" - {
       "and return the rosm when one is returned" in {
         when(mockSDILSessionCache.fetchEntry[RosmRegistration](any(), any())(any())).thenReturn(Future.successful(None))
-        when(mockHttp.GET[Option[RosmRegistration]](any(),any(), any())(any(), any(), any())).thenReturn(Future.successful(Some(rosmRegistration)))
+        when(mockHttp.GET[Option[RosmRegistration]](any(),any(), any())(any(), any(), any())).thenReturn(Future.successful(Some(rosmRegistration.rosmRegistration)))
         when(mockSDILSessionCache.save[RosmRegistration](any, any, any)(any())).thenReturn(Future.successful(CacheMap("test", Map("ROSM_REGISTRATION" -> Json.toJson(rosmRegistration)))))
-        val res = softDrinksIndustryLevyConnector.retreiveRosmSubscription(utr = utr, rosmRegistration.safeId)
+        val res = softDrinksIndustryLevyConnector.retreiveRosmSubscription(utr = utr, "foo")
         whenReady(
-          res
-        ) {
+          res) {
           response =>
             response mustEqual Some(rosmRegistration)
         }

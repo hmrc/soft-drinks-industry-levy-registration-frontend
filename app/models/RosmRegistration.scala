@@ -19,6 +19,7 @@ package models
 import models.backend.UkAddress
 import play.api.libs.json._
 
+case class RosmWithUtr(utr: String, rosmRegistration: RosmRegistration)
 case class RosmRegistration(
                              safeId: String,
                              organisation: Option[OrganisationDetails],
@@ -73,4 +74,7 @@ case class IndividualDetails(firstName: String, lastName: String)
 
 object IndividualDetails {
   implicit val format: Format[IndividualDetails] = Json.format[IndividualDetails]
+}
+object RosmWithUtr {
+  implicit val format: Format[RosmWithUtr] = Json.format[RosmWithUtr]
 }

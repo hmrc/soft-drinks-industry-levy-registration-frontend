@@ -17,82 +17,138 @@
 package controllers.actions
 
 import base.SpecBase
-import connectors.SoftDrinksIndustryLevyConnector
+import connectors.{DoesNotExist, Pending, Registered, SoftDrinksIndustryLevyConnector}
+import controllers.routes
+import models.Identify
 import models.requests.{DataRequest, OptionalDataRequest}
-import models.{LitresInBands, UserAnswers}
+import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.HowManyContractPackingPage
+import pages.IdentifyPage
 import play.api.mvc.Result
+import play.api.mvc.Results.Redirect
 import play.api.test.FakeRequest
-import play.api.test.Helpers.running
 import uk.gov.hmrc.http.HeaderCarrier
+import utilities.GenericLogger
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class DataRequiredActionSpec extends SpecBase with MockitoSugar {
 
-  class Harness(connector: SoftDrinksIndustryLevyConnector) extends DataRequiredActionImpl(connector) {
+  class Harness(connector: SoftDrinksIndustryLevyConnector) extends DataRequiredActionImpl(connector, application.injector.instanceOf[GenericLogger]) {
     def callRefine[A](request: OptionalDataRequest[A]): Future[Either[Result, DataRequest[A]]] = refine(request)
   }
+  implicit val hc: HeaderCarrier = HeaderCarrier()
+  val connector = mock[SoftDrinksIndustryLevyConnector]
+  val request = FakeRequest()
 
   "Data Required Action" - {
 
-    "when there is no data in the cache" - {
+    "when there is no user answers, user is redirected away" in {
 
-      "must set Rosm to 'None' in the request with no user answers" in {
+      val action = new Harness(connector)
+      val result = action.callRefine(OptionalDataRequest(request, "internalId", userAnswers = None)).futureValue
+      result.left.toOption.get mustBe Redirect(routes.JourneyRecoveryController.onPageLoad())
+    }
+    "when there are user answers but user has not answered Identify Page, and has a utr in auth" - {
+      s"should redirect away when pending queue returns $Registered" in {
+        val internalId = "foo"
+        val utr = "bar"
 
-        implicit val hc: HeaderCarrier = HeaderCarrier()
+        when(connector.checkPendingQueue(ArgumentMatchers.eq(utr))(ArgumentMatchers.any())) thenReturn Future.successful(Registered)
+        val action = new Harness(connector)
+        val result = action.callRefine(OptionalDataRequest(request, internalId, authUtr = Some(utr), userAnswers = Some(emptyUserAnswers))).futureValue
 
-        val connecor = mock[SoftDrinksIndustryLevyConnector]
-        when(connecor.retreiveRosmSubscription(sdilNumber, "internalId")) thenReturn Future.successful(None)
-        val action = new Harness(connecor)
+        result.left.toOption.get mustBe Redirect(routes.IndexController.onPageLoad())
+      }
+      s"should redirect away when pending queue returns $Pending" in {
+        val internalId = "foo"
+        val utr = "bar"
 
-        val result = action.callRefine(OptionalDataRequest(FakeRequest(), "internalId", userAnswers = None)).futureValue
+        when(connector.checkPendingQueue(ArgumentMatchers.eq(utr))(ArgumentMatchers.any())) thenReturn Future.successful(Pending)
+        val action = new Harness(connector)
+        val result = action.callRefine(OptionalDataRequest(request, internalId, authUtr = Some(utr), userAnswers = Some(emptyUserAnswers))).futureValue
 
-        result.map(_.rosmRegistration).isLeft mustBe true
+        result.left.toOption.get mustBe Redirect(routes.IndexController.onPageLoad())
+      }
+      s"should call rosm when pending queue returns $DoesNotExist but redirect away when rosm returns None" in {
+        val internalId = "id"
+        val utr = "bar"
+
+        when(connector.checkPendingQueue(ArgumentMatchers.eq(utr))(ArgumentMatchers.any())) thenReturn Future.successful(DoesNotExist)
+        when(connector.retreiveRosmSubscription(ArgumentMatchers.eq(utr), ArgumentMatchers.eq(internalId))(ArgumentMatchers.any())) thenReturn Future.successful(None)
+        val action = new Harness(connector)
+        val result = action.callRefine(OptionalDataRequest(request, internalId, authUtr = Some(utr), userAnswers = Some(emptyUserAnswers))).futureValue
+
+        result.left.toOption.get mustBe Redirect(routes.IndexController.onPageLoad())
+      }
+      s"should call rosm when pending queue returns $DoesNotExist and return success with rosm subscription" in {
+        val internalId = "id"
+        val utr = "bar"
+
+        when(connector.checkPendingQueue(ArgumentMatchers.eq(utr))(ArgumentMatchers.any())) thenReturn Future.successful(DoesNotExist)
+        when(connector.retreiveRosmSubscription(ArgumentMatchers.eq(utr), ArgumentMatchers.eq(internalId))(ArgumentMatchers.any())) thenReturn Future.successful(Some(rosmRegistration))
+        val action = new Harness(connector)
+        val result = action.callRefine(OptionalDataRequest(request, internalId, authUtr = Some(utr), userAnswers = Some(emptyUserAnswers))).futureValue
+
+        val rightResult = result.toOption.get
+        rightResult.rosmWithUtr mustBe rosmRegistration
+        rightResult.userAnswers mustBe emptyUserAnswers
+        rightResult.authUtr mustBe Some(utr)
       }
     }
+    s"when there are user answers but user has answered the $IdentifyPage and nothing exists in auth for utr" - {
+      val utr = "foobar"
+      val userAnswersWithIdentifyPage = emptyUserAnswers.set(IdentifyPage, Identify(utr, "foo")).success.value
 
-    "when there is no data in the cache" - {
+      s"should redirect away when pending queue returns $Registered" in {
+        val internalId = "foo"
 
-      "must set Rosm to 'None' in the request with no user answers but no matching utr for the rosm" in {
+        when(connector.checkPendingQueue(ArgumentMatchers.eq(utr))(ArgumentMatchers.any())) thenReturn Future.successful(Registered)
+        val action = new Harness(connector)
+        val result = action.callRefine(OptionalDataRequest(request, internalId, authUtr = None, userAnswers = Some(userAnswersWithIdentifyPage))).futureValue
 
-        implicit val hc: HeaderCarrier = HeaderCarrier()
+        result.left.toOption.get mustBe Redirect(routes.IndexController.onPageLoad())
+      }
+      s"should redirect away when pending queue returns $Pending" in {
+        val internalId = "foo"
 
-        val connecor = mock[SoftDrinksIndustryLevyConnector]
-        when(connecor.retreiveRosmSubscription(sdilNumber, "internalId")) thenReturn Future.successful(None)
-        val action = new Harness(connecor)
-        val userAnswers = UserAnswers(identifier).set(HowManyContractPackingPage, LitresInBands(100, 200)).success.value
-        val result = action.callRefine(OptionalDataRequest(FakeRequest(), "internalId", userAnswers = Some(userAnswers))).futureValue
+        when(connector.checkPendingQueue(ArgumentMatchers.eq(utr))(ArgumentMatchers.any()))thenReturn Future.successful(Pending)
+        val action = new Harness(connector)
+        val result = action.callRefine(OptionalDataRequest(request, internalId, authUtr = None, userAnswers = Some(userAnswersWithIdentifyPage))).futureValue
 
-        result.map(_.rosmRegistration).isLeft mustBe true
+        result.left.toOption.get mustBe Redirect(routes.IndexController.onPageLoad())
+      }
+      s"should call rosm when pending queue returns $DoesNotExist but redirect away when rosm returns None" in {
+        val internalId = "foo"
+
+        when(connector.checkPendingQueue(ArgumentMatchers.eq(utr))(ArgumentMatchers.any())) thenReturn Future.successful(DoesNotExist)
+        when(connector.retreiveRosmSubscription(ArgumentMatchers.eq(utr), ArgumentMatchers.eq(internalId))(ArgumentMatchers.any())) thenReturn Future.successful(None)
+        val action = new Harness(connector)
+        val result = action.callRefine(OptionalDataRequest(request, internalId, authUtr = None, userAnswers = Some(userAnswersWithIdentifyPage))).futureValue
+
+        result.left.toOption.get mustBe Redirect(routes.IndexController.onPageLoad())
+      }
+      s"should call rosm when pending queue returns $DoesNotExist and return success with rosm subscription" in {
+        val internalId = "foo"
+        when(connector.checkPendingQueue(ArgumentMatchers.eq(utr))(ArgumentMatchers.any()))  thenReturn Future.successful(DoesNotExist)
+        when(connector.retreiveRosmSubscription(ArgumentMatchers.eq(utr), ArgumentMatchers.eq(internalId))(ArgumentMatchers.any())) thenReturn Future.successful(Some(rosmRegistration))
+        val action = new Harness(connector)
+        val result = action.callRefine(OptionalDataRequest(request, internalId, authUtr = None, userAnswers = Some(userAnswersWithIdentifyPage))).futureValue
+
+        val rightResult = result.toOption.get
+        rightResult.rosmWithUtr mustBe rosmRegistration
+        rightResult.userAnswers mustBe userAnswersWithIdentifyPage
+        rightResult.authUtr mustBe None
       }
     }
+    s"when user has user answers but no utr and has NOT answered the $IdentifyPage, redirect away" in {
+      val internalId = "foo"
+      val action = new Harness(connector)
+      val result = action.callRefine(OptionalDataRequest(request, internalId, authUtr = None, userAnswers = Some(emptyUserAnswers))).futureValue
 
-    "when there is no data in the cache" - {
-
-      "must set Rosm in the request when there is user answers and a  matching utr for the rosm" in {
-
-        implicit val hc: HeaderCarrier = HeaderCarrier()
-        val userAnswers = UserAnswers(identifier).set(HowManyContractPackingPage, LitresInBands(100, 200)).success.value
-        val application = applicationBuilder(userAnswers = Some(userAnswers), rosmRegistration = rosmRegistration).build()
-
-
-
-        running(application) {
-          val connecor = mock[SoftDrinksIndustryLevyConnector]
-
-          when(connecor.retreiveRosmSubscription(sdilNumber, "internalId")) thenReturn Future.successful(Some(rosmRegistration))
-
-          val action = new Harness(connecor)
-
-          val result = action.callRefine(OptionalDataRequest(FakeRequest(), "internalId", userAnswers = Some(userAnswers))).futureValue
-          result.map(_.rosmRegistration).isRight mustBe false
-        }
-      }
+      result.left.toOption.get mustBe Redirect(routes.IndexController.onPageLoad())
     }
-
   }
 }
