@@ -47,14 +47,14 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
             whenReady(result) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include(Messages("updateRegisteredDetails.removeWarehouseDetails" + ".title"))
+              page.title must include(Messages("removeWarehouseDetails" + ".title"))
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe 2
               radioInputs.get(0).attr("value") mustBe "true"
               radioInputs.get(0).hasAttr("checked") mustBe false
               radioInputs.get(1).attr("value") mustBe "false"
               radioInputs.get(1).hasAttr("checked") mustBe false
-              page.getElementById("warehouseToRemove").text() mustBe "foo, bar wizz"
+              page.getElementById("warehouseToRemove").text() mustBe "foo, bar, wizz"
             }
           }
         }
@@ -96,7 +96,7 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
             whenReady(result) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include(Messages("updateRegisteredDetails.removeWarehouseDetails" + ".title"))
+              page.title must include(Messages("removeWarehouseDetails" + ".title"))
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe 2
               radioInputs.get(0).attr("value") mustBe "true"
@@ -184,14 +184,14 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + Messages("updateRegisteredDetails.removeWarehouseDetails" + ".title"))
+            page.title must include("Error: " + Messages("removeWarehouseDetails" + ".title"))
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")
               .attr("href") mustBe "#value"
-            errorSummary.text() mustBe Messages("updateRegisteredDetails.removeWarehouseDetails" + ".error.required")
-            page.getElementById("warehouseToRemove").text() mustBe "foo, bar wizz"
+            errorSummary.text() mustBe Messages("removeWarehouseDetails" + ".error.required")
+            page.getElementById("warehouseToRemove").text() mustBe "foo, bar, wizz"
             getAnswers(emptyUserAnswers.id).get.warehouseList.size mustBe 1
           }
         }
@@ -273,14 +273,14 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
             res.status mustBe 400
             getAnswers(emptyUserAnswers.id).get.warehouseList.size mustBe 1
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + Messages("updateRegisteredDetails.removeWarehouseDetails" + ".title"))
+            page.title must include("Error: " + Messages("removeWarehouseDetails" + ".title"))
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")
               .attr("href") mustBe "#value"
-            errorSummary.text() mustBe Messages("updateRegisteredDetails.removeWarehouseDetails" + ".error.required")
-            page.getElementById("warehouseToRemove").text() mustBe "foo, bar wizz"
+            errorSummary.text() mustBe Messages("removeWarehouseDetails" + ".error.required")
+            page.getElementById("warehouseToRemove").text() mustBe "foo, bar, wizz"
           }
         }
       }
