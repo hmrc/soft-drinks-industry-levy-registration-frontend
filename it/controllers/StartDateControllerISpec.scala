@@ -295,8 +295,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
             errorSummary
               .select("a")
               .attr("href") mustBe "#startDate.day"
-            errorSummary.text() mustBe Messages("startDate" + ".error.invalid"
-            )
+            errorSummary.text() mustBe "The date you became liable to register must be a real date, like 31 7 2020"
           }
         }
       }
@@ -467,8 +466,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
             errorSummary
               .select("a")
               .attr("href") mustBe "#startDate.day"
-            errorSummary.text() mustBe Messages("startDate" + ".error.invalid"
-            )
+            errorSummary.text() mustBe "The date you became liable to register must be a real date, like 31 7 2020"
           }
         }
       }
