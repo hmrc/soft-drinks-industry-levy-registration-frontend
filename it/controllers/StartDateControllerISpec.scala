@@ -1,5 +1,6 @@
 package controllers
 
+import models.NormalMode
 import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
 import pages.StartDatePage
@@ -149,7 +150,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
 
             whenReady(result) { res =>
               res.status mustBe 303
-              res.header(HeaderNames.LOCATION) mustBe Some(routes.IndexController.onPageLoad().url)
+              res.header(HeaderNames.LOCATION) mustBe Some(routes.PackAtBusinessAddressController.onPageLoad(NormalMode).url)
               val dataStoredForPage = getAnswers(identifier).fold[Option[LocalDate]](None)(_.get(StartDatePage))
               dataStoredForPage.nonEmpty mustBe true
               dataStoredForPage.get mustBe date
@@ -171,7 +172,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
 
             whenReady(result) { res =>
               res.status mustBe 303
-              res.header(HeaderNames.LOCATION) mustBe Some(routes.IndexController.onPageLoad().url)
+              res.header(HeaderNames.LOCATION) mustBe Some(routes.PackAtBusinessAddressController.onPageLoad(NormalMode).url)
               val dataStoredForPage = getAnswers(identifier).fold[Option[LocalDate]](None)(_.get(StartDatePage))
               dataStoredForPage.nonEmpty mustBe true
               dataStoredForPage.get mustBe date
