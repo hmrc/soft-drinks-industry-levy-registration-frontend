@@ -19,7 +19,7 @@ package base
 import config.FrontendAppConfig
 import controllers.actions._
 import models.backend.{Site, UkAddress}
-import models.{Contact, IndividualDetails, LitresInBands, OrganisationDetails, RetrievedActivity, RetrievedSubscription, RosmRegistration, UserAnswers}
+import models.{Contact, IndividualDetails, LitresInBands, OrganisationDetails, RetrievedActivity, RetrievedSubscription, RosmRegistration, RosmWithUtr, UserAnswers}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -96,12 +96,12 @@ trait SpecBase
   implicit lazy val messagesProvider = MessagesImpl(Lang("en"), messagesAPI)
   lazy val mcc = application.injector.instanceOf[MessagesControllerComponents]
   lazy val frontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
-  val rosmRegistration = RosmRegistration(
+  val rosmRegistration = RosmWithUtr("1234567891", RosmRegistration(
     safeId = "safeid",
     organisation = Some(OrganisationDetails(organisationName = "Super Lemonade Plc")),
     individual = Some(IndividualDetails(firstName = "Ava" , lastName = "Adams")),
     address = UkAddress(List("105B Godfrey Marchant Grove", "Guildford"), "GU14 8NL")
-  )
+  ))
 
 
 
@@ -113,7 +113,7 @@ trait SpecBase
 
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 
-  protected def applicationBuilder(hasCTEnrolment: Boolean = false, utr: Option[String] = None, userAnswers: Option[UserAnswers] = None, rosmRegistration:RosmRegistration = rosmRegistration):
+  protected def applicationBuilder(hasCTEnrolment: Boolean = false, utr: Option[String] = None, userAnswers: Option[UserAnswers] = None, rosmRegistration: RosmWithUtr = rosmRegistration):
   GuiceApplicationBuilder = {
     val bodyParsers = stubControllerComponents().parsers.defaultBodyParser
     new GuiceApplicationBuilder()

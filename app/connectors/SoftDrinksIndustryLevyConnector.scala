@@ -18,8 +18,10 @@ package connectors
 
 import config.FrontendAppConfig
 import models._
+import play.api.http.Status.{ACCEPTED, OK}
 import repositories.{SDILSessionCache, SDILSessionKeys}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpException, HttpResponse, NotFoundException}
+import utilities.GenericLogger
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -27,7 +29,8 @@ import scala.concurrent.{ExecutionContext, Future}
 class SoftDrinksIndustryLevyConnector @Inject()(
                                                  val http: HttpClient,
                                                  frontendAppConfig: FrontendAppConfig,
-                                                 sdilSessionCache: SDILSessionCache
+                                                 sdilSessionCache: SDILSessionCache,
+                                                 genericLogger: GenericLogger
                                                )(implicit ec: ExecutionContext) {
 
   lazy val sdilUrl: String = frontendAppConfig.sdilBaseUrl
@@ -36,24 +39,36 @@ class SoftDrinksIndustryLevyConnector @Inject()(
 
 
   def retreiveRosmSubscription(utr: String, internalId: String)
-                              (implicit hc: HeaderCarrier): Future[Option[RosmRegistration]] = {
-    sdilSessionCache.fetchEntry[RosmRegistration](internalId, SDILSessionKeys.ROSM_REGISTRATION).flatMap{
-      case Some(rosmRegistration) => Future.successful(rosmRegistration).map{_ =>
-        Some(rosmRegistration)
-      }
-      case None =>
+                              (implicit hc: HeaderCarrier): Future[Option[RosmWithUtr]] = {
+    sdilSessionCache.fetchEntry[RosmWithUtr](internalId, SDILSessionKeys.ROSM_REGISTRATION).flatMap{
+      case Some(rosmReg) if rosmReg.utr == utr => Future.successful(Some(rosmReg))
+      case _ =>
         http.GET[Option[RosmRegistration]](getRosmRegistration(utr)).flatMap {
           case Some(rosmReg) =>
-            sdilSessionCache.save(internalId, SDILSessionKeys.ROSM_REGISTRATION,
-              RosmRegistration(rosmReg.safeId,rosmReg.organisation,rosmReg.individual,rosmReg.address)).map{_ =>
-                Some(rosmReg)
-              }
+            val rosmWithUtr = RosmWithUtr(utr, RosmRegistration(rosmReg.safeId,rosmReg.organisation,rosmReg.individual,rosmReg.address))
+            sdilSessionCache.save(internalId, SDILSessionKeys.ROSM_REGISTRATION, rosmWithUtr).map{_ =>Some(rosmWithUtr)}
           case None => Future.successful(None)
         }
     }
   }
 
   private def getSubscriptionUrl(identifierValue: String, identifierType: String): String = s"$sdilUrl/subscription/$identifierType/$identifierValue"
+
+  def checkPendingQueue(utr: String)(implicit hc: HeaderCarrier): Future[SubscriptionStatus] = {
+    def onError(status: Int) = {
+      genericLogger.logger.warn(s"Returned unexpected status $status for ${hc.requestId} when attempting to check pending queue")
+      throw new Exception(s"Unexpected status from Soft Drinks Levy BE when checking for registration ${hc.requestId} $status")
+    }
+
+    http.GET[HttpResponse](s"$sdilUrl/check-enrolment-status/$utr").map(_.status match {
+      case OK => Registered
+      case ACCEPTED => Pending
+      case status => onError(status)
+    }) recover {
+      case _: NotFoundException => DoesNotExist
+      case e: HttpException => onError(e.responseCode)
+    }
+  }
 
   def retrieveSubscription(identifierValue: String, identifierType: String, internalId: String)
                           (implicit hc: HeaderCarrier): Future[Option[RetrievedSubscription]] = {

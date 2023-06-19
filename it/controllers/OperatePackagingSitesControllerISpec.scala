@@ -8,7 +8,6 @@ import play.api.http.HeaderNames
 import play.api.i18n.Messages
 import play.api.libs.json.Json
 import play.api.test.WsTestClient
-import uk.gov.hmrc.auth.core.User
 
 class OperatePackagingSitesControllerISpec extends ControllerITTestHelper {
 

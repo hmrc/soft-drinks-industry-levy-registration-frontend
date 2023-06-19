@@ -16,7 +16,7 @@
 
 package controllers.actions
 
-import connectors.SoftDrinksIndustryLevyConnector
+import connectors.{DoesNotExist, Pending, Registered, SoftDrinksIndustryLevyConnector}
 import controllers.routes
 import models.UserAnswers
 import models.requests.{DataRequest, OptionalDataRequest}
@@ -25,35 +25,57 @@ import play.api.mvc.Results.Redirect
 import play.api.mvc.{ActionRefiner, Result}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
+import utilities.GenericLogger
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class DataRequiredActionImpl @Inject()(sdilConnector: SoftDrinksIndustryLevyConnector)
+class DataRequiredActionImpl @Inject()(sdilConnector: SoftDrinksIndustryLevyConnector, genericLogger: GenericLogger)
                                       (implicit val executionContext: ExecutionContext) extends DataRequiredAction  {
 
-  private def findRosm[A](utr: String, request: OptionalDataRequest[A], data: UserAnswers): Future[Either[Result, DataRequest[A]]] ={
-    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
+  private def findRosm[A](utr: String, request: OptionalDataRequest[A], data: UserAnswers)(implicit hc: HeaderCarrier): Future[Either[Result, DataRequest[A]]] ={
 
-    sdilConnector.retreiveRosmSubscription(utr, request.internalId).map(result => result match {
+    sdilConnector.retreiveRosmSubscription(utr, request.internalId).map{
       case Some(result) =>
         Right(DataRequest(request, request.internalId, request.hasCTEnrolment, request.authUtr, data, result))
       case None =>
+        genericLogger.logger.warn(s"User has no rosm data for UTR on auth or from Identify ${hc.requestId}")
         Left(Redirect(routes.IndexController.onPageLoad()))
-    })
+    }
+  }
+
+  def checkPendingSubscriptions(utr: String)(implicit hc: HeaderCarrier): Future[Either[Result, Unit]] = {
+    sdilConnector.checkPendingQueue(utr).map {
+      case Registered =>
+        genericLogger.logger.info(s"User already registered on pending queue ${hc.requestId}")
+        Left(Redirect(routes.IndexController.onPageLoad()))
+      case Pending =>
+        genericLogger.logger.info(s"User already pending subscription on pending queue ${hc.requestId}")
+        Left(Redirect(routes.IndexController.onPageLoad()))
+      case DoesNotExist => Right((): Unit)
+    }
   }
 
   override protected def refine[A](request: OptionalDataRequest[A]): Future[Either[Result, DataRequest[A]]] = {
+    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
+    def checkPendingAndCallRosm(utr: String, data: UserAnswers): Future[Either[Result, DataRequest[A]]] = {
+      checkPendingSubscriptions(utr).flatMap {
+        case Left(result) => Future.successful(Left(result))
+        case Right(_) => findRosm(utr, request, data)
+      }
+    }
 
     request.userAnswers match {
               case None =>
+                genericLogger.logger.info(s"User has no user answers ${hc.requestId}")
                 Future.successful(Left(Redirect(routes.JourneyRecoveryController.onPageLoad())))
               case Some(data) =>
                 val manualUtr = data.get(IdentifyPage).map(answers => answers.utr)
                 (manualUtr, request.authUtr) match {
-                  case (None, Some(utr)) => findRosm(utr,  request, data)
-                  case (Some(utr),  _) => findRosm(utr,  request, data)
+                  case (None, Some(utr)) => checkPendingAndCallRosm(utr, data)
+                  case (Some(utr),  _) => checkPendingAndCallRosm(utr, data)
                   case (None, None) =>
+                    genericLogger.logger.info(s"User has no utr in auth or from Identify ${hc.requestId}")
                     Future.successful(Left(Redirect(routes.IndexController.onPageLoad())))
       }
     }

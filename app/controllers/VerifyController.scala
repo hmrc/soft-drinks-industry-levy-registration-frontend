@@ -17,31 +17,32 @@
 package controllers
 
 import controllers.actions._
-import forms.PackAtBusinessAddressFormProvider
-import handlers.ErrorHandler
+import forms.VerifyFormProvider
+
+import javax.inject.Inject
 import models.{Mode, RosmRegistration}
 import navigation.Navigator
-import pages.PackAtBusinessAddressPage
+import pages.VerifyPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SessionService
+import views.html.VerifyView
+import handlers.ErrorHandler
+
+import scala.concurrent.{ExecutionContext, Future}
 import utilities.GenericLogger
-import views.html.PackAtBusinessAddressView
 import viewmodels.AddressFormattingHelper
 
-import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
-
-class PackAtBusinessAddressController @Inject()(
+class VerifyController @Inject()(
                                        override val messagesApi: MessagesApi,
                                        val sessionService: SessionService,
                                        val navigator: Navigator,
                                        identify: IdentifierAction,
                                        getData: DataRetrievalAction,
                                        requireData: DataRequiredAction,
-                                       formProvider: PackAtBusinessAddressFormProvider,
+                                       formProvider: VerifyFormProvider,
                                        val controllerComponents: MessagesControllerComponents,
-                                       view: PackAtBusinessAddressView,
+                                       view: VerifyView,
                                        val errorHandler: ErrorHandler,
                                        val genericLogger: GenericLogger
                                      )(implicit ec: ExecutionContext) extends ControllerHelper {
@@ -53,13 +54,12 @@ class PackAtBusinessAddressController @Inject()(
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-
-      val preparedForm = request.userAnswers.get(PackAtBusinessAddressPage) match {
+      val preparedForm = request.userAnswers.get(VerifyPage) match {
         case None => form
         case Some(value) => form.fill(value)
       }
 
-      Ok(view(preparedForm, formattedAddress(request.rosmWithUtr.rosmRegistration), mode))
+      Ok(view(preparedForm, mode, request.rosmWithUtr.utr, formattedAddress(request.rosmWithUtr.rosmRegistration)))
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
@@ -67,11 +67,11 @@ class PackAtBusinessAddressController @Inject()(
 
       form.bindFromRequest().fold(
         formWithErrors =>
-          Future.successful(BadRequest(view(formWithErrors, formattedAddress(request.rosmWithUtr.rosmRegistration), mode))),
+          Future.successful(BadRequest(view(formWithErrors, mode, request.rosmWithUtr.utr, formattedAddress(request.rosmWithUtr.rosmRegistration)))),
 
         value => {
-          val updatedAnswers = request.userAnswers.set(PackAtBusinessAddressPage, value)
-          updateDatabaseAndRedirect(updatedAnswers, PackAtBusinessAddressPage, mode)
+          val updatedAnswers = request.userAnswers.set(VerifyPage, value)
+          updateDatabaseAndRedirect(updatedAnswers, VerifyPage, mode)
         }
       )
   }

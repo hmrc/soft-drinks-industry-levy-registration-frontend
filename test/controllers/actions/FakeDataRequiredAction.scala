@@ -18,13 +18,13 @@ package controllers.actions
 
 import controllers.routes
 import models.requests.{DataRequest, OptionalDataRequest}
-import models.{RosmRegistration, UserAnswers}
+import models.{RosmRegistration, RosmWithUtr, UserAnswers}
 import play.api.mvc.Result
 import play.api.mvc.Results.Redirect
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class FakeDataRequiredAction(rosmRegistration: RosmRegistration, userAnswers: Option[UserAnswers]) extends DataRequiredAction {
+class FakeDataRequiredAction(rosmRegistration: RosmWithUtr, userAnswers: Option[UserAnswers]) extends DataRequiredAction {
 
   override protected def refine[A](request: OptionalDataRequest[A]): Future[Either[Result, DataRequest[A]]] = {
     userAnswers match {
