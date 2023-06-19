@@ -21,6 +21,17 @@ trait ITCoreTestData extends TryValues {
     Map("yes" -> yesSelected,"no" -> noSelected)
   }
 
+  def userAnswersForUpdateRegisteredDetailsRemoveWarehouseDetailsPage(index: String): Map[String, UserAnswers] = {
+    val yesSelected = emptyUserAnswers
+      .copy(warehouseList = Map(index -> Warehouse(None, ukAddress)))
+      .set(RemoveWarehouseDetailsPage, true).success.value
+
+    val noSelected = emptyUserAnswers
+      .copy(warehouseList = Map(index -> Warehouse(None, ukAddress)))
+      .set(RemoveWarehouseDetailsPage, false).success.value
+    Map("yes" -> yesSelected, "no" -> noSelected)
+  }
+
   val contactDetails: ContactDetails = ContactDetails("test", "test", "89432789234", "test@example.com")
   val contactDetailsDiff: ContactDetails = ContactDetails("diff", "diff", "8793820901", "sample@example.com")
 
@@ -81,6 +92,8 @@ trait ITCoreTestData extends TryValues {
   )
 
   val dateMap = Map("day" -> day, "month" -> month, "year" -> year)
+
+  val ukAddress = UkAddress(List("foo", "bar"),"wizz", None)
 
   def sdilNumber = "XKSDIL000000022"
   val producerName = Some("Super Cola Ltd")

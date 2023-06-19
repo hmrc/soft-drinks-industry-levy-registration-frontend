@@ -28,6 +28,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SessionService
 import views.html.WarehouseDetailsView
 import handlers.ErrorHandler
+import models.backend.UkAddress
 import viewmodels.govuk.SummaryListFluency
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -59,6 +60,9 @@ class WarehouseDetailsController @Inject()(
           case None => form
           case Some(value) => form.fill(value)
         }
+//        TODO: LOCAL WORKAROUND
+//        def warehouse1 = Warehouse(Some("Warehouse One"), UkAddress(List("29 Station Place", "The Railyard", "Cambridge"), "CB1 2FP"))
+//        val warehouses = Map("1" -> warehouse1)
         val warehouses = request.userAnswers.warehouseList
 
         Ok(view(preparedForm, mode, createWarehouseSummary(warehouses), warehouses.size))

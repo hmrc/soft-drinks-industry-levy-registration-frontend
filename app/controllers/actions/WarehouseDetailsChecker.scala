@@ -29,7 +29,9 @@ class WarehouseDetailsChecker @Inject()(genericLogger: GenericLogger)(implicit v
 
   def checkWarehouseDetails(userAnswers: UserAnswers)(action: => Result): Result = {
     userAnswers match {
+//      TODO: LOCAL WORKAROUND
       case answers if answers.warehouseList.nonEmpty =>
+//      case answers if answers.warehouseList.nonEmpty || true =>
         action
       case _ =>
         genericLogger.logger.warn("Failed to load the requested page due to no warehouse being present")
