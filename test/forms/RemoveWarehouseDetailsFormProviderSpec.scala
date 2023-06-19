@@ -21,7 +21,7 @@ import play.api.data.FormError
 
 class RemoveWarehouseDetailsFormProviderSpec extends BooleanFieldBehaviours {
 
-  val requiredKey = "updateRegisteredDetails.removeWarehouseDetails.error.required"
+  val requiredKey = "removeWarehouseDetails.error.required"
   val invalidKey = "error.boolean"
 
   val form = new RemoveWarehouseDetailsFormProvider()()

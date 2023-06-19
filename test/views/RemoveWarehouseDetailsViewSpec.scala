@@ -50,7 +50,7 @@ class RemoveWarehouseDetailsViewSpec extends ViewSpecHelper {
 
     val document = doc(view(form, NormalMode, html, index)(request, messages(application)))
     "should contain the expected title" in {
-      document.title() must include(Messages("updateRegisteredDetails.removeWarehouseDetails" + ".title"))
+      document.title() must include(Messages("removeWarehouseDetails" + ".title"))
     }
 
     "when the form is not preoccupied and has no errors" - {
@@ -205,7 +205,7 @@ class RemoveWarehouseDetailsViewSpec extends ViewSpecHelper {
       val documentWithErrors = doc(htmlWithErrors)
 
       "should have a title containing error" in {
-        val titleMessage = Messages("updateRegisteredDetails.removeWarehouseDetails.title")
+        val titleMessage = Messages("removeWarehouseDetails.title")
         documentWithErrors.title must include("Error: " + titleMessage)
       }
 
@@ -216,7 +216,7 @@ class RemoveWarehouseDetailsViewSpec extends ViewSpecHelper {
         errorSummary
           .select("a")
           .attr("href") mustBe "#value"
-        errorSummary.text() mustBe Messages("updateRegisteredDetails.removeWarehouseDetails.error.required")
+        errorSummary.text() mustBe Messages("removeWarehouseDetails.error.required")
       }
     }
 

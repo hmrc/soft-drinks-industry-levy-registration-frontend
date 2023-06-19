@@ -254,7 +254,6 @@ removeWarehouseDetails.heading = Are yo sure you want to remove this warehouse?
 removeWarehouseDetails.checkYourAnswersLabel = Are you sure you want to remove this warehouse?
 removeWarehouseDetails.error.required = Select yes if you want to remove this warehouse
 
-
 addressLookupFrontend.warehouseDetails.lookupPageLabels.title = Find UK warehouse address
 addressLookupFrontend.warehouseDetails.lookupPageLabels.postcodeLabel = Postcode
 addressLookupFrontend.warehouseDetails.editPageLabels.title = Enter the UK warehouse address
