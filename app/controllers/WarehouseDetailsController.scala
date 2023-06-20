@@ -60,9 +60,6 @@ class WarehouseDetailsController @Inject()(
           case None => form
           case Some(value) => form.fill(value)
         }
-//        TODO: LOCAL WORKAROUND
-//        def warehouse1 = Warehouse(Some("Warehouse One"), UkAddress(List("29 Station Place", "The Railyard", "Cambridge"), "CB1 2FP"))
-//        val warehouses = Map("1" -> warehouse1)
         val warehouses = request.userAnswers.warehouseList
 
         Ok(view(preparedForm, mode, createWarehouseSummary(warehouses), warehouses.size))
