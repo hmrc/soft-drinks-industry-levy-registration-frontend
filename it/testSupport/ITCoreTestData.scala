@@ -1,5 +1,6 @@
 package testSupport
 
+import controllers.routes
 import models._
 import models.backend.{Site, UkAddress}
 import org.scalatest.TryValues
@@ -19,6 +20,17 @@ trait ITCoreTestData extends TryValues {
       .set(WarehouseDetailsPage, false).success.value
       .copy(warehouseList = warehouseListWith1)
     Map("yes" -> yesSelected,"no" -> noSelected)
+  }
+
+  def userAnswersForUpdateRegisteredDetailsRemoveWarehouseDetailsPage(index: String): Map[String, UserAnswers] = {
+    val yesSelected = emptyUserAnswers
+      .copy(warehouseList = Map(index -> Warehouse(None, ukAddress)))
+      .set(RemoveWarehouseDetailsPage, true).success.value
+
+    val noSelected = emptyUserAnswers
+      .copy(warehouseList = Map(index -> Warehouse(None, ukAddress)))
+      .set(RemoveWarehouseDetailsPage, false).success.value
+    Map("yes" -> yesSelected, "no" -> noSelected)
   }
 
   val contactDetails: ContactDetails = ContactDetails("test", "test", "89432789234", "test@example.com")
@@ -82,10 +94,14 @@ trait ITCoreTestData extends TryValues {
 
   val dateMap = Map("day" -> day, "month" -> month, "year" -> year)
 
+  val ukAddress = UkAddress(List("foo", "bar"),"wizz", None)
+
   def sdilNumber = "XKSDIL000000022"
   val producerName = Some("Super Cola Ltd")
 
   def identifier = "some-id"
+
+  val defaultCall = routes.IndexController.onPageLoad
 
   implicit val duration = 5.seconds
   def emptyUserAnswers = UserAnswers(identifier, Json.obj())

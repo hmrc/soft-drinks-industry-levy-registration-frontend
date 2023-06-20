@@ -249,6 +249,10 @@ warehouseDetails.remove.hidden = remove UK warehouse
 warehouseDetails.change.hidden = Change warehouses
 warehouseDetails.subtext = You don''t have any registered warehouses.
 
+removeWarehouseDetails.title = Are you sure you want to remove this warehouse?
+removeWarehouseDetails.heading = Are yo sure you want to remove this warehouse?
+removeWarehouseDetails.checkYourAnswersLabel = Are you sure you want to remove this warehouse?
+removeWarehouseDetails.error.required = Select yes if you want to remove this warehouse
 
 addressLookupFrontend.warehouseDetails.lookupPageLabels.title = Find UK warehouse address
 addressLookupFrontend.warehouseDetails.lookupPageLabels.postcodeLabel = Postcode
