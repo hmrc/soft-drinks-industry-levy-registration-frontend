@@ -28,7 +28,6 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SessionService
 import views.html.WarehouseDetailsView
 import handlers.ErrorHandler
-import models.backend.UkAddress
 import viewmodels.govuk.SummaryListFluency
 
 import scala.concurrent.{ExecutionContext, Future}

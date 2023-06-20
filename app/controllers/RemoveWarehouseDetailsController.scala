@@ -19,7 +19,6 @@ package controllers
 import controllers.actions._
 import forms.RemoveWarehouseDetailsFormProvider
 import handlers.ErrorHandler
-import models.backend.UkAddress
 import models.{Mode, UserAnswers, Warehouse}
 import navigation.Navigator
 import pages.RemoveWarehouseDetailsPage
