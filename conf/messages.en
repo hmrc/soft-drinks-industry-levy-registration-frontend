@@ -174,7 +174,7 @@ imports.highband.litres.hidden = change amount of litres in highband for imports
 
 startDate.title = What date did you become liable to register for the Soft Drinks Industry Levy?
 startDate.heading = What date did you become liable to register for the Soft Drinks Industry Levy?
-startDate.hint = For example, 6 4 2018
+startDate.hint = For example, <span style="white-space: nowrap">6 4 2018</span>
 startDate.list.help.header= How do I know when I became liable?
 startDate.list.help= The date you became liable is the date that you first:
 startDate.list.help.2= produced more than 1 million litres of liable drink over the past 12 months
@@ -190,11 +190,11 @@ startDate.error.required = The date you became liable to register must include a
 startDate.month.nan = Month must only include numbers
 startDate.year.nan = Year must only include numbers
 startDate.day.nan = Day must only include numbers
-startDate.error.invalid = The date you became liable to register must be a real date, like 31 7 2020
-startDate.error.dayMonth.invalid = The day and month must be part of a real date, like 31 7 2020
-startDate.error.monthYear.invalid = The month and year must be part of a real date, like 31 7 2020
-startDate.error.dayYear.invalid = The day and year must be part of a real date, like 31 7 2020
-startDate.minimumDate = The date you became liable to register must be after 5 April 2018
+startDate.error.invalid = The date you became liable to register must be a real date, like <span style="white-space: nowrap">31 7 2020</span>
+startDate.error.dayMonth.invalid = The day and month must be part of a real date, like <span style="white-space: nowrap">31 7 2020</span>
+startDate.error.monthYear.invalid = The month and year must be part of a real date, like <span style="white-space: nowrap">31 7 2020</span>
+startDate.error.dayYear.invalid = The day and year must be part of a real date, like <span style="white-space: nowrap">31 7 2020</span>
+startDate.minimumDate = The date you became liable to register must be after <span style="white-space: nowrap">5 April 2018</span>
 startDate.error.maximumDate = The date you became liable to register must be today or in the past
 startDate.change.hidden = StartDate
 startDate.day.nan = Day must only include numbers
@@ -227,7 +227,7 @@ contactDetails.error.phoneNumber.length = Telephone number must be 24 characters
 contactDetails.error.email.length = Email must be 132 characters or less
 contactDetails.error.fullName.invalid = Full name must only include letters a to z, apostrophes, hyphens and spaces
 contactDetails.error.position.invalid = Job title must only include letters a to z, apostrophes, dashes, hyphens and spaces
-contactDetails.error.phoneNumber.invalid = Enter a telephone number, like 01632 960999 or 07700 900999
+contactDetails.error.phoneNumber.invalid = Enter a telephone number, like <span style="white-space: nowrap">01632 960999</span> or <span style="white-space: nowrap">07700 900999</span>
 contactDetails.error.email.invalid = Enter a real email address, like name@example.com
 contactDetails.fullName.change.hidden = Full name
 contactDetails.position.change.hidden = Job title
