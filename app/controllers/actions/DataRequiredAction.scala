@@ -17,8 +17,9 @@
 package controllers.actions
 
 import connectors.{DoesNotExist, Pending, Registered, SoftDrinksIndustryLevyConnector}
+import akka.actor.FSM.Normal
 import controllers.routes
-import models.UserAnswers
+import models.{NormalMode, UserAnswers}
 import models.requests.{DataRequest, OptionalDataRequest}
 import pages.IdentifyPage
 import play.api.mvc.Results.Redirect
@@ -76,7 +77,7 @@ class DataRequiredActionImpl @Inject()(sdilConnector: SoftDrinksIndustryLevyConn
                   case (Some(utr),  _) => checkPendingAndCallRosm(utr, data)
                   case (None, None) =>
                     genericLogger.logger.info(s"User has no utr in auth or from Identify ${hc.requestId}")
-                    Future.successful(Left(Redirect(routes.IndexController.onPageLoad())))
+                    Future.successful(Left(Redirect(routes.EnterBusinessDetailsController.onPageLoad(NormalMode))))
       }
     }
   }
