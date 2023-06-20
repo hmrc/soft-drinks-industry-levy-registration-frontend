@@ -174,7 +174,7 @@ imports.highband.litres.hidden = change amount of litres in highband for imports
 
 startDate.title = What date did you become liable to register for the Soft Drinks Industry Levy?
 startDate.heading = What date did you become liable to register for the Soft Drinks Industry Levy?
-startDate.hint = For example, <span style="white-space: nowrap">6 4 2018</span>
+startDate.hint = For example, 6 4 2018
 startDate.list.help.header= How do I know when I became liable?
 startDate.list.help= The date you became liable is the date that you first:
 startDate.list.help.2= produced more than 1 million litres of liable drink over the past 12 months
