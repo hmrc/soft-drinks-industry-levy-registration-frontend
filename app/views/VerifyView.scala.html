@@ -33,8 +33,7 @@
             @govukErrorSummary(ErrorSummaryViewModel(form,  errorLinkOverrides = Map("value" -> "value_0")))
         }
         <h1 class="govuk-heading-m">@messages("verify.heading")</h1>
-        <p class="govuk-body" id="subText">@messages("verify.subText")</p>
-        <p class="govuk-body govuk-!-font-weight-bold" id="utrField">@utr</p>
+        <p class="govuk-body" id="subText">@messages("verify.subText")<br><span class="govuk-body govuk-!-font-weight-bold" id="utrField">@utr:</span></p>
 
         @govukInsetText(InsetText(
             id = Some("addressForUTR"),

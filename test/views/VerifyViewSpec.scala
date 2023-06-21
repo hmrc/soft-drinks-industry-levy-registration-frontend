@@ -55,10 +55,10 @@ class VerifyViewSpec extends ViewSpecHelper {
       document.title() must include(Messages("verify" + ".title"))
     }
     "should include the expected subtext" in {
-      document.getElementById("subText").text() mustBe "These are the details we hold for Unique Taxpayer Reference (UTR)"
+      document.getElementById("subText").text() mustBe s"These are the details we hold for Unique Taxpayer Reference (UTR) $utr:"
     }
     "should include the expected utr" in {
-      document.getElementById("utrField").text() mustBe utr
+      document.getElementById("utrField").text() mustBe utr + ":"
     }
     "should include the expected address" in {
       document.getElementById("addressForUTR").text() mustBe address.value.toString()

@@ -99,14 +99,13 @@ trait SpecBase
   implicit lazy val messagesProvider = MessagesImpl(Lang("en"), messagesAPI)
   lazy val mcc = application.injector.instanceOf[MessagesControllerComponents]
   lazy val frontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
-  val rosmRegistration = RosmWithUtr("1234567891", RosmRegistration(
+  val utr = "1234567891"
+  val rosmRegistration = RosmWithUtr(utr, RosmRegistration(
     safeId = "safeid",
     organisation = Some(OrganisationDetails(organisationName = "Super Lemonade Plc")),
     individual = Some(IndividualDetails(firstName = "Ava" , lastName = "Adams")),
     address = UkAddress(List("105B Godfrey Marchant Grove", "Guildford"), "GU14 8NL")
   ))
-
-
 
   override def afterEach(): Unit = {
     Play.stop(application)

@@ -300,3 +300,8 @@ removePackagingSiteDetails.title = Are you sure you want to remove this packagin
 removePackagingSiteDetails.heading = Are you sure you want to remove this packaging site?
 removePackagingSiteDetails.error.required = Select yes if you want to remove this packaging site
 removePackagingSiteDetails.change.hidden = Confirm remove this packaging site
+
+alreadyRegistered.heading.title = You are already registered for the Soft Drinks Industry Levy
+alreadyRegistered.subText = These are the details we hold for Unique Taxpayer Reference (UTR)
+alreadyRegistered.account.goto = To view your registration details, go to
+alreadyRegistered.account.link.text = your Soft Drinks Industry Levy account.
