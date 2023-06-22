@@ -75,7 +75,7 @@ class EnterBusinessDetailsController @Inject()(
           Future.successful(BadRequest(view(formWithErrors, mode))),
         identify => {
           softDrinksIndustryLevyConnector.retreiveRosmSubscription(identify.utr, request.internalId) flatMap {
-            case Some(rosmReg) if postcodesMatch(rosmReg.rosmRegistration.address, identify) => println("Good")
+            case Some(rosmReg) if postcodesMatch(rosmReg.rosmRegistration.address, identify) =>
               val updatedAnswers = answers.set(EnterBusinessDetailsPage, identify)
               updateDatabaseAndRedirect(updatedAnswers, EnterBusinessDetailsPage, mode)
             case _ => Future.successful(BadRequest(view(form.fill(identify).withError("utr", "enterBusinessDetails.no-record.utr"), NormalMode)))
