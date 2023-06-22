@@ -23,7 +23,7 @@ import errors.SessionDatabaseInsertError
 import forms.EnterBusinessDetailsFormProvider
 import helpers.LoggerHelper
 import models.requests.{DataRequest, OptionalDataRequest}
-import models.{NormalMode, RosmRegistration}
+import models.{NormalMode, RosmRegistration, RosmWithUtr}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -45,9 +45,13 @@ class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with
 
   def onwardRoute = Call("GET", "/foo")
 
-  class Harness(connector: SoftDrinksIndustryLevyConnector) extends DataRequiredActionImpl(connector) {
+  class Harness(connector: SoftDrinksIndustryLevyConnector) extends DataRequiredActionImpl(connector, application.injector.instanceOf[GenericLogger]) {
     def callRefine[A](request: OptionalDataRequest[A]): Future[Either[Result, DataRequest[A]]] = refine(request)
   }
+
+  val mockHttp = mock[HttpClient]
+  val softDrinksIndustryLevyConnector = mock[SoftDrinksIndustryLevyConnector]
+  val mockSessionService = mock[SessionService]
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
   val formProvider = new EnterBusinessDetailsFormProvider()
@@ -74,14 +78,9 @@ class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with
     }
 
     "must redirect to the next page when valid data is submitted" in {
-      val mockHttp = mock[HttpClient]
-      val mockSDILSessionCache = mock[SDILSessionCache]
-      val softDrinksIndustryLevyConnector = new SoftDrinksIndustryLevyConnector(http =mockHttp, frontendAppConfig, mockSDILSessionCache)
-      val mockSessionService = mock[SessionService]
 
-
-      when(mockSDILSessionCache.fetchEntry[RosmRegistration](any(),any())(any())) thenReturn Future.successful(Some(rosmRegistration))
-      when(softDrinksIndustryLevyConnector.retreiveRosmSubscription(any(),any())(any())) thenReturn Future.successful(Some(rosmRegistration))
+      when(softDrinksIndustryLevyConnector.retreiveRosmSubscription(any(),any())(any()))
+        .thenReturn(Future.successful(Some(rosmRegistration)))
       when(mockSessionService.set(any())) thenReturn Future.successful(Right(true))
 
 
@@ -91,7 +90,7 @@ class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionService].toInstance(mockSessionService),
-            bind[SDILSessionCache].toInstance(mockSDILSessionCache)
+            bind[SoftDrinksIndustryLevyConnector].toInstance(softDrinksIndustryLevyConnector)
           )
           .build()
 
@@ -109,12 +108,6 @@ class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val mockHttp = mock[HttpClient]
-      val mockSDILSessionCache = mock[SDILSessionCache]
-      val softDrinksIndustryLevyConnector = new SoftDrinksIndustryLevyConnector(http =mockHttp, frontendAppConfig, mockSDILSessionCache)
-      val mockSessionService = mock[SessionService]
-
-      when(mockSDILSessionCache.fetchEntry[RosmRegistration](any(),any())(any())) thenReturn Future.successful(Some(rosmRegistration))
       when(softDrinksIndustryLevyConnector.retreiveRosmSubscription(any(),any())(any())) thenReturn Future.successful(Some(rosmRegistration))
       when(mockSessionService.set(any())) thenReturn Future.successful(Right(true))
 
@@ -123,7 +116,7 @@ class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionService].toInstance(mockSessionService),
-            bind[SDILSessionCache].toInstance(mockSDILSessionCache)
+            bind[SoftDrinksIndustryLevyConnector].toInstance(softDrinksIndustryLevyConnector)
           )
           .build()
 
@@ -143,14 +136,10 @@ class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with
       }
     }
 
-    "should log an error message when internal server error is returned when user answers are not set in session repository" ignore {
-      val mockHttp = mock[HttpClient]
-      val mockSDILSessionCache = mock[SDILSessionCache]
-      val softDrinksIndustryLevyConnector = new SoftDrinksIndustryLevyConnector(http =mockHttp, frontendAppConfig, mockSDILSessionCache)
-      val mockSessionService = mock[SessionService]
+    "should log an error message when internal server error is returned when user answers are not set in session repository" in {
 
-      when(mockSDILSessionCache.fetchEntry[RosmRegistration](any(),any())(any())) thenReturn Future.successful(Some(rosmRegistration))
-      when(softDrinksIndustryLevyConnector.retreiveRosmSubscription(any(),any())(any())) thenReturn Future.successful(Some(rosmRegistration))
+      when(softDrinksIndustryLevyConnector.retreiveRosmSubscription(any(),any())(any()))
+        .thenReturn(Future.successful(Some(rosmRegistration)))
       when(mockSessionService.set(any())) thenReturn Future.successful(Left(SessionDatabaseInsertError))
 
       val application =
@@ -158,7 +147,7 @@ class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionService].toInstance(mockSessionService),
-            bind[SDILSessionCache].toInstance(mockSDILSessionCache)
+            bind[SoftDrinksIndustryLevyConnector].toInstance(softDrinksIndustryLevyConnector)
           )
           .build()
 
@@ -166,7 +155,7 @@ class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with
         withCaptureOfLoggingFrom(application.injector.instanceOf[GenericLogger].logger) { events =>
           val request =
             FakeRequest(POST, enterBusinessDetailsRoute)
-            .withFormUrlEncodedBody(("utr", "1234567890"), ("postcode", "BH15NG"))
+            .withFormUrlEncodedBody(("utr", "0000000437"), ("postcode", "GU14 8NL"))
 
           await(route(application, request).value)
           events.collectFirst {

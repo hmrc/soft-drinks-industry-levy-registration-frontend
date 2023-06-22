@@ -21,7 +21,7 @@ import controllers.actions._
 import forms.EnterBusinessDetailsFormProvider
 import handlers.ErrorHandler
 import models.backend.UkAddress
-import models.{CheckMode, Identification, Mode, NormalMode, UserAnswers}
+import models.{CheckMode, Identify, Mode, NormalMode, UserAnswers}
 import navigation.Navigator
 import pages.EnterBusinessDetailsPage
 import play.api.i18n.MessagesApi
@@ -52,7 +52,7 @@ class EnterBusinessDetailsController @Inject()(
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData).async {
     implicit request =>
-      val preparedForm = request.userAnswers.fold[Form[Identification]](form) { ua =>
+      val preparedForm = request.userAnswers.fold[Form[Identify]](form) { ua =>
         ua.get(EnterBusinessDetailsPage) match {
           case Some(value) if mode == CheckMode => form.fill(value)
           case _ => form
@@ -61,8 +61,8 @@ class EnterBusinessDetailsController @Inject()(
       Future.successful(Ok(view(preparedForm, mode)))
   }
 
-  private def postcodesMatch(rosmAddress: UkAddress, identification: Identification) =
-    rosmAddress.postCode.replaceAll(" ", "").equalsIgnoreCase(identification.postcode.replaceAll(" ", ""))
+  private def postcodesMatch(rosmAddress: UkAddress, identify: Identify) =
+    rosmAddress.postCode.replaceAll(" ", "").equalsIgnoreCase(identify.postcode.replaceAll(" ", ""))
 
 
   def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData).async {
@@ -73,12 +73,12 @@ class EnterBusinessDetailsController @Inject()(
       form.bindFromRequest().fold(
         formWithErrors =>
           Future.successful(BadRequest(view(formWithErrors, mode))),
-        identification => {
-          softDrinksIndustryLevyConnector.retreiveRosmSubscription(identification.utr, request.internalId) flatMap {
-            case Some(rosmReg) if postcodesMatch(rosmReg.address, identification) =>
-              val updatedAnswers = answers.set(EnterBusinessDetailsPage, identification)
+        identify => {
+          softDrinksIndustryLevyConnector.retreiveRosmSubscription(identify.utr, request.internalId) flatMap {
+            case Some(rosmReg) if postcodesMatch(rosmReg.rosmRegistration.address, identify) => println("Good")
+              val updatedAnswers = answers.set(EnterBusinessDetailsPage, identify)
               updateDatabaseAndRedirect(updatedAnswers, EnterBusinessDetailsPage, mode)
-            case _ => Future.successful(BadRequest(view(form.fill(identification).withError("utr", "enterBusinessDetails.no-record.utr"), NormalMode)))
+            case _ => Future.successful(BadRequest(view(form.fill(identify).withError("utr", "enterBusinessDetails.no-record.utr"), NormalMode)))
           }
         }
       )

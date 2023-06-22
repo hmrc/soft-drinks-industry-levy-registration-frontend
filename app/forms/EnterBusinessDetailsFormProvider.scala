@@ -17,7 +17,7 @@
 package forms
 
 import forms.mappings.Mappings
-import models.Identification
+import models.Identify
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.data.validation.{Constraint, Invalid, Valid}
@@ -26,7 +26,7 @@ import javax.inject.Inject
 
 class EnterBusinessDetailsFormProvider @Inject() extends Mappings {
 
-  def apply(): Form[Identification] =
+  def apply(): Form[Identify] =
     Form(
       mapping(
       "utr" -> text("enterBusinessDetails.required.utr").verifying(Constraint { x: String =>
@@ -38,7 +38,7 @@ class EnterBusinessDetailsFormProvider @Inject() extends Mappings {
         }
       }),
       "postcode" -> postcode
-      )(Identification.apply)(Identification.unapply)
+      )(Identify.apply)(Identify.unapply)
     )
 
 }

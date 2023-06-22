@@ -16,7 +16,7 @@
 
 package pages
 
-import models.Identification
+import models.Identify
 import pages.behaviours.PageBehaviours
 
 
@@ -24,10 +24,10 @@ class EnterBusinessDetailsPageSpec extends PageBehaviours {
 
   "EnterBusinessDetailsPage" - {
 
-    beRetrievable[Identification](EnterBusinessDetailsPage)
+    beRetrievable[Identify](EnterBusinessDetailsPage)
 
-    beSettable[Identification](EnterBusinessDetailsPage)
+    beSettable[Identify](EnterBusinessDetailsPage)
 
-    beRemovable[Identification](EnterBusinessDetailsPage)
+    beRemovable[Identify](EnterBusinessDetailsPage)
   }
 }

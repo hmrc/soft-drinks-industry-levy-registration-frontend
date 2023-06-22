@@ -18,7 +18,7 @@ package models
 
 import play.api.libs.json.Json
 
-case class Identify (utr: String, postCode: String)
+case class Identify (utr: String, postcode: String)
 
 object Identify {
   implicit val format = Json.format[Identify]

@@ -18,7 +18,7 @@ package views
 
 import controllers.routes
 import forms.EnterBusinessDetailsFormProvider
-import models.{CheckMode, Identification, NormalMode}
+import models.{CheckMode, Identify, NormalMode}
 import play.api.i18n.Messages
 import play.api.mvc.Request
 import play.api.test.FakeRequest
@@ -75,7 +75,7 @@ class EnterBusinessDetailsViewSpec extends ViewSpecHelper {
 
     "contains a form with the correct action" - {
       "when in CheckMode" in {
-        val htmlAllSelected = view(form.fill(Identification("testing", "testing")), CheckMode)(request, messages(application))
+        val htmlAllSelected = view(form.fill(Identify("testing", "testing")), CheckMode)(request, messages(application))
         val documentAllSelected = doc(htmlAllSelected)
 
         documentAllSelected.select(Selectors.form)
@@ -83,7 +83,7 @@ class EnterBusinessDetailsViewSpec extends ViewSpecHelper {
       }
 
       "when in NormalMode" in {
-        val htmlAllSelected = view(form.fill(Identification("testing", "testing")), NormalMode)(request, messages(application))
+        val htmlAllSelected = view(form.fill(Identify("testing", "testing")), NormalMode)(request, messages(application))
         val documentAllSelected = doc(htmlAllSelected)
 
         documentAllSelected.select(Selectors.form)

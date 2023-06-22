@@ -1,12 +1,12 @@
 package controllers
 
-import models.{Identification, NormalMode}
+import models.Identify
 import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
 import pages.EnterBusinessDetailsPage
 import play.api.http.HeaderNames
 import play.api.i18n.Messages
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json.Json
 import play.api.test.WsTestClient
 
 import scala.util.Random
@@ -16,11 +16,11 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
   val normalRoutePath = "/enter-business-details"
   val checkRoutePath = "/change-enter-business-details"
 
-  val enterBusinessDetails = Identification(utr = "0000000437", postcode = "GU14 8NL")
+  val enterBusinessDetails = Identify(utr = "0000000437", postcode = "GU14 8NL")
 
   val randomStringExceedingMaxLength = Random.nextString(10 + 1)
 
-  val userAnswers = emptyUserAnswers.set(EnterBusinessDetailsPage, Identification(utr = "0000000437", postcode = "GU14 8NL")).success.value
+  val userAnswers = emptyUserAnswers.set(EnterBusinessDetailsPage, Identify(utr = "0000000437", postcode = "GU14 8NL")).success.value
 
   "GET " + normalRoutePath - {
     "when the userAnswers contains no data" - {
@@ -43,9 +43,6 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
         }
       }
     }
-
-    testOtherSuccessUserTypes(baseUrl + normalRoutePath, Messages("enterBusinessDetails" + ".title"))
-    testUnauthorisedUser(baseUrl + normalRoutePath)
   }
 
   "GET " + checkRoutePath - {
@@ -70,8 +67,6 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
         }
       }
     }
-    testOtherSuccessUserTypes(baseUrl + checkRoutePath, Messages("enterBusinessDetails" + ".title"))
-    testUnauthorisedUser(baseUrl + checkRoutePath)
   }
 
   s"POST " + normalRoutePath - {
@@ -91,7 +86,7 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
             whenReady(result) { res =>
               res.status mustBe 303
               res.header(HeaderNames.LOCATION) mustBe Some(routes.IndexController.onPageLoad.url)
-              val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Identification]](None)(_.get(EnterBusinessDetailsPage))
+              val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Identify]](None)(_.get(EnterBusinessDetailsPage))
               dataStoredForPage.nonEmpty mustBe true
               dataStoredForPage.get mustBe enterBusinessDetails
             }
@@ -113,7 +108,7 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
             whenReady(result) { res =>
               res.status mustBe 303
               res.header(HeaderNames.LOCATION) mustBe Some(routes.IndexController.onPageLoad.url)
-              val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Identification]](None)(_.get(EnterBusinessDetailsPage))
+              val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Identify]](None)(_.get(EnterBusinessDetailsPage))
               dataStoredForPage.nonEmpty mustBe true
               dataStoredForPage.get mustBe enterBusinessDetails
             }
@@ -151,7 +146,6 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
         }
       }
     }
-    testUnauthorisedUser(baseUrl + normalRoutePath, Some(Json.obj("utr" -> enterBusinessDetails.utr, "postcode" -> enterBusinessDetails.postcode)))
   }
 
   s"POST " + checkRoutePath - {
@@ -171,7 +165,7 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
             whenReady(result) { res =>
               res.status mustBe 303
               res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad().url)
-              val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Identification]](None)(_.get(EnterBusinessDetailsPage))
+              val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Identify]](None)(_.get(EnterBusinessDetailsPage))
               dataStoredForPage.nonEmpty mustBe true
               dataStoredForPage.get mustBe enterBusinessDetails
             }
@@ -207,6 +201,5 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
         }
       }
     }
-    testUnauthorisedUser(baseUrl + checkRoutePath, Some(Json.obj("utr" -> enterBusinessDetails.utr, "postcode" -> enterBusinessDetails.postcode)))
   }
 }

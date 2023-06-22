@@ -18,12 +18,13 @@ package controllers.actions
 
 import base.SpecBase
 import connectors.{DoesNotExist, Pending, Registered, SoftDrinksIndustryLevyConnector}
-import models.Identify
+import controllers.routes
+import models.{Identify, NormalMode}
 import models.requests.{DataRequest, OptionalDataRequest}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.IdentifyPage
+import pages.EnterBusinessDetailsPage
 import play.api.mvc.Result
 import play.api.mvc.Results.Redirect
 import play.api.test.FakeRequest
@@ -97,16 +98,16 @@ class DataRequiredActionSpec extends SpecBase with MockitoSugar {
         rightResult.authUtr mustBe Some(utr)
       }
     }
-    s"when there are user answers but user has answered the $IdentifyPage and nothing exists in auth for utr" - {
+    s"when there are user answers but user has answered the $EnterBusinessDetailsPage and nothing exists in auth for utr" - {
       val utr = "foobar"
-      val userAnswersWithIdentifyPage = emptyUserAnswers.set(IdentifyPage, Identify(utr, "foo")).success.value
+      val userAnswersWithEnterBusinessDetailsPage = emptyUserAnswers.set(EnterBusinessDetailsPage, Identify(utr, "foo")).success.value
 
       s"should redirect away when pending queue returns $Registered" in {
         val internalId = "foo"
 
         when(connector.checkPendingQueue(ArgumentMatchers.eq(utr))(ArgumentMatchers.any())) thenReturn Future.successful(Registered)
         val action = new Harness(connector)
-        val result = action.callRefine(OptionalDataRequest(request, internalId, authUtr = None, userAnswers = Some(userAnswersWithIdentifyPage))).futureValue
+        val result = action.callRefine(OptionalDataRequest(request, internalId, authUtr = None, userAnswers = Some(userAnswersWithEnterBusinessDetailsPage))).futureValue
 
         result.left.toOption.get mustBe Redirect(controllers.routes.IndexController.onPageLoad())
       }
@@ -115,7 +116,7 @@ class DataRequiredActionSpec extends SpecBase with MockitoSugar {
 
         when(connector.checkPendingQueue(ArgumentMatchers.eq(utr))(ArgumentMatchers.any()))thenReturn Future.successful(Pending)
         val action = new Harness(connector)
-        val result = action.callRefine(OptionalDataRequest(request, internalId, authUtr = None, userAnswers = Some(userAnswersWithIdentifyPage))).futureValue
+        val result = action.callRefine(OptionalDataRequest(request, internalId, authUtr = None, userAnswers = Some(userAnswersWithEnterBusinessDetailsPage))).futureValue
 
         result.left.toOption.get mustBe Redirect(controllers.routes.RegistrationPendingController.onPageLoad)
       }
@@ -125,7 +126,7 @@ class DataRequiredActionSpec extends SpecBase with MockitoSugar {
         when(connector.checkPendingQueue(ArgumentMatchers.eq(utr))(ArgumentMatchers.any())) thenReturn Future.successful(DoesNotExist)
         when(connector.retreiveRosmSubscription(ArgumentMatchers.eq(utr), ArgumentMatchers.eq(internalId))(ArgumentMatchers.any())) thenReturn Future.successful(None)
         val action = new Harness(connector)
-        val result = action.callRefine(OptionalDataRequest(request, internalId, authUtr = None, userAnswers = Some(userAnswersWithIdentifyPage))).futureValue
+        val result = action.callRefine(OptionalDataRequest(request, internalId, authUtr = None, userAnswers = Some(userAnswersWithEnterBusinessDetailsPage))).futureValue
 
         result.left.toOption.get mustBe Redirect(controllers.routes.IndexController.onPageLoad())
       }
@@ -134,20 +135,20 @@ class DataRequiredActionSpec extends SpecBase with MockitoSugar {
         when(connector.checkPendingQueue(ArgumentMatchers.eq(utr))(ArgumentMatchers.any()))  thenReturn Future.successful(DoesNotExist)
         when(connector.retreiveRosmSubscription(ArgumentMatchers.eq(utr), ArgumentMatchers.eq(internalId))(ArgumentMatchers.any())) thenReturn Future.successful(Some(rosmRegistration))
         val action = new Harness(connector)
-        val result = action.callRefine(OptionalDataRequest(request, internalId, authUtr = None, userAnswers = Some(userAnswersWithIdentifyPage))).futureValue
+        val result = action.callRefine(OptionalDataRequest(request, internalId, authUtr = None, userAnswers = Some(userAnswersWithEnterBusinessDetailsPage))).futureValue
 
         val rightResult = result.toOption.get
         rightResult.rosmWithUtr mustBe rosmRegistration
-        rightResult.userAnswers mustBe userAnswersWithIdentifyPage
+        rightResult.userAnswers mustBe userAnswersWithEnterBusinessDetailsPage
         rightResult.authUtr mustBe None
       }
     }
-    s"when user has user answers but no utr and has NOT answered the $IdentifyPage, redirect away" in {
+    s"when user has user answers but no utr and has NOT answered the $EnterBusinessDetailsPage, redirect away" in {
       val internalId = "foo"
       val action = new Harness(connector)
       val result = action.callRefine(OptionalDataRequest(request, internalId, authUtr = None, userAnswers = Some(emptyUserAnswers))).futureValue
 
-      result.left.toOption.get mustBe Redirect(controllers.routes.IndexController.onPageLoad())
+      result.left.toOption.get mustBe Redirect(controllers.routes.EnterBusinessDetailsController.onPageLoad(NormalMode))
     }
   }
 }
