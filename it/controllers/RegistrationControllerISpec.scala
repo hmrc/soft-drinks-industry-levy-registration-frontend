@@ -27,7 +27,7 @@ class RegistrationControllerISpec extends ControllerITTestHelper {
         }
       }
     }
-    testUnauthorisedUser(baseUrl + path)
+    testUnauthorisedUser(baseUrl + path, identifyActionOnly = true)
   }
 
 }

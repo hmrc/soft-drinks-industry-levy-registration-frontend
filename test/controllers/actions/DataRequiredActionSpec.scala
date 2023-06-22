@@ -18,7 +18,6 @@ package controllers.actions
 
 import base.SpecBase
 import connectors.{DoesNotExist, Pending, Registered, SoftDrinksIndustryLevyConnector}
-import controllers.routes
 import models.Identify
 import models.requests.{DataRequest, OptionalDataRequest}
 import org.mockito.ArgumentMatchers
@@ -49,7 +48,7 @@ class DataRequiredActionSpec extends SpecBase with MockitoSugar {
 
       val action = new Harness(connector)
       val result = action.callRefine(OptionalDataRequest(request, "internalId", userAnswers = None)).futureValue
-      result.left.toOption.get mustBe Redirect(routes.JourneyRecoveryController.onPageLoad())
+      result.left.toOption.get mustBe Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
     }
     "when there are user answers but user has not answered Identify Page, and has a utr in auth" - {
       s"should redirect away when pending queue returns $Registered" in {
@@ -60,7 +59,7 @@ class DataRequiredActionSpec extends SpecBase with MockitoSugar {
         val action = new Harness(connector)
         val result = action.callRefine(OptionalDataRequest(request, internalId, authUtr = Some(utr), userAnswers = Some(emptyUserAnswers))).futureValue
 
-        result.left.toOption.get mustBe Redirect(routes.IndexController.onPageLoad())
+        result.left.toOption.get mustBe Redirect(controllers.routes.IndexController.onPageLoad())
       }
       s"should redirect away when pending queue returns $Pending" in {
         val internalId = "foo"
@@ -70,7 +69,7 @@ class DataRequiredActionSpec extends SpecBase with MockitoSugar {
         val action = new Harness(connector)
         val result = action.callRefine(OptionalDataRequest(request, internalId, authUtr = Some(utr), userAnswers = Some(emptyUserAnswers))).futureValue
 
-        result.left.toOption.get mustBe Redirect(routes.IndexController.onPageLoad())
+        result.left.toOption.get mustBe Redirect(controllers.routes.RegistrationPendingController.onPageLoad)
       }
       s"should call rosm when pending queue returns $DoesNotExist but redirect away when rosm returns None" in {
         val internalId = "id"
@@ -81,7 +80,7 @@ class DataRequiredActionSpec extends SpecBase with MockitoSugar {
         val action = new Harness(connector)
         val result = action.callRefine(OptionalDataRequest(request, internalId, authUtr = Some(utr), userAnswers = Some(emptyUserAnswers))).futureValue
 
-        result.left.toOption.get mustBe Redirect(routes.IndexController.onPageLoad())
+        result.left.toOption.get mustBe Redirect(controllers.routes.IndexController.onPageLoad())
       }
       s"should call rosm when pending queue returns $DoesNotExist and return success with rosm subscription" in {
         val internalId = "id"
@@ -109,7 +108,7 @@ class DataRequiredActionSpec extends SpecBase with MockitoSugar {
         val action = new Harness(connector)
         val result = action.callRefine(OptionalDataRequest(request, internalId, authUtr = None, userAnswers = Some(userAnswersWithIdentifyPage))).futureValue
 
-        result.left.toOption.get mustBe Redirect(routes.IndexController.onPageLoad())
+        result.left.toOption.get mustBe Redirect(controllers.routes.IndexController.onPageLoad())
       }
       s"should redirect away when pending queue returns $Pending" in {
         val internalId = "foo"
@@ -118,7 +117,7 @@ class DataRequiredActionSpec extends SpecBase with MockitoSugar {
         val action = new Harness(connector)
         val result = action.callRefine(OptionalDataRequest(request, internalId, authUtr = None, userAnswers = Some(userAnswersWithIdentifyPage))).futureValue
 
-        result.left.toOption.get mustBe Redirect(routes.IndexController.onPageLoad())
+        result.left.toOption.get mustBe Redirect(controllers.routes.RegistrationPendingController.onPageLoad)
       }
       s"should call rosm when pending queue returns $DoesNotExist but redirect away when rosm returns None" in {
         val internalId = "foo"
@@ -128,7 +127,7 @@ class DataRequiredActionSpec extends SpecBase with MockitoSugar {
         val action = new Harness(connector)
         val result = action.callRefine(OptionalDataRequest(request, internalId, authUtr = None, userAnswers = Some(userAnswersWithIdentifyPage))).futureValue
 
-        result.left.toOption.get mustBe Redirect(routes.IndexController.onPageLoad())
+        result.left.toOption.get mustBe Redirect(controllers.routes.IndexController.onPageLoad())
       }
       s"should call rosm when pending queue returns $DoesNotExist and return success with rosm subscription" in {
         val internalId = "foo"
@@ -148,7 +147,7 @@ class DataRequiredActionSpec extends SpecBase with MockitoSugar {
       val action = new Harness(connector)
       val result = action.callRefine(OptionalDataRequest(request, internalId, authUtr = None, userAnswers = Some(emptyUserAnswers))).futureValue
 
-      result.left.toOption.get mustBe Redirect(routes.IndexController.onPageLoad())
+      result.left.toOption.get mustBe Redirect(controllers.routes.IndexController.onPageLoad())
     }
   }
 }

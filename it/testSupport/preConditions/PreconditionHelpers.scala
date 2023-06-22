@@ -9,7 +9,7 @@ trait PreconditionHelpers {
       .user.isAuthorisedAndEnrolled
       .sdilBackend.retrieveRosm("0000001611")
       .sdilBackend.retrieveSubscriptionNone("utr", "0000001611")
-      .sdilBackend.checkPendingQueueDoesntExist("utr")
+      .sdilBackend.checkPendingQueueDoesntExist("0000001611")
   }
 
   def authorisedWithSdilSubscriptionIncDeRegDatePrecondition = {
@@ -17,20 +17,20 @@ trait PreconditionHelpers {
       .user.isAuthorisedAndEnrolled
       .sdilBackend.retrieveSubscriptionWithDeRegDate("utr", "0000001611")
       .sdilBackend.retrieveRosm("0000001611")
-      .sdilBackend.checkPendingQueueDoesntExist("utr")
+      .sdilBackend.checkPendingQueueDoesntExist("0000001611")
   }
   def authorisedWithoutSdilSubscriptionPendingQueueContainsRecordOfPending = {
     builder
       .user.isAuthorisedAndEnrolled
       .sdilBackend.retrieveSubscriptionNone("utr", "0000001611")
-      .sdilBackend.checkPendingQueuePending("utr")
+      .sdilBackend.checkPendingQueuePending("0000001611")
   }
 
   def authorisedWithoutSdilSubscriptionQueueContainsRecordOfRegistered = {
     builder
       .user.isAuthorisedAndEnrolled
       .sdilBackend.retrieveSubscriptionNone("utr", "0000001611")
-      .sdilBackend.checkPendingQueueRegistered("utr")
+      .sdilBackend.checkPendingQueueRegistered("0000001611")
   }
 
   def authorisedButNoEnrolmentsPrecondition = {

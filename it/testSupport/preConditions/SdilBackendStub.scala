@@ -93,12 +93,12 @@ case class SdilBackendStub()
     builder
   }
 
-  def retrieveRosm(utr: String)= {
+  def retrieveRosm(utr: String, rosmReg: RosmRegistration = rosmRegistration)= {
     stubFor(
       get(
         urlPathMatching(s"/rosm-registration/lookup/$utr"))
         .willReturn(
-          ok(Json.toJson(rosmRegistration).toString())))
+          ok(Json.toJson(rosmReg).toString())))
     builder
   }
 

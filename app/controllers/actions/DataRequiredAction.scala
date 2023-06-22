@@ -51,7 +51,7 @@ class DataRequiredActionImpl @Inject()(sdilConnector: SoftDrinksIndustryLevyConn
         Left(Redirect(routes.IndexController.onPageLoad()))
       case Pending =>
         genericLogger.logger.info(s"User already pending subscription on pending queue ${hc.requestId}")
-        Left(Redirect(routes.IndexController.onPageLoad()))
+        Left(Redirect(routes.RegistrationPendingController.onPageLoad.url))
       case DoesNotExist => Right((): Unit)
     }
   }

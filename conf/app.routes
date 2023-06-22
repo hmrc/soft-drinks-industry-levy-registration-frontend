@@ -117,5 +117,7 @@ POST       /warehouse-details/remove/:index                        controllers.R
 GET        /change-warehouse-details/remove/:index                 controllers.RemoveWarehouseDetailsController.onPageLoad(mode: Mode = CheckMode, index: String)
 POST       /change-warehouse-details/remove/:index                  controllers.RemoveWarehouseDetailsController.onSubmit(mode: Mode = CheckMode, index: String)
 
+GET        /application-already-sent                        controllers.RegistrationPendingController.onPageLoad
+
 GET        /application-already-registered                        controllers.AlreadyRegisteredController.onPageLoad()
 

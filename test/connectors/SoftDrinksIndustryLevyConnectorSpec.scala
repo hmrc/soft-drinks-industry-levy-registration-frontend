@@ -22,10 +22,9 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.http.Status.{ACCEPTED, NOT_FOUND, OK}
 import play.api.libs.json.Json
 import repositories.{CacheMap, SDILSessionCache}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 import utilities.GenericLogger
 
 import scala.concurrent.ExecutionContext.Implicits.global

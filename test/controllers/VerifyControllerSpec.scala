@@ -18,11 +18,11 @@ package controllers
 
 import base.SpecBase
 import errors.SessionDatabaseInsertError
-import helpers.LoggerHelper
-import utilities.GenericLogger
 import forms.VerifyFormProvider
+import helpers.LoggerHelper
 import models.{NormalMode, UserAnswers, Verify}
 import navigation.{FakeNavigator, Navigator}
+import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
@@ -32,12 +32,11 @@ import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.SessionService
+import utilities.GenericLogger
+import viewmodels.AddressFormattingHelper
 import views.html.VerifyView
 
 import scala.concurrent.Future
-import org.jsoup.Jsoup
-import uk.gov.hmrc.govukfrontend.views.Aliases.HtmlContent
-import viewmodels.AddressFormattingHelper
 
 class VerifyControllerSpec extends SpecBase with MockitoSugar with LoggerHelper {
 
