@@ -17,7 +17,7 @@
 package forms.mappings
 
 import models.Enumerable
-import play.api.data.Forms.{of, text}
+import play.api.data.Forms.of
 import play.api.data.format.Formats.stringFormat
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 import play.api.data.{FieldMapping, Mapping}

@@ -105,7 +105,10 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
         }
       }
     }
+  }
 
+
+  def authenticatedWithNoEnrolmentsAndHasNotEnteredUtr(url: String, expectedPageTitle: String, userAnswers: UserAnswers = emptyUserAnswers): Unit = {
     "the user is authenticated with no enrolments and has not entered utr from identify page" - {
       s"redirect the user to identify page" in {
         given.authorisedButNoEnrolmentsPrecondition

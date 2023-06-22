@@ -320,7 +320,6 @@ enterBusinessDetails.utr.hint = This is 10 numbers, for example 1234567890. It w
 enterBusinessDetails.postcode.heading = Registered business postcode
 enterBusinessDetails.postcode.hint = This is the postcode of your registered business address
 enterBusinessDetails.checkYourAnswersLabel = Enter your business details
-enterBusinessDetails.hint = Enter a maximum of 10 characters
 enterBusinessDetails.change.hidden = EnterBusinessDetails
 enterBusinessDetails.required.utr = Enter the Unique Taxpayer Reference (UTR) for your business
 enterBusinessDetails.invalid.utr.length = Unique Taxpayer Reference (UTR) must be 10 numbers

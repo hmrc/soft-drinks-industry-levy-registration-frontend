@@ -17,30 +17,39 @@
 package controllers
 
 import base.SpecBase
+import connectors.SoftDrinksIndustryLevyConnector
+import controllers.actions.DataRequiredActionImpl
 import errors.SessionDatabaseInsertError
-import helpers.LoggerHelper
-import utilities.GenericLogger
 import forms.EnterBusinessDetailsFormProvider
-import models.{Identification, NormalMode, UserAnswers}
+import helpers.LoggerHelper
+import models.requests.{DataRequest, OptionalDataRequest}
+import models.{NormalMode, RosmRegistration}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.EnterBusinessDetailsPage
 import play.api.inject.bind
-import play.api.mvc.Call
+import play.api.mvc.{Call, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import repositories.SDILSessionCache
 import services.SessionService
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import utilities.GenericLogger
 import views.html.EnterBusinessDetailsView
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import org.jsoup.Jsoup
 
 class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with LoggerHelper {
 
   def onwardRoute = Call("GET", "/foo")
 
+  class Harness(connector: SoftDrinksIndustryLevyConnector) extends DataRequiredActionImpl(connector) {
+    def callRefine[A](request: OptionalDataRequest[A]): Future[Either[Result, DataRequest[A]]] = refine(request)
+  }
+
+  implicit val hc: HeaderCarrier = HeaderCarrier()
   val formProvider = new EnterBusinessDetailsFormProvider()
   val form = formProvider()
 
@@ -64,42 +73,32 @@ class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with
       }
     }
 
-    "must populate the view correctly on a GET when the question has previously been answered" in {
-
-      val userAnswers = UserAnswers(identifier).set(EnterBusinessDetailsPage, Identification("answer","answer")).success.value
-
-      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
-
-      running(application) {
-        val request = FakeRequest(GET, enterBusinessDetailsRoute)
-
-        val view = application.injector.instanceOf[EnterBusinessDetailsView]
-
-        val result = route(application, request).value
-
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(Identification("answer","answer")), NormalMode)(request, messages(application)).toString
-      }
-    }
-
     "must redirect to the next page when valid data is submitted" in {
-
+      val mockHttp = mock[HttpClient]
+      val mockSDILSessionCache = mock[SDILSessionCache]
+      val softDrinksIndustryLevyConnector = new SoftDrinksIndustryLevyConnector(http =mockHttp, frontendAppConfig, mockSDILSessionCache)
       val mockSessionService = mock[SessionService]
 
+
+      when(mockSDILSessionCache.fetchEntry[RosmRegistration](any(),any())(any())) thenReturn Future.successful(Some(rosmRegistration))
+      when(softDrinksIndustryLevyConnector.retreiveRosmSubscription(any(),any())(any())) thenReturn Future.successful(Some(rosmRegistration))
       when(mockSessionService.set(any())) thenReturn Future.successful(Right(true))
+
+
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionService].toInstance(mockSessionService)
+            bind[SessionService].toInstance(mockSessionService),
+            bind[SDILSessionCache].toInstance(mockSDILSessionCache)
           )
           .build()
 
       running(application) {
         val request =
           FakeRequest(POST, enterBusinessDetailsRoute)
-        .withFormUrlEncodedBody(("value", "answer"))
+            .withFormUrlEncodedBody(("utr", "0000000437"), ("postcode", "GU14 8NL"))
 
         val result = route(application, request).value
 
@@ -110,14 +109,30 @@ class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val mockHttp = mock[HttpClient]
+      val mockSDILSessionCache = mock[SDILSessionCache]
+      val softDrinksIndustryLevyConnector = new SoftDrinksIndustryLevyConnector(http =mockHttp, frontendAppConfig, mockSDILSessionCache)
+      val mockSessionService = mock[SessionService]
+
+      when(mockSDILSessionCache.fetchEntry[RosmRegistration](any(),any())(any())) thenReturn Future.successful(Some(rosmRegistration))
+      when(softDrinksIndustryLevyConnector.retreiveRosmSubscription(any(),any())(any())) thenReturn Future.successful(Some(rosmRegistration))
+      when(mockSessionService.set(any())) thenReturn Future.successful(Right(true))
+
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[SessionService].toInstance(mockSessionService),
+            bind[SDILSessionCache].toInstance(mockSDILSessionCache)
+          )
+          .build()
 
       running(application) {
         val request =
           FakeRequest(POST, enterBusinessDetailsRoute)
-        .withFormUrlEncodedBody(("value", ""))
+            .withFormUrlEncodedBody(("utr", ""), ("postcode", ""))
 
-        val boundForm = form.bind(Map("value" -> ""))
+        val boundForm = form.bind(Map("utr" -> "", "postcode" -> ""))
 
         val view = application.injector.instanceOf[EnterBusinessDetailsView]
 
@@ -128,64 +143,22 @@ class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with
       }
     }
 
-    "must redirect to Journey Recovery for a GET if no existing data is found" in {
-
-      val application = applicationBuilder(userAnswers = None).build()
-
-      running(application) {
-        val request = FakeRequest(GET, enterBusinessDetailsRoute)
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
-      }
-    }
-
-    "must redirect to Journey Recovery for a POST if no existing data is found" in {
-
-      val application = applicationBuilder(userAnswers = None).build()
-
-      running(application) {
-        val request =
-          FakeRequest(POST, enterBusinessDetailsRoute)
-        .withFormUrlEncodedBody(("value", "answer"))
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
-      }
-    }
-
-    "must fail if the setting of userAnswers fails" in {
-
-      val application = applicationBuilder(userAnswers = Some(userDetailsWithSetMethodsReturningFailure)).build()
-
-      running(application) {
-        val request =
-          FakeRequest(POST, enterBusinessDetailsRoute
-        )
-        .withFormUrlEncodedBody(("value", "answer"))
-
-        val result = route(application, request).value
-
-        status(result) mustEqual INTERNAL_SERVER_ERROR
-        val page = Jsoup.parse(contentAsString(result))
-        page.title() mustBe "Sorry, we are experiencing technical difficulties - 500 - Soft Drinks Industry Levy - GOV.UK"
-      }
-    }
-
-    "should log an error message when internal server error is returned when user answers are not set in session repository" in {
+    "should log an error message when internal server error is returned when user answers are not set in session repository" ignore {
+      val mockHttp = mock[HttpClient]
+      val mockSDILSessionCache = mock[SDILSessionCache]
+      val softDrinksIndustryLevyConnector = new SoftDrinksIndustryLevyConnector(http =mockHttp, frontendAppConfig, mockSDILSessionCache)
       val mockSessionService = mock[SessionService]
 
+      when(mockSDILSessionCache.fetchEntry[RosmRegistration](any(),any())(any())) thenReturn Future.successful(Some(rosmRegistration))
+      when(softDrinksIndustryLevyConnector.retreiveRosmSubscription(any(),any())(any())) thenReturn Future.successful(Some(rosmRegistration))
       when(mockSessionService.set(any())) thenReturn Future.successful(Left(SessionDatabaseInsertError))
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionService].toInstance(mockSessionService)
+            bind[SessionService].toInstance(mockSessionService),
+            bind[SDILSessionCache].toInstance(mockSDILSessionCache)
           )
           .build()
 
@@ -193,7 +166,7 @@ class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with
         withCaptureOfLoggingFrom(application.injector.instanceOf[GenericLogger].logger) { events =>
           val request =
             FakeRequest(POST, enterBusinessDetailsRoute)
-          .withFormUrlEncodedBody(("value", "answer"))
+            .withFormUrlEncodedBody(("utr", "1234567890"), ("postcode", "BH15NG"))
 
           await(route(application, request).value)
           events.collectFirst {

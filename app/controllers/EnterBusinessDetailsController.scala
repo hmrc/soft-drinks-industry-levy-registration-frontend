@@ -25,6 +25,7 @@ import models.{CheckMode, Identification, Mode, NormalMode, UserAnswers}
 import navigation.Navigator
 import pages.EnterBusinessDetailsPage
 import play.api.i18n.MessagesApi
+import play.api.data.Form
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SessionService
 import utilities.GenericLogger
@@ -33,31 +34,12 @@ import views.html.EnterBusinessDetailsView
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-
-//object IdentifyController extends FormHelpers {
-//
-//  val form: Form[Identification] = Form(
-//    mapping(
-//      "utr" -> text.verifying(Constraint { x: String =>
-//        x match {
-//          case ""                            => Invalid("utr.required")
-//          case utr if utr.exists(!_.isDigit) => Invalid("utr.invalid")
-//          case utr if utr.length != 10       => Invalid("utr.length")
-//          case _                             => Valid
-//        }
-//      }),
-//      "postcode" -> postcode
-//    )(Identification.apply)(Identification.unapply)
-//  )
-//}
-
 class EnterBusinessDetailsController @Inject()(
                                        override val messagesApi: MessagesApi,
                                        val sessionService: SessionService,
                                        val navigator: Navigator,
                                        identify: IdentifierAction,
                                        getData: DataRetrievalAction,
-                                       requireData: DataRequiredAction,
                                        formProvider: EnterBusinessDetailsFormProvider,
                                        softDrinksIndustryLevyConnector: SoftDrinksIndustryLevyConnector,
                                        val controllerComponents: MessagesControllerComponents,
@@ -70,7 +52,7 @@ class EnterBusinessDetailsController @Inject()(
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData).async {
     implicit request =>
-      val preparedForm = request.userAnswers.fold(form) { ua =>
+      val preparedForm = request.userAnswers.fold[Form[Identification]](form) { ua =>
         ua.get(EnterBusinessDetailsPage) match {
           case Some(value) if mode == CheckMode => form.fill(value)
           case _ => form
@@ -92,10 +74,11 @@ class EnterBusinessDetailsController @Inject()(
         formWithErrors =>
           Future.successful(BadRequest(view(formWithErrors, mode))),
         identification => {
-
           softDrinksIndustryLevyConnector.retreiveRosmSubscription(identification.utr, request.internalId) flatMap {
-            case Some(rosmReg) if postcodesMatch(rosmReg.address, identification) => Future.successful(Redirect(routes.IndexController.onPageLoad()))
-            case Some(rosmReg) => Future.successful(BadRequest(view(form.fill(identification).withError("utr", "enterBusinessDetails.no-record.utr"), NormalMode)))
+            case Some(rosmReg) if postcodesMatch(rosmReg.address, identification) =>
+              val updatedAnswers = answers.set(EnterBusinessDetailsPage, identification)
+              updateDatabaseAndRedirect(updatedAnswers, EnterBusinessDetailsPage, mode)
+            case _ => Future.successful(BadRequest(view(form.fill(identification).withError("utr", "enterBusinessDetails.no-record.utr"), NormalMode)))
           }
         }
       )

@@ -36,12 +36,12 @@ class EnterBusinessDetailsViewSpec extends ViewSpecHelper {
 
   object Selectors {
     val formGroup = "govuk-form-group"
-    val labelAsHeading = "govuk-label  govuk-label--m"
+    val heading = "govuk-heading-m"
     val hint = "govuk-hint"
     val errorSummaryList = "govuk-list govuk-error-summary__list"
     val button = "govuk-button"
     val form = "form"
-    val textArea = "govuk-textarea"
+    val textArea = "govuk-input"
   }
 
   "View" - {
@@ -54,17 +54,18 @@ class EnterBusinessDetailsViewSpec extends ViewSpecHelper {
 
     "should contain a govuk form group" - {
       "that contains the page heading" in {
-        formGroup.get(0).getElementsByClass(Selectors.labelAsHeading)
+        document.getElementsByClass(Selectors.heading)
           .text() mustBe Messages("enterBusinessDetails.heading")
       }
 
       "that contains the expected hint test" in {
         formGroup.get(0).getElementsByClass(Selectors.hint)
-          .text() mustBe Messages("enterBusinessDetails.hint")
+          .text() mustBe Messages("This is 10 numbers, for example 1234567890. It will be on tax returns and other letters about Corporation Tax. It may be called ‘reference’, ‘UTR’ or ‘official use’.You can find a lost UTR(opens in a new tab).")
       }
 
       "that contains a text area" in {
         formGroup.get(0).getElementsByClass(Selectors.textArea).size mustBe 1
+        formGroup.get(1).getElementsByClass(Selectors.textArea).size mustBe 1
       }
     }
 
@@ -90,10 +91,10 @@ class EnterBusinessDetailsViewSpec extends ViewSpecHelper {
       }
     }
 
-    "when a form error exists" - {
+    "when a form error exists (utr length error + no postcode)" - {
       val valueOutOfMaxRange = Random.nextString(10 + 1)
 
-      val htmlWithErrors = view(form.bind(Map("value" -> valueOutOfMaxRange)), NormalMode)(request, messages(application))
+      val htmlWithErrors = view(form.bind(Map("utr" -> valueOutOfMaxRange)), NormalMode)(request, messages(application))
       val documentWithErrors = doc(htmlWithErrors)
       "should have a title containing error" in {
         val titleMessage = Messages("enterBusinessDetails.title")
@@ -106,8 +107,8 @@ class EnterBusinessDetailsViewSpec extends ViewSpecHelper {
           .first()
         errorSummary
           .select("a")
-          .attr("href") mustBe "#value"
-        errorSummary.text() mustBe Messages("enterBusinessDetails.error.length")
+          .attr("href") mustBe "#utr"
+        errorSummary.text() mustBe Messages("Unique Taxpayer Reference (UTR) must be 10 numbers Please enter a value")
       }
     }
 

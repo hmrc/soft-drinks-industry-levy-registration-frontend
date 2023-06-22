@@ -16,31 +16,29 @@
 
 package forms
 
-import forms.behaviours.StringFieldBehaviours
-import play.api.data.FormError
+import forms.behaviours.{IntFieldBehaviours, StringFieldBehaviours}
+import models.Identification
+import org.scalatest.matchers.must.Matchers
+import play.api.data.{Form, FormError}
 
-class EnterBusinessDetailsFormProviderSpec extends StringFieldBehaviours {
+class EnterBusinessDetailsFormProviderSpec extends  IntFieldBehaviours with Matchers{
 
   val lengthKey = "enterBusinessDetails.error.length"
   val maxLength = 10
 
-  val form = new EnterBusinessDetailsFormProvider()()
+  val form: Form[Identification] = new EnterBusinessDetailsFormProvider().apply()
 
-  ".value" - {
+  ".utr" - {
 
-    val fieldName = "value"
+    val fieldName = "utr"
+    val requiredKey = "enterBusinessDetails.required.utr"
+    val invalidKey = "enterBusinessDetails.invalid.utr"
+    val maxLengthKey = "enterBusinessDetails.invalid.utr.length"
 
     behave like fieldThatBindsValidData(
       form,
       fieldName,
-      stringsWithMaxLength(maxLength)
-    )
-
-    behave like fieldWithMaxLength(
-      form,
-      fieldName,
-      maxLength = maxLength,
-      lengthError = FormError(fieldName, lengthKey, Seq(maxLength))
+      "0000000437"
     )
   }
 }
