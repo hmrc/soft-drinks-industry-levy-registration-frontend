@@ -32,7 +32,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
             val radioInputs = page.getElementsByClass("govuk-radios__input")
             radioInputs.size() mustBe Verify.values.size
             page.getElementById("addressForUTR").text() mustBe "Super Lemonade Plc 105B Godfrey Marchant Grove GU14 8NL"
-            page.getElementById("utrField").text() mustBe "0000001611"
+            page.getElementById("utrField").text() mustBe "0000001611:"
             Verify.values.zipWithIndex.foreach { case (radio1, index1) =>
               radioInputs.get(index1).attr("value") mustBe radio1.toString
               radioInputs.get(index1).hasAttr("checked") mustBe false
@@ -63,7 +63,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe Verify.values.size
               page.getElementById("addressForUTR").text() mustBe "Super Lemonade Plc 105B Godfrey Marchant Grove GU14 8NL"
-              page.getElementById("utrField").text() mustBe "0000001611"
+              page.getElementById("utrField").text() mustBe "0000001611:"
               Verify.values.zipWithIndex.foreach { case (radio1, index1) =>
                 radioInputs.get(index1).attr("value") mustBe radio1.toString
                 radioInputs.get(index1).hasAttr("checked") mustBe index == index1
@@ -96,7 +96,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
             val radioInputs = page.getElementsByClass("govuk-radios__input")
             radioInputs.size() mustBe Verify.values.size
             page.getElementById("addressForUTR").text() mustBe "Super Lemonade Plc 105B Godfrey Marchant Grove GU14 8NL"
-            page.getElementById("utrField").text() mustBe "0000001611"
+            page.getElementById("utrField").text() mustBe "0000001611:"
             Verify.values.zipWithIndex.foreach { case (radio1, index1) =>
               radioInputs.get(index1).attr("value") mustBe radio1.toString
               radioInputs.get(index1).hasAttr("checked") mustBe false
@@ -127,7 +127,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe Verify.values.size
               page.getElementById("addressForUTR").text() mustBe "Super Lemonade Plc 105B Godfrey Marchant Grove GU14 8NL"
-              page.getElementById("utrField").text() mustBe "0000001611"
+              page.getElementById("utrField").text() mustBe "0000001611:"
               Verify.values.zipWithIndex.foreach { case (radio1, index1) =>
                 radioInputs.get(index1).attr("value") mustBe radio1.toString
                 radioInputs.get(index1).hasAttr("checked") mustBe index == index1
@@ -208,7 +208,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
             val page = Jsoup.parse(res.body)
             page.title must include("Error: " + Messages("verify" + ".title"))
             page.getElementById("addressForUTR").text() mustBe "Super Lemonade Plc 105B Godfrey Marchant Grove GU14 8NL"
-            page.getElementById("utrField").text() mustBe "0000001611"
+            page.getElementById("utrField").text() mustBe "0000001611:"
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
@@ -288,7 +288,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
             val page = Jsoup.parse(res.body)
             page.title must include("Error: " + Messages("verify" + ".title"))
             page.getElementById("addressForUTR").text() mustBe "Super Lemonade Plc 105B Godfrey Marchant Grove GU14 8NL"
-            page.getElementById("utrField").text() mustBe "0000001611"
+            page.getElementById("utrField").text() mustBe "0000001611:"
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary

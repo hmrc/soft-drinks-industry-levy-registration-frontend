@@ -41,8 +41,6 @@ class SoftDrinksIndustryLevyConnectorSpec extends SpecBase with MockitoSugar wit
 
   implicit val hc = HeaderCarrier()
 
-  val utr: String = "1234567891"
-
   val identifierMap = Map("sdil" -> sdilNumber, "utr" -> utr)
 
   "SoftDrinksIndustryLevyConnector" - {
