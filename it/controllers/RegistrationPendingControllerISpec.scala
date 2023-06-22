@@ -4,7 +4,7 @@ import models.backend.UkAddress
 import models.{Identify, IndividualDetails, OrganisationDetails, RosmRegistration}
 import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
-import pages.IdentifyPage
+import pages.EnterBusinessDetailsPage
 import play.api.i18n.Messages
 import play.api.test.WsTestClient
 
@@ -13,7 +13,7 @@ class RegistrationPendingControllerISpec extends ControllerITTestHelper {
   val normalRoutePath = "/application-already-sent"
 
   "GET " + normalRoutePath - {
-    s"should return OK and render the RegistrationPending page when $IdentifyPage UTR IS NOT Populated" in {
+    s"should return OK and render the RegistrationPending page when $EnterBusinessDetailsPage UTR IS NOT Populated" in {
       given
         .commonPrecondition
 
@@ -32,7 +32,7 @@ class RegistrationPendingControllerISpec extends ControllerITTestHelper {
         }
       }
     }
-    s"should return OK and render the RegistrationPending page when $IdentifyPage UTR IS Populated" in {
+    s"should return OK and render the RegistrationPending page when $EnterBusinessDetailsPage UTR IS Populated" in {
       val utr = "utrFoo"
       val rosmReg =  RosmRegistration(
         safeId = "safeid",
@@ -46,7 +46,7 @@ class RegistrationPendingControllerISpec extends ControllerITTestHelper {
         .sdilBackend.checkPendingQueueDoesntExist(utr)
         .sdilBackend.retrieveRosm(utr, rosmReg)
 
-      setAnswers(emptyUserAnswers.set(IdentifyPage, Identify(utr, "posty")).success.value)
+      setAnswers(emptyUserAnswers.set(EnterBusinessDetailsPage, Identify(utr, "posty")).success.value)
 
       WsTestClient.withClient { client =>
         val result1 = createClientRequestGet(client, baseUrl + normalRoutePath)

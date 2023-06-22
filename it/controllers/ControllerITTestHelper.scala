@@ -166,6 +166,9 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
     if(!identifyActionOnly) {
       s"the user is authed, no sub, $Pending sub in queue" - {
         "redirect to journey stopper" in {
+
+          setAnswers(emptyUserAnswers)
+
           given.authorisedWithoutSdilSubscriptionPendingQueueContainsRecordOfPending
           WsTestClient.withClient { client =>
             val result1 = optJson match {
@@ -182,6 +185,9 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
       }
       s"the user is authed, no sub, $Registered sub in queue" - {
         "redirect to journey stopper" in {
+
+          setAnswers(emptyUserAnswers)
+
           given.authorisedWithoutSdilSubscriptionQueueContainsRecordOfRegistered
 
           WsTestClient.withClient { client =>

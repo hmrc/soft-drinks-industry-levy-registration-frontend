@@ -39,6 +39,7 @@ class DataRequiredActionImpl @Inject()(sdilConnector: SoftDrinksIndustryLevyConn
       case Some(result) =>
         Right(DataRequest(request, request.internalId, request.hasCTEnrolment, request.authUtr, data, result))
       case None =>
+        println("NO ROSM")
         genericLogger.logger.warn(s"User has no rosm data for UTR on auth or from Identify ${hc.requestId}")
         Left(Redirect(routes.IndexController.onPageLoad()))
     }
