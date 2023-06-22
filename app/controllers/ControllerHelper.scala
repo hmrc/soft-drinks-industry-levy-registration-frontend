@@ -22,6 +22,7 @@ import navigation.Navigator
 import pages.Page
 import play.api.i18n.I18nSupport
 import play.api.mvc.{AnyContent, Request, Result}
+import repositories.SessionRepository
 import services.SessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utilities.GenericLogger
@@ -50,6 +51,16 @@ trait ControllerHelper extends FrontendBaseController with I18nSupport {
           genericLogger.logger.error(sessionRepo500ErrorMessage(page))
           InternalServerError(errorHandler.internalServerErrorTemplate)
       }
+    }
+  }
+
+  def updateDatabaseWithoutRedirect(updatedAnswers: UserAnswers, page: Page)
+                                   (implicit ec: ExecutionContext, request: Request[AnyContent]): Future[Status] = {
+    sessionService.set(updatedAnswers).map {
+      case Right(_) => Ok
+      case Left(_) =>
+        genericLogger.logger.error(sessionRepo500ErrorMessage(page))
+        InternalServerError
     }
   }
 

@@ -20,12 +20,12 @@ import controllers.actions._
 import forms.WarehouseDetailsFormProvider
 
 import javax.inject.Inject
-import models.{Mode, Warehouse}
+import models.{Mode, NormalMode, Warehouse}
 import navigation.Navigator
 import pages.WarehouseDetailsPage
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.SessionService
+import services.{AddressLookupService, SessionService, WarehouseDetails}
 import views.html.WarehouseDetailsView
 import handlers.ErrorHandler
 import viewmodels.govuk.SummaryListFluency
@@ -43,6 +43,7 @@ class WarehouseDetailsController @Inject()(
                                        requireData: DataRequiredAction,
                                        warehouseDetailsChecker: WarehouseDetailsChecker,
                                        formProvider: WarehouseDetailsFormProvider,
+                                       addressLookupService: AddressLookupService,
                                        val controllerComponents: MessagesControllerComponents,
                                        view: WarehouseDetailsView,
                                        val errorHandler: ErrorHandler,
@@ -76,8 +77,15 @@ class WarehouseDetailsController @Inject()(
           Future.successful(BadRequest(view(formWithErrors, mode, createWarehouseSummary(warehouses), warehouses.size))),
 
         value => {
-          val updatedAnswers = request.userAnswers.set(WarehouseDetailsPage, value)
-          updateDatabaseAndRedirect(updatedAnswers, WarehouseDetailsPage, mode)
+          for {
+            updatedAnswers <- Future.fromTry(request.userAnswers.set(WarehouseDetailsPage, value))
+            _              <- updateDatabaseWithoutRedirect(updatedAnswers, WarehouseDetailsPage)
+            onwardUrl              <- if(value){
+              addressLookupService.initJourneyAndReturnOnRampUrl(WarehouseDetails)
+            }else {
+              Future.successful(routes.ContactDetailsController.onPageLoad(NormalMode).url)
+            }
+          }yield Redirect(onwardUrl)
         }
       )
   }
