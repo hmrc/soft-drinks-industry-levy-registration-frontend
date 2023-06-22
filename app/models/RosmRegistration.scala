@@ -19,6 +19,8 @@ package models
 import models.backend.UkAddress
 import play.api.libs.json._
 
+import scala.util.Try
+
 case class RosmWithUtr(utr: String, rosmRegistration: RosmRegistration)
 case class RosmRegistration(
                              safeId: String,
@@ -48,15 +50,12 @@ object RosmRegistration {
     }
 
   private val addressWrites: Writes[UkAddress] = (o: UkAddress) => {
-    val lines = o.lines
-    def getLine(n: Int) = lines.init.lift(n).getOrElse("")
     Json.obj(
-      ("addressLine1", JsString(getLine(0))),
-      ("addressLine2", JsString(getLine(1))),
-      ("addressLine3", JsString(getLine(2))),
-      ("addressLine4", JsString(getLine(3))),
-      ("postalCode", JsString(o.postCode))
-    )
+      ("addressLine1", JsString(o.lines.headOption.getOrElse(""))),
+      ("addressLine2", JsString(Try(o.lines(1)).getOrElse(""))),
+      ("addressLine3", JsString(Try(o.lines(2)).getOrElse(""))),
+      ("addressLine4", JsString(Try(o.lines(3)).getOrElse(""))),
+      ("postalCode", JsString(o.postCode)))
   }
 
   private implicit val addressFormat: Format[UkAddress] = Format(addressReads, addressWrites)

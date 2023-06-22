@@ -18,7 +18,7 @@ package controllers.actions
 
 import controllers.routes
 import models.requests.{DataRequest, OptionalDataRequest}
-import models.{RosmRegistration, RosmWithUtr, UserAnswers}
+import models.{RosmWithUtr, UserAnswers}
 import play.api.mvc.Result
 import play.api.mvc.Results.Redirect
 
@@ -32,8 +32,6 @@ class FakeDataRequiredAction(rosmRegistration: RosmWithUtr, userAnswers: Option[
       case Some(userAnswers) => Future(Right(DataRequest(request, request.internalId, request.hasCTEnrolment, request.authUtr, userAnswers = userAnswers, rosmRegistration)))
     }
   }
-
-
 
   override protected implicit val executionContext: ExecutionContext =
     scala.concurrent.ExecutionContext.Implicits.global

@@ -31,7 +31,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
             page.title must include(Messages("verify" + ".title"))
             val radioInputs = page.getElementsByClass("govuk-radios__input")
             radioInputs.size() mustBe Verify.values.size
-            page.getElementById("addressForUTR").text() mustBe "Super Lemonade Plc 105B Godfrey Marchant Grove GU14 8NL"
+            page.getElementById("addressForUTR").text() mustBe "Super Lemonade Plc 105B Godfrey Marchant Grove Guildford GU14 8NL"
             page.getElementById("utrField").text() mustBe "0000001611:"
             Verify.values.zipWithIndex.foreach { case (radio1, index1) =>
               radioInputs.get(index1).attr("value") mustBe radio1.toString
@@ -59,10 +59,10 @@ class VerifyControllerISpec extends ControllerITTestHelper {
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
               page.title must include(Messages("verify" + ".title"))
-              page.getElementById("addressForUTR").text() mustBe "Super Lemonade Plc 105B Godfrey Marchant Grove GU14 8NL"
+              page.getElementById("addressForUTR").text() mustBe "Super Lemonade Plc 105B Godfrey Marchant Grove Guildford GU14 8NL"
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe Verify.values.size
-              page.getElementById("addressForUTR").text() mustBe "Super Lemonade Plc 105B Godfrey Marchant Grove GU14 8NL"
+              page.getElementById("addressForUTR").text() mustBe "Super Lemonade Plc 105B Godfrey Marchant Grove Guildford GU14 8NL"
               page.getElementById("utrField").text() mustBe "0000001611:"
               Verify.values.zipWithIndex.foreach { case (radio1, index1) =>
                 radioInputs.get(index1).attr("value") mustBe radio1.toString
@@ -95,7 +95,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
             page.title must include(Messages("verify" + ".title"))
             val radioInputs = page.getElementsByClass("govuk-radios__input")
             radioInputs.size() mustBe Verify.values.size
-            page.getElementById("addressForUTR").text() mustBe "Super Lemonade Plc 105B Godfrey Marchant Grove GU14 8NL"
+            page.getElementById("addressForUTR").text() mustBe "Super Lemonade Plc 105B Godfrey Marchant Grove Guildford GU14 8NL"
             page.getElementById("utrField").text() mustBe "0000001611:"
             Verify.values.zipWithIndex.foreach { case (radio1, index1) =>
               radioInputs.get(index1).attr("value") mustBe radio1.toString
@@ -126,7 +126,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
               page.title must include(Messages("verify" + ".title"))
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe Verify.values.size
-              page.getElementById("addressForUTR").text() mustBe "Super Lemonade Plc 105B Godfrey Marchant Grove GU14 8NL"
+              page.getElementById("addressForUTR").text() mustBe "Super Lemonade Plc 105B Godfrey Marchant Grove Guildford GU14 8NL"
               page.getElementById("utrField").text() mustBe "0000001611:"
               Verify.values.zipWithIndex.foreach { case (radio1, index1) =>
                 radioInputs.get(index1).attr("value") mustBe radio1.toString
@@ -207,7 +207,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
             page.title must include("Error: " + Messages("verify" + ".title"))
-            page.getElementById("addressForUTR").text() mustBe "Super Lemonade Plc 105B Godfrey Marchant Grove GU14 8NL"
+            page.getElementById("addressForUTR").text() mustBe "Super Lemonade Plc 105B Godfrey Marchant Grove Guildford GU14 8NL"
             page.getElementById("utrField").text() mustBe "0000001611:"
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
@@ -287,7 +287,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
             page.title must include("Error: " + Messages("verify" + ".title"))
-            page.getElementById("addressForUTR").text() mustBe "Super Lemonade Plc 105B Godfrey Marchant Grove GU14 8NL"
+            page.getElementById("addressForUTR").text() mustBe "Super Lemonade Plc 105B Godfrey Marchant Grove Guildford GU14 8NL"
             page.getElementById("utrField").text() mustBe "0000001611:"
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first()

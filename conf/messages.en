@@ -301,6 +301,12 @@ removePackagingSiteDetails.heading = Are you sure you want to remove this packag
 removePackagingSiteDetails.error.required = Select yes if you want to remove this packaging site
 removePackagingSiteDetails.change.hidden = Confirm remove this packaging site
 
+registrationPending.title = You have already sent an application
+registrationPending.heading = You have already sent an application
+registrationPending.subText1 = These are the details we hold for Unique Taxpayer Reference (UTR)
+registrationPending.subText2 = If you have not got your registration number within 24 hours you need to call the Soft Drinks Industry Levy Helpline on {0}.
+registrationPending.subText3 = We will contact you using the information you gave in your application if there is a problem.
+
 alreadyRegistered.heading.title = You are already registered for the Soft Drinks Industry Levy
 alreadyRegistered.subText = These are the details we hold for Unique Taxpayer Reference (UTR)
 alreadyRegistered.account.goto = To view your registration details, go to
