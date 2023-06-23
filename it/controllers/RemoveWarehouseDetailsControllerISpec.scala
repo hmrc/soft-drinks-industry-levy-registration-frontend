@@ -1,6 +1,6 @@
 package controllers
 
-import models.Warehouse
+import models.{CheckMode, NormalMode, Warehouse}
 import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
 import pages.RemoveWarehouseDetailsPage
@@ -117,7 +117,7 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
 
     userAnswersForUpdateRegisteredDetailsRemoveWarehouseDetailsPage(indexOfWarehouseToBeRemoved).foreach { case (key, userAnswers) =>
       "when the user selects " + key - {
-        "should update the session with the new value and redirect to the index controller" - {
+        "should update the session with the new value and redirect to the Warehouse details controller" - {
           "when the session contains no data for page" in {
             given
               .commonPrecondition
@@ -131,7 +131,7 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
 
               whenReady(result) { res =>
                 res.status mustBe 303
-                res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.IndexController.onPageLoad.url)
+                res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.WarehouseDetailsController.onPageLoad(NormalMode).url)
               }
             }
           }
@@ -150,7 +150,7 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
 
               whenReady(result) { res =>
                 res.status mustBe 303
-                res.header(HeaderNames.LOCATION) mustBe Some(defaultCall.url)
+                res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.WarehouseDetailsController.onPageLoad(NormalMode).url)
                 val userAnswersAfterTest = getAnswers(userAnswers.id)
                 val dataStoredForPage = userAnswersAfterTest.fold[Option[Boolean]](None)(_.get(RemoveWarehouseDetailsPage))
                 if(yesSelected) {
@@ -205,7 +205,7 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
 
     userAnswersForUpdateRegisteredDetailsRemoveWarehouseDetailsPage(indexOfWarehouseToBeRemoved).foreach { case (key, userAnswers) =>
       "when the user selects " + key - {
-        "should update the session with the new value and redirect to the checkAnswers controller" - {
+        "should update the session with the new value and redirect to the Warehouse details controller" - {
           "when the session contains no data for page" in {
             given
               .commonPrecondition
@@ -219,38 +219,38 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
 
               whenReady(result) { res =>
                 res.status mustBe 303
-                res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.IndexController.onPageLoad.url)
+                res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.WarehouseDetailsController.onPageLoad(CheckMode).url)
               }
             }
           }
-// TODO: FIX
-//          "when the session already contains data for page" in {
-//            given
-//              .commonPrecondition
-//
-//            setAnswers(userAnswers)
-//            getAnswers(userAnswers.id).get.warehouseList.size mustBe 1
-//            WsTestClient.withClient { client =>
-//              val yesSelected = key == "yes"
-//              val result = createClientRequestPOST(
-//                client, baseUrl + checkRoutePath(indexOfWarehouseToBeRemoved), Json.obj("value" -> yesSelected.toString)
-//              )
-//
-//              whenReady(result) { res =>
-//                res.status mustBe 303
-//                res.header(HeaderNames.LOCATION) mustBe Some(routes.CYAController.onPageLoad.url)
-//                val userAnswersAfterTest = getAnswers(userAnswers.id)
-//                val dataStoredForPage = userAnswersAfterTest.fold[Option[Boolean]](None)(_.get(RemoveWarehouseDetailsPage))
-//                dataStoredForPage.nonEmpty mustBe true
-//                dataStoredForPage.get mustBe yesSelected
-//                if(yesSelected) {
-//                  userAnswersAfterTest.get.warehouseList.size mustBe 0
-//                } else {
-//                  userAnswersAfterTest.get.warehouseList.size mustBe 1
-//                }
-//              }
-//            }
-//          }
+
+          "when the session already contains data for page" in {
+            given
+              .commonPrecondition
+
+            setAnswers(userAnswers)
+            getAnswers(userAnswers.id).get.warehouseList.size mustBe 1
+            WsTestClient.withClient { client =>
+              val yesSelected = key == "yes"
+              val result = createClientRequestPOST(
+                client, baseUrl + checkRoutePath(indexOfWarehouseToBeRemoved), Json.obj("value" -> yesSelected.toString)
+              )
+
+              whenReady(result) { res =>
+                res.status mustBe 303
+                res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.WarehouseDetailsController.onPageLoad(CheckMode).url)
+                val userAnswersAfterTest = getAnswers(userAnswers.id)
+                val dataStoredForPage = userAnswersAfterTest.fold[Option[Boolean]](None)(_.get(RemoveWarehouseDetailsPage))
+                dataStoredForPage.nonEmpty mustBe true
+                dataStoredForPage.get mustBe yesSelected
+                if(yesSelected) {
+                  userAnswersAfterTest.get.warehouseList.size mustBe 0
+                } else {
+                  userAnswersAfterTest.get.warehouseList.size mustBe 1
+                }
+              }
+            }
+          }
         }
       }
     }
