@@ -17,7 +17,6 @@
 package controllers
 
 import base.SpecBase
-import org.jsoup.Jsoup
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import viewmodels.AddressFormattingHelper

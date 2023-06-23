@@ -14,12 +14,20 @@
  * limitations under the License.
  */
 
-package models
+package pages
 
-import play.api.libs.json.Json
+import models.Identify
+import pages.behaviours.PageBehaviours
 
-case class Identify (utr: String, postcode: String)
 
-object Identify {
-  implicit val format = Json.format[Identify]
+class EnterBusinessDetailsPageSpec extends PageBehaviours {
+
+  "EnterBusinessDetailsPage" - {
+
+    beRetrievable[Identify](EnterBusinessDetailsPage)
+
+    beSettable[Identify](EnterBusinessDetailsPage)
+
+    beRemovable[Identify](EnterBusinessDetailsPage)
+  }
 }

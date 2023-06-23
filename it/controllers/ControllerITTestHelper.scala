@@ -4,7 +4,7 @@ import connectors.{Pending, Registered}
 import models.{Identify, UserAnswers}
 import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
-import pages.IdentifyPage
+import pages.EnterBusinessDetailsPage
 import play.api.http.HeaderNames
 import play.api.libs.json.JsValue
 import play.api.libs.ws.{DefaultWSCookie, WSClient, WSResponse}
@@ -56,7 +56,7 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
         given.sdilBackend.retrieveRosm("1")
         given.sdilBackend.checkPendingQueueDoesntExist("1")
 
-        setAnswers(userAnswers.set(IdentifyPage,Identify(utr = "1", postCode = "fakepostcode")).success.value)
+          setAnswers(userAnswers.set(EnterBusinessDetailsPage,Identify(utr = "1", postcode = "fakepostcode")).success.value)
 
         WsTestClient.withClient { client =>
           val result1 = createClientRequestGet(client, url)
@@ -75,7 +75,7 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
         given.sdilBackend.retrieveRosm("1")
         given.sdilBackend.checkPendingQueuePending("1")
 
-        setAnswers(userAnswers.set(IdentifyPage,Identify(utr = "1", postCode = "fakepostcode")).success.value)
+        setAnswers(userAnswers.set(EnterBusinessDetailsPage,Identify(utr = "1", postcode = "fakepostcode")).success.value)
 
         WsTestClient.withClient { client =>
           val result1 = createClientRequestGet(client, url)
@@ -93,19 +93,22 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
         given.sdilBackend.retrieveRosm("1")
         given.sdilBackend.checkPendingQueueRegistered("1")
 
-        setAnswers(userAnswers.set(IdentifyPage,Identify(utr = "1", postCode = "fakepostcode")).success.value)
+        setAnswers(userAnswers.set(EnterBusinessDetailsPage,Identify(utr = "1", postcode = "fakepostcode")).success.value)
 
         WsTestClient.withClient { client =>
           val result1 = createClientRequestGet(client, url)
 
           whenReady(result1) { res =>
             res.status mustBe 303
-            res.header(HeaderNames.LOCATION) mustBe Some(routes.IndexController.onPageLoad.url)
+            res.header(HeaderNames.LOCATION) mustBe Some(routes.IndexController.onPageLoad().url)
           }
         }
       }
     }
+  }
 
+
+  def authenticatedWithNoEnrolmentsAndHasNotEnteredUtr(url: String, expectedPageTitle: String, userAnswers: UserAnswers = emptyUserAnswers): Unit = {
     "the user is authenticated with no enrolments and has not entered utr from identify page" - {
       s"redirect the user to identify page" in {
         given.authorisedButNoEnrolmentsPrecondition
@@ -163,6 +166,9 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
     if(!identifyActionOnly) {
       s"the user is authed, no sub, $Pending sub in queue" - {
         "redirect to journey stopper" in {
+
+          setAnswers(emptyUserAnswers)
+
           given.authorisedWithoutSdilSubscriptionPendingQueueContainsRecordOfPending
           WsTestClient.withClient { client =>
             val result1 = optJson match {
@@ -179,6 +185,9 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
       }
       s"the user is authed, no sub, $Registered sub in queue" - {
         "redirect to journey stopper" in {
+
+          setAnswers(emptyUserAnswers)
+
           given.authorisedWithoutSdilSubscriptionQueueContainsRecordOfRegistered
 
           WsTestClient.withClient { client =>

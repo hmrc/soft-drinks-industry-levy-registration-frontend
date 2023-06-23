@@ -37,6 +37,14 @@ trait ModelGenerators {
       } yield ContactDetails(fullName, position, phoneNumber, email)
     }
 
+  implicit lazy val arbitraryIdentification: Arbitrary[Identify] =
+    Arbitrary {
+      for {
+        utr <- arbitrary[String]
+        postcode <- arbitrary[String]
+      } yield Identify(utr, postcode)
+    }
+
   implicit lazy val arbitraryHowManyLitresGlobally: Arbitrary[HowManyLitresGlobally] =
     Arbitrary {
       Gen.oneOf(HowManyLitresGlobally.values.toSeq)

@@ -18,11 +18,36 @@ package forms.mappings
 
 import models.Enumerable
 import play.api.data.Forms.of
+import play.api.data.format.Formats.stringFormat
+import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
 import play.api.data.{FieldMapping, Mapping}
 
 import java.time.LocalDate
 
 trait Mappings extends Formatters with Constraints {
+
+  val postcodeCharactersRegex = "^[a-zA-Z0-9 ]+$"
+
+  val postcodeRegex = "^[A-Z]{1,2}[0-9][0-9A-Z]?\\s?[0-9][A-Z]{2}$|BFPO\\s?[0-9]{1,5}$"
+
+  val trimmedUppercaseText: Mapping[String] = of[String].transform(_.trim.toUpperCase, identity)
+
+  def validPostcode(invalidFormatFailure: String, emptyFailure: String, invalidCharactersFailure: String): Constraint[String] =
+    Constraint[String] { input: String =>
+      if (input.isEmpty) Invalid(ValidationError(emptyFailure))
+      else if (!input.matches(postcodeCharactersRegex)) Invalid(ValidationError(invalidCharactersFailure))
+      else if (!input.matches(postcodeRegex)) Invalid(ValidationError(invalidFormatFailure))
+      else Valid
+    }
+
+  def postcode: Mapping[String] =
+    trimmedUppercaseText.verifying(
+      validPostcode(
+        invalidFormatFailure = "enterBusinessDetails.postcode.invalid",
+        emptyFailure = "enterBusinessDetails.postcode.required",
+        invalidCharactersFailure = "enterBusinessDetails.postcode.special"
+      )
+    )
 
   protected def text(errorKey: String = "error.required", args: Seq[String] = Seq.empty): FieldMapping[String] =
     of(stringFormatter(errorKey, args))

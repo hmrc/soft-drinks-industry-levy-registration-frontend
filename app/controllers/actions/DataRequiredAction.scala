@@ -18,9 +18,9 @@ package controllers.actions
 
 import connectors.{DoesNotExist, Pending, Registered, SoftDrinksIndustryLevyConnector}
 import controllers.routes
-import models.UserAnswers
 import models.requests.{DataRequest, OptionalDataRequest}
-import pages.IdentifyPage
+import models.{NormalMode, UserAnswers}
+import pages.EnterBusinessDetailsPage
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{ActionRefiner, Result}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -70,13 +70,13 @@ class DataRequiredActionImpl @Inject()(sdilConnector: SoftDrinksIndustryLevyConn
                 genericLogger.logger.info(s"User has no user answers ${hc.requestId}")
                 Future.successful(Left(Redirect(routes.JourneyRecoveryController.onPageLoad())))
               case Some(data) =>
-                val manualUtr = data.get(IdentifyPage).map(answers => answers.utr)
+                val manualUtr = data.get(EnterBusinessDetailsPage).map(answers => answers.utr)
                 (manualUtr, request.authUtr) match {
                   case (None, Some(utr)) => checkPendingAndCallRosm(utr, data)
                   case (Some(utr),  _) => checkPendingAndCallRosm(utr, data)
                   case (None, None) =>
                     genericLogger.logger.info(s"User has no utr in auth or from Identify ${hc.requestId}")
-                    Future.successful(Left(Redirect(routes.IndexController.onPageLoad())))
+                    Future.successful(Left(Redirect(routes.EnterBusinessDetailsController.onPageLoad(NormalMode))))
       }
     }
   }

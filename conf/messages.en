@@ -311,3 +311,20 @@ alreadyRegistered.heading.title = You are already registered for the Soft Drinks
 alreadyRegistered.subText = These are the details we hold for Unique Taxpayer Reference (UTR)
 alreadyRegistered.account.goto = To view your registration details, go to
 alreadyRegistered.account.link.text = your Soft Drinks Industry Levy account.
+
+enterBusinessDetails.title = Enter your business details
+enterBusinessDetails.heading = Enter your business details
+enterBusinessDetails.subtext = This will help us match your details against information we currently hold.
+enterBusinessDetails.utr.heading = Corporation Tax or company Unique Taxpayer Reference number (UTR)
+enterBusinessDetails.utr.hint = This is 10 numbers, for example 1234567890. It will be on tax returns and other letters about Corporation Tax. It may be called ‘reference’, ‘UTR’ or ‘official use’. You can <a href={0}>find a lost UTR (opens in a new tab).</a>
+enterBusinessDetails.postcode.heading = Registered business postcode
+enterBusinessDetails.postcode.hint = This is the postcode of your registered business address
+enterBusinessDetails.checkYourAnswersLabel = Enter your business details
+enterBusinessDetails.change.hidden = EnterBusinessDetails
+enterBusinessDetails.required.utr = Enter the Unique Taxpayer Reference (UTR) for your business
+enterBusinessDetails.invalid.utr.length = Unique Taxpayer Reference (UTR) must be 10 numbers
+enterBusinessDetails.invalid.utr = Unique Taxpayer Reference (UTR) must be 10 numbers
+enterBusinessDetails.no-record.utr = This Unique Taxpayer Reference (UTR) and postcode do not match our records
+enterBusinessDetails.postcode.special = Enter a real postcode
+enterBusinessDetails.postcode.required = Enter a postcode
+enterBusinessDetails.postcode.invalid = Enter a real postcode
