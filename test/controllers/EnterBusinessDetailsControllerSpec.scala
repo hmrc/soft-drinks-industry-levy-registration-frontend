@@ -23,7 +23,7 @@ import errors.SessionDatabaseInsertError
 import forms.EnterBusinessDetailsFormProvider
 import helpers.LoggerHelper
 import models.requests.{DataRequest, OptionalDataRequest}
-import models.{NormalMode, RosmRegistration, RosmWithUtr}
+import models.{Identify, NormalMode, RosmRegistration, RosmWithUtr}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -103,6 +103,35 @@ class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
+      }
+    }
+
+    "must return a Bad Request and errors when utr or postcode is found from rosm data when submitted" in {
+
+      when(softDrinksIndustryLevyConnector.retreiveRosmSubscription(any(),any())(any())) thenReturn Future.successful(None)
+      when(mockSessionService.set(any())) thenReturn Future.successful(Right(true))
+
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[SessionService].toInstance(mockSessionService),
+            bind[SoftDrinksIndustryLevyConnector].toInstance(softDrinksIndustryLevyConnector)
+          )
+          .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, enterBusinessDetailsRoute)
+            .withFormUrlEncodedBody(("utr", "0000000436"), ("postcode", "GU14 8NL"))
+
+        val view = application.injector.instanceOf[EnterBusinessDetailsView]
+
+        val result = route(application, request).value
+
+        status(result) mustEqual BAD_REQUEST
+        contentAsString(result) mustEqual  view(form.fill(Identify(utr = "0000000436", postcode = "GU14 8NL"))
+          .withError("utr", "enterBusinessDetails.no-record.utr"), NormalMode)(request, messages(application)).toString
       }
     }
 
