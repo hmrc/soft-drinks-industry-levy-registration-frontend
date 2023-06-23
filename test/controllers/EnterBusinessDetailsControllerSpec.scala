@@ -23,7 +23,7 @@ import errors.SessionDatabaseInsertError
 import forms.EnterBusinessDetailsFormProvider
 import helpers.LoggerHelper
 import models.requests.{DataRequest, OptionalDataRequest}
-import models.{Identify, NormalMode, RosmRegistration, RosmWithUtr}
+import models.{Identify, NormalMode}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -32,7 +32,6 @@ import play.api.inject.bind
 import play.api.mvc.{Call, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import repositories.SDILSessionCache
 import services.SessionService
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 import utilities.GenericLogger

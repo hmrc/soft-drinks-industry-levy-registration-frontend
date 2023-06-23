@@ -60,7 +60,7 @@ class EnterBusinessDetailsViewSpec extends ViewSpecHelper {
 
       "that contains the expected hint test" in {
         formGroup.get(0).getElementsByClass(Selectors.hint)
-          .text() mustBe Messages("This is 10 numbers, for example 1234567890. It will be on tax returns and other letters about Corporation Tax. It may be called ‘reference’, ‘UTR’ or ‘official use’.You can find a lost UTR(opens in a new tab).")
+          .text() mustBe Messages("This is 10 numbers, for example 1234567890. It will be on tax returns and other letters about Corporation Tax. It may be called ‘reference’, ‘UTR’ or ‘official use’.You can find a lost UTR (opens in a new tab).")
       }
 
       "that contains a text area" in {
@@ -91,7 +91,7 @@ class EnterBusinessDetailsViewSpec extends ViewSpecHelper {
       }
     }
 
-    "when a form error exists (utr length error + no postcode)" - {
+    "when a form error exists (utr invalid characters + no postcode)" - {
       val valueOutOfMaxRange = Random.nextString(10 + 1)
 
       val htmlWithErrors = view(form.bind(Map("utr" -> valueOutOfMaxRange)), NormalMode)(request, messages(application))
