@@ -17,7 +17,6 @@
 package controllers
 
 import base.SpecBase
-import errors.SessionDatabaseInsertError
 import helpers.LoggerHelper
 import utilities.GenericLogger
 import forms.WarehouseDetailsFormProvider
@@ -36,7 +35,6 @@ import services.{AddressLookupService, WarehouseDetails}
 import views.html.WarehouseDetailsView
 
 import scala.concurrent.Future
-import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.MockitoSugar.{times, verify}
 import play.api.libs.json.Json
@@ -105,32 +103,69 @@ class WarehouseDetailsControllerSpec extends SpecBase with MockitoSugar with Log
       }
     }
 
-    "must redirect to the next page when valid data is submitted" in {
-      val userAnswers : UserAnswers = UserAnswers(sdilNumber,Json.obj(), warehouseList = twoWarehouses)
-        .set(WarehouseDetailsPage, true).success.value
+    "must redirect to the next page when valid data is submitted (true)" in {
+      val mockSessionRepository = mock[SessionRepository]
+      val mockAddressLookupService = mock[AddressLookupService]
+      val onwardUrlForALF = "foobarwizz"
 
-      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+
+      when(mockAddressLookupService.initJourneyAndReturnOnRampUrl(
+        ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any())(
+        ArgumentMatchers.any(), ArgumentMatchers.any(),ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(onwardUrlForALF))
+
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[SessionRepository].toInstance(mockSessionRepository),
+            bind[AddressLookupService].toInstance(mockAddressLookupService)
+          )
+          .build()
 
       running(application) {
-        val request = FakeRequest(GET, warehouseDetailsRoute)
-
-        val view = application.injector.instanceOf[WarehouseDetailsView]
+        val request =
+          FakeRequest(POST, warehouseDetailsRoute)
+            .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
 
-        val warehouseMap: Map[String, Warehouse] =
-          Map("1"-> Warehouse(Some("ABC Ltd"), UkAddress(List("33 Rhes Priordy", "East London","Line 3","Line 4"),"WR53 7CX")),
-            "2" -> Warehouse(Some("Super Cola Ltd"), UkAddress(List("33 Rhes Priordy", "East London","Line 3",""),"SA13 7CE")))
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual onwardUrlForALF
 
-        val warehouseSummaryList: List[SummaryListRow] =
-          WarehouseDetailsSummary.warehouseDetailsRow(warehouseMap)(messages(application))
+        verify(mockAddressLookupService, times(1)).initJourneyAndReturnOnRampUrl(
+          ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any())(
+          ArgumentMatchers.any(), ArgumentMatchers.any(),ArgumentMatchers.any(), ArgumentMatchers.any())
+      }
+    }
+    "must redirect to the next page when valid data is submitted (false)" in {
+      val mockSessionRepository = mock[SessionRepository]
+      val mockAddressLookupService = mock[AddressLookupService]
+      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
-        val summaryList: SummaryList = SummaryListViewModel(
-          rows = warehouseSummaryList
-        )
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[SessionRepository].toInstance(mockSessionRepository),
+            bind[AddressLookupService].toInstance(mockAddressLookupService)
+          )
+          .build()
 
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode , Some(summaryList), 2)(request, messages(application)).toString
+      running(application) {
+        val request =
+          FakeRequest(POST, warehouseDetailsRoute)
+            .withFormUrlEncodedBody(("value", "false"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual controllers.routes.ContactDetailsController.onPageLoad(NormalMode).url
+
+        verify(mockAddressLookupService, times(0)).initJourneyAndReturnOnRampUrl(
+          ArgumentMatchers.any(), ArgumentMatchers.any())(
+          ArgumentMatchers.any(), ArgumentMatchers.any(),ArgumentMatchers.any(), ArgumentMatchers.any())
       }
     }
 
