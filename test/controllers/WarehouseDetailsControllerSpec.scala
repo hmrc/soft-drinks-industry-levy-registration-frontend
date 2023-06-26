@@ -17,7 +17,6 @@
 package controllers
 
 import base.SpecBase
-import errors.SessionDatabaseInsertError
 import helpers.LoggerHelper
 import utilities.GenericLogger
 import forms.WarehouseDetailsFormProvider
@@ -32,13 +31,19 @@ import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.SessionService
+import services.{AddressLookupService, WarehouseDetails}
 import views.html.WarehouseDetailsView
 
 import scala.concurrent.Future
-import org.jsoup.Jsoup
+import org.mockito.ArgumentMatchers
+import org.mockito.MockitoSugar.{times, verify}
+import play.api.libs.json.Json
+import repositories.SessionRepository
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, SummaryListRow}
 import viewmodels.govuk.SummaryListFluency
 import viewmodels.summary.WarehouseDetailsSummary
+
+import scala.collection.immutable.Map
 
 class WarehouseDetailsControllerSpec extends SpecBase with MockitoSugar with LoggerHelper with SummaryListFluency {
 
@@ -48,6 +53,13 @@ class WarehouseDetailsControllerSpec extends SpecBase with MockitoSugar with Log
   val form = formProvider()
 
   lazy val warehouseDetailsRoute = routes.WarehouseDetailsController.onPageLoad(NormalMode).url
+
+  val twoWarehouses: Map[String,Warehouse] = Map(
+    "1"-> Warehouse(Some("ABC Ltd"), UkAddress(List("33 Rhes Priordy", "East London","Line 3","Line 4"),"WR53 7CX")),
+    "2" -> Warehouse(Some("Super Cola Ltd"), UkAddress(List("33 Rhes Priordy", "East London","Line 3",""),"SA13 7CE"))
+  )
+
+  val userAnswerTwoWarehouses : UserAnswers = UserAnswers(sdilNumber,Json.obj(), warehouseList = twoWarehouses)
 
   "WarehouseDetails Controller" - {
 
@@ -91,53 +103,69 @@ class WarehouseDetailsControllerSpec extends SpecBase with MockitoSugar with Log
       }
     }
 
-    "must redirect to the next page when valid data is submitted" in {
+    "must redirect to the next page when valid data is submitted (true)" in {
+      val mockSessionRepository = mock[SessionRepository]
+      val mockAddressLookupService = mock[AddressLookupService]
+      val onwardUrlForALF = "foobarwizz"
 
-      val mockSessionService = mock[SessionService]
+      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
-      when(mockSessionService.set(any())) thenReturn Future.successful(Right(true))
+      when(mockAddressLookupService.initJourneyAndReturnOnRampUrl(
+        ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any())(
+        ArgumentMatchers.any(), ArgumentMatchers.any(),ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(onwardUrlForALF))
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionService].toInstance(mockSessionService)
+            bind[SessionRepository].toInstance(mockSessionRepository),
+            bind[AddressLookupService].toInstance(mockAddressLookupService)
           )
           .build()
 
       running(application) {
         val request =
           FakeRequest(POST, warehouseDetailsRoute)
-        .withFormUrlEncodedBody(("value", "true"))
+            .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual onwardRoute.url
+        redirectLocation(result).value mustEqual onwardUrlForALF
+
+        verify(mockAddressLookupService, times(1)).initJourneyAndReturnOnRampUrl(
+          ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any())(
+          ArgumentMatchers.any(), ArgumentMatchers.any(),ArgumentMatchers.any(), ArgumentMatchers.any())
       }
     }
+    "must redirect to the next page when valid data is submitted (false)" in {
+      val mockSessionRepository = mock[SessionRepository]
+      val mockAddressLookupService = mock[AddressLookupService]
+      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
-    "must return a Bad Request and errors when invalid data is submitted" in {
-      val address = UkAddress(List("29 Station Place", "The Railyard", "Cambridge"), "CB1 2FP")
-      val warehouse = Map("78941132" -> Warehouse(Some("Warehouse One"), address))
-      val userAnswers = UserAnswers(identifier).set(WarehouseDetailsPage, true).success.value
-      val uaWithWarehouses = userAnswers.copy(warehouseList = warehouse)
-      val warehouseSummary = Some(SummaryListViewModel(rows = WarehouseDetailsSummary.warehouseDetailsRow(warehouse)))
-      val application = applicationBuilder(userAnswers = Some(uaWithWarehouses)).build()
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[SessionRepository].toInstance(mockSessionRepository),
+            bind[AddressLookupService].toInstance(mockAddressLookupService)
+          )
+          .build()
 
       running(application) {
         val request =
           FakeRequest(POST, warehouseDetailsRoute)
-        .withFormUrlEncodedBody(("value", ""))
-
-        val boundForm = form.bind(Map("value" -> ""))
-
-        val view = application.injector.instanceOf[WarehouseDetailsView]
+            .withFormUrlEncodedBody(("value", "false"))
 
         val result = route(application, request).value
 
-        status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, warehouseSummary, 1)(request, messages(application)).toString
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual controllers.routes.ContactDetailsController.onPageLoad(NormalMode).url
+
+        verify(mockAddressLookupService, times(0)).initJourneyAndReturnOnRampUrl(
+          ArgumentMatchers.any(), ArgumentMatchers.any())(
+          ArgumentMatchers.any(), ArgumentMatchers.any(),ArgumentMatchers.any(), ArgumentMatchers.any())
       }
     }
 
@@ -171,50 +199,67 @@ class WarehouseDetailsControllerSpec extends SpecBase with MockitoSugar with Log
       }
     }
 
-    "must fail if the setting of userAnswers fails" in {
+    "must return error if ALF on ramp call returns error" in {
+      val mockSessionRepository = mock[SessionRepository]
+      val mockAddressLookupService = mock[AddressLookupService]
+      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
-      val application = applicationBuilder(userAnswers = Some(userDetailsWithSetMethodsReturningFailure)).build()
-
-      running(application) {
-        val request =
-          FakeRequest(POST, warehouseDetailsRoute
-        )
-        .withFormUrlEncodedBody(("value", "true"))
-
-        val result = route(application, request).value
-
-        status(result) mustEqual INTERNAL_SERVER_ERROR
-        val page = Jsoup.parse(contentAsString(result))
-        page.title() mustBe "Sorry, we are experiencing technical difficulties - 500 - Soft Drinks Industry Levy - GOV.UK"
-      }
-    }
-
-    "should log an error message when internal server error is returned when user answers are not set in session repository" in {
-      val mockSessionService = mock[SessionService]
-
-      when(mockSessionService.set(any())) thenReturn Future.successful(Left(SessionDatabaseInsertError))
+      when(mockAddressLookupService.initJourneyAndReturnOnRampUrl(
+        ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any())(
+        ArgumentMatchers.any(), ArgumentMatchers.any(),ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.failed(new Exception("uh oh spaghetio")))
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionService].toInstance(mockSessionService)
+            bind[SessionRepository].toInstance(mockSessionRepository),
+            bind[AddressLookupService].toInstance(mockAddressLookupService)
           )
           .build()
 
       running(application) {
-        withCaptureOfLoggingFrom(application.injector.instanceOf[GenericLogger].logger) { events =>
-          val request =
-            FakeRequest(POST, warehouseDetailsRoute)
-          .withFormUrlEncodedBody(("value", "true"))
+        val request =
+          FakeRequest(POST, warehouseDetailsRoute)
+            .withFormUrlEncodedBody(("value", "true"))
 
-          await(route(application, request).value)
-          events.collectFirst {
-            case event =>
-              event.getLevel.levelStr mustBe "ERROR"
-              event.getMessage mustEqual "Failed to set value in session repository while attempting set on warehouseDetails"
-          }.getOrElse(fail("No logging captured"))
-        }
+        intercept[Exception](await(route(application, request).value))
+
+
+        verify(mockAddressLookupService, times(1)).initJourneyAndReturnOnRampUrl(
+          ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any())(
+          ArgumentMatchers.any(), ArgumentMatchers.any(),ArgumentMatchers.any(), ArgumentMatchers.any())
+      }
+    }
+
+    "must return a Bad Request and errors when invalid data is submitted" in {
+
+      val application = applicationBuilder(userAnswers = Some(userAnswerTwoWarehouses)).build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, warehouseDetailsRoute)
+            .withFormUrlEncodedBody(("value", ""))
+
+        val boundForm = form.bind(Map("value" -> ""))
+
+        val view = application.injector.instanceOf[WarehouseDetailsView]
+
+        val result = route(application, request).value
+
+        val WarhouseMap: Map[String,Warehouse] =
+          Map("1"-> Warehouse(Some("ABC Ltd"), UkAddress(List("33 Rhes Priordy", "East London","Line 3","Line 4"),"WR53 7CX")),
+            "2" -> Warehouse(Some("Super Cola Ltd"), UkAddress(List("33 Rhes Priordy", "East London","Line 3",""),"SA13 7CE")))
+
+        val warehouseSummaryList: List[SummaryListRow] =
+          WarehouseDetailsSummary.warehouseDetailsRow(WarhouseMap)(messages(application))
+
+        val summaryList: SummaryList = SummaryListViewModel(
+          rows = warehouseSummaryList
+        )
+
+        status(result) mustEqual BAD_REQUEST
+        contentAsString(result) mustEqual view(boundForm, NormalMode, Some(summaryList), 2)(request, messages(application)).toString
       }
     }
   }

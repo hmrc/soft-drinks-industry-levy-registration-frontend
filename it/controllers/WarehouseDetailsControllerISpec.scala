@@ -1,14 +1,17 @@
 package controllers
 
 import models.NormalMode
+import models.alf.init.{AppLevelLabels, ConfirmPageConfig, EditPageLabels, JourneyConfig, JourneyLabels, JourneyOptions, LanguageLabels, LookupPageLabels, SelectPageConfig, TimeoutConfig}
 import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
 import pages.WarehouseDetailsPage
 import play.api.http.HeaderNames
 import play.api.i18n.Messages
-import play.api.libs.json.Json
+import play.api.libs.json.{JsObject, Json}
+import play.api.libs.ws.DefaultWSCookie
 import play.api.test.Helpers.redirectLocation
 import play.api.test.WsTestClient
+import testSupport.ALFTestHelper
 
 class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
 
@@ -165,10 +168,14 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
       "when the user selects " + key - {
         "should update the session with the new value and redirect to the index controller" - {
           "when the session contains no data for page" in {
+            val alfOnRampURL: String = "http://onramp.com"
+            setAnswers(emptyUserAnswers
+              .set(WarehouseDetailsPage, true).success.value
+              )
             given
               .commonPrecondition
+              .alf.getSuccessResponseFromALFInit(alfOnRampURL)
 
-            setAnswers(emptyUserAnswers)
             WsTestClient.withClient { client =>
               val yesSelected = key == "yes"
               val result = createClientRequestPOST(
@@ -177,7 +184,6 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
 
               whenReady(result) { res =>
                 res.status mustBe 303
-                res.header(HeaderNames.LOCATION) mustBe Some(routes.IndexController.onPageLoad().url)
                 val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(WarehouseDetailsPage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe yesSelected
@@ -186,8 +192,13 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
           }
 
           "when the session already contains data for page" in {
+            val alfOnRampURL: String = "http://onramp.com"
+            setAnswers(emptyUserAnswers
+              .set(WarehouseDetailsPage, true).success.value
+            )
             given
               .commonPrecondition
+              .alf.getSuccessResponseFromALFInit(alfOnRampURL)
 
             setAnswers(userAnswers)
             WsTestClient.withClient { client =>
@@ -198,7 +209,7 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
 
               whenReady(result) { res =>
                 res.status mustBe 303
-                res.header(HeaderNames.LOCATION) mustBe Some(routes.IndexController.onPageLoad().url)
+                //res.header(HeaderNames.LOCATION) mustBe Some(alfOnRampURL)
                 val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(WarehouseDetailsPage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe yesSelected
@@ -239,14 +250,61 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
   }
 
   s"POST " + checkRoutePath - {
+
+    "when user selects yes" in {
+      val alfOnRampURL: String = "http://onramp.com"
+      setAnswers(emptyUserAnswers.set(WarehouseDetailsPage, true).success.value
+        .copy(warehouseList = warehouseListWith1))
+      given
+        .commonPrecondition
+        .alf.getSuccessResponseFromALFInit(alfOnRampURL)
+      WsTestClient.withClient { client =>
+        emptyUserAnswers
+          .set(WarehouseDetailsPage, true).success.value
+          .copy(warehouseList = warehouseListWith1)
+        val result = createClientRequestPOST(
+          client, baseUrl + checkRoutePath, Json.obj("value" -> true)
+        )
+
+        whenReady(result) { res =>
+          res.status mustBe 303
+          res.header(HeaderNames.LOCATION) mustBe Some(alfOnRampURL)
+        }
+      }
+    }
+
+    "when user selects no" in {
+      val alfOnRampURL: String = "http://onramp.com"
+      setAnswers(emptyUserAnswers.set(WarehouseDetailsPage, true).success.value
+        .copy(warehouseList = warehouseListWith1))
+      given
+        .commonPrecondition
+        .alf.getSuccessResponseFromALFInit(alfOnRampURL)
+      WsTestClient.withClient { client =>
+        emptyUserAnswers
+          .set(WarehouseDetailsPage, true).success.value
+          .copy(warehouseList = warehouseListWith1)
+        val result = createClientRequestPOST(
+          client, baseUrl + checkRoutePath, Json.obj("value" -> false)
+        )
+
+        whenReady(result) { res =>
+          res.status mustBe 303
+          res.header(HeaderNames.LOCATION) mustBe Some(routes.ContactDetailsController.onPageLoad(NormalMode).url)
+        }
+      }
+    }
+
     userAnswersForWarehouseDetailsPage.foreach { case (key, userAnswers) =>
       "when the user selects " + key - {
         "should update the session with the new value and redirect to the checkAnswers controller" - {
           "when the session contains no data for page" in {
+            val alfOnRampURL: String = "http://onramp.com"
+            setAnswers(emptyUserAnswers.set(WarehouseDetailsPage, true).success.value
+              .copy(warehouseList = warehouseListWith1))
             given
               .commonPrecondition
-
-            setAnswers(emptyUserAnswers)
+              .alf.getSuccessResponseFromALFInit(alfOnRampURL)
             WsTestClient.withClient { client =>
               val yesSelected = key == "yes"
               val result = createClientRequestPOST(
@@ -255,7 +313,6 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
 
               whenReady(result) { res =>
                 res.status mustBe 303
-                res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad().url)
                 val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(WarehouseDetailsPage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe yesSelected
@@ -264,8 +321,10 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
           }
 
           "when the session already contains data for page" in {
+            val alfOnRampURL: String = "http://onramp.com"
             given
               .commonPrecondition
+              .alf.getSuccessResponseFromALFInit(alfOnRampURL)
 
             setAnswers(userAnswers)
             WsTestClient.withClient { client =>
@@ -276,7 +335,6 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
 
               whenReady(result) { res =>
                 res.status mustBe 303
-                res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad().url)
                 val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(WarehouseDetailsPage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe yesSelected

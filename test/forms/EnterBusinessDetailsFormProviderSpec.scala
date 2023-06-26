@@ -33,7 +33,6 @@ class EnterBusinessDetailsFormProviderSpec extends  IntFieldBehaviours with Matc
     val fieldName = "utr"
     val requiredKey = "enterBusinessDetails.required.utr"
     val invalidKey = "enterBusinessDetails.invalid.utr"
-    val maxLengthKey = "enterBusinessDetails.invalid.utr.length"
 
     behave like fieldThatBindsValidData(
       form,

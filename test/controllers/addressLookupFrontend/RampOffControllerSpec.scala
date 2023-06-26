@@ -189,11 +189,11 @@ class RampOffControllerSpec extends SpecBase with MockitoSugar {
         .thenReturn(Future.successful(true))
 
       running(app) {
-        val request = FakeRequest(GET, routes.RampOffController.secondaryWareHouseDetailsOffRamp(sdilId, alfId).url)
+        val request = FakeRequest(GET, routes.RampOffController.wareHouseDetailsOffRamp(sdilId, alfId).url)
 
         val result = route(app, request).value
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.routes.IndexController.onPageLoad().url
+        redirectLocation(result).get mustBe controllers.routes.WarehouseDetailsController.onPageLoad(NormalMode).url
       }
     }
     s"should return exception to the next page when ALF doesnt return Address successfully" in new Setup {
@@ -210,7 +210,7 @@ class RampOffControllerSpec extends SpecBase with MockitoSugar {
         .thenReturn(Future.failed(new Exception("woopsie")))
 
       running(application) {
-        val request = FakeRequest(GET, routes.RampOffController.secondaryWareHouseDetailsOffRamp(sdilId, alfId).url)
+        val request = FakeRequest(GET, routes.RampOffController.wareHouseDetailsOffRamp(sdilId, alfId).url)
 
         intercept[Exception](await(route(application, request).value))
       }
@@ -237,7 +237,7 @@ class RampOffControllerSpec extends SpecBase with MockitoSugar {
         .thenThrow(new RuntimeException("foo"))
 
       running(application) {
-        val request = FakeRequest(GET, routes.RampOffController.secondaryWareHouseDetailsOffRamp(sdilId, alfId).url)
+        val request = FakeRequest(GET, routes.RampOffController.wareHouseDetailsOffRamp(sdilId, alfId).url)
 
         intercept[Exception](await(route(application, request).value))
       }
@@ -267,7 +267,7 @@ class RampOffControllerSpec extends SpecBase with MockitoSugar {
         .thenReturn(Future.failed(new Exception("woopsie")))
 
       running(application) {
-        val request = FakeRequest(GET, routes.RampOffController.secondaryWareHouseDetailsOffRamp(sdilId, alfId).url)
+        val request = FakeRequest(GET, routes.RampOffController.wareHouseDetailsOffRamp(sdilId, alfId).url)
         intercept[Exception](await(route(application, request).value))
       }
     }

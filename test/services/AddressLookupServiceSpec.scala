@@ -411,7 +411,7 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
       val expectedJourneyConfigToBePassedToConnector = JourneyConfig(
         version = 2,
         options = JourneyOptions(
-          continueUrl = s"http://localhost:8706/soft-drinks-industry-levy-registration/off-ramp/secondary-warehouses/$sdilId",
+          continueUrl = s"http://localhost:8706/soft-drinks-industry-levy-registration/off-ramp/warehouses/$sdilId",
           homeNavHref = None,
           signOutHref = Some(controllers.auth.routes.AuthController.signOut().url),
           accessibilityFooterUrl = None,
@@ -570,7 +570,7 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
       val expected =  JourneyConfig(
         version = 2,
         options = JourneyOptions(
-          continueUrl = s"http://localhost:8706/soft-drinks-industry-levy-registration/off-ramp/secondary-warehouses/$exampleSdilIdWeGenerate",
+          continueUrl = s"http://localhost:8706/soft-drinks-industry-levy-registration/off-ramp/warehouses/$exampleSdilIdWeGenerate",
           homeNavHref = None,
           signOutHref = Some(controllers.auth.routes.AuthController.signOut().url),
           accessibilityFooterUrl = None,

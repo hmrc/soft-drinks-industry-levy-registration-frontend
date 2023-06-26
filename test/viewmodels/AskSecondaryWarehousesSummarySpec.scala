@@ -18,11 +18,10 @@ package viewmodels
 
 import base.SpecBase
 import controllers.routes
-import models.{NormalMode, UserAnswers, Warehouse}
 import models.backend.UkAddress
+import models.{NormalMode, Warehouse}
 import uk.gov.hmrc.govukfrontend.views.Aliases.HtmlContent
-import viewmodels.summary.{EnterBusinessDetailsSummary, WarehouseDetailsSummary}
-import views.summary.AskSecondaryWarehousesSummary
+import viewmodels.summary.WarehouseDetailsSummary
 
 class AskSecondaryWarehousesSummarySpec extends SpecBase {
 
@@ -94,11 +93,11 @@ class AskSecondaryWarehousesSummarySpec extends SpecBase {
   val warehouseSummaryRowList = WarehouseDetailsSummary.warehouseDetailsRow(Map("ref1" -> site1, "ref2" -> site2))
     warehouseSummaryRowList.head.key.content.asHtml.toString() mustBe "foo2, bar2, wizz2"
     warehouseSummaryRowList.head.actions.toList.head.items.last.content.asHtml.toString() mustBe "Remove"
-    warehouseSummaryRowList.head.actions.toList.head.items.last.href mustBe routes.WarehouseDetailsController.onPageLoad(NormalMode).url
+    warehouseSummaryRowList.head.actions.toList.head.items.last.href mustBe routes.RemoveWarehouseDetailsController.onPageLoad(NormalMode, "ref1").url
 
     warehouseSummaryRowList.last.key.content.asHtml.toString() mustBe "foo, bar, wizz"
     warehouseSummaryRowList.last.actions.toList.head.items.last.content.asHtml.toString() mustBe "Remove"
-    warehouseSummaryRowList.last.actions.toList.head.items.last.href mustBe routes.WarehouseDetailsController.onPageLoad(NormalMode).url
+    warehouseSummaryRowList.last.actions.toList.head.items.last.href mustBe routes.RemoveWarehouseDetailsController.onPageLoad(NormalMode, "ref2").url
 }
 }
 

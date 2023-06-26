@@ -18,9 +18,8 @@ package controllers.actions
 
 import base.SpecBase
 import connectors.{DoesNotExist, Pending, Registered, SoftDrinksIndustryLevyConnector}
-import controllers.routes
-import models.{Identify, NormalMode}
 import models.requests.{DataRequest, OptionalDataRequest}
+import models.{Identify, NormalMode}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar

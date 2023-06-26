@@ -56,7 +56,7 @@ object WarehouseDetailsSummary  {
           ),
           actions = if(numberOfWarehouses != 1) {
             Some(Actions("", Seq(
-              ActionItemViewModel("site.remove", routes.WarehouseDetailsController.onPageLoad(NormalMode).url)
+              ActionItemViewModel("site.remove", routes.RemoveWarehouseDetailsController.onPageLoad(NormalMode, warehouse._1).url)
                 .withCssClass("remove-link")
                 .withVisuallyHiddenText(messages("warehouseDetails.remove.hidden"))
             )))
