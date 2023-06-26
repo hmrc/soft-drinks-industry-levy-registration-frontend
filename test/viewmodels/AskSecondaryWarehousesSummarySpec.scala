@@ -18,11 +18,10 @@ package viewmodels
 
 import base.SpecBase
 import controllers.routes
-import models.{NormalMode, UserAnswers, Warehouse}
 import models.backend.UkAddress
+import models.{NormalMode, Warehouse}
 import uk.gov.hmrc.govukfrontend.views.Aliases.HtmlContent
-import viewmodels.summary.{EnterBusinessDetailsSummary, WarehouseDetailsSummary}
-import views.summary.AskSecondaryWarehousesSummary
+import viewmodels.summary.WarehouseDetailsSummary
 
 class AskSecondaryWarehousesSummarySpec extends SpecBase {
 

@@ -23,7 +23,7 @@ class RampOffControllerISpec extends ControllerITTestHelper {
         setAnswers(emptyUserAnswers)
 
         WsTestClient.withClient { client =>
-          val result = createClientRequestGet(client, s"$baseUrl/off-ramp/secondary-warehouses/$sdilId?id=$alfId")
+          val result = createClientRequestGet(client, s"$baseUrl/off-ramp/warehouses/$sdilId?id=$alfId")
 
           whenReady(result) { res =>
             val updatedUserAnswers = getAnswers(emptyUserAnswers.id).get
@@ -35,7 +35,7 @@ class RampOffControllerISpec extends ControllerITTestHelper {
             updatedUserAnswers.warehouseList mustBe Map(sdilId -> Warehouse(Some("soft drinks ltd"), UkAddress(List("line 1", "line 2", "line 3", "line 4"), "aa1 1aa", alfId = Some(alfId))))
 
             res.status mustBe SEE_OTHER
-            res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.IndexController.onPageLoad().url)
+            res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.WarehouseDetailsController.onPageLoad(NormalMode).url)
           }
 
         }
@@ -50,7 +50,7 @@ class RampOffControllerISpec extends ControllerITTestHelper {
         setAnswers(userAnswersBefore)
 
         WsTestClient.withClient { client =>
-          val result = createClientRequestGet(client, s"$baseUrl/off-ramp/secondary-warehouses/$sdilId?id=$alfId")
+          val result = createClientRequestGet(client, s"$baseUrl/off-ramp/warehouses/$sdilId?id=$alfId")
 
           whenReady(result) { res =>
             val updatedUserAnswers = getAnswers(emptyUserAnswers.id).get
@@ -62,7 +62,7 @@ class RampOffControllerISpec extends ControllerITTestHelper {
             updatedUserAnswers.warehouseList mustBe Map(sdilId -> Warehouse(Some("soft drinks ltd"), UkAddress(List("line 1", "line 2", "line 3", "line 4"), "aa1 1aa", alfId = Some(alfId))))
 
             res.status mustBe SEE_OTHER
-            res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.IndexController.onPageLoad().url)
+            res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.WarehouseDetailsController.onPageLoad(NormalMode).url)
           }
         }
       }
@@ -77,7 +77,7 @@ class RampOffControllerISpec extends ControllerITTestHelper {
         setAnswers(emptyUserAnswers)
 
         WsTestClient.withClient { client =>
-          val result = createClientRequestGet(client, s"$baseUrl/off-ramp/secondary-warehouses/$sdilId?id=$alfId")
+          val result = createClientRequestGet(client, s"$baseUrl/off-ramp/warehouses/$sdilId?id=$alfId")
 
           whenReady(result) { res =>
             res.status mustBe INTERNAL_SERVER_ERROR

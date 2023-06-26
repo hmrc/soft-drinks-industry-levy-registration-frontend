@@ -193,35 +193,6 @@ class AddressLookupService @Inject()(
           ))
         ))
 
-      case SecondaryWarehouseDetails => Some(
-        JourneyLabels(
-          en = Some(LanguageLabels(
-            appLevelLabels = Some(AppLevelLabels(
-              navTitle = Some(messages("service.name")),
-              phaseBannerHtml = None
-            )),
-            selectPageLabels = None,
-            lookupPageLabels = Some(
-              LookupPageLabels(
-                title = Some(messages("addressLookupFrontend.warehouseDetails.lookupPageLabels.title")),
-                heading = Some(messages("addressLookupFrontend.warehouseDetails.lookupPageLabels.title")),
-                postcodeLabel = Some(messages("addressLookupFrontend.warehouseDetails.lookupPageLabels.postcodeLabel")))),
-            editPageLabels = Some(
-              EditPageLabels(
-                title = Some(messages("addressLookupFrontend.warehouseDetails.editPageLabels.title")),
-                heading = Some(messages("addressLookupFrontend.warehouseDetails.editPageLabels.title")),
-                line1Label = Some(messages("addressLookupFrontend.warehouseDetails.editPageLabels.line1Label")),
-                line2Label = Some(messages("addressLookupFrontend.warehouseDetails.editPageLabels.line2Label")),
-                line3Label = Some(messages("addressLookupFrontend.warehouseDetails.editPageLabels.line3Label")),
-                townLabel = Some(messages("addressLookupFrontend.warehouseDetails.editPageLabels.townLabel")),
-                postcodeLabel= Some(messages("addressLookupFrontend.warehouseDetails.editPageLabels.postcodeLabel")),
-                organisationLabel = Some(messages("addressLookupFrontend.warehouseDetails.editPageLabels.organisationLabel")))
-            ),
-            confirmPageLabels = None,
-            countryPickerLabels = None
-          ))
-        ))
-
       case WarehouseDetails => Some(
         JourneyLabels(
           en = Some(LanguageLabels(
@@ -256,7 +227,6 @@ class AddressLookupService @Inject()(
   private def returnContinueUrl(state: AddressLookupState, sdilId: String): String = {
     state match {
       case BusinessAddress => frontendAppConfig.AddressLookupConfig.BusinessAddress.offRampUrl(sdilId)
-      case SecondaryWarehouseDetails => frontendAppConfig.AddressLookupConfig.SecondaryWarehouseDetails.offRampUrl(sdilId)
       case WarehouseDetails => frontendAppConfig.AddressLookupConfig.WarehouseDetails.offRampUrl(sdilId)
       case PackingDetails => frontendAppConfig.AddressLookupConfig.PackingDetails.offRampUrl(sdilId)
     }
