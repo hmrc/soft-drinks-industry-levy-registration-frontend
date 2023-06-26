@@ -20,6 +20,8 @@ sealed trait AddressLookupState
 
 case object PackingDetails extends AddressLookupState
 
+case object SecondaryWarehouseDetails extends AddressLookupState
+
 case object WarehouseDetails extends AddressLookupState
 
 case object BusinessAddress extends AddressLookupState

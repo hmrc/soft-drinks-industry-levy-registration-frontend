@@ -78,9 +78,15 @@ class FrontendAppConfig @Inject() (servicesConfig: ServicesConfig, configuration
       }
     }
 
-    object WarehouseDetails {
+    object SecondaryWarehouseDetails {
       def offRampUrl(sdilId: String): String = {
         s"$host${controllers.addressLookupFrontend.routes.RampOffController.secondaryWareHouseDetailsOffRamp(sdilId, "").url.replace("?id=", "")}"
+      }
+    }
+
+    object WarehouseDetails {
+      def offRampUrl(sdilId: String): String = {
+        s"$host${controllers.addressLookupFrontend.routes.RampOffController.wareHouseDetailsOffRamp(sdilId, "").url.replace("?id=", "")}"
       }
     }
 

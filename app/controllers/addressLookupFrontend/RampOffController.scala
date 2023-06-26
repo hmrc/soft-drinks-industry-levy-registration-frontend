@@ -56,6 +56,17 @@ class RampOffController @Inject()(identify: IdentifierAction,
     }
   }
 
+  def wareHouseDetailsOffRamp(sdilId: String, alfId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+    implicit request =>
+      for {
+        alfResponse         <- addressLookupService.getAddress(alfId)
+        updatedUserAnswers = addressLookupService.addAddressUserAnswers(WarehouseDetails, alfResponse.address, request.userAnswers, sdilId, alfId)
+        _                   <- sessionRepository.set(updatedUserAnswers)
+      } yield {
+        Redirect(controllers.routes.WarehouseDetailsController.onPageLoad(NormalMode))
+      }
+  }
+
   def packingSiteDetailsOffRamp(sdilId: String, alfId: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
       for {

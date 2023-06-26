@@ -406,7 +406,7 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
         res => res mustBe "foo"
       }
     }
-    s"should return Successful future when connector returns success for $WarehouseDetails" in {
+    s"should return Successful future when connector returns success for $SecondaryWarehouseDetails" in {
       val sdilId = "Foobar"
       val expectedJourneyConfigToBePassedToConnector = JourneyConfig(
         version = 2,
@@ -475,7 +475,7 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
 
       when(mockALFConnector.initJourney(ArgumentMatchers.eq(expectedJourneyConfigToBePassedToConnector))(ArgumentMatchers.any(),ArgumentMatchers.any()))
         .thenReturn(Future.successful(Right("foo")))
-      whenReady(service.initJourneyAndReturnOnRampUrl(WarehouseDetails, sdilId)(implicitly, implicitly, implicitly, FakeRequest("foo", "bar"))) {
+      whenReady(service.initJourneyAndReturnOnRampUrl(SecondaryWarehouseDetails, sdilId)(implicitly, implicitly, implicitly, FakeRequest("foo", "bar"))) {
         res => res mustBe "foo"
       }
     }
@@ -563,10 +563,10 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
   }
 
   "createJourneyConfig" - {
-    s"should return a journey config for $WarehouseDetails" in {
+    s"should return a journey config for $SecondaryWarehouseDetails" in {
       val request = FakeRequest("foo","bar")
       val exampleSdilIdWeGenerate: String = "wizz"
-      val res = service.createJourneyConfig(WarehouseDetails, exampleSdilIdWeGenerate)(request, implicitly)
+      val res = service.createJourneyConfig(SecondaryWarehouseDetails, exampleSdilIdWeGenerate)(request, implicitly)
       val expected =  JourneyConfig(
         version = 2,
         options = JourneyOptions(
