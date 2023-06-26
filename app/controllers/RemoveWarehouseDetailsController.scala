@@ -68,7 +68,7 @@ class RemoveWarehouseDetailsController @Inject()(
         case None =>
           genericLogger.logger.warn(s"Warehouse index $index doesn't exist ${request.userAnswers.id} warehouse list length:" +
           s"${request.userAnswers.warehouseList.size}")
-          Future.successful(Redirect(routes.IndexController.onPageLoad()))
+          Future.successful(Redirect(routes.WarehouseDetailsController.onPageLoad(mode)))
         case Some(warehouse) =>
           val formattedAddress: Html = AddressFormattingHelper.addressFormatting(warehouse.address, warehouse.tradingName)
           form.bindFromRequest().fold(
