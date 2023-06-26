@@ -18,20 +18,20 @@ package controllers
 
 import controllers.actions._
 import forms.VerifyFormProvider
-
-import javax.inject.Inject
+import handlers.ErrorHandler
+import models.Verify.{No, YesNewAddress}
 import models.{Mode, RosmRegistration}
 import navigation.Navigator
 import pages.VerifyPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.SessionService
-import views.html.VerifyView
-import handlers.ErrorHandler
-
-import scala.concurrent.{ExecutionContext, Future}
+import services.{AddressLookupService, BusinessAddress, SessionService}
 import utilities.GenericLogger
 import viewmodels.AddressFormattingHelper
+import views.html.VerifyView
+
+import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 class VerifyController @Inject()(
                                        override val messagesApi: MessagesApi,
@@ -44,7 +44,8 @@ class VerifyController @Inject()(
                                        val controllerComponents: MessagesControllerComponents,
                                        view: VerifyView,
                                        val errorHandler: ErrorHandler,
-                                       val genericLogger: GenericLogger
+                                       val genericLogger: GenericLogger,
+                                       addressLookupService: AddressLookupService
                                      )(implicit ec: ExecutionContext) extends ControllerHelper {
 
   val form = formProvider()
@@ -68,10 +69,16 @@ class VerifyController @Inject()(
       form.bindFromRequest().fold(
         formWithErrors =>
           Future.successful(BadRequest(view(formWithErrors, mode, request.rosmWithUtr.utr, formattedAddress(request.rosmWithUtr.rosmRegistration)))),
-
         value => {
           val updatedAnswers = request.userAnswers.set(VerifyPage, value)
-          updateDatabaseAndRedirect(updatedAnswers, VerifyPage, mode)
+          value match {
+            case YesNewAddress =>
+              updateDatabaseWithoutRedirect(updatedAnswers, VerifyPage)(
+                addressLookupService.initJourneyAndReturnOnRampUrl(BusinessAddress)
+                .map(alfOnRamp => Redirect(alfOnRamp)))
+            case No => Future.successful(Redirect(auth.routes.AuthController.signOutNoSurvey()))
+            case _ => updateDatabaseAndRedirect (updatedAnswers.map(_.copy(address = None)), VerifyPage, mode)
+          }
         }
       )
   }

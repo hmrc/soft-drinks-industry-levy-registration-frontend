@@ -1,5 +1,6 @@
 package controllers
 
+import models.NormalMode
 import play.api.http.HeaderNames
 import play.api.test.WsTestClient
 import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, defined}
@@ -21,7 +22,7 @@ class RegistrationControllerISpec extends ControllerITTestHelper {
 
           whenReady(result1) { res =>
             res.status mustBe 303
-            res.header(HeaderNames.LOCATION) mustBe Some(routes.IndexController.onPageLoad().url)
+            res.header(HeaderNames.LOCATION) mustBe Some(routes.VerifyController.onPageLoad(NormalMode).url)
             getAnswers(identifier) mustBe defined
           }
         }
