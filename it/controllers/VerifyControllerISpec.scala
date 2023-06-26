@@ -1,5 +1,7 @@
 package controllers
 
+import models.Verify.{No, YesNewAddress, YesRegister}
+import models.backend.UkAddress
 import models.{NormalMode, Verify}
 import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
@@ -144,51 +146,132 @@ class VerifyControllerISpec extends ControllerITTestHelper {
   }
 
   s"POST " + normalRoutePath - {
-    Verify.values.foreach { case radio =>
-      "when the user selects " + radio.toString - {
-        "should update the session with the new value and redirect to the index controller" - {
-          "when the session contains no data for page" in {
-            given
-              .commonPrecondition
+    s"when the user selects $YesRegister" - {
+      "should update the session with the new value and wipe the business address and redirect to the Organisation Type controller" - {
+        "when the session contains no data for page" in {
+          given
+            .commonPrecondition
 
-            setAnswers(emptyUserAnswers)
-            WsTestClient.withClient { client =>
-              val result = createClientRequestPOST(
-                client, baseUrl + normalRoutePath, Json.obj("value" -> radio)
-              )
+          setAnswers(emptyUserAnswers)
+          WsTestClient.withClient { client =>
+            val result = createClientRequestPOST(
+              client, baseUrl + normalRoutePath, Json.obj("value" -> Json.toJson(YesRegister.toString))
+            )
 
-              whenReady(result) { res =>
-                res.status mustBe 303
-                res.header(HeaderNames.LOCATION) mustBe Some(routes.OrganisationTypeController.onPageLoad(NormalMode).url)
-                val dataStoredForPage = getAnswers(identifier).fold[Option[Verify]](None)(_.get(VerifyPage))
-                dataStoredForPage.nonEmpty mustBe true
-                dataStoredForPage.get mustBe radio
-              }
-            }
-          }
+            whenReady(result) { res =>
+              res.status mustBe 303
+              res.header(HeaderNames.LOCATION) mustBe Some(routes.OrganisationTypeController.onPageLoad(NormalMode).url)
+              val userAnswersAfterPOST = getAnswers(identifier)
+              val dataStoredForPage = userAnswersAfterPOST.fold[Option[Verify]](None)(_.get(VerifyPage))
+              dataStoredForPage.nonEmpty mustBe true
+              dataStoredForPage.get mustBe YesRegister
+              userAnswersAfterPOST.get.address.isEmpty mustBe true
 
-          "when the session already contains data for page" in {
-            given
-              .commonPrecondition
-
-            val userAnswers = emptyUserAnswers.set(VerifyPage, radio).success.value
-
-            setAnswers(userAnswers)
-            WsTestClient.withClient { client =>
-              val result = createClientRequestPOST(
-                client, baseUrl + normalRoutePath, Json.obj("value" -> radio)
-              )
-
-              whenReady(result) { res =>
-                res.status mustBe 303
-                res.header(HeaderNames.LOCATION) mustBe Some(routes.OrganisationTypeController.onPageLoad(NormalMode).url)
-                val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Verify]](None)(_.get(VerifyPage))
-                dataStoredForPage.nonEmpty mustBe true
-                dataStoredForPage.get mustBe radio
-              }
             }
           }
         }
+
+        "when the session already contains data for page" in {
+          given
+            .commonPrecondition
+
+          val userAnswers = {
+            emptyUserAnswers.set(VerifyPage, YesNewAddress).success.value
+              .copy(address = Some(UkAddress(List.empty,"")))
+          }
+
+          setAnswers(userAnswers)
+          WsTestClient.withClient { client =>
+            val result = createClientRequestPOST(
+              client, baseUrl + normalRoutePath, Json.obj("value" -> Json.toJson(YesRegister.toString))
+            )
+
+            whenReady(result) { res =>
+              res.status mustBe 303
+              res.header(HeaderNames.LOCATION) mustBe Some(routes.OrganisationTypeController.onPageLoad(NormalMode).url)
+              val userAnswersAfterPOST = getAnswers(identifier)
+              val dataStoredForPage = userAnswersAfterPOST.fold[Option[Verify]](None)(_.get(VerifyPage))
+              dataStoredForPage.nonEmpty mustBe true
+              dataStoredForPage.get mustBe YesRegister
+              userAnswersAfterPOST.get.address.isEmpty mustBe true
+            }
+          }
+        }
+      }
+    }
+    s"when the user selects $YesNewAddress" - {
+      "should update the session with the new value and redirect to the ALF" - {
+        "when the session contains no data for page" in {
+          given
+            .commonPrecondition
+            .alf.getSuccessResponseFromALFInit("foo")
+
+          setAnswers(emptyUserAnswers)
+          WsTestClient.withClient { client =>
+            val result = createClientRequestPOST(
+              client, baseUrl + normalRoutePath, Json.obj("value" -> Json.toJson(YesNewAddress.toString))
+            )
+
+            whenReady(result) { res =>
+              res.status mustBe 303
+              res.header(HeaderNames.LOCATION) mustBe Some("foo")
+              val userAnswersAfterPOST = getAnswers(identifier)
+              val dataStoredForPage = userAnswersAfterPOST.fold[Option[Verify]](None)(_.get(VerifyPage))
+              dataStoredForPage.nonEmpty mustBe true
+              dataStoredForPage.get mustBe YesNewAddress
+              userAnswersAfterPOST.get.address.isEmpty mustBe true
+
+            }
+          }
+        }
+
+        "when the session already contains data for page" in {
+          given
+            .commonPrecondition
+            .alf.getSuccessResponseFromALFInit("foo")
+
+          val userAnswers = {
+            emptyUserAnswers.set(VerifyPage, YesRegister).success.value
+              .copy(address = Some(UkAddress(List.empty,"")))
+          }
+
+          setAnswers(userAnswers)
+          WsTestClient.withClient { client =>
+            val result = createClientRequestPOST(
+              client, baseUrl + normalRoutePath, Json.obj("value" -> Json.toJson(YesNewAddress.toString))
+            )
+
+            whenReady(result) { res =>
+              res.status mustBe 303
+              res.header(HeaderNames.LOCATION) mustBe Some("foo")
+              val userAnswersAfterPOST = getAnswers(identifier)
+              val dataStoredForPage = userAnswersAfterPOST.fold[Option[Verify]](None)(_.get(VerifyPage))
+              dataStoredForPage.nonEmpty mustBe true
+              dataStoredForPage.get mustBe YesNewAddress
+              userAnswersAfterPOST.get.address.isEmpty mustBe false
+            }
+          }
+        }
+      }
+    }
+    s"when the user selects $No" - {
+      "should NOT update the session with the new value and redirect to the Auth sign out controller" in {
+          given
+            .commonPrecondition
+
+          setAnswers(emptyUserAnswers)
+          WsTestClient.withClient { client =>
+            val result = createClientRequestPOST(
+              client, baseUrl + normalRoutePath, Json.obj("value" -> Json.toJson(No.toString))
+            )
+
+            whenReady(result) { res =>
+              res.status mustBe 303
+              res.header(HeaderNames.LOCATION) mustBe Some(auth.routes.AuthController.signOutNoSurvey().url)
+
+            }
+          }
+
       }
     }
 
@@ -224,9 +307,9 @@ class VerifyControllerISpec extends ControllerITTestHelper {
   }
 
   s"POST " + checkRoutePath - {
-    Verify.values.foreach { case radio =>
-      "when the user selects " + radio.toString - {
-        "should update the session with the new value and redirect to the checkAnswers controller" - {
+
+      s"when the user selects $YesRegister" - {
+        "should update the session with the new value and wipe the business address and redirect to the checkAnswers controller" - {
           "when the session contains no data for page" in {
             given
               .commonPrecondition
@@ -234,15 +317,18 @@ class VerifyControllerISpec extends ControllerITTestHelper {
             setAnswers(emptyUserAnswers)
             WsTestClient.withClient { client =>
               val result = createClientRequestPOST(
-                client, baseUrl + checkRoutePath, Json.obj("value" -> Json.toJson(radio))
+                client, baseUrl + checkRoutePath, Json.obj("value" -> Json.toJson(YesRegister.toString))
               )
 
               whenReady(result) { res =>
                 res.status mustBe 303
                 res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad().url)
-                val dataStoredForPage = getAnswers(identifier).fold[Option[Verify]](None)(_.get(VerifyPage))
+                val userAnswersAfterPOST = getAnswers(identifier)
+                val dataStoredForPage = userAnswersAfterPOST.fold[Option[Verify]](None)(_.get(VerifyPage))
                 dataStoredForPage.nonEmpty mustBe true
-                dataStoredForPage.get mustBe radio
+                dataStoredForPage.get mustBe YesRegister
+                userAnswersAfterPOST.get.address.isEmpty mustBe true
+
               }
             }
           }
@@ -251,22 +337,97 @@ class VerifyControllerISpec extends ControllerITTestHelper {
             given
               .commonPrecondition
 
-            val userAnswers = emptyUserAnswers.set(VerifyPage, radio).success.value
+            val userAnswers = emptyUserAnswers.set(VerifyPage, YesRegister).success.value
 
             setAnswers(userAnswers)
             WsTestClient.withClient { client =>
               val result = createClientRequestPOST(
-                client, baseUrl + checkRoutePath, Json.obj("value" -> Json.toJson(radio))
+                client, baseUrl + checkRoutePath, Json.obj("value" -> Json.toJson(YesRegister.toString))
               )
 
               whenReady(result) { res =>
                 res.status mustBe 303
                 res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad().url)
-                val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Verify]](None)(_.get(VerifyPage))
+                val userAnswersAfterPOST = getAnswers(identifier)
+                val dataStoredForPage = userAnswersAfterPOST.fold[Option[Verify]](None)(_.get(VerifyPage))
                 dataStoredForPage.nonEmpty mustBe true
-                dataStoredForPage.get mustBe radio
+                dataStoredForPage.get mustBe YesRegister
+                userAnswersAfterPOST.get.address.isEmpty mustBe true
               }
             }
+          }
+        }
+      }
+    s"when the user selects $YesNewAddress" - {
+      "should update the session with the new value and redirect to the ALF" - {
+        "when the session contains no data for page" in {
+          given
+            .commonPrecondition
+            .alf.getSuccessResponseFromALFInit("foo")
+
+          setAnswers(emptyUserAnswers)
+          WsTestClient.withClient { client =>
+            val result = createClientRequestPOST(
+              client, baseUrl + checkRoutePath, Json.obj("value" -> Json.toJson(YesNewAddress.toString))
+            )
+
+            whenReady(result) { res =>
+              res.status mustBe 303
+              res.header(HeaderNames.LOCATION) mustBe Some("foo")
+              val userAnswersAfterPOST = getAnswers(identifier)
+              val dataStoredForPage = userAnswersAfterPOST.fold[Option[Verify]](None)(_.get(VerifyPage))
+              dataStoredForPage.nonEmpty mustBe true
+              dataStoredForPage.get mustBe YesNewAddress
+              userAnswersAfterPOST.get.address.isEmpty mustBe true
+
+            }
+          }
+        }
+
+        "when the session already contains data for page" in {
+          given
+            .commonPrecondition
+            .alf.getSuccessResponseFromALFInit("foo")
+
+          val userAnswers = {
+            emptyUserAnswers.set(VerifyPage, YesRegister).success.value
+              .copy(address = Some(UkAddress(List.empty,"")))
+          }
+
+          setAnswers(userAnswers)
+          WsTestClient.withClient { client =>
+            val result = createClientRequestPOST(
+              client, baseUrl + checkRoutePath, Json.obj("value" -> Json.toJson(YesNewAddress.toString))
+            )
+
+            whenReady(result) { res =>
+              res.status mustBe 303
+              res.header(HeaderNames.LOCATION) mustBe Some("foo")
+              val userAnswersAfterPOST = getAnswers(identifier)
+              val dataStoredForPage = userAnswersAfterPOST.fold[Option[Verify]](None)(_.get(VerifyPage))
+              dataStoredForPage.nonEmpty mustBe true
+              dataStoredForPage.get mustBe YesNewAddress
+              userAnswersAfterPOST.get.address.isEmpty mustBe false
+            }
+          }
+        }
+      }
+    }
+    s"when the user selects $No" - {
+      "should NOT update the session with the new value and redirect to the Auth sign out controller" in {
+        given
+          .commonPrecondition
+
+        setAnswers(emptyUserAnswers)
+        WsTestClient.withClient { client =>
+          val result = createClientRequestPOST(
+            client, baseUrl + checkRoutePath, Json.obj("value" -> Json.toJson(No.toString))
+          )
+
+          whenReady(result) { res =>
+            res.status mustBe 303
+            res.header(HeaderNames.LOCATION) mustBe Some(auth.routes.AuthController.signOutNoSurvey().url)
+
           }
         }
       }

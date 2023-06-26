@@ -19,7 +19,7 @@ package controllers
 import com.google.inject.Inject
 import controllers.actions.IdentifierAction
 import handlers.ErrorHandler
-import models.UserAnswers
+import models.{NormalMode, UserAnswers}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SessionService
@@ -37,7 +37,7 @@ class RegistrationController @Inject()(identify: IdentifierAction,
     implicit request =>
       val defaultUserAnswers = new UserAnswers(request.internalId)
       sessionService.set(defaultUserAnswers).map{
-        case Right(_) => Redirect(routes.IndexController.onPageLoad())
+        case Right(_) => Redirect(routes.VerifyController.onPageLoad(NormalMode))
         case Left(_) => InternalServerError(errorHandler.internalServerErrorTemplate)
       }
   }

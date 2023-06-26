@@ -83,7 +83,7 @@ class RampOffControllerSpec extends SpecBase with MockitoSugar {
 
         val result = route(app, request).value
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).get mustBe controllers.routes.IndexController.onPageLoad().url
+        redirectLocation(result).get mustBe controllers.routes.OrganisationTypeController.onPageLoad(NormalMode).url
       }
     }
     s"should return exception to the next page when ALF doesnt return Address successfully" in new Setup {

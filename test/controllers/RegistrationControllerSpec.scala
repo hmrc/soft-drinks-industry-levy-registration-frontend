@@ -19,6 +19,7 @@ package controllers
 import base.SpecBase
 import controllers.actions.{FakeIdentifierAction, IdentifierAction}
 import errors.SessionDatabaseInsertError
+import models.NormalMode
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -29,6 +30,7 @@ import play.api.test.Helpers._
 import services.SessionService
 import viewmodels.govuk.SummaryListFluency
 import play.api.inject.bind
+
 import scala.concurrent.Future
 
 class RegistrationControllerSpec extends SpecBase with SummaryListFluency with MockitoSugar{
@@ -48,7 +50,7 @@ class RegistrationControllerSpec extends SpecBase with SummaryListFluency with M
   "RegistrationController.start" - {
     "when a valid user" - {
       "should generate a user answers record" - {
-        "and redirect to IndexController when the user has a IR-CT enrolment" in {
+        "and redirect to Verify Controller when the user has a IR-CT enrolment" in {
           val application = applicationBuilderForHome().build()
           when(mockSessionService.set(any())) thenReturn Future.successful(Right(true))
 
@@ -58,7 +60,7 @@ class RegistrationControllerSpec extends SpecBase with SummaryListFluency with M
             val result = route(application, request).value
 
             status(result) mustEqual SEE_OTHER
-            redirectLocation(result) mustEqual Some(routes.IndexController.onPageLoad().url)
+            redirectLocation(result) mustEqual Some(routes.VerifyController.onPageLoad(NormalMode).url)
           }
         }
       }

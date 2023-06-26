@@ -20,9 +20,11 @@ import base.SpecBase
 import errors.SessionDatabaseInsertError
 import forms.VerifyFormProvider
 import helpers.LoggerHelper
+import models.Verify.{No, YesNewAddress, YesRegister}
 import models.{NormalMode, UserAnswers, Verify}
 import navigation.{FakeNavigator, Navigator}
 import org.jsoup.Jsoup
+import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
@@ -31,7 +33,7 @@ import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.SessionService
+import services.{AddressLookupService, BusinessAddress, SessionService}
 import utilities.GenericLogger
 import viewmodels.AddressFormattingHelper
 import views.html.VerifyView
@@ -85,7 +87,7 @@ class VerifyControllerSpec extends SpecBase with MockitoSugar with LoggerHelper 
       }
     }
 
-    "must redirect to the next page when valid data is submitted" in {
+    s"must redirect to the next page when valid data is submitted $YesRegister" in {
 
       val mockSessionService = mock[SessionService]
 
@@ -102,12 +104,68 @@ class VerifyControllerSpec extends SpecBase with MockitoSugar with LoggerHelper 
       running(application) {
         val request =
           FakeRequest(POST, verifyRoute)
-        .withFormUrlEncodedBody(("value", Verify.values.head.toString))
+        .withFormUrlEncodedBody(("value", YesRegister.toString))
 
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
+      }
+    }
+    s"must onboard to ALF when valid data is submitted $YesNewAddress" in {
+
+      val mockSessionService = mock[SessionService]
+      val mockAlfService = mock[AddressLookupService]
+
+      when(mockSessionService.set(any())) thenReturn Future.successful(Right(true))
+      when(mockAlfService
+        .initJourneyAndReturnOnRampUrl(ArgumentMatchers.eq(BusinessAddress),any())(any(),any(),any(), any()))
+        .thenReturn(Future.successful("alfOnRamp"))
+
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[SessionService].toInstance(mockSessionService),
+            bind[AddressLookupService].toInstance(mockAlfService)
+          )
+          .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, verifyRoute)
+            .withFormUrlEncodedBody(("value", YesNewAddress.toString))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual "alfOnRamp"
+      }
+    }
+
+    s"must redirect Sign out when valid data is submitted $No" in {
+
+      val mockSessionService = mock[SessionService]
+
+      when(mockSessionService.set(any())) thenReturn Future.successful(Right(true))
+
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[SessionService].toInstance(mockSessionService)
+          )
+          .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, verifyRoute)
+            .withFormUrlEncodedBody(("value", No.toString))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual auth.routes.AuthController.signOutNoSurvey().url
       }
     }
 
@@ -162,14 +220,30 @@ class VerifyControllerSpec extends SpecBase with MockitoSugar with LoggerHelper 
       }
     }
 
-    "must fail if the setting of userAnswers fails" in {
+    s"must fail if the setting of userAnswers fails for $YesRegister" in {
 
       val application = applicationBuilder(userAnswers = Some(userDetailsWithSetMethodsReturningFailure)).build()
 
       running(application) {
         val request =
           FakeRequest(POST, verifyRoute)
-        .withFormUrlEncodedBody(("value", Verify.values.head.toString))
+        .withFormUrlEncodedBody(("value", YesRegister.toString))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual INTERNAL_SERVER_ERROR
+        val page = Jsoup.parse(contentAsString(result))
+        page.title() mustBe "Sorry, we are experiencing technical difficulties - 500 - Soft Drinks Industry Levy - GOV.UK"
+      }
+    }
+    s"must fail if the setting of userAnswers fails for $YesNewAddress" in {
+
+      val application = applicationBuilder(userAnswers = Some(userDetailsWithSetMethodsReturningFailure)).build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, verifyRoute)
+            .withFormUrlEncodedBody(("value", YesNewAddress.toString))
 
         val result = route(application, request).value
 
