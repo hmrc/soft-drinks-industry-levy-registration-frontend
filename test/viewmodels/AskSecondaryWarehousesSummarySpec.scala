@@ -93,11 +93,11 @@ class AskSecondaryWarehousesSummarySpec extends SpecBase {
   val warehouseSummaryRowList = WarehouseDetailsSummary.warehouseDetailsRow(Map("ref1" -> site1, "ref2" -> site2))
     warehouseSummaryRowList.head.key.content.asHtml.toString() mustBe "foo2, bar2, wizz2"
     warehouseSummaryRowList.head.actions.toList.head.items.last.content.asHtml.toString() mustBe "Remove"
-    warehouseSummaryRowList.head.actions.toList.head.items.last.href mustBe routes.WarehouseDetailsController.onPageLoad(NormalMode).url
+    warehouseSummaryRowList.head.actions.toList.head.items.last.href mustBe routes.RemoveWarehouseDetailsController.onPageLoad(NormalMode, "ref1").url
 
     warehouseSummaryRowList.last.key.content.asHtml.toString() mustBe "foo, bar, wizz"
     warehouseSummaryRowList.last.actions.toList.head.items.last.content.asHtml.toString() mustBe "Remove"
-    warehouseSummaryRowList.last.actions.toList.head.items.last.href mustBe routes.WarehouseDetailsController.onPageLoad(NormalMode).url
+    warehouseSummaryRowList.last.actions.toList.head.items.last.href mustBe routes.RemoveWarehouseDetailsController.onPageLoad(NormalMode, "ref2").url
 }
 }
 

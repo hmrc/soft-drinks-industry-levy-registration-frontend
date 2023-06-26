@@ -11,6 +11,7 @@ import play.api.libs.json.{JsObject, Json}
 import play.api.libs.ws.DefaultWSCookie
 import play.api.test.Helpers.redirectLocation
 import play.api.test.WsTestClient
+import play.mvc.Http.HeaderNames
 import testSupport.ALFTestHelper
 
 class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
