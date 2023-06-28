@@ -1,17 +1,13 @@
 package controllers
 
 import models.NormalMode
-import models.alf.init.{AppLevelLabels, ConfirmPageConfig, EditPageLabels, JourneyConfig, JourneyLabels, JourneyOptions, LanguageLabels, LookupPageLabels, SelectPageConfig, TimeoutConfig}
 import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
 import pages.WarehouseDetailsPage
 import play.api.http.HeaderNames
 import play.api.i18n.Messages
-import play.api.libs.json.{JsObject, Json}
-import play.api.libs.ws.DefaultWSCookie
-import play.api.test.Helpers.redirectLocation
+import play.api.libs.json.Json
 import play.api.test.WsTestClient
-import testSupport.ALFTestHelper
 
 class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
 

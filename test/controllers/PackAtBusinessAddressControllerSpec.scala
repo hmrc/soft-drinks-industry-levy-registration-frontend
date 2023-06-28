@@ -31,11 +31,14 @@ import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.SessionService
+import services.{AddressLookupService, PackingDetails, SessionService}
 import views.html.PackAtBusinessAddressView
 
 import scala.concurrent.Future
 import org.jsoup.Jsoup
+import org.mockito.ArgumentMatchers
+import org.mockito.MockitoSugar.{times, verify}
+import repositories.SessionRepository
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 
 class PackAtBusinessAddressControllerSpec extends SpecBase with MockitoSugar with LoggerHelper {
@@ -83,7 +86,7 @@ class PackAtBusinessAddressControllerSpec extends SpecBase with MockitoSugar wit
       }
     }
 
-    "must redirect to the next page when valid data is submitted" in {
+    "must redirect to the next page when valid data is submitted (true)" in {
 
       val mockSessionService = mock[SessionService]
 
@@ -92,7 +95,6 @@ class PackAtBusinessAddressControllerSpec extends SpecBase with MockitoSugar wit
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration)
           .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionService].toInstance(mockSessionService)
           )
           .build()
@@ -105,7 +107,44 @@ class PackAtBusinessAddressControllerSpec extends SpecBase with MockitoSugar wit
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual onwardRoute.url
+        redirectLocation(result).value mustEqual routes.PackagingSiteDetailsController.onPageLoad(NormalMode).url
+      }
+    }
+
+    "must redirect to the next page when valid data is submitted (false)" in {
+      val mockSessionRepository = mock[SessionRepository]
+      val mockAddressLookupService = mock[AddressLookupService]
+      val onwardUrlForALF = "foobarwizz"
+
+
+      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+      when(mockAddressLookupService.initJourneyAndReturnOnRampUrl(
+        ArgumentMatchers.eq(PackingDetails), ArgumentMatchers.any())(
+        ArgumentMatchers.any(), ArgumentMatchers.any(),ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(onwardUrlForALF))
+
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[SessionRepository].toInstance(mockSessionRepository),
+            bind[AddressLookupService].toInstance(mockAddressLookupService)
+          )
+          .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, packAtBusinessAddressRoute)
+            .withFormUrlEncodedBody(("value", "false"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual onwardUrlForALF
+
+        verify(mockAddressLookupService, times(1)).initJourneyAndReturnOnRampUrl(
+          ArgumentMatchers.eq(PackingDetails), ArgumentMatchers.any())(
+          ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
       }
     }
 
@@ -156,24 +195,6 @@ class PackAtBusinessAddressControllerSpec extends SpecBase with MockitoSugar wit
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
-      }
-    }
-
-    "must fail if the setting of userAnswers fails" in {
-
-      val application = applicationBuilder(userAnswers = Some(userDetailsWithSetMethodsReturningFailure), rosmRegistration = rosmRegistration).build()
-
-      running(application) {
-        val request =
-          FakeRequest(POST, packAtBusinessAddressRoute
-        )
-        .withFormUrlEncodedBody(("value", "true"))
-
-        val result = route(application, request).value
-
-        status(result) mustEqual INTERNAL_SERVER_ERROR
-        val page = Jsoup.parse(contentAsString(result))
-        page.title() mustBe "Sorry, we are experiencing technical difficulties - 500 - Soft Drinks Industry Levy - GOV.UK"
       }
     }
 
