@@ -16,9 +16,7 @@
 
 package pages
 
-import models.NormalMode
 import pages.behaviours.PageBehaviours
-import play.api.test.FakeRequest
 
 class WarehouseDetailsPageSpec extends PageBehaviours {
 

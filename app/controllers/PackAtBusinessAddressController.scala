@@ -19,12 +19,13 @@ package controllers
 import controllers.actions._
 import forms.PackAtBusinessAddressFormProvider
 import handlers.ErrorHandler
-import models.{Mode, RosmRegistration}
+import models.backend.Site
+import models.{Mode, NormalMode, RosmRegistration}
 import navigation.Navigator
 import pages.PackAtBusinessAddressPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.SessionService
+import services.{AddressLookupService, PackingDetails, SessionService}
 import utilities.GenericLogger
 import views.html.PackAtBusinessAddressView
 import viewmodels.AddressFormattingHelper
@@ -40,6 +41,7 @@ class PackAtBusinessAddressController @Inject()(
                                        getData: DataRetrievalAction,
                                        requireData: DataRequiredAction,
                                        formProvider: PackAtBusinessAddressFormProvider,
+                                       addressLookupService: AddressLookupService,
                                        val controllerComponents: MessagesControllerComponents,
                                        view: PackAtBusinessAddressView,
                                        val errorHandler: ErrorHandler,
@@ -65,13 +67,30 @@ class PackAtBusinessAddressController @Inject()(
   def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
 
+      val rosmReg = request.rosmWithUtr.rosmRegistration
+
       form.bindFromRequest().fold(
         formWithErrors =>
           Future.successful(BadRequest(view(formWithErrors, formattedAddress(request.rosmWithUtr.rosmRegistration), mode))),
 
         value => {
-          val updatedAnswers = request.userAnswers.set(PackAtBusinessAddressPage, value)
-          updateDatabaseAndRedirect(updatedAnswers, PackAtBusinessAddressPage, mode)
+          for {
+            updatedAnswers <- Future.fromTry(request.userAnswers.set(PackAtBusinessAddressPage, value))
+            _              <- updateDatabaseWithoutRedirect(updatedAnswers, PackAtBusinessAddressPage)
+            onwardUrl              <- if(value){
+              updateDatabaseWithoutRedirect(updatedAnswers.copy(packagingSiteList = updatedAnswers.packagingSiteList ++ Map("1" ->
+                Site(
+                  address = rosmReg.address,
+                  ref = None,
+                  tradingName = Some(rosmReg.organisationName),
+                  closureDate = None
+                )
+              )), PackAtBusinessAddressPage).flatMap(_ =>
+                Future.successful(routes.PackagingSiteDetailsController.onPageLoad(NormalMode).url))
+            }else {
+              addressLookupService.initJourneyAndReturnOnRampUrl(PackingDetails)
+            }
+          }yield Redirect(onwardUrl)
         }
       )
   }
