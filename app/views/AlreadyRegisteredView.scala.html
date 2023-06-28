@@ -20,7 +20,7 @@
         govukInsetText: GovukInsetText
 )
 
-@(utr: String, formattedAddress: HtmlContent)(implicit request: Request[_], messages: Messages)
+@(utr: String, formattedAddress: HtmlContent, accountLink: String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("alreadyRegistered.heading.title"))) {
 
@@ -34,6 +34,6 @@
      classes = "govuk-!-margin-top-0"
     ))
 
-    <p class="govuk-body" id="account-redirect">@messages("alreadyRegistered.account.goto") <a id="account-link" href="../../soft-drinks-industry-levy-account-frontend/home" >@messages("alreadyRegistered.account.link.text")</a></p>
+    <p class="govuk-body" id="account-redirect">@messages("alreadyRegistered.account.goto") <a id="account-link" href=@accountLink>@messages("alreadyRegistered.account.link.text")</a></p>
 
 }

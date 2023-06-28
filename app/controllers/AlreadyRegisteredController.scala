@@ -16,6 +16,7 @@
 
 package controllers
 
+import config.FrontendAppConfig
 import controllers.actions._
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -27,6 +28,7 @@ import javax.inject.Inject
 
 class AlreadyRegisteredController @Inject()(
                                        override val messagesApi: MessagesApi,
+                                       config: FrontendAppConfig,
                                        identify: IdentifierAction,
                                        getData: DataRetrievalAction,
                                        requireData: DataRequiredAction,
@@ -39,7 +41,6 @@ class AlreadyRegisteredController @Inject()(
 
       val rosmRegistration = request.rosmWithUtr.rosmRegistration
       val formattedAddress = AddressFormattingHelper.formatBusinessAddress(rosmRegistration.address, Some(rosmRegistration.organisationName))
-
-      Ok(view(request.rosmWithUtr.utr, formattedAddress))
+      Ok(view(request.rosmWithUtr.utr, formattedAddress, accountLink = config.accountFrontendHomeUrl))
   }
 }

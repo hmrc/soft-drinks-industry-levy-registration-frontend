@@ -36,7 +36,7 @@ class AlreadyRegisteredViewSpec extends ViewSpecHelper with SpecBase {
   "View" - {
     val registration = rosmRegistration.rosmRegistration
     val formattedAddress = AddressFormattingHelper.formatBusinessAddress(registration.address,Some(registration.organisationName))
-    val html = view(utr, formattedAddress)(request, messages(application))
+    val html = view(utr, formattedAddress, frontendAppConfig.accountFrontendHomeUrl)(request, messages(application))
     val document = doc(html)
 
     "should contain the expected title" in {
@@ -57,7 +57,7 @@ class AlreadyRegisteredViewSpec extends ViewSpecHelper with SpecBase {
 
     "should have the expected account link" in {
       document.getElementById("account-redirect").text() mustBe "To view your registration details, go to your Soft Drinks Industry Levy account."
-      document.getElementById("account-link").attr("href") mustBe "../../soft-drinks-industry-levy-account-frontend/home"
+      document.getElementById("account-link").attr("href") mustBe frontendAppConfig.accountFrontendHomeUrl
     }
 
     testBackLink(document)
