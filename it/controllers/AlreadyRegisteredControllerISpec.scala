@@ -1,5 +1,7 @@
 package controllers
 
+import controllers.auth.routes
+
 import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
 import play.api.i18n.Messages
@@ -28,7 +30,7 @@ class AlreadyRegisteredControllerISpec extends ControllerITTestHelper {
           page.getElementById("utrField").text() mustEqual "0000001611:"
           page.getElementById("addressForUTR").text() mustBe "Super Lemonade Plc 105B Godfrey Marchant Grove Guildford GU14 8NL"
           page.getElementById("account-redirect").text() mustBe "To view your registration details, go to your Soft Drinks Industry Levy account."
-          page.getElementById("account-link").attr("href") mustBe routes.IndexController.onPageLoad().url
+          page.getElementById("account-link").attr("href") mustBe "../../soft-drinks-industry-levy-account-frontend/home"
         }
       }
     }
