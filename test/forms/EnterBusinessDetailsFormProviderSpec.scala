@@ -52,7 +52,5 @@ class EnterBusinessDetailsFormProviderSpec extends  IntFieldBehaviours with Matc
       maxLength = maxLength,
       lengthError = FormError(fieldName, invalidKey)
     )
-
-
   }
 }

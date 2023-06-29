@@ -15,6 +15,7 @@
  *@
 
 @import viewmodels.InputWidth._
+@import config.FrontendAppConfig
 
 @this(
     layout: templates.Layout,
@@ -24,7 +25,7 @@
     govukButton: GovukButton
 )
 
-@(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages, config: FrontendAppConfig)
 
 @layout(pageTitle = title(form, messages("enterBusinessDetails.title"))) {
 
@@ -48,7 +49,7 @@
                 } else None,
                 value = form.data.get("utr")
             )
-            .withHint(Hint(content = HtmlContent(messages("enterBusinessDetails.utr.hint","https://www.gov.uk/find-utr-number"))))
+            .withHint(Hint(content = HtmlContent(messages("enterBusinessDetails.utr.hint", config.findALostUtrLink))))
         )
 
         @govukInput(

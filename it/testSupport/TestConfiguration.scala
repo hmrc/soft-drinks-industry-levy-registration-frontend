@@ -4,7 +4,7 @@ import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock.{configureFor, reset, resetAllScenarios}
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig
 import controllers.actions._
-import models.UserAnswers
+import org.mongodb.scala.bson.BsonDocument
 import org.scalatest.concurrent.{IntegrationPatience, PatienceConfiguration}
 import org.scalatest.time.{Millis, Seconds, Span}
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, Suite, TestSuite}
@@ -15,14 +15,14 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc.{CookieHeaderEncoding, MessagesControllerComponents, Session, SessionCookieBaker}
 import play.api.test.Helpers._
 import play.api.{Application, Environment, Mode}
-import repositories.{SDILSessionCacheRepository, SDILSessionKeys, SessionRepository}
+import repositories.{SDILSessionCacheRepository, SessionRepository}
 import testSupport.databases.SessionDatabaseOperations
 import uk.gov.hmrc.crypto.PlainText
 import uk.gov.hmrc.play.bootstrap.frontend.filters.crypto.SessionCookieCrypto
 import uk.gov.hmrc.play.health.HealthController
 
 import java.time.{Clock, ZoneOffset}
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 import scala.jdk.CollectionConverters._
 
 trait TestConfiguration
@@ -92,6 +92,7 @@ trait TestConfiguration
 
   override implicit lazy val app: Application = appBuilder().build()
   val sessionCache = app.injector.instanceOf[SDILSessionCacheRepository]
+  lazy val mongo: SessionRepository = app.injector.instanceOf[SessionRepository]
 
   def configParams: Map[String, Any] = Map()
 
@@ -118,7 +119,8 @@ trait TestConfiguration
   }
 
   override def beforeEach() = {
-    await(sessionCache.collection.drop().toFuture())
+    await(mongo.collection.deleteMany(BsonDocument()).toFuture())
+    await(sessionCache.collection.deleteMany(BsonDocument()).toFuture())
     resetAllScenarios()
     reset()
   }
