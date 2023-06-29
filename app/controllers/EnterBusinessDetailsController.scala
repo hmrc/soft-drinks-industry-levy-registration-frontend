@@ -16,16 +16,17 @@
 
 package controllers
 
+import config.FrontendAppConfig
 import connectors.SoftDrinksIndustryLevyConnector
 import controllers.actions._
 import forms.EnterBusinessDetailsFormProvider
 import handlers.ErrorHandler
 import models.backend.UkAddress
-import models.{CheckMode, Identify, Mode, NormalMode, UserAnswers}
+import models.{Identify, Mode, NormalMode, UserAnswers}
 import navigation.Navigator
 import pages.EnterBusinessDetailsPage
-import play.api.i18n.MessagesApi
 import play.api.data.Form
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SessionService
 import utilities.GenericLogger
@@ -46,7 +47,7 @@ class EnterBusinessDetailsController @Inject()(
                                        view: EnterBusinessDetailsView,
                                        val errorHandler: ErrorHandler,
                                        val genericLogger: GenericLogger
-                                     )(implicit ec: ExecutionContext) extends ControllerHelper {
+                                     )(implicit ec: ExecutionContext, config: FrontendAppConfig) extends ControllerHelper {
 
   private val form = formProvider()
 
@@ -54,7 +55,7 @@ class EnterBusinessDetailsController @Inject()(
     implicit request =>
       val preparedForm = request.userAnswers.fold[Form[Identify]](form) { ua =>
         ua.get(EnterBusinessDetailsPage) match {
-          case Some(value) if mode == CheckMode => form.fill(value)
+          case Some(value) => form.fill(value)
           case _ => form
         }
       }
@@ -64,19 +65,24 @@ class EnterBusinessDetailsController @Inject()(
   private def postcodesMatch(rosmAddress: UkAddress, identify: Identify) =
     rosmAddress.postCode.replaceAll(" ", "").equalsIgnoreCase(identify.postcode.replaceAll(" ", ""))
 
+  private def wipeUserDetailsIfDifferentIdentifer(identify: Identify, userAnswers: UserAnswers): UserAnswers = {
+    val userAnswersChanged: Boolean = !userAnswers.get(EnterBusinessDetailsPage).contains(identify)
+    userAnswersChanged match {
+      case true => new UserAnswers(userAnswers.id)
+      case false => userAnswers
+    }
+  }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData).async {
     implicit request =>
-
       val answers = request.userAnswers.getOrElse(UserAnswers(id = request.internalId))
-
       form.bindFromRequest().fold(
         formWithErrors =>
           Future.successful(BadRequest(view(formWithErrors, mode))),
         identify => {
           softDrinksIndustryLevyConnector.retreiveRosmSubscription(identify.utr, request.internalId) flatMap {
             case Some(rosmReg) if postcodesMatch(rosmReg.rosmRegistration.address, identify) =>
-              val updatedAnswers = answers.set(EnterBusinessDetailsPage, identify)
+              val updatedAnswers = wipeUserDetailsIfDifferentIdentifer(identify, answers).set(EnterBusinessDetailsPage, identify)
               updateDatabaseAndRedirect(updatedAnswers, EnterBusinessDetailsPage, mode)
             case _ => Future.successful(BadRequest(view(form.fill(identify).withError("utr", "enterBusinessDetails.no-record.utr"), NormalMode)))
           }

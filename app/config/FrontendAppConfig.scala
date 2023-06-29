@@ -60,7 +60,7 @@ class FrontendAppConfig @Inject() (servicesConfig: ServicesConfig, configuration
   val helpdeskPhoneNumber: String = servicesConfig.getString("helpdeskPhoneNumber").replace("-"," ")
   val addressLookupService: String  = servicesConfig.baseUrl("address-lookup-frontend")
   val addressLookUpFrontendTestEnabled: Boolean = servicesConfig.getBoolean("addressLookupFrontendTest.enabled")
-
+  val findALostUtrLink: String = servicesConfig.getString("findALostUtrLink")
   object AddressLookupConfig {
 
     private val addressLookupInitConfig: Config = configuration

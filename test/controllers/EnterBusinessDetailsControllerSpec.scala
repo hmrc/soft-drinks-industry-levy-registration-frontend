@@ -72,7 +72,7 @@ class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with
         val view = application.injector.instanceOf[EnterBusinessDetailsView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application), frontendAppConfig).toString
       }
     }
 
@@ -81,8 +81,6 @@ class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with
       when(softDrinksIndustryLevyConnector.retreiveRosmSubscription(any(),any())(any()))
         .thenReturn(Future.successful(Some(rosmRegistration)))
       when(mockSessionService.set(any())) thenReturn Future.successful(Right(true))
-
-
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -130,7 +128,7 @@ class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with
 
         status(result) mustEqual BAD_REQUEST
         contentAsString(result) mustEqual  view(form.fill(Identify(utr = "0000000436", postcode = "GU14 8NL"))
-          .withError("utr", "enterBusinessDetails.no-record.utr"), NormalMode)(request, messages(application)).toString
+          .withError("utr", "enterBusinessDetails.no-record.utr"), NormalMode)(request, messages(application), frontendAppConfig).toString
       }
     }
 
@@ -160,7 +158,7 @@ class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application), frontendAppConfig).toString
       }
     }
 

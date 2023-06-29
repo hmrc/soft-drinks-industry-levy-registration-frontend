@@ -1,6 +1,7 @@
 package controllers
 
-import models.Identify
+import models.backend.{Site, UkAddress}
+import models.{Identify, NormalMode, SmallProducer, Warehouse}
 import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
 import pages.EnterBusinessDetailsPage
@@ -71,7 +72,7 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
 
   s"POST " + normalRoutePath - {
     "when the user answers the question" - {
-      "should update the session with the new values and redirect to the index controller" - {
+      "should update the session with the new values and redirect to the Verify controller" - {
         "when the session contains no data for page" in {
           given
             .commonPrecondition
@@ -85,14 +86,13 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
 
             whenReady(result) { res =>
               res.status mustBe 303
-              res.header(HeaderNames.LOCATION) mustBe Some(routes.IndexController.onPageLoad.url)
+              res.header(HeaderNames.LOCATION) mustBe Some(routes.VerifyController.onPageLoad(NormalMode).url)
               val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Identify]](None)(_.get(EnterBusinessDetailsPage))
               dataStoredForPage.nonEmpty mustBe true
               dataStoredForPage.get mustBe enterBusinessDetails
             }
           }
         }
-
 
         "when the session already contains data for page" in {
           given
@@ -107,10 +107,81 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
 
             whenReady(result) { res =>
               res.status mustBe 303
-              res.header(HeaderNames.LOCATION) mustBe Some(routes.IndexController.onPageLoad.url)
+              res.header(HeaderNames.LOCATION) mustBe Some(routes.VerifyController.onPageLoad(NormalMode).url)
               val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Identify]](None)(_.get(EnterBusinessDetailsPage))
               dataStoredForPage.nonEmpty mustBe true
               dataStoredForPage.get mustBe enterBusinessDetails
+            }
+          }
+        }
+        "when the session already contains data that does not matches the data the user entered, should reset user answers" in {
+          val userAnswersWithNonIdenticalData = {
+            emptyUserAnswers
+              .set(EnterBusinessDetailsPage, Identify("0000001611", "AA1 1AA")).success.get
+              .copy(
+                address = Some(UkAddress(List.empty,"")),
+                smallProducerList = List(SmallProducer("","", (0,0))),
+                packagingSiteList = Map("" -> Site(UkAddress(List.empty,""),None,None,None)),
+                warehouseList = Map("" -> Warehouse(None, UkAddress(List.empty,""))),
+                submitted = true
+              )
+          }
+          given
+            .commonPrecondition
+
+          setAnswers(userAnswersWithNonIdenticalData)
+          WsTestClient.withClient { client =>
+            val result = createClientRequestPOST(
+              client, baseUrl + normalRoutePath, Json.obj("utr" -> "0000001611", "postcode" -> "GU14 8NL")
+            )
+
+            whenReady(result) { res =>
+              res.status mustBe 303
+              res.header(HeaderNames.LOCATION) mustBe Some(routes.VerifyController.onPageLoad(NormalMode).url)
+              val updatedAnswers = getAnswers(userAnswersWithNonIdenticalData.id)
+              val dataStoredForPage = updatedAnswers.fold[Option[Identify]](None)(_.get(EnterBusinessDetailsPage))
+              dataStoredForPage.nonEmpty mustBe true
+              dataStoredForPage.get mustBe Identify(utr = "0000001611", postcode = "GU14 8NL")
+              updatedAnswers.get.address mustBe None
+              updatedAnswers.get.warehouseList mustBe Map.empty
+              updatedAnswers.get.packagingSiteList mustBe Map.empty
+              updatedAnswers.get.submitted mustBe false
+              updatedAnswers.get.smallProducerList mustBe List.empty
+              updatedAnswers.get.data mustBe Json.obj("enterBusinessDetails" -> Json.obj("utr" -> "0000001611", "postcode" -> "GU14 8NL"))
+            }
+          }
+        }
+        "when the session already contains data that does matches the data the user entered, should NOT reset user answers" in {
+          val userAnswersWithIdenticalData = {
+            emptyUserAnswers
+              .set(EnterBusinessDetailsPage, Identify("0000001611", "GU14 8NL")).success.get
+              .copy(
+                address = Some(UkAddress(List.empty,"")),
+                smallProducerList = List(SmallProducer("","", (0,0))),
+                packagingSiteList = Map("" -> Site(UkAddress(List.empty,""),None,None,None)),
+                warehouseList = Map("" -> Warehouse(None, UkAddress(List.empty,""))),
+                submitted = true
+              )
+          }
+          given
+            .commonPrecondition
+
+          setAnswers(userAnswersWithIdenticalData)
+          WsTestClient.withClient { client =>
+            val result = createClientRequestPOST(
+              client, baseUrl + normalRoutePath, Json.obj("utr" -> "0000001611", "postcode" -> "GU14 8NL")
+            )
+
+            whenReady(result) { res =>
+              res.status mustBe 303
+              res.header(HeaderNames.LOCATION) mustBe Some(routes.VerifyController.onPageLoad(NormalMode).url)
+              val updatedAnswers = getAnswers(userAnswersWithIdenticalData.id)
+              updatedAnswers.get.address mustBe userAnswersWithIdenticalData.address
+              updatedAnswers.get.warehouseList mustBe userAnswersWithIdenticalData.warehouseList
+              updatedAnswers.get.packagingSiteList mustBe userAnswersWithIdenticalData.packagingSiteList
+              updatedAnswers.get.submitted mustBe userAnswersWithIdenticalData.submitted
+              updatedAnswers.get.smallProducerList mustBe userAnswersWithIdenticalData.smallProducerList
+              updatedAnswers.get.data mustBe userAnswersWithIdenticalData.data
             }
           }
         }
@@ -150,7 +221,7 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
 
   s"POST " + checkRoutePath - {
     "when the user answers the question" - {
-      "should update the session with the new values and redirect to the index controller" - {
+      "should update the session with the new values and redirect to the Verify controller" - {
         "when the session contains no data for page" in {
           given
             .commonPrecondition
@@ -164,7 +235,7 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
 
             whenReady(result) { res =>
               res.status mustBe 303
-              res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad().url)
+              res.header(HeaderNames.LOCATION) mustBe Some(routes.VerifyController.onPageLoad(NormalMode).url)
               val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Identify]](None)(_.get(EnterBusinessDetailsPage))
               dataStoredForPage.nonEmpty mustBe true
               dataStoredForPage.get mustBe enterBusinessDetails
