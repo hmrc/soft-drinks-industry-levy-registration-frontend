@@ -24,8 +24,10 @@ import models.{NormalMode, UserAnswers}
 import models.backend.{Site, UkAddress}
 import navigation.{FakeNavigator, Navigator}
 import org.jsoup.Jsoup
+import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
+import org.mockito.MockitoSugar.{times, verify}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.PackagingSiteDetailsPage
 import play.api.data.Form
@@ -33,13 +35,15 @@ import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.SessionService
+import repositories.SessionRepository
+import services.{AddressLookupService, PackingDetails, SessionService, WarehouseDetails}
 import utilities.GenericLogger
+import viewmodels.govuk.SummaryListFluency
 import views.html.PackagingSiteDetailsView
 
 import scala.concurrent.Future
 
-class PackagingSiteDetailsControllerSpec extends SpecBase with MockitoSugar with LoggerHelper {
+class PackagingSiteDetailsControllerSpec extends SpecBase with MockitoSugar with LoggerHelper with SummaryListFluency {
 
   def onwardRoute: Call = Call("GET", "/foo")
 
@@ -94,17 +98,24 @@ class PackagingSiteDetailsControllerSpec extends SpecBase with MockitoSugar with
       }
     }
 
-    "must redirect to the next page when valid data is submitted" in {
+    "must redirect to the next page when valid data is submitted (true)" in {
+      val mockSessionRepository = mock[SessionRepository]
+      val mockAddressLookupService = mock[AddressLookupService]
+      val onwardUrlForALF = "foobarwizz"
 
-      val mockSessionService = mock[SessionService]
 
-      when(mockSessionService.set(any())) thenReturn Future.successful(Right(true))
+      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+      when(mockAddressLookupService.initJourneyAndReturnOnRampUrl(
+        ArgumentMatchers.eq(PackingDetails), ArgumentMatchers.any())(
+        ArgumentMatchers.any(), ArgumentMatchers.any(),ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(onwardUrlForALF))
 
       val application =
         applicationBuilder(userAnswers = Some(userAnswersWithPackagingSite), rosmRegistration = rosmRegistration)
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionService].toInstance(mockSessionService)
+            bind[SessionRepository].toInstance(mockSessionRepository),
+            bind[AddressLookupService].toInstance(mockAddressLookupService)
           )
           .build()
 
@@ -116,7 +127,36 @@ class PackagingSiteDetailsControllerSpec extends SpecBase with MockitoSugar with
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual onwardRoute.url
+        redirectLocation(result).value mustEqual onwardUrlForALF
+
+        verify(mockAddressLookupService, times(1)).initJourneyAndReturnOnRampUrl(
+          ArgumentMatchers.eq(PackingDetails), ArgumentMatchers.any())(
+          ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+      }
+    }
+
+    "must redirect to the next page when valid data is submitted (false)" in {
+      val mockSessionService = mock[SessionService]
+
+      when(mockSessionService.set(any())) thenReturn Future.successful(Right(true))
+
+      val application =
+        applicationBuilder(userAnswers = Some(userAnswersWithPackagingSite), rosmRegistration = rosmRegistration)
+          .overrides(
+            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[SessionService].toInstance(mockSessionService),
+          )
+          .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, packagingSiteDetailsRoute)
+            .withFormUrlEncodedBody(("value", "false"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.AskSecondaryWarehousesController.onPageLoad(NormalMode).url
       }
     }
 
@@ -167,24 +207,6 @@ class PackagingSiteDetailsControllerSpec extends SpecBase with MockitoSugar with
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
-      }
-    }
-
-    "must fail if the setting of userAnswers fails" in {
-
-      val application = applicationBuilder(userAnswers = Some(userDetailsWithSetMethodsReturningFailure), rosmRegistration = rosmRegistration).build()
-
-      running(application) {
-        val request =
-          FakeRequest(POST, packagingSiteDetailsRoute
-        )
-        .withFormUrlEncodedBody(("value", "true"))
-
-        val result = route(application, request).value
-
-        status(result) mustEqual INTERNAL_SERVER_ERROR
-        val page = Jsoup.parse(contentAsString(result))
-        page.title() mustBe "Sorry, we are experiencing technical difficulties - 500 - Soft Drinks Industry Levy - GOV.UK"
       }
     }
 

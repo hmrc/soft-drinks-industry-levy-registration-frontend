@@ -1,5 +1,6 @@
 package controllers
 
+import models.{CheckMode, NormalMode}
 import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
 import pages.PackagingSiteDetailsPage
@@ -215,8 +216,10 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
       "when the user selects " + key - {
         "should update the session with the new value and redirect to the index controller" - {
           "when the session contains no data for page" in {
+            val alfOnRampURL: String = "http://onramp.com"
             given
               .commonPrecondition
+              .alf.getSuccessResponseFromALFInit(alfOnRampURL)
 
             setAnswers(userAnswersWith1PackingSite)
             WsTestClient.withClient { client =>
@@ -227,7 +230,7 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
 
               whenReady(result) { res =>
                 res.status mustBe 303
-                res.header(HeaderNames.LOCATION) mustBe Some(routes.IndexController.onPageLoad().url)
+                res.header(HeaderNames.LOCATION) mustBe Some(routes.AskSecondaryWarehousesController.onPageLoad(NormalMode).url)
                 val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(PackagingSiteDetailsPage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe yesSelected
@@ -236,8 +239,10 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
           }
 
           "when the session already contains data for page" in {
+            val alfOnRampURL: String = "http://onramp.com"
             given
               .commonPrecondition
+              .alf.getSuccessResponseFromALFInit(alfOnRampURL)
 
             setAnswers(userAnswers)
             WsTestClient.withClient { client =>
@@ -248,7 +253,7 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
 
               whenReady(result) { res =>
                 res.status mustBe 303
-                res.header(HeaderNames.LOCATION) mustBe Some(routes.IndexController.onPageLoad().url)
+                res.header(HeaderNames.LOCATION) mustBe Some(routes.AskSecondaryWarehousesController.onPageLoad(NormalMode).url)
                 val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(PackagingSiteDetailsPage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe yesSelected
@@ -293,8 +298,10 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
       "when the user selects " + key - {
         "should update the session with the new value and redirect to the checkAnswers controller" - {
           "when the session contains no data for page" in {
+            val alfOnRampURL: String = "http://onramp.com"
             given
               .commonPrecondition
+              .alf.getSuccessResponseFromALFInit(alfOnRampURL)
 
             setAnswers(userAnswersWith1PackingSite)
             WsTestClient.withClient { client =>
@@ -305,7 +312,7 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
 
               whenReady(result) { res =>
                 res.status mustBe 303
-                res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad().url)
+                res.header(HeaderNames.LOCATION) mustBe Some(alfOnRampURL)
                 val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(PackagingSiteDetailsPage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe yesSelected
@@ -314,8 +321,10 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
           }
 
           "when the session already contains data for page" in {
+            val alfOnRampURL: String = "http://onramp.com"
             given
               .commonPrecondition
+              .alf.getSuccessResponseFromALFInit(alfOnRampURL)
 
             setAnswers(userAnswers)
             WsTestClient.withClient { client =>
@@ -326,7 +335,7 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
 
               whenReady(result) { res =>
                 res.status mustBe 303
-                res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad().url)
+                res.header(HeaderNames.LOCATION) mustBe Some(alfOnRampURL)
                 val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(PackagingSiteDetailsPage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe yesSelected

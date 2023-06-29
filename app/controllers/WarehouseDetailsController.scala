@@ -83,7 +83,7 @@ class WarehouseDetailsController @Inject()(
             onwardUrl              <- if(value){
               addressLookupService.initJourneyAndReturnOnRampUrl(WarehouseDetails)
             }else {
-              Future.successful(routes.ContactDetailsController.onPageLoad(NormalMode).url)
+              Future.successful(routes.ContactDetailsController.onPageLoad(mode).url)
             }
           }yield Redirect(onwardUrl)
         }

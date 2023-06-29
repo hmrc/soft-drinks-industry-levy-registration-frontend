@@ -18,13 +18,14 @@ package controllers
 
 import controllers.actions._
 import forms.PackagingSiteDetailsFormProvider
+
 import javax.inject.Inject
-import models.Mode
+import models.{Mode, NormalMode}
 import navigation.Navigator
 import pages.PackagingSiteDetailsPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.SessionService
+import services.{AddressLookupService, PackingDetails, SessionService}
 import views.html.PackagingSiteDetailsView
 import handlers.ErrorHandler
 
@@ -39,6 +40,7 @@ class PackagingSiteDetailsController @Inject()(
                                        getData: DataRetrievalAction,
                                        requireData: DataRequiredAction,
                                        formProvider: PackagingSiteDetailsFormProvider,
+                                       addressLookupService: AddressLookupService,
                                        val controllerComponents: MessagesControllerComponents,
                                        view: PackagingSiteDetailsView,
                                        val errorHandler: ErrorHandler,
@@ -65,8 +67,15 @@ class PackagingSiteDetailsController @Inject()(
           Future.successful(BadRequest(view(formWithErrors, mode, request.userAnswers.packagingSiteList))),
 
         value => {
-          val updatedAnswers = request.userAnswers.set(PackagingSiteDetailsPage, value)
-          updateDatabaseAndRedirect(updatedAnswers, PackagingSiteDetailsPage, mode)
+          for {
+            updatedAnswers <- Future.fromTry(request.userAnswers.set(PackagingSiteDetailsPage, value))
+            _              <- updateDatabaseWithoutRedirect(updatedAnswers, PackagingSiteDetailsPage)
+            onwardUrl              <- if(value){
+              addressLookupService.initJourneyAndReturnOnRampUrl(PackingDetails)
+            }else{
+             Future.successful(routes.AskSecondaryWarehousesController.onPageLoad(mode).url)
+            }
+          }yield Redirect(onwardUrl)
         }
       )
   }
