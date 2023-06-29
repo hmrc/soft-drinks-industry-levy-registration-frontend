@@ -115,7 +115,7 @@ class PackagingSiteDetailsSummarySpec extends SpecBase {
 
       packagingSiteSummaryRowList.last.key.content.asHtml.toString() mustBe "trade<br>foo, bar, wizz"
       packagingSiteSummaryRowList.last.actions.toList.head.items.last.content.asHtml.toString() mustBe "Remove"
-      packagingSiteSummaryRowList.last.actions.toList.head.items.last.href mustBe routes.RemovePackagingSiteDetailsController.onPageLoad("ref1").url
+      packagingSiteSummaryRowList.last.actions.toList.head.items.last.href mustBe routes.RemovePackagingSiteDetailsController.onPageLoad("ref2").url
     }
   }
 
