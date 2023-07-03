@@ -17,6 +17,8 @@
 package viewmodels
 
 import base.SpecBase
+import controllers.routes
+import models.NormalMode
 import models.backend.{Site, UkAddress}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content._
 import views.summary.PackagingSiteDetailsSummary
@@ -109,11 +111,11 @@ class PackagingSiteDetailsSummarySpec extends SpecBase {
       val packagingSiteSummaryRowList = PackagingSiteDetailsSummary.row2(Map("ref1" -> site1, "ref2" -> site2))
       packagingSiteSummaryRowList.head.key.content.asHtml.toString() mustBe "trade2<br>foo2, bar2, wizz2"
       packagingSiteSummaryRowList.head.actions.toList.head.items.last.content.asHtml.toString() mustBe "Remove"
-      packagingSiteSummaryRowList.head.actions.toList.head.items.last.href mustBe controllers.routes.IndexController.onPageLoad().url
+      packagingSiteSummaryRowList.head.actions.toList.head.items.last.href mustBe routes.RemovePackagingSiteDetailsController.onPageLoad( "ref1").url
 
       packagingSiteSummaryRowList.last.key.content.asHtml.toString() mustBe "trade<br>foo, bar, wizz"
       packagingSiteSummaryRowList.last.actions.toList.head.items.last.content.asHtml.toString() mustBe "Remove"
-      packagingSiteSummaryRowList.last.actions.toList.head.items.last.href mustBe controllers.routes.IndexController.onPageLoad().url
+      packagingSiteSummaryRowList.last.actions.toList.head.items.last.href mustBe routes.RemovePackagingSiteDetailsController.onPageLoad("ref2").url
     }
   }
 

@@ -17,6 +17,7 @@
 package views.summary
 
 import controllers.routes
+import models.NormalMode
 import models.backend.Site
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.{Actions, SummaryList}
@@ -45,7 +46,7 @@ object PackagingSiteDetailsSummary  {
           ),
           actions = if (packagingSiteList.size > 1) {
             Some(Actions("", Seq(
-              ActionItemViewModel("site.remove", routes.IndexController.onPageLoad().url)
+              ActionItemViewModel("site.remove", routes.RemovePackagingSiteDetailsController.onPageLoad(site._1).url)
                 .withVisuallyHiddenText(messages("packagingSiteDetails.hidden"))
             )))
           } else {

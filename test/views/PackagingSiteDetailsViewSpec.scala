@@ -123,7 +123,7 @@ class PackagingSiteDetailsViewSpec extends ViewSpecHelper {
               val action = summaryRow.getElementsByClass(Selectors.link)
               if(numberOfPackagingSites > 1) {
                 action.text() mustBe "Remove packaging site"
-                action.attr("href") mustBe routes.IndexController.onPageLoad().url
+                action.attr("href") mustBe routes.RemovePackagingSiteDetailsController.onPageLoad(id).url
               } else {
                 action.size() mustEqual 0
               }
