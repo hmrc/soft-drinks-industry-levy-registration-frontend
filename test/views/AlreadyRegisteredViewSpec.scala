@@ -36,7 +36,7 @@ class AlreadyRegisteredViewSpec extends ViewSpecHelper with SpecBase {
   "View" - {
     val registration = rosmRegistration.rosmRegistration
     val formattedAddress = AddressFormattingHelper.formatBusinessAddress(registration.address,Some(registration.organisationName))
-    val html = view(utr, formattedAddress, frontendAppConfig.accountFrontendHomeUrl)(request, messages(application))
+    val html = view(utr, formattedAddress)(request, messages(application))
     val document = doc(html)
 
     "should contain the expected title" in {

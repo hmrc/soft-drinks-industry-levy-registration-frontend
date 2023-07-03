@@ -44,7 +44,7 @@ class AlreadyRegisteredControllerSpec extends SpecBase {
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual
-          view(rosmRegistration.utr, formattedAddress, frontendAppConfig.accountFrontendHomeUrl)(request, messages(application)).toString
+          view(rosmRegistration.utr, formattedAddress)(request, messages(application)).toString
       }
     }
 
