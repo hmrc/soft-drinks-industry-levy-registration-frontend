@@ -17,8 +17,10 @@
 package views.summary
 
 import controllers.routes
-import models.{CheckMode, LitresInBands}
+import models.{CheckMode, LitresInBands, UserAnswers}
 import pages.{HowManyOperatePackagingSitesPage, OperatePackagingSitesPage, QuestionPage}
+import play.api.i18n.Messages
+import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import views.summary.{ReturnDetailsSummaryListWithLitres, SummaryListRowLitresHelper}
 
 object OperatePackagingSitesSummary extends ReturnDetailsSummaryListWithLitres  {
@@ -30,5 +32,10 @@ object OperatePackagingSitesSummary extends ReturnDetailsSummaryListWithLitres  
   override val action: String = routes.OperatePackagingSitesController.onPageLoad(CheckMode).url
   override val actionId: String = "change-operatePackagingSites"
   override val hiddenText: String = "operatePackagingSites"
+
+   def checkAnswersSummary(userAnswers: UserAnswers, isCheckAnswers: Boolean = true)(implicit messages: Messages): Option[(String, SummaryList)] = {
+    val list = summaryList(userAnswers = userAnswers, isCheckAnswers)
+    list.rows.headOption.fold(Option.empty[(String, SummaryList)])(_ => Some("operatePackagingSites.checkYourAnswersLabel" -> list))
+  }
 
 }

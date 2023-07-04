@@ -37,18 +37,9 @@ class CheckYourAnswersController @Inject()(
   def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
 
-      val operatePackagingSites: Option[(String, SummaryList)] = {
-        val list = OperatePackagingSitesSummary.summaryList(userAnswers = request.userAnswers, isCheckAnswers = true)
-        list.rows.headOption.fold(Option.empty[(String, SummaryList)])(_ => Some("operatePackagingSites.checkYourAnswersLabel" -> list))
-      }
-      val contractPacking: Option[(String, SummaryList)] = {
-        val list = ContractPackingSummary.summaryList(userAnswers = request.userAnswers, isCheckAnswers = true)
-        list.rows.headOption.fold(Option.empty[(String, SummaryList)])(_ => Some("contractPacking.checkYourAnswersLabel" -> list))
-      }
-      val imports: Option[(String, SummaryList)] = {
-        val list = ImportsSummary.summaryList(userAnswers = request.userAnswers, isCheckAnswers = true)
-        list.rows.headOption.fold(Option.empty[(String, SummaryList)])(_ => Some("imports.checkYourAnswersLabel" -> list))
-      }
+      val operatePackagingSites: Option[(String, SummaryList)] = OperatePackagingSitesSummary.checkAnswersSummary(request.userAnswers)
+      val contractPacking: Option[(String, SummaryList)] = ContractPackingSummary.checkAnswersSummary(request.userAnswers)
+      val imports: Option[(String, SummaryList)] = ImportsSummary.checkAnswersSummary(request.userAnswers)
       val summaryList: Seq[(String, SummaryList)] = Seq(operatePackagingSites, contractPacking, imports).flatten
 
       Ok(view(summaryList, routes.CheckYourAnswersController.onSubmit()))

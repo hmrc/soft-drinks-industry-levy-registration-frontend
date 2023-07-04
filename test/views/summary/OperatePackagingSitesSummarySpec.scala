@@ -105,4 +105,95 @@ class OperatePackagingSitesSummarySpec extends SpecBase {
       res.rows.size mustBe 0
     }
   }
+  "checkAnswersSummary" - {
+    "should return correct elements when passed in with TRUE and litres provided and check answers is true" in {
+      val userAnswers = emptyUserAnswers
+        .set(OperatePackagingSitesPage, true).success.value
+        .set(HowManyOperatePackagingSitesPage, LitresInBands(1000,2000)).success.value
+
+      val res = OperatePackagingSitesSummary.checkAnswersSummary(userAnswers)
+      res.get._1 mustBe "operatePackagingSites.checkYourAnswersLabel"
+      val summaryList = res.get._2
+
+      summaryList.rows.head.key.content.asHtml mustBe Html("Reporting own brands packaged at your own site?")
+      summaryList.rows.head.key.classes mustBe ""
+      summaryList.rows.head.value.content.asHtml mustBe Html("Yes")
+      summaryList.rows.head.value.classes.trim mustBe "govuk-!-text-align-right"
+      summaryList.rows.head.actions.head.items.head.href mustBe "/soft-drinks-industry-levy-registration/change-operate-packaging-sites"
+      summaryList.rows.head.actions.head.items.head.attributes mustBe Map("id" -> "change-operatePackagingSites")
+      summaryList.rows.head.actions.head.items.head.content.asHtml mustBe Html("Change")
+
+      summaryList.rows(1).key.content.asHtml mustBe Html("Litres in the low band")
+      summaryList.rows(1).key.classes mustBe ""
+      summaryList.rows(1).value.content.asHtml mustBe Html("1,000")
+      summaryList.rows(1).value.classes.trim mustBe "govuk-!-text-align-right"
+      summaryList.rows(1).actions.head.items.head.href mustBe "/soft-drinks-industry-levy-registration/change-how-many-own-brands-next-12-months"
+      summaryList.rows(1).actions.head.items.head.attributes mustBe Map("id" -> "change-litresInLowBand-litreage-operatePackagingSites")
+      summaryList.rows(1).actions.head.items.head.content.asHtml mustBe Html("Change")
+
+      summaryList.rows(2).key.content.asHtml mustBe Html("Litres in the high band")
+      summaryList.rows(2).key.classes mustBe ""
+      summaryList.rows(2).value.content.asHtml mustBe Html("2,000")
+      summaryList.rows(2).value.classes.trim mustBe "govuk-!-text-align-right"
+      summaryList.rows(2).actions.head.items.head.href mustBe "/soft-drinks-industry-levy-registration/change-how-many-own-brands-next-12-months"
+      summaryList.rows(2).actions.head.items.head.attributes mustBe Map("id" -> "change-litresInHighBand-litreage-operatePackagingSites")
+      summaryList.rows(2).actions.head.items.head.content.asHtml mustBe Html("Change")
+
+      summaryList.rows.size mustBe 3
+    }
+    "should return correct elements when passed in with TRUE and litres provided and check answers is false" in {
+      val userAnswers = emptyUserAnswers
+        .set(OperatePackagingSitesPage, true).success.value
+        .set(HowManyOperatePackagingSitesPage, LitresInBands(1000,2000)).success.value
+
+      val res = OperatePackagingSitesSummary.checkAnswersSummary(userAnswers, isCheckAnswers = false)
+      res.get._1 mustBe "operatePackagingSites.checkYourAnswersLabel"
+      val summaryList = res.get._2
+
+      summaryList.rows.head.key.content.asHtml mustBe Html("Reporting own brands packaged at your own site?")
+      summaryList.rows.head.key.classes mustBe ""
+      summaryList.rows.head.value.content.asHtml mustBe Html("Yes")
+      summaryList.rows.head.value.classes.trim mustBe "govuk-!-text-align-right"
+      summaryList.rows.head.actions.get mustBe Actions("", List.empty)
+
+      summaryList.rows(1).key.content.asHtml mustBe Html("Litres in the low band")
+      summaryList.rows(1).key.classes mustBe ""
+      summaryList.rows(1).value.content.asHtml mustBe Html("1,000")
+      summaryList.rows(1).value.classes.trim mustBe "govuk-!-text-align-right"
+      summaryList.rows(1).actions mustBe None
+
+      summaryList.rows(2).key.content.asHtml mustBe Html("Litres in the high band")
+      summaryList.rows(2).key.classes mustBe ""
+      summaryList.rows(2).value.content.asHtml mustBe Html("2,000")
+      summaryList.rows(2).value.classes.trim mustBe "govuk-!-text-align-right"
+      summaryList.rows(2).actions mustBe None
+
+      summaryList.rows.size mustBe 3
+    }
+    "should return correct elements when passed in with FALSE and NO litres provided" in {
+      val userAnswers = emptyUserAnswers
+        .set(OperatePackagingSitesPage, false).success.value
+
+      val res = OperatePackagingSitesSummary.checkAnswersSummary(userAnswers)
+      res.get._1 mustBe "operatePackagingSites.checkYourAnswersLabel"
+      val summaryList = res.get._2
+
+      summaryList.rows.head.key.content.asHtml mustBe Html("Reporting own brands packaged at your own site?")
+      summaryList.rows.head.key.classes mustBe ""
+      summaryList.rows.head.value.content.asHtml mustBe Html("No")
+      summaryList.rows.head.value.classes.trim mustBe "govuk-!-text-align-right"
+      summaryList.rows.head.actions.head.items.head.href mustBe "/soft-drinks-industry-levy-registration/change-operate-packaging-sites"
+      summaryList.rows.head.actions.head.items.head.attributes mustBe Map("id" -> "change-operatePackagingSites")
+      summaryList.rows.head.actions.head.items.head.content.asHtml mustBe Html("Change")
+
+      summaryList.rows.size mustBe 1
+    }
+    "should return correct elements when no elements provided" in {
+      val userAnswers = emptyUserAnswers
+
+      val res = OperatePackagingSitesSummary.checkAnswersSummary(userAnswers)
+      res mustBe None
+    }
+  }
+
 }

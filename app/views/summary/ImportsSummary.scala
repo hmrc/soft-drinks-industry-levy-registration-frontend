@@ -17,8 +17,10 @@
 package views.summary
 
 import controllers.routes
-import models.{CheckMode, LitresInBands}
+import models.{CheckMode, LitresInBands, UserAnswers}
 import pages.{HowManyImportsPage, ImportsPage, QuestionPage}
+import play.api.i18n.Messages
+import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import views.summary.{ReturnDetailsSummaryListWithLitres, SummaryListRowLitresHelper}
 
 object ImportsSummary extends ReturnDetailsSummaryListWithLitres  {
@@ -30,5 +32,10 @@ object ImportsSummary extends ReturnDetailsSummaryListWithLitres  {
   override val action: String = routes.ImportsController.onPageLoad(CheckMode).url
   override val actionId: String = "change-imports"
   override val hiddenText: String = "imports"
+
+  def checkAnswersSummary(userAnswers: UserAnswers, isCheckAnswers: Boolean = true)(implicit messages: Messages): Option[(String, SummaryList)] = {
+    val list = summaryList(userAnswers = userAnswers, isCheckAnswers)
+    list.rows.headOption.fold(Option.empty[(String, SummaryList)])(_ => Some("imports.checkYourAnswersLabel" -> list))
+  }
 
 }
