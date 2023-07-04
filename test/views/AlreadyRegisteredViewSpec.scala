@@ -17,7 +17,6 @@
 package views
 
 import base.SpecBase
-import controllers.routes
 
 import play.api.i18n.Messages
 import play.api.mvc.Request
@@ -58,7 +57,7 @@ class AlreadyRegisteredViewSpec extends ViewSpecHelper with SpecBase {
 
     "should have the expected account link" in {
       document.getElementById("account-redirect").text() mustBe "To view your registration details, go to your Soft Drinks Industry Levy account."
-      document.getElementById("account-link").attr("href") mustBe routes.IndexController.onPageLoad().url
+      document.getElementById("account-link").attr("href") mustBe frontendAppConfig.accountFrontendHomeUrl
     }
 
     testBackLink(document)

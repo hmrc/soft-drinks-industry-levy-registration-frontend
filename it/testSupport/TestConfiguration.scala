@@ -3,6 +3,7 @@ package testSupport
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock.{configureFor, reset, resetAllScenarios}
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig
+import config.FrontendAppConfig
 import controllers.actions._
 import org.mongodb.scala.bson.BsonDocument
 import org.scalatest.concurrent.{IntegrationPatience, PatienceConfiguration}
@@ -34,6 +35,8 @@ trait TestConfiguration
     with SessionDatabaseOperations {
 
   me: Suite with TestSuite =>
+
+  lazy val frontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
 
   val wiremockHost: String = "localhost"
   val wiremockPort: Int = Port.randomAvailable

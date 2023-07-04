@@ -39,7 +39,6 @@ class AlreadyRegisteredController @Inject()(
 
       val rosmRegistration = request.rosmWithUtr.rosmRegistration
       val formattedAddress = AddressFormattingHelper.formatBusinessAddress(rosmRegistration.address, Some(rosmRegistration.organisationName))
-
       Ok(view(request.rosmWithUtr.utr, formattedAddress))
   }
 }
