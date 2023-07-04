@@ -3,7 +3,7 @@ package controllers
 import models.{CheckMode, LitresInBands}
 import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
-import pages.{ContractPackingPage, HowManyContractPackingPage, HowManyImportsPage, HowManyOperatePackagingSitesPage, ImportsPage, OperatePackagingSitesPage}
+import pages._
 import play.api.http.HeaderNames
 import play.api.http.Status.OK
 import play.api.i18n.Messages
@@ -34,7 +34,7 @@ class CheckYourAnswersControllerISpec extends ControllerITTestHelper {
       }
     }
     "when the userAnswers contains data" - {
-      "should render the page with answers" in {
+      "should render the page with answers of yes for every literage page" in {
         given
           .commonPrecondition
 
@@ -109,6 +109,57 @@ class CheckYourAnswersControllerISpec extends ControllerITTestHelper {
             imports.get(2).getElementsByClass("govuk-summary-list__actions").first().getElementsByTag("a").first().text() mustBe "Change amount of litres in high band for brought into the UK"
             imports.get(2).getElementsByClass("govuk-summary-list__actions").first().getElementsByClass("govuk-visually-hidden").first().text() mustBe "amount of litres in high band for brought into the UK"
             imports.get(2).getElementsByClass("govuk-summary-list__actions").first().getElementsByTag("a").first().attr("href") mustBe routes.HowManyImportsController.onPageLoad(CheckMode).url
+
+            page.getElementsByTag("form").first().attr("action") mustBe routes.CheckYourAnswersController.onSubmit().url
+            page.getElementsByTag("form").first().getElementsByTag("button").first().text() mustBe "Confirm details and apply"
+          }
+        }
+      }
+      "should render the page with answers of no for every literage page" in {
+        given
+          .commonPrecondition
+
+        val userAnswers = emptyUserAnswers
+          .set(OperatePackagingSitesPage, false).success.value
+          .set(ContractPackingPage, false).success.value
+          .set(ImportsPage, false).success.value
+
+        setAnswers(userAnswers)
+
+        WsTestClient.withClient { client =>
+          val result = createClientRequestGet(client, baseUrl + route)
+
+          whenReady(result) { res =>
+            res.status mustBe OK
+            val page = Jsoup.parse(res.body)
+            page.title must include(Messages("checkYourAnswers.title"))
+            page.getElementsByClass("govuk-summary-list").size() mustBe 3
+            val operatePackagingSites = page.getElementsByClass("govuk-summary-list").first().getElementsByClass("govuk-summary-list__row")
+
+            page.getElementsByTag("h2").first().text() mustBe "Own brands packaged at your own site"
+            operatePackagingSites.get(0).getElementsByClass("govuk-summary-list__value").first().text() mustBe "No"
+            operatePackagingSites.get(0).getElementsByClass("govuk-summary-list__actions").first().getElementsByTag("a").first().text() mustBe "Change do you operate any packaging sites in the UK to package liable drinks for the brands you own?"
+            operatePackagingSites.get(0).getElementsByClass("govuk-summary-list__actions").first().getElementsByClass("govuk-visually-hidden").first().text() mustBe "do you operate any packaging sites in the UK to package liable drinks for the brands you own?"
+            operatePackagingSites.get(0).getElementsByClass("govuk-summary-list__actions").first().getElementsByTag("a").first().attr("href") mustBe routes.OperatePackagingSitesController.onPageLoad(CheckMode).url
+            operatePackagingSites.size() mustBe 1
+
+            val contractPacking = page.getElementsByClass("govuk-summary-list").get(1).getElementsByClass("govuk-summary-list__row")
+
+            page.getElementsByTag("h2").get(1).text() mustBe "Contract packed at your own site"
+            contractPacking.get(0).getElementsByClass("govuk-summary-list__value").first().text() mustBe "No"
+            contractPacking.get(0).getElementsByClass("govuk-summary-list__actions").first().getElementsByTag("a").first().text() mustBe "Change do you operate any packaging sites in the UK to package liable drinks as a third party or contract packer?"
+            contractPacking.get(0).getElementsByClass("govuk-summary-list__actions").first().getElementsByClass("govuk-visually-hidden").first().text() mustBe "do you operate any packaging sites in the UK to package liable drinks as a third party or contract packer?"
+            contractPacking.get(0).getElementsByClass("govuk-summary-list__actions").first().getElementsByTag("a").first().attr("href") mustBe routes.ContractPackingController.onPageLoad(CheckMode).url
+            contractPacking.size() mustBe 1
+
+            val imports = page.getElementsByClass("govuk-summary-list").get(2).getElementsByClass("govuk-summary-list__row")
+
+            page.getElementsByTag("h2").get(2).text() mustBe "Brought into the UK"
+            imports.get(0).getElementsByClass("govuk-summary-list__value").first().text() mustBe "No"
+            imports.get(0).getElementsByClass("govuk-summary-list__actions").first().getElementsByTag("a").first().text() mustBe "Change do you bring liable drinks into the UK from anywhere outside of the UK?"
+            imports.get(0).getElementsByClass("govuk-summary-list__actions").first().getElementsByClass("govuk-visually-hidden").first().text() mustBe "do you bring liable drinks into the UK from anywhere outside of the UK?"
+            imports.get(0).getElementsByClass("govuk-summary-list__actions").first().getElementsByTag("a").first().attr("href") mustBe routes.ImportsController.onPageLoad(CheckMode).url
+            imports.size() mustBe 1
 
             page.getElementsByTag("form").first().attr("action") mustBe routes.CheckYourAnswersController.onSubmit().url
             page.getElementsByTag("form").first().getElementsByTag("button").first().text() mustBe "Confirm details and apply"
