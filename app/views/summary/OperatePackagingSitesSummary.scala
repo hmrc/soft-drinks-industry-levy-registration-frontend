@@ -26,7 +26,7 @@ object OperatePackagingSitesSummary extends ReturnDetailsSummaryListWithLitres  
   override val page: QuestionPage[Boolean] = OperatePackagingSitesPage
   override val optLitresPage: Option[QuestionPage[LitresInBands]] = Some(HowManyOperatePackagingSitesPage)
   override val summaryLitres: SummaryListRowLitresHelper = HowManyOperatePackagingSitesSummary
-  override val key: String = "reportingoperatePackagingSites"
+  override val key: String = "operatePackagingSites"
   override val action: String = routes.OperatePackagingSitesController.onPageLoad(CheckMode).url
   override val actionId: String = "change-operatePackagingSites"
   override val hiddenText: String = "operatePackagingSites"

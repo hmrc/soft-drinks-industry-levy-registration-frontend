@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package viewmodels
+package views.summary
 
 import base.SpecBase
 import models.{ContactDetails, UserAnswers}
 import play.api.libs.json.Json
 import viewmodels.summary.ContactDetailsSummary
 
-class ContactDetailsSummarySpec extends SpecBase{
+class ContactDetailsSummarySpec extends SpecBase {
 
   val userContactDetails: ContactDetails = ContactDetails("Jane Doe", "CEO", "07700 09900", "sample@example.com")
 

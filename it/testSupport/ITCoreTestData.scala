@@ -101,7 +101,7 @@ trait ITCoreTestData extends TryValues {
 
   def identifier = "some-id"
 
-  val defaultCall = routes.IndexController.onPageLoad
+  val defaultCall = routes.IndexController.onPageLoad()
 
   implicit val duration = 5.seconds
   def emptyUserAnswers = UserAnswers(identifier, Json.obj())

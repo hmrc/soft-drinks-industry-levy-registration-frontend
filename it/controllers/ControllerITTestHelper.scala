@@ -107,8 +107,7 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
     }
   }
 
-
-  def authenticatedWithNoEnrolmentsAndHasNotEnteredUtr(url: String, expectedPageTitle: String, userAnswers: UserAnswers = emptyUserAnswers): Unit = {
+  def authenticatedWithNoEnrolmentsAndHasNotEnteredUtr(url: String, userAnswers: UserAnswers = emptyUserAnswers): Unit = {
     "the user is authenticated with no enrolments and has not entered utr from identify page" - {
       s"redirect the user to identify page" in {
         given.authorisedButNoEnrolmentsPrecondition
@@ -198,7 +197,7 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
 
             whenReady(result1) { res =>
               res.status mustBe 303
-              res.header(HeaderNames.LOCATION) mustBe Some(routes.IndexController.onPageLoad.url)
+              res.header(HeaderNames.LOCATION) mustBe Some(routes.IndexController.onPageLoad().url)
             }
           }
         }

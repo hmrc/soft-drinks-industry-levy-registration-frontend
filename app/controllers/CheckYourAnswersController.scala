@@ -20,9 +20,10 @@ import com.google.inject.Inject
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import viewmodels.govuk.summarylist._
 import views.html.CheckYourAnswersView
+import views.summary.{ContractPackingSummary, ImportsSummary, OperatePackagingSitesSummary}
 
 class CheckYourAnswersController @Inject()(
                                             override val messagesApi: MessagesApi,
@@ -36,10 +37,26 @@ class CheckYourAnswersController @Inject()(
   def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
 
-      val list = SummaryListViewModel(
-        rows = Seq.empty
-      )
+      val operatePackagingSites: Option[(String, SummaryList)] = {
+        val list = OperatePackagingSitesSummary.summaryList(userAnswers = request.userAnswers, isCheckAnswers = true)
+        list.rows.headOption.fold(Option.empty[(String, SummaryList)])(_ => Some("operatePackagingSites.checkYourAnswersLabel" -> list))
+      }
+      val contractPacking: Option[(String, SummaryList)] = {
+        val list = ContractPackingSummary.summaryList(userAnswers = request.userAnswers, isCheckAnswers = true)
+        list.rows.headOption.fold(Option.empty[(String, SummaryList)])(_ => Some("contractPacking.checkYourAnswersLabel" -> list))
+      }
+      val imports: Option[(String, SummaryList)] = {
+        val list = ImportsSummary.summaryList(userAnswers = request.userAnswers, isCheckAnswers = true)
+        list.rows.headOption.fold(Option.empty[(String, SummaryList)])(_ => Some("imports.checkYourAnswersLabel" -> list))
+      }
+      val summaryList: Seq[(String, SummaryList)] = Seq(operatePackagingSites, contractPacking, imports).flatten
 
-      Ok(view(list))
+      Ok(view(summaryList, routes.CheckYourAnswersController.onSubmit()))
+  }
+
+  def onSubmit(): Action[AnyContent] = (identify andThen getData andThen requireData) {
+    Redirect(controllers.routes.IndexController.onPageLoad().url)
   }
 }
+
+

@@ -32,7 +32,7 @@ object EnterBusinessDetailsSummary  {
       answer =>
         SummaryListRowViewModel(
           key     = "enterBusinessDetails.checkYourAnswersLabel",
-          value   = ValueViewModel(HtmlFormat.escape(answer.utr).toString),
+          value   = ValueViewModel(HtmlFormat.escape(answer.utr).toString).withCssClass("govuk-!-text-align-right"),
           actions = Seq(
             ActionItemViewModel("site.change", routes.EnterBusinessDetailsController.onPageLoad(CheckMode).url)
               .withVisuallyHiddenText(messages("enterBusinessDetails.change.hidden"))

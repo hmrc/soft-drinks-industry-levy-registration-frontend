@@ -37,7 +37,7 @@ object ContactDetailsSummary  {
 
         SummaryListRowViewModel(
           key     = "contactDetails.checkYourAnswersLabel",
-          value   = ValueViewModel(HtmlContent(value)),
+          value   = ValueViewModel(HtmlContent(value)).withCssClass("govuk-!-text-align-right"),
           actions = Seq(
             ActionItemViewModel("site.change", routes.ContactDetailsController.onPageLoad(CheckMode).url)
               .withVisuallyHiddenText(messages("contactDetails.change.hidden"))
