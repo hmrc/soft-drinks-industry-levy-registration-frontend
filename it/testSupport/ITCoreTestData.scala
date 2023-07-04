@@ -144,4 +144,7 @@ trait ITCoreTestData extends TryValues {
   def warehouseListWith2 = Map("78941132" -> warehouse1, "11111111" -> warehouse2)
   def userAnswersWith1Warehouse = emptyUserAnswers.copy(warehouseList = warehouseListWith1)
   def userAnswersWith2Warehouses = emptyUserAnswers.copy(warehouseList = warehouseListWith2)
+
+  val radioYes = true
+  val radioNo = false
 }
