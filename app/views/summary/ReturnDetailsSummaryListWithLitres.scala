@@ -16,7 +16,6 @@
 
 package views.summary
 
-import config.FrontendAppConfig
 import models.{LitresInBands, UserAnswers}
 import pages.QuestionPage
 import play.api.i18n.Messages
@@ -35,7 +34,7 @@ trait ReturnDetailsSummaryListWithLitres extends ReturnDetailsSummaryRowHelper {
   val hiddenText: String
   val isSmallProducerLitres: Boolean = false
 
-  def summaryList(userAnswers: UserAnswers, isCheckAnswers: Boolean)(implicit messages: Messages, config: FrontendAppConfig): SummaryList = {
+  def summaryList(userAnswers: UserAnswers, isCheckAnswers: Boolean)(implicit messages: Messages): SummaryList = {
     val litresDetails: Seq[SummaryListRow] = optLitresPage match {
       case Some(litresPage) => getLitresDetails(userAnswers, isCheckAnswers, litresPage)
       case None if isSmallProducerLitres => getLitresForSmallProducer(userAnswers, isCheckAnswers)
@@ -47,16 +46,15 @@ trait ReturnDetailsSummaryListWithLitres extends ReturnDetailsSummaryRowHelper {
   }
 
   private def getLitresDetails(userAnswers: UserAnswers, isCheckAnswers: Boolean, litresPage: QuestionPage[LitresInBands])
-                              (implicit messages: Messages, config: FrontendAppConfig): Seq[SummaryListRow] = {
+                              (implicit messages: Messages): Seq[SummaryListRow] = {
     (userAnswers.get(page), userAnswers.get(litresPage)) match {
       case (Some(true), Some(litresInBands)) => summaryLitres.rows(litresInBands, isCheckAnswers)
       case _ => Seq.empty
     }
   }
 
-
   private def getLitresForSmallProducer(userAnswers: UserAnswers, isCheckAnswers: Boolean)
-                                       (implicit messages: Messages, config: FrontendAppConfig): Seq[SummaryListRow] = {
+                                       (implicit messages: Messages): Seq[SummaryListRow] = {
     val smallProducerList = userAnswers.smallProducerList
     if(userAnswers.get(page).contains(true) && smallProducerList.nonEmpty) {
       val lowBandLitres = smallProducerList.map(_.litreage._1).sum

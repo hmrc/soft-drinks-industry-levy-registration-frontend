@@ -36,7 +36,7 @@ object HowManyLitresGloballySummary  {
           HtmlContent(
             HtmlFormat.escape(messages(s"howManyLitresGlobally.$answer"))
           )
-        )
+        ).withCssClass("govuk-!-text-align-right")
 
         SummaryListRowViewModel(
           key     = "howManyLitresGlobally.checkYourAnswersLabel",

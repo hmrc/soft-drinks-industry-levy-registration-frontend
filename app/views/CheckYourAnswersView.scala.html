@@ -16,14 +16,23 @@
 
 @this(
     layout: templates.Layout,
-    govukSummaryList: GovukSummaryList
+    govukSummaryList: GovukSummaryList,
+    formHelper: FormWithCSRF,
+    govukButton: GovukButton
 )
 
-@(list: SummaryList)(implicit request: Request[_], messages: Messages)
+@(seqSummaryList: Seq[(String, SummaryList)], submitCall: Call)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("checkYourAnswers.title"))) {
 
-    <h1 class="govuk-heading-xl">@messages("checkYourAnswers.heading")</h1>
+    <h1 class="govuk-heading-l">@messages("checkYourAnswers.heading")</h1>
 
-    @govukSummaryList(list)
+        @for((heading, summaryList) <- seqSummaryList) {
+        <h2 class="govuk-heading-m">@messages(heading)</h2>
+        @govukSummaryList(summaryList)
+        }
+
+        @formHelper(action = submitCall, Symbol("autoComplete") -> "off") {
+            @govukButton(ButtonViewModel(messages("checkYourAnswers.submit")))
+        }
 }

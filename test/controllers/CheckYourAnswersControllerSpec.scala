@@ -17,16 +17,21 @@
 package controllers
 
 import base.SpecBase
+import controllers.routes.{CheckYourAnswersController, IndexController, JourneyRecoveryController}
+import models.LitresInBands
+import pages.{ContractPackingPage, HowManyContractPackingPage, HowManyImportsPage, HowManyOperatePackagingSitesPage, ImportsPage, OperatePackagingSitesPage}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import viewmodels.govuk.SummaryListFluency
 import views.html.CheckYourAnswersView
+import views.summary.{ContractPackingSummary, ImportsSummary, OperatePackagingSitesSummary}
 
 class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
 
   "Check Your Answers Controller" - {
 
-    "must return OK and the correct view for a GET" in {
+    "must return OK and the correct view for a GET with empty user answers" in {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration).build()
 
@@ -36,10 +41,42 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
         val result = route(application, request).value
 
         val view = application.injector.instanceOf[CheckYourAnswersView]
-        val list = SummaryListViewModel(Seq.empty)
+        val list = Seq.empty
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(list)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(list, routes.CheckYourAnswersController.onSubmit())(request, messages(application)).toString
+      }
+    }
+    "must return OK and the correct view for a GET with full user answers with litres pages yes" in {
+
+      val userAnswers = emptyUserAnswers
+        .set(OperatePackagingSitesPage, true).success.value
+        .set(HowManyOperatePackagingSitesPage, LitresInBands(1,2)).success.value
+        .set(ContractPackingPage, true).success.value
+        .set(HowManyContractPackingPage, LitresInBands(3,4)).success.value
+        .set(ImportsPage, true).success.value
+        .set(HowManyImportsPage, LitresInBands(3,4)).success.value
+
+      val application = applicationBuilder(userAnswers = Some(userAnswers), rosmRegistration = rosmRegistration).build()
+
+      running(application) {
+        val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad().url)
+
+        val result = route(application, request).value
+
+        val view = application.injector.instanceOf[CheckYourAnswersView]
+        val operatePackagingSites: (String, SummaryList) = {
+          "operatePackagingSites.checkYourAnswersLabel" -> OperatePackagingSitesSummary.summaryList(userAnswers = userAnswers, isCheckAnswers = true)
+        }
+        val contractPacking: (String, SummaryList) = {
+          "contractPacking.checkYourAnswersLabel" -> ContractPackingSummary.summaryList(userAnswers = userAnswers, isCheckAnswers = true)
+        }
+        val imports: (String, SummaryList) = {
+          "imports.checkYourAnswersLabel" -> ImportsSummary.summaryList(userAnswers = userAnswers, isCheckAnswers = true)
+        }
+
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(Seq(operatePackagingSites, contractPacking, imports), routes.CheckYourAnswersController.onSubmit())(request, messages(application)).toString
       }
     }
 
@@ -54,6 +91,31 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+    "must Redirect to next page when data is correct for POST" in {
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+      running(application) {
+        val request = FakeRequest(POST, CheckYourAnswersController.onSubmit().url).withFormUrlEncodedBody()
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual IndexController.onPageLoad().url
+      }
+    }
+    "must redirect to Journey Recovery for a POST if no existing data is found" in {
+
+      val application = applicationBuilder(userAnswers = None).build()
+
+      running(application) {
+        val request = FakeRequest(POST, CheckYourAnswersController.onSubmit().url).withFormUrlEncodedBody()
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual JourneyRecoveryController.onPageLoad().url
       }
     }
   }

@@ -20,9 +20,10 @@ import com.google.inject.Inject
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import viewmodels.govuk.summarylist._
 import views.html.CheckYourAnswersView
+import views.summary.{ContractPackingSummary, ImportsSummary, OperatePackagingSitesSummary}
 
 class CheckYourAnswersController @Inject()(
                                             override val messagesApi: MessagesApi,
@@ -36,10 +37,17 @@ class CheckYourAnswersController @Inject()(
   def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
 
-      val list = SummaryListViewModel(
-        rows = Seq.empty
-      )
+      val operatePackagingSites: Option[(String, SummaryList)] = OperatePackagingSitesSummary.checkAnswersSummary(request.userAnswers)
+      val contractPacking: Option[(String, SummaryList)] = ContractPackingSummary.checkAnswersSummary(request.userAnswers)
+      val imports: Option[(String, SummaryList)] = ImportsSummary.checkAnswersSummary(request.userAnswers)
+      val summaryList: Seq[(String, SummaryList)] = Seq(operatePackagingSites, contractPacking, imports).flatten
 
-      Ok(view(list))
+      Ok(view(summaryList, routes.CheckYourAnswersController.onSubmit()))
+  }
+
+  def onSubmit(): Action[AnyContent] = (identify andThen getData andThen requireData) {
+    Redirect(controllers.routes.IndexController.onPageLoad().url)
   }
 }
+
+

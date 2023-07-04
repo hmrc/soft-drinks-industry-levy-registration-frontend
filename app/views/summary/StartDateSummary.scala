@@ -36,7 +36,7 @@ object StartDateSummary  {
 
         SummaryListRowViewModel(
           key     = "startDate.checkYourAnswersLabel",
-          value   = ValueViewModel(answer.format(dateFormatter)),
+          value   = ValueViewModel(answer.format(dateFormatter)).withCssClass("govuk-!-text-align-right"),
           actions = Seq(
             ActionItemViewModel("site.change", routes.StartDateController.onPageLoad(CheckMode).url)
               .withVisuallyHiddenText(messages("startDate.change.hidden"))

@@ -37,7 +37,7 @@ object WarehouseDetailsSummary  {
 
         SummaryListRowViewModel(
           key     = "warehouseDetails.checkYourAnswersLabel",
-          value   = ValueViewModel(value),
+          value   = ValueViewModel(value).withCssClass("govuk-!-text-align-right"),
           actions = Seq(
             ActionItemViewModel("site.change", routes.WarehouseDetailsController.onPageLoad(CheckMode).url)
               .withVisuallyHiddenText(messages("warehouseDetails.change.hidden"))

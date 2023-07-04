@@ -17,8 +17,10 @@
 package views.summary
 
 import controllers.routes
-import models.{CheckMode, LitresInBands}
-import pages.{HowManyContractPackingPage, ContractPackingPage, QuestionPage}
+import models.{CheckMode, LitresInBands, UserAnswers}
+import pages.{ContractPackingPage, HowManyContractPackingPage, QuestionPage}
+import play.api.i18n.Messages
+import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import views.summary.{ReturnDetailsSummaryListWithLitres, SummaryListRowLitresHelper}
 
 object ContractPackingSummary extends ReturnDetailsSummaryListWithLitres  {
@@ -26,9 +28,14 @@ object ContractPackingSummary extends ReturnDetailsSummaryListWithLitres  {
   override val page: QuestionPage[Boolean] = ContractPackingPage
   override val optLitresPage: Option[QuestionPage[LitresInBands]] = Some(HowManyContractPackingPage)
   override val summaryLitres: SummaryListRowLitresHelper = HowManyContractPackingSummary
-  override val key: String = "reportingcontractPacking"
+  override val key: String = "contractPacking"
   override val action: String = routes.ContractPackingController.onPageLoad(CheckMode).url
   override val actionId: String = "change-contractPacking"
   override val hiddenText: String = "contractPacking"
+
+  def checkAnswersSummary(userAnswers: UserAnswers, isCheckAnswers: Boolean = true)(implicit messages: Messages): Option[(String, SummaryList)] = {
+    val list = summaryList(userAnswers = userAnswers, isCheckAnswers)
+    list.rows.headOption.fold(Option.empty[(String, SummaryList)])(_ => Some("contractPacking.checkYourAnswersLabel" -> list))
+  }
 
 }

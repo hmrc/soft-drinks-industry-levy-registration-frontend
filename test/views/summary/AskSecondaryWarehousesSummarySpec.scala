@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package viewmodels
+package views.summary
 
 import base.SpecBase
 import controllers.routes
