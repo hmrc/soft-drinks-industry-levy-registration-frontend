@@ -109,7 +109,7 @@ class Navigator @Inject()() {
     case EnterBusinessDetailsPage => userAnswers => routes.VerifyController.onPageLoad(NormalMode)
     case WarehouseDetailsPage => userAnswers => routes.IndexController.onPageLoad()
     case RemoveWarehouseDetailsPage => userAnswers => routes.WarehouseDetailsController.onPageLoad(NormalMode)
-    case ContactDetailsPage => userAnswers => routes.IndexController.onPageLoad()
+    case ContactDetailsPage => userAnswers => routes.CheckYourAnswersController.onPageLoad()
     case PackAtBusinessAddressPage => userAnswers => routes.IndexController.onPageLoad()
     case ContractPackingPage => userAnswers => navigationForContractPacking(userAnswers, NormalMode)
     case HowManyContractPackingPage => userAnswers => routes.ImportsController.onPageLoad(NormalMode)
