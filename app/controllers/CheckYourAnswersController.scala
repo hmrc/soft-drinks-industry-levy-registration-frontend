@@ -23,7 +23,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.CheckYourAnswersView
-import views.summary.{ContractPackingSummary, ImportsSummary, OperatePackagingSitesSummary}
+import views.summary.{ContractPackingSummary, ImportsSummary, OperatePackagingSitesSummary, RegistrationSummary}
 
 class CheckYourAnswersController @Inject()(
                                             override val messagesApi: MessagesApi,
@@ -37,10 +37,7 @@ class CheckYourAnswersController @Inject()(
   def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
 
-      val operatePackagingSites: Option[(String, SummaryList)] = OperatePackagingSitesSummary.checkAnswersSummary(request.userAnswers)
-      val contractPacking: Option[(String, SummaryList)] = ContractPackingSummary.checkAnswersSummary(request.userAnswers)
-      val imports: Option[(String, SummaryList)] = ImportsSummary.checkAnswersSummary(request.userAnswers)
-      val summaryList: Seq[(String, SummaryList)] = Seq(operatePackagingSites, contractPacking, imports).flatten
+      val summaryList = RegistrationSummary.summaryList(request.userAnswers)
 
       Ok(view(summaryList, routes.CheckYourAnswersController.onSubmit()))
   }

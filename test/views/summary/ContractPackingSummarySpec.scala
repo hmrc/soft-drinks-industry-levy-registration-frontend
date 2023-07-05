@@ -112,7 +112,7 @@ class ContractPackingSummarySpec extends SpecBase {
         .set(ContractPackingPage, true).success.value
         .set(HowManyContractPackingPage, LitresInBands(1000,2000)).success.value
 
-      val res = ContractPackingSummary.checkAnswersSummary(userAnswers)
+      val res = ContractPackingSummary.headingAndSummary(userAnswers)
       res.get._1 mustBe "contractPacking.checkYourAnswersLabel"
       val summaryList = res.get._2
       summaryList.rows.head.key.content.asHtml mustBe Html("Reporting contract packed at your own sites?")
@@ -146,7 +146,7 @@ class ContractPackingSummarySpec extends SpecBase {
         .set(ContractPackingPage, true).success.value
         .set(HowManyContractPackingPage, LitresInBands(1000,2000)).success.value
 
-      val res = ContractPackingSummary.checkAnswersSummary(userAnswers, isCheckAnswers = false)
+      val res = ContractPackingSummary.headingAndSummary(userAnswers, isCheckAnswers = false)
       res.get._1 mustBe "contractPacking.checkYourAnswersLabel"
       val summaryList = res.get._2
       summaryList.rows.head.key.content.asHtml mustBe Html("Reporting contract packed at your own sites?")
@@ -173,7 +173,7 @@ class ContractPackingSummarySpec extends SpecBase {
       val userAnswers = emptyUserAnswers
         .set(ContractPackingPage, false).success.value
 
-      val res = ContractPackingSummary.checkAnswersSummary(userAnswers)
+      val res = ContractPackingSummary.headingAndSummary(userAnswers)
       res.get._1 mustBe "contractPacking.checkYourAnswersLabel"
       val summaryList = res.get._2
       summaryList.rows.head.key.content.asHtml mustBe Html("Reporting contract packed at your own sites?")
@@ -189,7 +189,7 @@ class ContractPackingSummarySpec extends SpecBase {
     "should return correct elements when no elements provided" in {
       val userAnswers = emptyUserAnswers
 
-      val res = ContractPackingSummary.checkAnswersSummary(userAnswers)
+      val res = ContractPackingSummary.headingAndSummary(userAnswers)
       res mustBe None
     }
   }

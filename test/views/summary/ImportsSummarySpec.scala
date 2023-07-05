@@ -105,13 +105,13 @@ class ImportsSummarySpec extends SpecBase {
       res.rows.size mustBe 0
     }
   }
-  "checkAnswersSummary" - {
+  "headingAndSummary" - {
     "should return correct elements when passed in with TRUE and litres provided and check answers is true" in {
       val userAnswers = emptyUserAnswers
         .set(ImportsPage, true).success.value
         .set(HowManyImportsPage, LitresInBands(1000,2000)).success.value
 
-      val res = ImportsSummary.checkAnswersSummary(userAnswers)
+      val res = ImportsSummary.headingAndSummary(userAnswers)
       res.get._1 mustBe "imports.checkYourAnswersLabel"
       val summaryList = res.get._2
       summaryList.rows.head.key.content.asHtml mustBe Html("Reporting liable drinks brought into the UK?")
@@ -145,7 +145,7 @@ class ImportsSummarySpec extends SpecBase {
         .set(ImportsPage, true).success.value
         .set(HowManyImportsPage, LitresInBands(1000,2000)).success.value
 
-      val res = ImportsSummary.checkAnswersSummary(userAnswers, isCheckAnswers = false)
+      val res = ImportsSummary.headingAndSummary(userAnswers, isCheckAnswers = false)
       res.get._1 mustBe "imports.checkYourAnswersLabel"
       val summaryList = res.get._2
       summaryList.rows.head.key.content.asHtml mustBe Html("Reporting liable drinks brought into the UK?")
@@ -172,7 +172,7 @@ class ImportsSummarySpec extends SpecBase {
       val userAnswers = emptyUserAnswers
         .set(ImportsPage, false).success.value
 
-      val res = ImportsSummary.checkAnswersSummary(userAnswers)
+      val res = ImportsSummary.headingAndSummary(userAnswers)
       res.get._1 mustBe "imports.checkYourAnswersLabel"
       val summaryList = res.get._2
       summaryList.rows.head.key.content.asHtml mustBe Html("Reporting liable drinks brought into the UK?")
@@ -188,7 +188,7 @@ class ImportsSummarySpec extends SpecBase {
     "should return correct elements when no elements provided" in {
       val userAnswers = emptyUserAnswers
 
-      val res = ImportsSummary.checkAnswersSummary(userAnswers)
+      val res = ImportsSummary.headingAndSummary(userAnswers)
       res mustBe None
     }
   }
