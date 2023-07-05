@@ -23,7 +23,10 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.CheckYourAnswersView
-import views.summary.{ContractPackingSummary, ImportsSummary, OperatePackagingSitesSummary}
+import views.summary.{ContractPackingSummary, ImportsSummary, OperatePackagingSitesSummary, StartDateSummary}
+
+import java.time.LocalDate
+import java.time.temporal.TemporalQueries.localDate
 
 class CheckYourAnswersController @Inject()(
                                             override val messagesApi: MessagesApi,
@@ -40,7 +43,8 @@ class CheckYourAnswersController @Inject()(
       val operatePackagingSites: Option[(String, SummaryList)] = OperatePackagingSitesSummary.checkAnswersSummary(request.userAnswers)
       val contractPacking: Option[(String, SummaryList)] = ContractPackingSummary.checkAnswersSummary(request.userAnswers)
       val imports: Option[(String, SummaryList)] = ImportsSummary.checkAnswersSummary(request.userAnswers)
-      val summaryList: Seq[(String, SummaryList)] = Seq(operatePackagingSites, contractPacking, imports).flatten
+      val startDate: Option[(String, SummaryList)] = StartDateSummary.checkAnswersSummary(request.userAnswers)
+      val summaryList: Seq[(String, SummaryList)] = Seq(operatePackagingSites, contractPacking, imports, startDate).flatten
 
       Ok(view(summaryList, routes.CheckYourAnswersController.onSubmit()))
   }

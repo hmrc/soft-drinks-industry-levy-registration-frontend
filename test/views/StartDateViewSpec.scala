@@ -42,7 +42,7 @@ class StartDateViewSpec extends ViewSpecHelper {
     val heading = "govuk-fieldset__heading"
     val legend = "govuk-fieldset__legend  govuk-fieldset__legend--m"
     val dateItems = "govuk-date-input__item"
-    val dateLables = "govuk-label govuk-date-input__label"
+    val dateLabels = "govuk-label govuk-date-input__label"
     val errorSummaryList = "govuk-list govuk-error-summary__list"
     val button = "govuk-button"
     val form = "form"
@@ -73,21 +73,21 @@ class StartDateViewSpec extends ViewSpecHelper {
           val dateItem1 = dateItems
             .get(0)
           dateItem1
-            .getElementsByClass(Selectors.dateLables)
+            .getElementsByClass(Selectors.dateLabels)
             .text() mustBe "Day"
         }
         s"that has Month field" in {
           val dateItem1 = dateItems
             .get(1)
           dateItem1
-            .getElementsByClass(Selectors.dateLables)
+            .getElementsByClass(Selectors.dateLabels)
             .text() mustBe "Month"
         }
         s"that has Year field" in {
           val dateItem1 = dateItems
             .get(2)
           dateItem1
-            .getElementsByClass(Selectors.dateLables)
+            .getElementsByClass(Selectors.dateLabels)
             .text() mustBe "Year"
         }
       }
