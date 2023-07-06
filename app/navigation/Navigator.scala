@@ -81,7 +81,7 @@ class Navigator @Inject()() {
     userAnswers.get(page = ImportsPage).contains(true) match {
       case true => routes.HowManyImportsController.onPageLoad(mode)
       case false if mode == NormalMode => routes.StartDateController.onPageLoad(mode)
-      case false if mode == CheckMode => routes.CheckYourAnswersController.onPageLoad()
+      case _ => routes.CheckYourAnswersController.onPageLoad()
     }
   }
 
@@ -104,22 +104,22 @@ class Navigator @Inject()() {
   }
 
   private val normalRoutes: Page => UserAnswers => Call = {
-    case VerifyPage => userAnswers => routes.OrganisationTypeController.onPageLoad(NormalMode)
-    case RemovePackagingSiteDetailsPage => userAnswers => routes.PackagingSiteDetailsController.onPageLoad(NormalMode)
-    case EnterBusinessDetailsPage => userAnswers => routes.VerifyController.onPageLoad(NormalMode)
-    case WarehouseDetailsPage => userAnswers => routes.IndexController.onPageLoad()
-    case RemoveWarehouseDetailsPage => userAnswers => routes.WarehouseDetailsController.onPageLoad(NormalMode)
-    case ContactDetailsPage => userAnswers => routes.IndexController.onPageLoad()
-    case PackAtBusinessAddressPage => userAnswers => routes.IndexController.onPageLoad()
+    case VerifyPage => _ => routes.OrganisationTypeController.onPageLoad(NormalMode)
+    case RemovePackagingSiteDetailsPage => _ => routes.PackagingSiteDetailsController.onPageLoad(NormalMode)
+    case EnterBusinessDetailsPage => _ => routes.VerifyController.onPageLoad(NormalMode)
+    case WarehouseDetailsPage => _ => routes.IndexController.onPageLoad()
+    case RemoveWarehouseDetailsPage => _ => routes.WarehouseDetailsController.onPageLoad(NormalMode)
+    case ContactDetailsPage => _ => routes.CheckYourAnswersController.onPageLoad()
+    case PackAtBusinessAddressPage => _ => routes.IndexController.onPageLoad()
     case ContractPackingPage => userAnswers => navigationForContractPacking(userAnswers, NormalMode)
-    case HowManyContractPackingPage => userAnswers => routes.ImportsController.onPageLoad(NormalMode)
+    case HowManyContractPackingPage => _ => routes.ImportsController.onPageLoad(NormalMode)
     case ImportsPage => userAnswers => navigationForImports(userAnswers, NormalMode)
-    case HowManyImportsPage => userAnswers => routes.StartDateController.onPageLoad(NormalMode)
-    case AskSecondaryWarehousesPage => userAnswers => routes.IndexController.onPageLoad()
+    case HowManyImportsPage => _ => routes.StartDateController.onPageLoad(NormalMode)
+    case AskSecondaryWarehousesPage => _ => routes.IndexController.onPageLoad()
     case OperatePackagingSitesPage => userAnswers => navigationForOperatePackagingSites(userAnswers, NormalMode)
-    case HowManyOperatePackagingSitesPage => userAnswers => routes.ContractPackingController.onPageLoad(NormalMode)
-    case ThirdPartyPackagersPage => userAnswers => routes.OperatePackagingSitesController.onPageLoad(NormalMode)
-    case PackagingSiteDetailsPage => userAnswers => routes.IndexController.onPageLoad()
+    case HowManyOperatePackagingSitesPage => _ => routes.ContractPackingController.onPageLoad(NormalMode)
+    case ThirdPartyPackagersPage => _ => routes.OperatePackagingSitesController.onPageLoad(NormalMode)
+    case PackagingSiteDetailsPage => _ => routes.IndexController.onPageLoad()
     case StartDatePage => userAnswers => navigationForStartDate(userAnswers, NormalMode)
     case OrganisationTypePage => userAnswers => navigationForOrganisationType(userAnswers, NormalMode)
     case HowManyLitresGloballyPage => userAnswers => navigationForHowManyLitresGloballyNormalMode(userAnswers)
@@ -127,8 +127,8 @@ class Navigator @Inject()() {
   }
 
   private val checkRouteMap: Page => UserAnswers => Option[String] => Call = {
-    case EnterBusinessDetailsPage => userAnswers =>_ => routes.VerifyController.onPageLoad(NormalMode)
-    case RemoveWarehouseDetailsPage => userAnswers => _ => routes.WarehouseDetailsController.onPageLoad(CheckMode)
+    case EnterBusinessDetailsPage => _ =>_ => routes.VerifyController.onPageLoad(NormalMode)
+    case RemoveWarehouseDetailsPage => _ => _ => routes.WarehouseDetailsController.onPageLoad(CheckMode)
     case StartDatePage => userAnswers => _ => navigationForStartDate(userAnswers, CheckMode)
     case ContractPackingPage => userAnswers => _ => navigationForContractPacking(userAnswers, CheckMode)
     case OperatePackagingSitesPage => userAnswers => _ =>  navigationForOperatePackagingSites(userAnswers, CheckMode)
