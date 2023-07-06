@@ -197,7 +197,8 @@ startDate.list.help.4= packaged liable drinks for someone else
 startDate.list.help.5= knew you were going to package liable drinks for someone else
 startDate.list.help.6= brought liable drinks into the UK
 startDate.list.help.7= knew you were going to bring liable drinks into the UK
-startDate.checkYourAnswersLabel = StartDate
+startDate.checkYourAnswersLabel = Soft Drinks Industry Levy liability date
+startDate.checkYourAnswersKey = Date liable from
 startDate.error.required.all = Enter the date you became liable to register
 startDate.error.required.two = The date you became liable to register must include a {0} and {1}
 startDate.error.required = The date you became liable to register must include a {0}
@@ -210,7 +211,7 @@ startDate.error.monthYear.invalid = The month and year must be part of a real da
 startDate.error.dayYear.invalid = The day and year must be part of a real date, like <span style="white-space: nowrap">31 7 2020</span>
 startDate.minimumDate = The date you became liable to register must be after <span style="white-space: nowrap">5 April 2018</span>
 startDate.error.maximumDate = The date you became liable to register must be today or in the past
-startDate.change.hidden = StartDate
+startDate.change.hidden = liability date
 startDate.day.nan = Day must only include numbers
 
 contractPacking.title = Do you operate any packaging sites in the UK to package liable drinks as a third party or contract packer?
@@ -240,10 +241,10 @@ contactDetails.error.fullName.invalid = Full name must only include letters a to
 contactDetails.error.position.invalid = Job title must only include letters a to z, apostrophes, dashes, hyphens and spaces
 contactDetails.error.phoneNumber.invalid = Enter a telephone number, like <span style="white-space: nowrap">01632 960999</span> or <span style="white-space: nowrap">07700 900999</span>
 contactDetails.error.email.invalid = Enter a real email address, like name@example.com
-contactDetails.fullName.change.hidden = Full name
-contactDetails.position.change.hidden = Job title
-contactDetails.phoneNumber.change.hidden = Telephone Number
-contactDetails.email.change.hidden = Email
+contactDetails.fullName.change.hidden = full name
+contactDetails.position.change.hidden = job title
+contactDetails.phoneNumber.change.hidden = telephone number
+contactDetails.email.change.hidden = email
 
 packAtBusinessAddress.heading = Your business address
 packAtBusinessAddress.title = Your business address

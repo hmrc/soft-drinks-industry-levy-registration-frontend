@@ -43,4 +43,31 @@ class RosmRegistrationSpec extends SpecBase {
     )
   }
 
+  "convertToUsableUkAddress" - {
+    "return a UK address with organisation name added to lines" in {
+      val rosmRegistration = RosmRegistration(
+        "foo",
+        Some(OrganisationDetails("wizzbang")),
+        Some(IndividualDetails("bar", "wizz")),
+        UkAddress(List("1","2","3","4"),"posty", Some("alf")))
+      RosmRegistration.convertToUsableUkAddress(rosmRegistration) mustBe UkAddress(List("wizzbang","1","2","3","4"),"posty", Some("alf"))
+    }
+    "return a UK address with individual details added to lines" in {
+      val rosmRegistration = RosmRegistration(
+        "foo",
+        None,
+        Some(IndividualDetails("bar", "wizz")),
+        UkAddress(List("1","2","3","4"),"posty", Some("alf")))
+      RosmRegistration.convertToUsableUkAddress(rosmRegistration) mustBe UkAddress(List("bar wizz","1","2","3","4"),"posty", Some("alf"))
+    }
+    "return a UK address with nothing additional added to lines" in {
+      val rosmRegistration = RosmRegistration(
+        "foo",
+        None,
+        None,
+        UkAddress(List("1","2","3","4"),"posty", Some("alf")))
+      RosmRegistration.convertToUsableUkAddress(rosmRegistration) mustBe UkAddress(List("1","2","3","4"),"posty", Some("alf"))
+    }
+  }
+
 }

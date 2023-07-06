@@ -186,7 +186,7 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
             }
           }
         }
-      case radio if radio == Partnership =>
+      case radio =>
         "when the user selects " + radio.toString - {
           "should update the session with the new value and redirect to the how many litres globally" - {
             "when the session contains no data for page" in {
@@ -310,7 +310,7 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
             }
           }
         }
-      case radio if radio == Partnership =>
+      case radio =>
         "when the user selects " + radio.toString - {
           "should update the session with the new value and redirect to the checkAnswers controller" - {
             "when the session contains no data for page" in {

@@ -34,6 +34,17 @@ case class RosmRegistration(
 }
 
 object RosmRegistration {
+  def convertToUsableUkAddress(rosmRegistration: RosmRegistration): UkAddress = {
+    val organisationName: List[String] = rosmRegistration.organisationName match {
+      case "" => List.empty
+      case name => List(name)
+    }
+    UkAddress(
+      organisationName ++ rosmRegistration.address.lines,
+      rosmRegistration.address.postCode,
+      rosmRegistration.address.alfId)
+
+  }
   private val addressReads: Reads[UkAddress] =
     (json: JsValue) => {
       for {

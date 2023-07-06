@@ -20,10 +20,9 @@ import com.google.inject.Inject
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.CheckYourAnswersView
-import views.summary.{ContractPackingSummary, ImportsSummary, OperatePackagingSitesSummary, RegistrationSummary}
+import views.summary.RegistrationSummary
 
 class CheckYourAnswersController @Inject()(
                                             override val messagesApi: MessagesApi,

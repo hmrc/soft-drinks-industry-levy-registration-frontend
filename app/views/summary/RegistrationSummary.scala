@@ -28,11 +28,13 @@ object RegistrationSummary {
     val operatePackagingSites: Option[(String, SummaryList)] = OperatePackagingSitesSummary.headingAndSummary(userAnswers, isCheckYourAnswers)
     val contractPacking: Option[(String, SummaryList)] = ContractPackingSummary.headingAndSummary(userAnswers, isCheckYourAnswers)
     val imports: Option[(String, SummaryList)] = ImportsSummary.headingAndSummary(userAnswers, isCheckYourAnswers)
+    val startDate: Option[(String, SummaryList)] = StartDateSummary.headingAndSummary(userAnswers)
     val contactDetails: Option[(String, SummaryList)] = ContactDetailsSummary.headingAndSummary(userAnswers, isCheckYourAnswers)
     Seq(
       operatePackagingSites,
       contractPacking,
       imports,
+      startDate,
       contactDetails
     ).flatten
   }

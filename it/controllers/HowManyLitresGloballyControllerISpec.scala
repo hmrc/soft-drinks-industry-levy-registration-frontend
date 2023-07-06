@@ -232,7 +232,7 @@ class HowManyLitresGloballyControllerISpec extends ControllerITTestHelper {
             }
           }
         }
-      case radio if radio == HowManyLitresGlobally.None =>
+      case radio =>
         "when the user selects " + radio.toString - {
           "should update the session with the new value and redirect to the operate packaging sites" - {
             "when the session contains no data for page" in {
@@ -403,7 +403,7 @@ class HowManyLitresGloballyControllerISpec extends ControllerITTestHelper {
           }
         }
       }
-      case radio if radio == HowManyLitresGlobally.None =>
+      case radio =>
         "when the user selects " + radio.toString - {
         "should update the session with the new value and redirect to the checkAnswers controller" - {
           "when the session contains no data for page" in {

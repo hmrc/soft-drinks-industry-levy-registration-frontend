@@ -17,15 +17,17 @@
 package controllers
 
 import base.SpecBase
-import controllers.routes.{CheckYourAnswersController, IndexController, JourneyRecoveryController}
+import controllers.routes._
 import models.LitresInBands
-import pages.{ContractPackingPage, HowManyContractPackingPage, HowManyImportsPage, HowManyOperatePackagingSitesPage, ImportsPage, OperatePackagingSitesPage}
+import pages.{ContractPackingPage, HowManyContractPackingPage, HowManyImportsPage, HowManyOperatePackagingSitesPage, ImportsPage, OperatePackagingSitesPage, StartDatePage}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import viewmodels.govuk.SummaryListFluency
 import views.html.CheckYourAnswersView
-import views.summary.{ContractPackingSummary, ImportsSummary, OperatePackagingSitesSummary}
+import views.summary._
+
+import java.time.LocalDate
 
 class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
 
@@ -48,7 +50,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
       }
     }
     "must return OK and the correct view for a GET with full user answers with litres pages yes" in {
-
+      val userAnswerDate: LocalDate = LocalDate.of(2023, 6, 1)
       val userAnswers = emptyUserAnswers
         .set(OperatePackagingSitesPage, true).success.value
         .set(HowManyOperatePackagingSitesPage, LitresInBands(1,2)).success.value
@@ -56,6 +58,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
         .set(HowManyContractPackingPage, LitresInBands(3,4)).success.value
         .set(ImportsPage, true).success.value
         .set(HowManyImportsPage, LitresInBands(3,4)).success.value
+        .set(StartDatePage, userAnswerDate).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers), rosmRegistration = rosmRegistration).build()
 
@@ -74,9 +77,13 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
         val imports: (String, SummaryList) = {
           "imports.checkYourAnswersLabel" -> ImportsSummary.summaryList(userAnswers = userAnswers, isCheckAnswers = true)
         }
+        val startDate: (String, SummaryList) = {
+          "startDate.checkYourAnswersLabel" -> StartDateSummary.summaryList(userAnswers = userAnswers, isCheckAnswers = true)
+        }
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(Seq(operatePackagingSites, contractPacking, imports), routes.CheckYourAnswersController.onSubmit())(request, messages(application)).toString
+        contentAsString(result) mustEqual view(Seq(operatePackagingSites, contractPacking, imports, startDate),
+          routes.CheckYourAnswersController.onSubmit())(request, messages(application)).toString
       }
     }
 

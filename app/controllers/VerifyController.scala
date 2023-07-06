@@ -77,7 +77,7 @@ class VerifyController @Inject()(
                 addressLookupService.initJourneyAndReturnOnRampUrl(BusinessAddress)
                 .map(alfOnRamp => Redirect(alfOnRamp)))
             case No => Future.successful(Redirect(auth.routes.AuthController.signOutNoSurvey()))
-            case _ => updateDatabaseAndRedirect (updatedAnswers.map(_.copy(address = None)), VerifyPage, mode)
+            case _ => updateDatabaseAndRedirect (updatedAnswers.map(_.copy(address = Some(RosmRegistration.convertToUsableUkAddress(request.rosmWithUtr.rosmRegistration)))), VerifyPage, mode)
           }
         }
       )

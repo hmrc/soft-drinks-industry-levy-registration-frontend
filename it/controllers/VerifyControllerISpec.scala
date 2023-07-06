@@ -147,7 +147,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
 
   s"POST " + normalRoutePath - {
     s"when the user selects $YesRegister" - {
-      "should update the session with the new value and wipe the business address and redirect to the Organisation Type controller" - {
+      "should update the session with the value and set business address as rosm address and redirect to the Organisation Type controller" - {
         "when the session contains no data for page" in {
           given
             .commonPrecondition
@@ -165,8 +165,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
               val dataStoredForPage = userAnswersAfterPOST.fold[Option[Verify]](None)(_.get(VerifyPage))
               dataStoredForPage.nonEmpty mustBe true
               dataStoredForPage.get mustBe YesRegister
-              userAnswersAfterPOST.get.address.isEmpty mustBe true
-
+              userAnswersAfterPOST.get.address.get mustBe UkAddress(List("Super Lemonade Plc", "105B Godfrey Marchant Grove", "Guildford", "", ""), "GU14 8NL", None)
             }
           }
         }
@@ -193,7 +192,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
               val dataStoredForPage = userAnswersAfterPOST.fold[Option[Verify]](None)(_.get(VerifyPage))
               dataStoredForPage.nonEmpty mustBe true
               dataStoredForPage.get mustBe YesRegister
-              userAnswersAfterPOST.get.address.isEmpty mustBe true
+              userAnswersAfterPOST.get.address.get mustBe UkAddress(List("Super Lemonade Plc", "105B Godfrey Marchant Grove", "Guildford", "", ""), "GU14 8NL", None)
             }
           }
         }
@@ -327,7 +326,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
                 val dataStoredForPage = userAnswersAfterPOST.fold[Option[Verify]](None)(_.get(VerifyPage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe YesRegister
-                userAnswersAfterPOST.get.address.isEmpty mustBe true
+                userAnswersAfterPOST.get.address.get mustBe UkAddress(List("Super Lemonade Plc", "105B Godfrey Marchant Grove", "Guildford", "", ""), "GU14 8NL", None)
 
               }
             }
@@ -352,7 +351,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
                 val dataStoredForPage = userAnswersAfterPOST.fold[Option[Verify]](None)(_.get(VerifyPage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe YesRegister
-                userAnswersAfterPOST.get.address.isEmpty mustBe true
+                userAnswersAfterPOST.get.address.get mustBe UkAddress(List("Super Lemonade Plc", "105B Godfrey Marchant Grove", "Guildford", "", ""), "GU14 8NL", None)
               }
             }
           }

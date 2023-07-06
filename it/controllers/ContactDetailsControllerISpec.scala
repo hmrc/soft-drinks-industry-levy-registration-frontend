@@ -135,7 +135,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
 
   s"POST " + normalRoutePath - {
     "when the user populates answers all questions" - {
-      "should update the session with the new values and redirect to the index controller" - {
+      "should update the session with the new values and redirect to the Check Your Answers controller" - {
         "when the session contains no data for page" in {
           given
             .commonPrecondition
@@ -148,7 +148,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
 
             whenReady(result) { res =>
               res.status mustBe 303
-              res.header(HeaderNames.LOCATION) mustBe Some(routes.IndexController.onPageLoad().url)
+              res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad().url)
               val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[ContactDetails]](None)(_.get(ContactDetailsPage))
               dataStoredForPage.nonEmpty mustBe true
               dataStoredForPage.get mustBe contactDetailsDiff
@@ -168,7 +168,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
 
             whenReady(result) { res =>
               res.status mustBe 303
-              res.header(HeaderNames.LOCATION) mustBe Some(routes.IndexController.onPageLoad().url)
+              res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad().url)
               val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[ContactDetails]](None)(_.get(ContactDetailsPage))
               dataStoredForPage.nonEmpty mustBe true
               dataStoredForPage.get mustBe contactDetailsDiff

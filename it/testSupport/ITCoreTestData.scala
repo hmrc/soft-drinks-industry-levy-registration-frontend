@@ -81,9 +81,9 @@ trait ITCoreTestData extends TryValues {
     Map("yes" -> yesSelected, "no" -> noSelected)
     }
 
-  val year = 2022
-  val month = 11
-  val day = 10
+  var year = 2022
+  var month = 11
+  var day = 10
   val date = LocalDate.of(year, month, day)
 
   val validDateJson = Json.obj(

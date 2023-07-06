@@ -17,13 +17,11 @@
 package controllers
 
 import base.SpecBase
-import errors.SessionDatabaseInsertError
 import forms.PackagingSiteDetailsFormProvider
 import helpers.LoggerHelper
-import models.{NormalMode, UserAnswers}
 import models.backend.{Site, UkAddress}
+import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
-import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -36,8 +34,7 @@ import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
-import services.{AddressLookupService, PackingDetails, SessionService, WarehouseDetails}
-import utilities.GenericLogger
+import services.{AddressLookupService, PackingDetails, SessionService}
 import viewmodels.govuk.SummaryListFluency
 import views.html.PackagingSiteDetailsView
 

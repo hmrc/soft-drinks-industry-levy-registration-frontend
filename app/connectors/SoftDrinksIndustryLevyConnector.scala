@@ -22,7 +22,7 @@ import play.api.http.Status.{ACCEPTED, OK}
 import repositories.{SDILSessionCache, SDILSessionKeys}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpException, HttpResponse, NotFoundException}
 import utilities.GenericLogger
-
+import uk.gov.hmrc.http.HttpReads.Implicits._
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 

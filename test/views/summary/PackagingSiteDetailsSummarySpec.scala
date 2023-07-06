@@ -18,7 +18,6 @@ package views.summary
 
 import base.SpecBase
 import controllers.routes
-import models.NormalMode
 import models.backend.{Site, UkAddress}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content._
 
