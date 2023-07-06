@@ -31,11 +31,14 @@ import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.SessionService
+import services.{AddressLookupService, SessionService, WarehouseDetails}
 import views.html.AskSecondaryWarehousesView
 
 import scala.concurrent.Future
 import org.jsoup.Jsoup
+import org.mockito.ArgumentMatchers
+import org.mockito.MockitoSugar.{times, verify}
+import repositories.SessionRepository
 
 class AskSecondaryWarehousesControllerSpec extends SpecBase with MockitoSugar with LoggerHelper {
 
@@ -82,29 +85,108 @@ class AskSecondaryWarehousesControllerSpec extends SpecBase with MockitoSugar wi
       }
     }
 
-    "must redirect to the next page when valid data is submitted" in {
+    "must redirect to alf on ramp when valid data is submitted (true)" in {
 
-      val mockSessionService = mock[SessionService]
+      val mockSessionRepository = mock[SessionRepository]
+      val mockAddressLookupService = mock[AddressLookupService]
+      val onwardUrlForALF = "foobarwizz"
 
-      when(mockSessionService.set(any())) thenReturn Future.successful(Right(true))
+      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+      when(mockAddressLookupService.initJourneyAndReturnOnRampUrl(
+        ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any())(
+        ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(onwardUrlForALF))
 
       val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration)
+        applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionService].toInstance(mockSessionService)
+            bind[SessionRepository].toInstance(mockSessionRepository),
+            bind[AddressLookupService].toInstance(mockAddressLookupService)
           )
           .build()
 
       running(application) {
         val request =
           FakeRequest(POST, askSecondaryWarehousesRoute)
-        .withFormUrlEncodedBody(("value", "true"))
+            .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual onwardRoute.url
+        redirectLocation(result).value mustEqual onwardUrlForALF
+
+        verify(mockAddressLookupService, times(1)).initJourneyAndReturnOnRampUrl(
+          ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any())(
+          ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+      }
+    }
+    "must redirect to contact details when valid data is submitted (false), verifying ALF is not called" in {
+
+      val mockSessionRepository = mock[SessionRepository]
+      val mockAddressLookupService = mock[AddressLookupService]
+      val onwardUrlForALF = "foobarwizz"
+
+      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+      when(mockAddressLookupService.initJourneyAndReturnOnRampUrl(
+        ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any())(
+        ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(onwardUrlForALF))
+
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[SessionRepository].toInstance(mockSessionRepository),
+            bind[AddressLookupService].toInstance(mockAddressLookupService)
+
+          )
+          .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, askSecondaryWarehousesRoute)
+            .withFormUrlEncodedBody(("value", "false"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.ContactDetailsController.onPageLoad(NormalMode).url
+
+        verify(mockAddressLookupService, times(0)).initJourneyAndReturnOnRampUrl(
+          ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any())(
+          ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+      }
+    }
+    "must return error if ALF on ramp call returns error" in {
+      val mockSessionRepository = mock[SessionRepository]
+      val mockAddressLookupService = mock[AddressLookupService]
+      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+      when(mockAddressLookupService.initJourneyAndReturnOnRampUrl(
+        ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any())(
+        ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.failed(new Exception("uh oh spaghetio")))
+
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[SessionRepository].toInstance(mockSessionRepository),
+            bind[AddressLookupService].toInstance(mockAddressLookupService)
+          )
+          .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, askSecondaryWarehousesRoute)
+            .withFormUrlEncodedBody(("value", "true"))
+
+        intercept[Exception](await(route(application, request).value))
+
+
+        verify(mockAddressLookupService, times(1)).initJourneyAndReturnOnRampUrl(
+          ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any())(
+          ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
       }
     }
 
@@ -155,53 +237,6 @@ class AskSecondaryWarehousesControllerSpec extends SpecBase with MockitoSugar wi
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
-      }
-    }
-
-    "must fail if the setting of userAnswers fails" in {
-
-      val application = applicationBuilder(userAnswers = Some(userDetailsWithSetMethodsReturningFailure), rosmRegistration = rosmRegistration).build()
-
-      running(application) {
-        val request =
-          FakeRequest(POST, askSecondaryWarehousesRoute
-        )
-        .withFormUrlEncodedBody(("value", "true"))
-
-        val result = route(application, request).value
-
-        status(result) mustEqual INTERNAL_SERVER_ERROR
-        val page = Jsoup.parse(contentAsString(result))
-        page.title() mustBe "Sorry, we are experiencing technical difficulties - 500 - Soft Drinks Industry Levy - GOV.UK"
-      }
-    }
-
-    "should log an error message when internal server error is returned when user answers are not set in session repository" in {
-      val mockSessionService = mock[SessionService]
-
-      when(mockSessionService.set(any())) thenReturn Future.successful(Left(SessionDatabaseInsertError))
-
-      val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration)
-          .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionService].toInstance(mockSessionService)
-          )
-          .build()
-
-      running(application) {
-        withCaptureOfLoggingFrom(application.injector.instanceOf[GenericLogger].logger) { events =>
-          val request =
-            FakeRequest(POST, askSecondaryWarehousesRoute)
-          .withFormUrlEncodedBody(("value", "true"))
-
-          await(route(application, request).value)
-          events.collectFirst {
-            case event =>
-              event.getLevel.levelStr mustBe "ERROR"
-              event.getMessage mustEqual "Failed to set value in session repository while attempting set on askSecondaryWarehouses"
-          }.getOrElse(fail("No logging captured"))
-        }
       }
     }
   }

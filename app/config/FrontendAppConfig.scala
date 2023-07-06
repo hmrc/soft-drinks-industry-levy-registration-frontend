@@ -33,7 +33,7 @@ class FrontendAppConfig @Inject() (servicesConfig: ServicesConfig, configuration
   val sdilFoundingDate: LocalDate =   LocalDate.of(servicesConfig.getInt("sdilFoundingDate.year"), servicesConfig.getInt("sdilFoundingDate.month"), servicesConfig.getInt("sdilFoundingDate.day"))
 
   private val contactHost = servicesConfig.getString("contact-frontend.host")
-  private val contactFormServiceIdentifier = "soft-drinks-industry-levy-registration-frontend"
+  private val contactFormServiceIdentifier = "soft-drinks-industry-levy-registration"
 
   def feedbackUrl(implicit request: RequestHeader): String =
     s"$contactHost/contact/beta-feedback?service=$contactFormServiceIdentifier&backUrl=${SafeRedirectUrl(host + request.uri).encodedUrl}"

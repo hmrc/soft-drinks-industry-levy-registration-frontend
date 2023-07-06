@@ -18,13 +18,14 @@ package controllers
 
 import controllers.actions._
 import forms.AskSecondaryWarehousesFormProvider
+
 import javax.inject.Inject
-import models.Mode
+import models.{CheckMode, Mode}
 import navigation.Navigator
 import pages.AskSecondaryWarehousesPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.SessionService
+import services.{AddressLookupService, SessionService, WarehouseDetails}
 import views.html.AskSecondaryWarehousesView
 import handlers.ErrorHandler
 
@@ -39,6 +40,7 @@ class AskSecondaryWarehousesController @Inject()(
                                        getData: DataRetrievalAction,
                                        requireData: DataRequiredAction,
                                        formProvider: AskSecondaryWarehousesFormProvider,
+                                       addressLookupService: AddressLookupService,
                                        val controllerComponents: MessagesControllerComponents,
                                        view: AskSecondaryWarehousesView,
                                        val errorHandler: ErrorHandler,
@@ -66,8 +68,26 @@ class AskSecondaryWarehousesController @Inject()(
           Future.successful(BadRequest(view(formWithErrors, mode))),
 
         value => {
-          val updatedAnswers = request.userAnswers.set(AskSecondaryWarehousesPage, value)
-          updateDatabaseAndRedirect(updatedAnswers, AskSecondaryWarehousesPage, mode)
+          for {
+            updatedAnswers <- Future.fromTry(request.userAnswers.set(AskSecondaryWarehousesPage, value))
+            onwardUrl <-
+              if (value) {
+                updateDatabaseWithoutRedirect(updatedAnswers, AskSecondaryWarehousesPage).flatMap(_ =>
+                  addressLookupService.initJourneyAndReturnOnRampUrl(WarehouseDetails))
+              } else {
+                mode match {
+                  case CheckMode =>
+                    updateDatabaseWithoutRedirect(updatedAnswers.copy(warehouseList = Map.empty), AskSecondaryWarehousesPage).flatMap(_ =>
+                      Future.successful(routes.CheckYourAnswersController.onPageLoad().url))
+                  case _ =>
+                    updateDatabaseWithoutRedirect(updatedAnswers.copy(warehouseList = Map.empty), AskSecondaryWarehousesPage).flatMap(_ =>
+                      Future.successful(routes.ContactDetailsController.onPageLoad(mode).url))
+                }
+              }
+          } yield {
+            Redirect(onwardUrl)
+          }
+
         }
       )
   }
