@@ -17,31 +17,57 @@
 package viewmodels.summary
 
 import controllers.routes
-import models.{CheckMode, UserAnswers}
+import models.{CheckMode, ContactDetails, UserAnswers}
 import pages.ContactDetailsPage
 import play.api.i18n.Messages
-import play.twirl.api.HtmlFormat
-import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
+import uk.gov.hmrc.govukfrontend.views.Aliases.{ActionItem, SummaryList, Text}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
 
 object ContactDetailsSummary  {
 
-  def row(answers: UserAnswers)(implicit messages: Messages): Option[SummaryListRow] =
-    answers.get(ContactDetailsPage).map {
-      answer =>
-
-      val value = HtmlFormat.escape(answer.fullName).toString + "<br/>" + HtmlFormat.escape(answer.position).toString +
-        "<br/>" + HtmlFormat.escape(answer.phoneNumber).toString + "<br/>" + HtmlFormat.escape(answer.email).toString
-
-        SummaryListRowViewModel(
-          key     = "contactDetails.checkYourAnswersLabel",
-          value   = ValueViewModel(HtmlContent(value)).withCssClass("govuk-!-text-align-right"),
-          actions = Seq(
-            ActionItemViewModel("site.change", routes.ContactDetailsController.onPageLoad(CheckMode).url)
-              .withVisuallyHiddenText(messages("contactDetails.change.hidden"))
-          )
-        )
+  def headingAndSummary(userAnswers: UserAnswers, isCheckAnswers: Boolean = true)
+                         (implicit messages: Messages): Option[(String, SummaryList)] = {
+    userAnswers.get(ContactDetailsPage).map { contactDetails =>
+      val heading = messages("contactDetails.title")
+      val summaryList = SummaryListViewModel(
+        rows(contactDetails, isCheckAnswers)
+      )
+      heading -> summaryList
     }
+  }
+
+  private def rows(contactDetails: ContactDetails, isCheckAnswers: Boolean)
+          (implicit messages: Messages): Seq[SummaryListRow] = {
+    Seq(
+      createSummaryListItem("fullName", contactDetails.fullName, isCheckAnswers),
+      createSummaryListItem("position", contactDetails.position, isCheckAnswers),
+      createSummaryListItem("phoneNumber", contactDetails.phoneNumber, isCheckAnswers),
+      createSummaryListItem("email", contactDetails.email, isCheckAnswers)
+    )
+  }
+
+
+  private def createSummaryListItem(fieldName: String, fieldValue: String, isCheckAnswers: Boolean)
+                                   (implicit messages: Messages): SummaryListRow = {
+    SummaryListRowViewModel(
+      key = s"contactDetails.$fieldName",
+      value = ValueViewModel(Text(fieldValue)).withCssClass("govuk-!-text-align-right"),
+      actions = if (isCheckAnswers) {
+          Seq(
+            getAction(fieldName)
+          )
+        } else {
+          Seq.empty[ActionItem]
+        }
+    )
+  }
+
+  private def getAction(fieldName: String)
+                       (implicit messages: Messages): ActionItem = {
+    ActionItemViewModel("site.change", routes.ContactDetailsController.onPageLoad(CheckMode).url)
+      .withAttribute(("id", s"change-$fieldName"))
+      .withVisuallyHiddenText(messages(s"contactDetails.$fieldName.change.hidden"))
+  }
 }

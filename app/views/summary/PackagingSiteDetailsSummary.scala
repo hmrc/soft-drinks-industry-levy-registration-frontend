@@ -17,7 +17,6 @@
 package views.summary
 
 import controllers.routes
-import models.NormalMode
 import models.backend.Site
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.{Actions, SummaryList}
@@ -27,7 +26,7 @@ import viewmodels.AddressFormattingHelper
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
 
-object PackagingSiteDetailsSummary  {
+object PackagingSiteDetailsSummary {
 
   def summaryList(packagingSiteList: Map[String, Site])(implicit messages: Messages): SummaryList = {
     SummaryListViewModel(

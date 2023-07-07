@@ -241,10 +241,10 @@ contactDetails.error.fullName.invalid = Full name must only include letters a to
 contactDetails.error.position.invalid = Job title must only include letters a to z, apostrophes, dashes, hyphens and spaces
 contactDetails.error.phoneNumber.invalid = Enter a telephone number, like <span style="white-space: nowrap">01632 960999</span> or <span style="white-space: nowrap">07700 900999</span>
 contactDetails.error.email.invalid = Enter a real email address, like name@example.com
-contactDetails.fullName.change.hidden = Full name
-contactDetails.position.change.hidden = Job title
-contactDetails.phoneNumber.change.hidden = Telephone Number
-contactDetails.email.change.hidden = Email
+contactDetails.fullName.change.hidden = full name
+contactDetails.position.change.hidden = job title
+contactDetails.phoneNumber.change.hidden = telephone number
+contactDetails.email.change.hidden = email
 
 packAtBusinessAddress.heading = Your business address
 packAtBusinessAddress.title = Your business address

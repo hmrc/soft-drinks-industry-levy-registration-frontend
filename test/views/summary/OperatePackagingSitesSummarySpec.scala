@@ -111,7 +111,7 @@ class OperatePackagingSitesSummarySpec extends SpecBase {
         .set(OperatePackagingSitesPage, true).success.value
         .set(HowManyOperatePackagingSitesPage, LitresInBands(1000,2000)).success.value
 
-      val res = OperatePackagingSitesSummary.checkAnswersSummary(userAnswers)
+      val res = OperatePackagingSitesSummary.headingAndSummary(userAnswers)
       res.get._1 mustBe "operatePackagingSites.checkYourAnswersLabel"
       val summaryList = res.get._2
 
@@ -146,7 +146,7 @@ class OperatePackagingSitesSummarySpec extends SpecBase {
         .set(OperatePackagingSitesPage, true).success.value
         .set(HowManyOperatePackagingSitesPage, LitresInBands(1000,2000)).success.value
 
-      val res = OperatePackagingSitesSummary.checkAnswersSummary(userAnswers, isCheckAnswers = false)
+      val res = OperatePackagingSitesSummary.headingAndSummary(userAnswers, isCheckAnswers = false)
       res.get._1 mustBe "operatePackagingSites.checkYourAnswersLabel"
       val summaryList = res.get._2
 
@@ -174,7 +174,7 @@ class OperatePackagingSitesSummarySpec extends SpecBase {
       val userAnswers = emptyUserAnswers
         .set(OperatePackagingSitesPage, false).success.value
 
-      val res = OperatePackagingSitesSummary.checkAnswersSummary(userAnswers)
+      val res = OperatePackagingSitesSummary.headingAndSummary(userAnswers)
       res.get._1 mustBe "operatePackagingSites.checkYourAnswersLabel"
       val summaryList = res.get._2
 
@@ -191,7 +191,7 @@ class OperatePackagingSitesSummarySpec extends SpecBase {
     "should return correct elements when no elements provided" in {
       val userAnswers = emptyUserAnswers
 
-      val res = OperatePackagingSitesSummary.checkAnswersSummary(userAnswers)
+      val res = OperatePackagingSitesSummary.headingAndSummary(userAnswers)
       res mustBe None
     }
   }

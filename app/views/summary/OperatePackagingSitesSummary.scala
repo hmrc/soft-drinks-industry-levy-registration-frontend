@@ -33,7 +33,7 @@ object OperatePackagingSitesSummary extends ReturnDetailsSummaryListWithLitres  
   override val actionId: String = "change-operatePackagingSites"
   override val hiddenText: String = "operatePackagingSites"
 
-   def checkAnswersSummary(userAnswers: UserAnswers, isCheckAnswers: Boolean = true)(implicit messages: Messages): Option[(String, SummaryList)] = {
+   def headingAndSummary(userAnswers: UserAnswers, isCheckAnswers: Boolean = true)(implicit messages: Messages): Option[(String, SummaryList)] = {
     val list = summaryList(userAnswers = userAnswers, isCheckAnswers)
     list.rows.headOption.fold(Option.empty[(String, SummaryList)])(_ => Some("operatePackagingSites.checkYourAnswersLabel" -> list))
   }

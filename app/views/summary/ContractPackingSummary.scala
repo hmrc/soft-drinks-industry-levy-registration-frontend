@@ -33,7 +33,7 @@ object ContractPackingSummary extends ReturnDetailsSummaryListWithLitres  {
   override val actionId: String = "change-contractPacking"
   override val hiddenText: String = "contractPacking"
 
-  def checkAnswersSummary(userAnswers: UserAnswers, isCheckAnswers: Boolean = true)(implicit messages: Messages): Option[(String, SummaryList)] = {
+  def headingAndSummary(userAnswers: UserAnswers, isCheckAnswers: Boolean = true)(implicit messages: Messages): Option[(String, SummaryList)] = {
     val list = summaryList(userAnswers = userAnswers, isCheckAnswers)
     list.rows.headOption.fold(Option.empty[(String, SummaryList)])(_ => Some("contractPacking.checkYourAnswersLabel" -> list))
   }

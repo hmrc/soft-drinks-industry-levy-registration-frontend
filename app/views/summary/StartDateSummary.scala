@@ -66,7 +66,7 @@ object StartDateSummary {
   val action: String = routes.StartDateController.onPageLoad(CheckMode).url
   val actionId: String = "change-startDate"
   val hiddenText: String = "startDate"
-  def checkAnswersSummary(userAnswers: UserAnswers, isCheckAnswers: Boolean = true)(implicit messages: Messages): Option[(String, SummaryList)] = {
+  def headingAndSummary(userAnswers: UserAnswers, isCheckAnswers: Boolean = true)(implicit messages: Messages): Option[(String, SummaryList)] = {
     val list = summaryList(userAnswers, isCheckAnswers)
     list.rows.headOption.fold(Option.empty[(String, SummaryList)])(_ => Some("startDate.checkYourAnswersLabel" -> list))
   }

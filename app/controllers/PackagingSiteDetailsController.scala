@@ -18,19 +18,18 @@ package controllers
 
 import controllers.actions._
 import forms.PackagingSiteDetailsFormProvider
-
-import javax.inject.Inject
-import models.{Mode, NormalMode}
+import handlers.ErrorHandler
+import models.Mode
 import navigation.Navigator
 import pages.PackagingSiteDetailsPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{AddressLookupService, PackingDetails, SessionService}
-import views.html.PackagingSiteDetailsView
-import handlers.ErrorHandler
-
-import scala.concurrent.{ExecutionContext, Future}
 import utilities.GenericLogger
+import views.html.PackagingSiteDetailsView
+
+import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 class PackagingSiteDetailsController @Inject()(
                                        override val messagesApi: MessagesApi,

@@ -18,28 +18,27 @@ package controllers
 
 import base.SpecBase
 import errors.SessionDatabaseInsertError
-import helpers.LoggerHelper
-import utilities.GenericLogger
 import forms.PackAtBusinessAddressFormProvider
+import helpers.LoggerHelper
 import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
+import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
+import org.mockito.MockitoSugar.{times, verify}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.PackAtBusinessAddressPage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import repositories.SessionRepository
 import services.{AddressLookupService, PackingDetails, SessionService}
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
+import utilities.GenericLogger
 import views.html.PackAtBusinessAddressView
 
 import scala.concurrent.Future
-import org.jsoup.Jsoup
-import org.mockito.ArgumentMatchers
-import org.mockito.MockitoSugar.{times, verify}
-import repositories.SessionRepository
-import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 
 class PackAtBusinessAddressControllerSpec extends SpecBase with MockitoSugar with LoggerHelper {
 

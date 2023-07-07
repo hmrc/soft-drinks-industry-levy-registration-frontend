@@ -18,21 +18,20 @@ package controllers
 
 import controllers.actions._
 import forms.WarehouseDetailsFormProvider
-
-import javax.inject.Inject
-import models.{Mode, NormalMode, Warehouse}
+import handlers.ErrorHandler
+import models.{Mode, Warehouse}
 import navigation.Navigator
 import pages.WarehouseDetailsPage
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{AddressLookupService, SessionService, WarehouseDetails}
-import views.html.WarehouseDetailsView
-import handlers.ErrorHandler
-import viewmodels.govuk.SummaryListFluency
-
-import scala.concurrent.{ExecutionContext, Future}
 import utilities.GenericLogger
+import viewmodels.govuk.SummaryListFluency
 import viewmodels.summary.WarehouseDetailsSummary
+import views.html.WarehouseDetailsView
+
+import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 class WarehouseDetailsController @Inject()(
                                        override val messagesApi: MessagesApi,
