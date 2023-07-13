@@ -17,19 +17,15 @@
 package models
 
 import cats.implicits._
-import play.api.libs.functional.syntax.{toFunctionalBuilderOps, unlift}
-import play.api.libs.json.{Format, JsPath, Json, OFormat}
+import play.api.libs.json.{Json, OFormat}
 import pages.{HowManyContractPackingPage, HowManyOperatePackagingSitesPage}
-
-import java.time.Instant
-
 
 case class RegisterationDetails(
                        packLarge: (Long, Long),
                        packLarge2: (Long, Long),
                        packSmall: List[SmallProducer]
                      ) {
-  def totalPacked: (Long, Long) = packLarge |+| packLarge2 |+| packSmall.total //|+| packLarge2
+  def totalPacked: (Long, Long) = packLarge |+| packLarge2 |+| packSmall.total
 
   implicit class SmallProducerDetails(smallProducers: List[SmallProducer]) {
     def total: (Long, Long) = smallProducers.map(x => x.litreage).combineAll
@@ -41,8 +37,6 @@ object RegisterationDetails {
   implicit val smallProducerJson: OFormat[SmallProducer] = Json.format[SmallProducer]
   implicit val registerationDetailsFormat = Json.format[RegisterationDetails]
 
-
-
   def apply(userAnswers: UserAnswers): RegisterationDetails = {
     val lowPackLarge = userAnswers.get(HowManyOperatePackagingSitesPage).map(_.lowBand).getOrElse(0L)
     val highPackLarge = userAnswers.get(HowManyOperatePackagingSitesPage).map(_.highBand).getOrElse(0L)
@@ -52,7 +46,7 @@ object RegisterationDetails {
     RegisterationDetails(
       packLarge = (lowPackLarge, highPackLarge),
       packLarge2 = (lowPackLarge2, highPackLarge2),
-      packSmall = packSmall,
+      packSmall = packSmall
     )
   }
 
