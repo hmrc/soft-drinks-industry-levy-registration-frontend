@@ -130,7 +130,7 @@ class NavigatorSpec extends SpecBase {
 
         "must navigate to third party of co-packing in case of valid litreage" in {
           val result = navigator.nextPage(HowManyOperatePackagingSitesPage, NormalMode,
-            UserAnswers("id", Json.obj(HowManyOperatePackagingSitesPage.toString -> Json.obj("lowBand"-> "123" , "highBand"-> "123"))))
+            UserAnswers("id", Json.obj(HowManyOperatePackagingSitesPage.toString -> Json.obj("lowBand" -> "123", "highBand" -> "123"))))
           result mustBe routes.ContractPackingController.onPageLoad(NormalMode)
         }
       }
@@ -155,6 +155,54 @@ class NavigatorSpec extends SpecBase {
             UserAnswers("id", Json.obj(HowManyContractPackingPage.toString -> Json.obj("lowBand" -> "123", "highBand" -> "123"))))
           result mustBe routes.ImportsController.onPageLoad(NormalMode)
         }
+      }
+
+      "when on import page" - {
+        "must navigate to packaging details page (When user has inputted litres on the  how many operate packaging sites page)" in {
+          val result = navigator.nextPage(ImportsPage, NormalMode,
+            UserAnswers("id", Json.obj(ImportsPage.toString -> false, HowManyOperatePackagingSitesPage.toString -> Json.obj("lowBand" -> 123L, "highBand" -> 123L))))
+          result mustBe routes.PackagingSiteDetailsController.onPageLoad(NormalMode)
+        }
+
+        "must navigate to packaging details page (When user has inputted litres on the  how many contract packing page)" in {
+          val result = navigator.nextPage(ImportsPage, NormalMode,
+            UserAnswers("id", Json.obj(ImportsPage.toString -> false, HowManyContractPackingPage.toString -> Json.obj("lowBand" -> 123L, "highBand" -> 123L))))
+          result mustBe routes.PackagingSiteDetailsController.onPageLoad(NormalMode)
+        }
+
+        "must navigate to start date page" in {
+          val result = navigator.nextPage(ImportsPage, NormalMode,
+            UserAnswers("id", Json.obj(ImportsPage.toString -> false)))
+          result mustBe routes.StartDateController.onPageLoad(NormalMode)
+        }
+
+        "must navigate to how many imports" in {
+          val result = navigator.nextPage(ImportsPage, NormalMode,
+            UserAnswers("id", Json.obj(ImportsPage.toString -> true)))
+          result mustBe routes.HowManyImportsController.onPageLoad(NormalMode)
+        }
+      }
+
+      "when on how many imports page" - {
+
+        "must navigate to packaging details page (When user has inputted litres on the  how many operate packaging sites page)" in {
+          val result = navigator.nextPage(ImportsPage, NormalMode,
+            UserAnswers("id", Json.obj(HowManyImportsPage.toString -> Json.obj("lowBand" -> 123L, "highBand" -> 123L), HowManyOperatePackagingSitesPage.toString -> Json.obj("lowBand" -> 123L, "highBand" -> 123L))))
+          result mustBe routes.PackagingSiteDetailsController.onPageLoad(NormalMode)
+        }
+
+        "must navigate to packaging details page (When user has inputted litres on the  how many contract packing page)" in {
+          val result = navigator.nextPage(ImportsPage, NormalMode,
+            UserAnswers("id", Json.obj(HowManyImportsPage.toString -> Json.obj("lowBand" -> 123L, "highBand" -> 123L), HowManyContractPackingPage.toString -> Json.obj("lowBand" -> 123L, "highBand" -> 123L))))
+          result mustBe routes.PackagingSiteDetailsController.onPageLoad(NormalMode)
+        }
+
+        "must navigate to start date page" in {
+          val result = navigator.nextPage(ImportsPage, NormalMode,
+            UserAnswers("id", Json.obj(HowManyImportsPage.toString -> Json.obj("lowBand" -> 123L, "highBand" -> 123L))))
+          result mustBe routes.StartDateController.onPageLoad(NormalMode)
+        }
+
       }
 
     }
