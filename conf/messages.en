@@ -61,6 +61,7 @@ index.guidance = Welcome to your new frontend. Please see the README file for a 
 checkYourAnswers.title = Check Your Answers
 checkYourAnswers.heading = Check Your Answers
 checkYourAnswers.submit = Confirm details and apply
+checkYourAnswers.sites = Uk site details
 operatePackagingSites.checkYourAnswersLabel = Own brands packaged at your own site
 operatePackagingSites = Reporting own brands packaged at your own site?
 operatePackagingSites.change.hidden = do you operate any packaging sites in the UK to package liable drinks for the brands you own?
@@ -115,7 +116,7 @@ packagingSiteDetails.heading1Site = You added 1 UK packaging site
 packagingSiteDetails.headingMultipleSites = You added {0} UK packaging sites
 packagingSiteDetails.heading2 = Do you want to add another UK packaging site?
 packagingSiteDetails.hidden = packaging site
-packagingSiteDetails.checkYourAnswersLabel = Packaging sites
+packagingSiteDetails.checkYourAnswersLabel = You have {0} packing site{1}
 packagingSiteDetails.error.required = Select yes if you want to add another UK packaging site
 packagingSiteDetails.change.hidden = Packaging sites
 
@@ -255,7 +256,7 @@ packAtBusinessAddress.change.hidden = PackAtBusinessAddress
 
 warehouseDetails.title.heading = You added {0} UK warehouse{1}
 wareshousDetails.add.another = Do you want to register another UK warehouse?
-warehouseDetails.checkYourAnswersLabel = You added {0} UK warehouse{1}
+warehouseDetails.checkYourAnswersLabel = You added {0} warehouse{1}
 warehouseDetails.error.required = Select yes if you want to register another UK warehouse
 warehouseDetails.remove.hidden = remove UK warehouse
 warehouseDetails.change.hidden = Change warehouses
