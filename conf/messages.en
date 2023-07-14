@@ -67,6 +67,7 @@ checkYourAnswers.businessDetails.utr = Unique Taxpayer Reference (UTR)
 checkYourAnswers.businessDetails.name = Business name
 checkYourAnswers.businessDetails.address = Business address
 checkYourAnswers.businessDetails.litresGlobally = Litres of your own brands of liable drinks packaged globally in the past 12 months
+checkYourAnswers.sites = Uk site details
 
 operatePackagingSites.checkYourAnswersLabel = Own brands packaged at your own site
 operatePackagingSites = Reporting own brands packaged at your own site?
