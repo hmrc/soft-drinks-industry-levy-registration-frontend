@@ -88,7 +88,7 @@ class PackAtBusinessAddressController @Inject()(
               )), PackAtBusinessAddressPage).flatMap(_ =>
                 Future.successful(routes.PackagingSiteDetailsController.onPageLoad(NormalMode).url))
             }else {
-              addressLookupService.initJourneyAndReturnOnRampUrl(PackingDetails)
+              addressLookupService.initJourneyAndReturnOnRampUrl(PackingDetails, mode = mode)
             }
           }yield Redirect(onwardUrl)
         }

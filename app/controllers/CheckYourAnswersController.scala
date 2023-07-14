@@ -36,7 +36,7 @@ class CheckYourAnswersController @Inject()(
   def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
 
-      val summaryList = RegistrationSummary.summaryList(request.userAnswers)
+      val summaryList = RegistrationSummary.summaryList(request.userAnswers, request.rosmWithUtr)
 
       Ok(view(summaryList, routes.CheckYourAnswersController.onSubmit()))
   }

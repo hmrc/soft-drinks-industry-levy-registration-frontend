@@ -18,6 +18,7 @@ package config
 
 import com.google.inject.{Inject, Singleton}
 import com.typesafe.config.Config
+import models.Mode
 import play.api.Configuration
 import play.api.mvc.RequestHeader
 import uk.gov.hmrc.play.bootstrap.binders.SafeRedirectUrl
@@ -76,20 +77,20 @@ class FrontendAppConfig @Inject() (servicesConfig: ServicesConfig, configuration
     val selectPageConfigProposalLimit: Int = addressLookupInitConfig.getInt("select-page-config.proposalListLimit")
 
     object BusinessAddress {
-      def offRampUrl(sdilId: String): String = {
-        s"$host${controllers.addressLookupFrontend.routes.RampOffController.businessAddressOffRamp(sdilId, "").url.replace("?id=", "")}"
+      def offRampUrl(sdilId: String, mode: Mode): String = {
+        s"$host${controllers.addressLookupFrontend.routes.RampOffController.businessAddressOffRamp(sdilId, "", mode).url.replace("?id=", "")}"
       }
     }
 
     object WarehouseDetails {
-      def offRampUrl(sdilId: String): String = {
-        s"$host${controllers.addressLookupFrontend.routes.RampOffController.wareHouseDetailsOffRamp(sdilId, "").url.replace("?id=", "")}"
+      def offRampUrl(sdilId: String, mode: Mode): String = {
+        s"$host${controllers.addressLookupFrontend.routes.RampOffController.wareHouseDetailsOffRamp(sdilId, "", mode).url.replace("?id=", "")}"
       }
     }
 
     object PackingDetails {
-      def offRampUrl(sdilId: String): String = {
-        s"$host${controllers.addressLookupFrontend.routes.RampOffController.packingSiteDetailsOffRamp(sdilId, "").url.replace("?id=", "")}"
+      def offRampUrl(sdilId: String, mode: Mode): String = {
+        s"$host${controllers.addressLookupFrontend.routes.RampOffController.packingSiteDetailsOffRamp(sdilId, "", mode).url.replace("?id=", "")}"
       }
     }
 

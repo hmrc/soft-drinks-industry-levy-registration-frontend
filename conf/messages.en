@@ -61,6 +61,12 @@ index.guidance = Welcome to your new frontend. Please see the README file for a 
 checkYourAnswers.title = Check Your Answers
 checkYourAnswers.heading = Check Your Answers
 checkYourAnswers.submit = Confirm details and apply
+checkYourAnswers.businessDetails.subHeader = Business details
+checkYourAnswers.businessDetails.utr = Unique Taxpayer Reference (UTR)
+checkYourAnswers.businessDetails.name = Business name
+checkYourAnswers.businessDetails.address = Business address
+checkYourAnswers.businessDetails.litresGlobally = Litres of your own brands of liable drinks packaged globally in the past 12 months
+
 operatePackagingSites.checkYourAnswersLabel = Own brands packaged at your own site
 operatePackagingSites = Reporting own brands packaged at your own site?
 operatePackagingSites.change.hidden = do you operate any packaging sites in the UK to package liable drinks for the brands you own?
@@ -306,8 +312,8 @@ verify.error.required = Select if this is the business you want to register, if 
                           using a different Government Gateway user ID
 verify.subText = These are the details we hold for Unique Taxpayer Reference (UTR)
 verify.subHeading = Is this the business you want to register?
-
-
+businessDetails.businessAddress.change.hidden = business address
+businessDetails.howManyLitresGlobally.change.hidden = litres of your own brands of liable drinks packaged globally in the past 12 months
 removePackagingSiteDetails.title = Are you sure you want to remove this packaging site?
 removePackagingSiteDetails.heading = Are you sure you want to remove this packaging site?
 removePackagingSiteDetails.error.required = Select yes if you want to remove this packaging site

@@ -1,5 +1,7 @@
 package controllers
 
+import models.{HowManyLitresGlobally, Verify}
+import models.backend.UkAddress
 import org.jsoup.Jsoup
 import pages._
 import play.api.http.HeaderNames
@@ -13,6 +15,9 @@ import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
 class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
 
   val route = "/check-your-answers"
+
+  val rosmAddress = UkAddress(List("105B Godfrey Marchant Grove", "Guildford"), "GU14 8NL")
+  val newAddress = UkAddress(List("10 Linden Close", "Langly"), "LA16 3KL")
   "GET " + routes.CheckYourAnswersController.onPageLoad().url - {
     "when the userAnswers contains no data" - {
       "should render the page" in {
@@ -39,6 +44,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
           .commonPrecondition
 
         val userAnswers = emptyUserAnswers
+          .set(HowManyLitresGloballyPage, HowManyLitresGlobally.Large).success.value
           .set(OperatePackagingSitesPage, true).success.value
           .set(HowManyOperatePackagingSitesPage, operatePackagingSiteLitres).success.value
           .set(ContractPackingPage, true).success.value
@@ -47,6 +53,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
           .set(HowManyImportsPage, importsLitres).success.value
           .set(StartDatePage, startDate).success.value
           .set(ContactDetailsPage, contactDetails).success.value
+          .set(VerifyPage, Verify.No).success.value
 
         setAnswers(userAnswers)
 
@@ -57,27 +64,31 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
             res.status mustBe OK
             val page = Jsoup.parse(res.body)
             page.title must include(Messages("checkYourAnswers.title"))
-            page.getElementsByClass("govuk-summary-list").size() mustBe 5
+            page.getElementsByClass("govuk-summary-list").size() mustBe 6
 
-            val operatePackagingSites = page.getElementsByClass("govuk-summary-list").first()
-            page.getElementsByTag("h2").first().text() mustBe "Own brands packaged at your own site"
+            val businessDetails = page.getElementsByClass("govuk-summary-list").first()
+            page.getElementsByTag("h2").first().text() mustBe "Business details"
+            validateBusinessDetailsSummaryList(businessDetails, "0000001611", rosmAddress, "1 million litres or more", true)
+
+            val operatePackagingSites = page.getElementsByClass("govuk-summary-list").get(1)
+            page.getElementsByTag("h2").get(1).text() mustBe "Own brands packaged at your own site"
             validateOperatePackagingSitesWithLitresSummaryList(operatePackagingSites, operatePackagingSiteLitres, true)
 
-            val contractPacking = page.getElementsByClass("govuk-summary-list").get(1)
+            val contractPacking = page.getElementsByClass("govuk-summary-list").get(2)
 
-            page.getElementsByTag("h2").get(1).text() mustBe "Contract packed at your own site"
+            page.getElementsByTag("h2").get(2).text() mustBe "Contract packed at your own site"
             validateContractPackingWithLitresSummaryList(contractPacking, contractPackingLitres, true)
 
-            val imports = page.getElementsByClass("govuk-summary-list").get(2)
-            page.getElementsByTag("h2").get(2).text() mustBe "Brought into the UK"
+            val imports = page.getElementsByClass("govuk-summary-list").get(3)
+            page.getElementsByTag("h2").get(3).text() mustBe "Brought into the UK"
             validateImportsWithLitresSummaryList(imports, importsLitres, true)
 
-            val startDateSummaryListItem = page.getElementsByClass("govuk-summary-list").get(3)
-            page.getElementsByTag("h2").get(3).text() mustBe "Soft Drinks Industry Levy liability date"
+            val startDateSummaryListItem = page.getElementsByClass("govuk-summary-list").get(4)
+            page.getElementsByTag("h2").get(4).text() mustBe "Soft Drinks Industry Levy liability date"
             validateStartDateSummaryList(startDateSummaryListItem, startDate, true)
 
-            val contactDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(4)
-            page.getElementsByTag("h2").get(4).text() mustBe "Contact person details"
+            val contactDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(5)
+            page.getElementsByTag("h2").get(5).text() mustBe "Contact person details"
             validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, true)
 
             page.getElementsByTag("form").first().attr("action") mustBe routes.CheckYourAnswersController.onSubmit().url
@@ -90,11 +101,14 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
           .commonPrecondition
 
         val userAnswers = emptyUserAnswers
+          .copy(address = Some(newAddress))
+          .set(HowManyLitresGloballyPage, HowManyLitresGlobally.Small).success.value
           .set(OperatePackagingSitesPage, false).success.value
           .set(ContractPackingPage, false).success.value
           .set(ImportsPage, false).success.value
           .set(StartDatePage, startDate).success.value
           .set(ContactDetailsPage, contactDetails).success.value
+          .set(VerifyPage, Verify.YesNewAddress).success.value
 
         setAnswers(userAnswers)
 
@@ -105,26 +119,31 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
             res.status mustBe OK
             val page = Jsoup.parse(res.body)
             page.title must include(Messages("checkYourAnswers.title"))
-            page.getElementsByClass("govuk-summary-list").size() mustBe 5
-            val operatePackagingSites = page.getElementsByClass("govuk-summary-list").first()
-            page.getElementsByTag("h2").first().text() mustBe "Own brands packaged at your own site"
+            page.getElementsByClass("govuk-summary-list").size() mustBe 6
+
+            val businessDetails = page.getElementsByClass("govuk-summary-list").first()
+            page.getElementsByTag("h2").first().text() mustBe "Business details"
+            validateBusinessDetailsSummaryList(businessDetails, "0000001611", newAddress, "Less than 1 million litres", true)
+
+            val operatePackagingSites = page.getElementsByClass("govuk-summary-list").get(1)
+            page.getElementsByTag("h2").get(1).text() mustBe "Own brands packaged at your own site"
             validateOperatePackagingSitesWithNoLitresSummaryList(operatePackagingSites, true)
 
-            val contractPacking = page.getElementsByClass("govuk-summary-list").get(1)
+            val contractPacking = page.getElementsByClass("govuk-summary-list").get(2)
 
-            page.getElementsByTag("h2").get(1).text() mustBe "Contract packed at your own site"
+            page.getElementsByTag("h2").get(2).text() mustBe "Contract packed at your own site"
             validateContractPackingWithNoLitresSummaryList(contractPacking, true)
 
-            val imports = page.getElementsByClass("govuk-summary-list").get(2)
-            page.getElementsByTag("h2").get(2).text() mustBe "Brought into the UK"
+            val imports = page.getElementsByClass("govuk-summary-list").get(3)
+            page.getElementsByTag("h2").get(3).text() mustBe "Brought into the UK"
             validateImportsWithNoLitresSummaryList(imports, true)
 
-            val startDateSummaryListItem = page.getElementsByClass("govuk-summary-list").get(3)
-            page.getElementsByTag("h2").get(3).text() mustBe "Soft Drinks Industry Levy liability date"
+            val startDateSummaryListItem = page.getElementsByClass("govuk-summary-list").get(4)
+            page.getElementsByTag("h2").get(4).text() mustBe "Soft Drinks Industry Levy liability date"
             validateStartDateSummaryList(startDateSummaryListItem, startDate, true)
 
-            val contactDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(4)
-            page.getElementsByTag("h2").get(4).text() mustBe "Contact person details"
+            val contactDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(5)
+            page.getElementsByTag("h2").get(5).text() mustBe "Contact person details"
             validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, true)
 
             page.getElementsByTag("form").first().attr("action") mustBe routes.CheckYourAnswersController.onSubmit().url

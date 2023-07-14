@@ -16,6 +16,7 @@
 
 package controllers
 
+import models.backend.UkAddress
 import models.{CheckMode, ContactDetails, LitresInBands}
 import org.jsoup.nodes.Element
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
@@ -42,6 +43,44 @@ trait RegSummaryISpecHelper extends ControllerITTestHelper {
   val contractPackingLitres = LitresInBands(3000, 4000)
   val importsLitres = LitresInBands(5000, 6000)
   val startDate = LocalDate.of(2022, 6, 1)
+
+  def validateBusinessDetailsSummaryList(summaryList: Element,
+                                         utr: String,
+                                         address: UkAddress,
+                                         numberOfLitresGloballyValue: String,
+                                         isCheckAnswers: Boolean = true) = {
+    val summaryRows = summaryList.getElementsByClass("govuk-summary-list__row")
+    summaryRows.size mustBe 4
+
+    val utrRow = summaryRows.first()
+    utrRow.getElementsByClass("govuk-summary-list__key").text() mustBe "Unique Taxpayer Reference (UTR)"
+    utrRow.getElementsByClass("govuk-summary-list__value").text() mustBe utr
+
+    val nameRow = summaryRows.get(1)
+    nameRow.getElementsByClass("govuk-summary-list__key").text() mustBe "Business name"
+    nameRow.getElementsByClass("govuk-summary-list__value").text() mustBe "Super Lemonade Plc"
+
+    val addressRow = summaryRows.get(2)
+    addressRow.getElementsByClass("govuk-summary-list__key").text() mustBe "Business address"
+    addressRow.getElementsByClass("govuk-summary-list__value").text() mustBe s"${address.lines.mkString(" ")} ${address.postCode}"
+    if (isCheckAnswers) {
+      val addressAction = addressRow.getElementsByClass("govuk-summary-list__actions").first()
+      addressAction.text() mustBe "Change business address"
+      addressAction.getElementById("change-businessAddress").attr("href") mustBe "/soft-drinks-industry-levy-registration/change-verify"
+    } else {
+      addressRow.getElementsByClass("govuk-summary-list__actions").size() mustBe 0
+    }
+    val globalLitresRow = summaryRows.get(3)
+    globalLitresRow.getElementsByClass("govuk-summary-list__key").text() mustBe "Litres of your own brands of liable drinks packaged globally in the past 12 months"
+    globalLitresRow.getElementsByClass("govuk-summary-list__value").text() mustBe numberOfLitresGloballyValue
+    if (isCheckAnswers) {
+      val globalLitresAction = globalLitresRow.getElementsByClass("govuk-summary-list__actions").first()
+      globalLitresAction.text() mustBe "Change litres of your own brands of liable drinks packaged globally in the past 12 months"
+      globalLitresAction.getElementById("change-howManyLitresGlobally").attr("href") mustBe "/soft-drinks-industry-levy-registration/change-how-many-litres-globally"
+    } else {
+      globalLitresRow.getElementsByClass("govuk-summary-list__actions").size() mustBe 0
+    }
+  }
 
   def validateOperatePackagingSitesWithLitresSummaryList(operatePackagingSites: Element,
                                                          litresInBands: LitresInBands,

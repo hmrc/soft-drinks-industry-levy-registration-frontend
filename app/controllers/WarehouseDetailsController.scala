@@ -19,7 +19,7 @@ package controllers
 import controllers.actions._
 import forms.WarehouseDetailsFormProvider
 import handlers.ErrorHandler
-import models.{Mode, Warehouse}
+import models.{Mode, NormalMode, Warehouse}
 import navigation.Navigator
 import pages.WarehouseDetailsPage
 import play.api.i18n.{Messages, MessagesApi}
@@ -80,11 +80,13 @@ class WarehouseDetailsController @Inject()(
             updatedAnswers <- Future.fromTry(request.userAnswers.set(WarehouseDetailsPage, value))
             _              <- updateDatabaseWithoutRedirect(updatedAnswers, WarehouseDetailsPage)
             onwardUrl              <- if(value){
-              addressLookupService.initJourneyAndReturnOnRampUrl(WarehouseDetails)
-            }else {
+              addressLookupService.initJourneyAndReturnOnRampUrl(WarehouseDetails, mode = mode)
+            }else if(mode == NormalMode){
               Future.successful(routes.ContactDetailsController.onPageLoad(mode).url)
+            } else {
+              Future.successful(routes.CheckYourAnswersController.onPageLoad().url)
             }
-          }yield Redirect(onwardUrl)
+          } yield Redirect(onwardUrl)
         }
       )
   }
