@@ -22,6 +22,7 @@ import models.OrganisationType.Partnership
 import models._
 import pages._
 import play.api.mvc.Call
+import utilities.UserTypeCheck.{isNewPacker, producerSize}
 
 import javax.inject.{Inject, Singleton}
 
@@ -46,7 +47,7 @@ class Navigator @Inject()() {
     case ContractPackingPage => userAnswers => navigationForContractPacking(userAnswers, NormalMode)
     case HowManyContractPackingPage => _ => routes.ImportsController.onPageLoad(NormalMode)
     case ImportsPage => userAnswers => navigationForImports(userAnswers, NormalMode)
-    case HowManyImportsPage => _ => routes.StartDateController.onPageLoad(NormalMode)
+    case HowManyImportsPage => userAnswers => navigateForHowManyImports(userAnswers, NormalMode)
     case OperatePackagingSitesPage => userAnswers => navigationForOperatePackagingSites(userAnswers, NormalMode)
     case HowManyOperatePackagingSitesPage => _ => routes.ContractPackingController.onPageLoad(NormalMode)
     case ThirdPartyPackagersPage => _ => routes.OperatePackagingSitesController.onPageLoad(NormalMode)
@@ -86,12 +87,12 @@ class Navigator @Inject()() {
   }
 
   private def navigationForHowManyLitresGloballyNormalMode(userAnswers: UserAnswers): Call = {
-    userAnswers.get(page = HowManyLitresGloballyPage) match {
-      case Some(litres) if litres == Large =>
+    producerSize(userAnswers) match {
+      case Large =>
         routes.OperatePackagingSitesController.onPageLoad(NormalMode)
-      case Some(litres) if litres == Small =>
+      case Small =>
         routes.ThirdPartyPackagersController.onPageLoad(NormalMode)
-      case Some(litres) if litres == HowManyLitresGlobally.None =>
+      case HowManyLitresGlobally.None =>
         routes.ContractPackingController.onPageLoad(NormalMode)
       case _ =>
         routes.IndexController.onPageLoad()
@@ -121,10 +122,20 @@ class Navigator @Inject()() {
 
   private def navigationForImports(userAnswers: UserAnswers, mode: Mode): Call = {
     userAnswers.get(page = ImportsPage).contains(true) match {
-      case true => routes.HowManyImportsController.onPageLoad(mode)
-      case false if mode == NormalMode => routes.StartDateController.onPageLoad(mode)
-      case _ => routes.CheckYourAnswersController.onPageLoad()
+      case false if isNewPacker(userAnswers) && mode == NormalMode  =>
+        routes.PackagingSiteDetailsController.onPageLoad(mode)
+      case true =>
+        routes.HowManyImportsController.onPageLoad(mode)
+      case false if mode == NormalMode =>
+        routes.StartDateController.onPageLoad(mode)
+      case _ =>
+        routes.CheckYourAnswersController.onPageLoad()
     }
+  }
+
+  private def navigateForHowManyImports(userAnswers: UserAnswers, mode: Mode): Call = {
+    if(isNewPacker(userAnswers) && mode == NormalMode){routes.PackagingSiteDetailsController.onPageLoad(mode)}
+    else {routes.StartDateController.onPageLoad(mode)}
   }
 
   private def navigationForOperatePackagingSites(userAnswers: UserAnswers, mode: Mode): Call = {
