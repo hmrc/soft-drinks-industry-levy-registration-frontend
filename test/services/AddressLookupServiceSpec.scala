@@ -708,10 +708,6 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
             requestedVersion = None
           )
 
-          println("$$$$$$$$$$$$$$$$$$$$$")
-          println(res)
-          println(expected)
-
           res mustBe expected
         }
       }

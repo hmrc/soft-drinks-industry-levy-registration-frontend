@@ -40,10 +40,8 @@ class RequiredUserAnswers @Inject()(genericLogger: GenericLogger)(implicit val e
   }
 
   private[controllers] def checkYourAnswersRequiredData(action: => Future[Result])(implicit request: DataRequest[_]): Future[Result] = {
-    println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
     val userAnswersMissing: List[RequiredPage[_,_,_]] = returnMissingAnswers(journey)
     if (userAnswersMissing.nonEmpty) {
-      println(userAnswersMissing)
       genericLogger.logger.warn(s"${request.userAnswers.id} has hit CYA and is missing $userAnswersMissing")
       Future.successful(Redirect(controllers.routes.VerifyController.onPageLoad(NormalMode)))
     } else {
