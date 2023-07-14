@@ -17,32 +17,39 @@
 package controllers
 
 import com.google.inject.Inject
-import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
+import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, RequiredUserAnswers}
+import pages.CheckYourAnswersPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.CheckYourAnswersView
 import views.summary.RegistrationSummary
 
+import scala.concurrent.Future
+
 class CheckYourAnswersController @Inject()(
                                             override val messagesApi: MessagesApi,
                                             identify: IdentifierAction,
                                             getData: DataRetrievalAction,
                                             requireData: DataRequiredAction,
+                                            requiredUserAnswers: RequiredUserAnswers,
                                             val controllerComponents: MessagesControllerComponents,
                                             view: CheckYourAnswersView
                                           ) extends FrontendBaseController with I18nSupport {
 
-  def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
-
-      val summaryList = RegistrationSummary.summaryList(request.userAnswers, request.rosmWithUtr)
-
-      Ok(view(summaryList, routes.CheckYourAnswersController.onSubmit()))
+      requiredUserAnswers.requireData(CheckYourAnswersPage) {
+        val summaryList = RegistrationSummary.summaryList(request.userAnswers, request.rosmWithUtr)
+        Future.successful(Ok(view(summaryList, routes.CheckYourAnswersController.onSubmit())))
+      }
   }
 
-  def onSubmit(): Action[AnyContent] = (identify andThen getData andThen requireData) {
-    Redirect(controllers.routes.IndexController.onPageLoad().url)
+  def onSubmit(): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+    implicit request =>
+      requiredUserAnswers.requireData(CheckYourAnswersPage) {
+        Future.successful(Redirect(controllers.routes.IndexController.onPageLoad().url))
+    }
   }
 }
 

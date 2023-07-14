@@ -358,7 +358,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
 
         whenReady(result) { res =>
           res.status mustBe 303
-          res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
+          res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad().url)
           getAnswers(identifier).map(userAnswers => userAnswers.data) mustBe expectedResult
           getAnswers(identifier).map(userAnswers => userAnswers.warehouseList).get mustBe Map.empty
 

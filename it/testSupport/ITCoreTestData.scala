@@ -1,6 +1,9 @@
 package testSupport
 
 import controllers.routes
+import models.HowManyLitresGlobally.Large
+import models.OrganisationType.LimitedCompany
+import models.Verify.YesRegister
 import models._
 import models.backend.{Site, UkAddress}
 import org.scalatest.TryValues
@@ -134,7 +137,6 @@ trait ITCoreTestData extends TryValues {
 
   def packagingSiteListWith3 = Map(("12345678", address45Characters), ("23456789", address47Characters), ("34567890", address49Characters))
 
-
   def userAnswersWith1PackingSite = emptyUserAnswers.copy(packagingSiteList = packagingSiteListWith1)
 
 
@@ -147,4 +149,20 @@ trait ITCoreTestData extends TryValues {
 
   val radioYes = true
   val radioNo = false
+
+  val fullExampleUserAnswers = {
+    emptyUserAnswers
+      .set(VerifyPage, YesRegister).success.value
+      .set(OrganisationTypePage, LimitedCompany).success.value
+      .set(HowManyLitresGloballyPage, Large).success.value
+      .set(OperatePackagingSitesPage, false).success.value
+      .set(ContractPackingPage, false).success.value
+      .set(ImportsPage, false).success.value
+      .set(StartDatePage, LocalDate.now()).success.value
+      .set(PackAtBusinessAddressPage, true).success.value
+      .set(PackagingSiteDetailsPage, true).success.value
+      .set(AskSecondaryWarehousesPage, true).success.value
+      .set(WarehouseDetailsPage, true).success.value
+      .set(ContactDetailsPage, contactDetails).success.value
+  }
 }
