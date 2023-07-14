@@ -43,4 +43,5 @@ object HowManyLitresGlobally extends Enumerable.Implicits {
 
   implicit val enumerable: Enumerable[HowManyLitresGlobally] =
     Enumerable(values.map(v => v.toString -> v): _*)
+
 }
