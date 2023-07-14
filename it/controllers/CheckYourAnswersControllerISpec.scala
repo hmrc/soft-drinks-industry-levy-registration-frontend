@@ -1,13 +1,17 @@
 package controllers
 
+import models.HowManyLitresGlobally.Large
+import models.NormalMode
+import models.OrganisationType.LimitedCompany
+import models.Verify.YesRegister
 import org.jsoup.Jsoup
+import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
 import pages._
 import play.api.http.HeaderNames
 import play.api.http.Status.OK
 import play.api.i18n.Messages
 import play.api.libs.json.Json
 import play.api.test.WsTestClient
-import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
 
 
 class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
@@ -15,7 +19,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
   val route = "/check-your-answers"
   "GET " + routes.CheckYourAnswersController.onPageLoad().url - {
     "when the userAnswers contains no data" - {
-      "should render the page" in {
+      "should redirect to verify controller" in {
         given
           .commonPrecondition
 
@@ -25,10 +29,8 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
           val result = createClientRequestGet(client, baseUrl + route)
 
           whenReady(result) { res =>
-            res.status mustBe OK
-            val page = Jsoup.parse(res.body)
-            page.title must include(Messages("checkYourAnswers.title"))
-            page.getElementsByClass("govuk-summary-list").size() mustBe 0
+            res.status mustBe 303
+            res.header(HeaderNames.LOCATION) mustBe Some(routes.VerifyController.onPageLoad(NormalMode).url)
           }
         }
       }
@@ -38,15 +40,24 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
         given
           .commonPrecondition
 
-        val userAnswers = emptyUserAnswers
-          .set(OperatePackagingSitesPage, true).success.value
-          .set(HowManyOperatePackagingSitesPage, operatePackagingSiteLitres).success.value
-          .set(ContractPackingPage, true).success.value
-          .set(HowManyContractPackingPage, contractPackingLitres).success.value
-          .set(ImportsPage, true).success.value
-          .set(HowManyImportsPage, importsLitres).success.value
-          .set(StartDatePage, startDate).success.value
-          .set(ContactDetailsPage, contactDetails).success.value
+        val userAnswers = {
+          emptyUserAnswers
+            .set(VerifyPage, YesRegister).success.value
+            .set(OrganisationTypePage, LimitedCompany).success.value
+            .set(HowManyLitresGloballyPage, Large).success.value
+            .set(OperatePackagingSitesPage, true).success.value
+            .set(HowManyOperatePackagingSitesPage, operatePackagingSiteLitres).success.value
+            .set(ContractPackingPage, true).success.value
+            .set(HowManyContractPackingPage, contractPackingLitres).success.value
+            .set(ImportsPage, true).success.value
+            .set(HowManyImportsPage, importsLitres).success.value
+            .set(StartDatePage, startDate).success.value
+            .set(PackAtBusinessAddressPage, true).success.value
+            .set(PackagingSiteDetailsPage, true).success.value
+            .set(AskSecondaryWarehousesPage, true).success.value
+            .set(WarehouseDetailsPage, true).success.value
+            .set(ContactDetailsPage, contactDetails).success.value
+        }
 
         setAnswers(userAnswers)
 
@@ -57,6 +68,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
             res.status mustBe OK
             val page = Jsoup.parse(res.body)
             page.title must include(Messages("checkYourAnswers.title"))
+
             page.getElementsByClass("govuk-summary-list").size() mustBe 5
 
             val operatePackagingSites = page.getElementsByClass("govuk-summary-list").first()
@@ -89,12 +101,21 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
         given
           .commonPrecondition
 
-        val userAnswers = emptyUserAnswers
-          .set(OperatePackagingSitesPage, false).success.value
-          .set(ContractPackingPage, false).success.value
-          .set(ImportsPage, false).success.value
-          .set(StartDatePage, startDate).success.value
-          .set(ContactDetailsPage, contactDetails).success.value
+        val userAnswers = {
+          emptyUserAnswers
+            .set(VerifyPage, YesRegister).success.value
+            .set(OrganisationTypePage, LimitedCompany).success.value
+            .set(HowManyLitresGloballyPage, Large).success.value
+            .set(OperatePackagingSitesPage, false).success.value
+            .set(ContractPackingPage, false).success.value
+            .set(ImportsPage, false).success.value
+            .set(StartDatePage, startDate).success.value
+            .set(PackAtBusinessAddressPage, true).success.value
+            .set(PackagingSiteDetailsPage, true).success.value
+            .set(AskSecondaryWarehousesPage, true).success.value
+            .set(WarehouseDetailsPage, true).success.value
+            .set(ContactDetailsPage, contactDetails).success.value
+        }
 
         setAnswers(userAnswers)
 
@@ -133,17 +154,50 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
         }
       }
     }
-    testOtherSuccessUserTypes(baseUrl + route, Messages("checkYourAnswers.title"))
+    testOtherSuccessUserTypes(baseUrl + route, Messages("checkYourAnswers.title"), fullExampleUserAnswers)
     testUnauthorisedUser(baseUrl + route)
     testAuthenticatedUserButNoUserAnswers(baseUrl + route)
   }
 
   "POST " + routes.CheckYourAnswersController.onPageLoad().url - {
-    "should submit successfully and redirect to the next page" in {
+    "should redirect to verify controller when user answers empty" in {
       given
         .commonPrecondition
 
       setAnswers(emptyUserAnswers)
+
+      WsTestClient.withClient { client =>
+        val result = createClientRequestPOST(client, baseUrl + route, Json.obj())
+
+        whenReady(result) { res =>
+          res.status mustBe 303
+          res.header(HeaderNames.LOCATION) mustBe Some(routes.VerifyController.onPageLoad(NormalMode).url)
+        }
+      }
+    }
+    "should submit successfully and redirect to the next page when user answers full" in {
+      given
+        .commonPrecondition
+
+      val userAnswers = {
+        emptyUserAnswers
+          .set(VerifyPage, YesRegister).success.value
+          .set(OrganisationTypePage, LimitedCompany).success.value
+          .set(HowManyLitresGloballyPage, Large).success.value
+          .set(OperatePackagingSitesPage, true).success.value
+          .set(HowManyOperatePackagingSitesPage, operatePackagingSiteLitres).success.value
+          .set(ContractPackingPage, true).success.value
+          .set(HowManyContractPackingPage, contractPackingLitres).success.value
+          .set(ImportsPage, true).success.value
+          .set(HowManyImportsPage, importsLitres).success.value
+          .set(StartDatePage, startDate).success.value
+          .set(PackAtBusinessAddressPage, true).success.value
+          .set(PackagingSiteDetailsPage, true).success.value
+          .set(AskSecondaryWarehousesPage, true).success.value
+          .set(WarehouseDetailsPage, true).success.value
+          .set(ContactDetailsPage, contactDetails).success.value
+      }
+      setAnswers(userAnswers)
 
       WsTestClient.withClient { client =>
         val result = createClientRequestPOST(client, baseUrl + route, Json.obj())
@@ -156,6 +210,5 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
     }
     testUnauthorisedUser(baseUrl + route, optJson = Some(Json.obj()))
     testAuthenticatedUserButNoUserAnswers(baseUrl + route, optJson = Some(Json.obj()))
-
   }
 }

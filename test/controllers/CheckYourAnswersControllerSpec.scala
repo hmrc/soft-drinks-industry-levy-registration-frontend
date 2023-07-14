@@ -18,12 +18,16 @@ package controllers
 
 import base.SpecBase
 import controllers.routes._
-import models.LitresInBands
-import pages.{ContractPackingPage, HowManyContractPackingPage, HowManyImportsPage, HowManyOperatePackagingSitesPage, ImportsPage, OperatePackagingSitesPage, StartDatePage}
+import models.HowManyLitresGlobally.Large
+import models.OrganisationType.LimitedCompany
+import models.{ContactDetails, LitresInBands, NormalMode}
+import models.Verify.YesRegister
+import pages.{AskSecondaryWarehousesPage, ContactDetailsPage, ContractPackingPage, HowManyContractPackingPage, HowManyImportsPage, HowManyLitresGloballyPage, HowManyOperatePackagingSitesPage, ImportsPage, OperatePackagingSitesPage, OrganisationTypePage, PackAtBusinessAddressPage, PackagingSiteDetailsPage, StartDatePage, VerifyPage, WarehouseDetailsPage}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import viewmodels.govuk.SummaryListFluency
+import viewmodels.summary.ContactDetailsSummary
 import views.html.CheckYourAnswersView
 import views.summary._
 
@@ -33,7 +37,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
 
   "Check Your Answers Controller" - {
 
-    "must return OK and the correct view for a GET with empty user answers" in {
+    "must redirect to verify controller for a GET with empty user answers" in {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration).build()
 
@@ -42,23 +46,58 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[CheckYourAnswersView]
-        val list = Seq.empty
+        redirectLocation(result).get mustEqual VerifyController.onPageLoad(NormalMode).url
+      }
+    }
+    "must redirect to verify controller for a GET with user answers full apart from 1 missing answer" in {
+      val userAnswerDate: LocalDate = LocalDate.of(2023, 6, 1)
+      val userAnswers = {
+        emptyUserAnswers
+          .set(VerifyPage, YesRegister).success.value
+          .set(OrganisationTypePage, LimitedCompany).success.value
+          .set(HowManyLitresGloballyPage, Large).success.value
+          .set(OperatePackagingSitesPage, true).success.value
+          .set(HowManyOperatePackagingSitesPage, LitresInBands(1, 2)).success.value
+          .set(ContractPackingPage, true).success.value
+          .set(HowManyContractPackingPage, LitresInBands(3, 4)).success.value
+          .set(ImportsPage, true).success.value
+          .set(HowManyImportsPage, LitresInBands(3, 4)).success.value
+          .set(StartDatePage, userAnswerDate).success.value
+          .set(PackAtBusinessAddressPage, true).success.value
+          .set(PackagingSiteDetailsPage, true).success.value
+          .set(AskSecondaryWarehousesPage, true).success.value
+          .set(WarehouseDetailsPage, true).success.value
+      }
+      val application = applicationBuilder(userAnswers = Some(userAnswers), rosmRegistration = rosmRegistration).build()
 
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(list, routes.CheckYourAnswersController.onSubmit())(request, messages(application)).toString
+      running(application) {
+        val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad().url)
+
+        val result = route(application, request).value
+
+        redirectLocation(result).get mustEqual VerifyController.onPageLoad(NormalMode).url
       }
     }
     "must return OK and the correct view for a GET with full user answers with litres pages yes" in {
       val userAnswerDate: LocalDate = LocalDate.of(2023, 6, 1)
-      val userAnswers = emptyUserAnswers
-        .set(OperatePackagingSitesPage, true).success.value
-        .set(HowManyOperatePackagingSitesPage, LitresInBands(1,2)).success.value
-        .set(ContractPackingPage, true).success.value
-        .set(HowManyContractPackingPage, LitresInBands(3,4)).success.value
-        .set(ImportsPage, true).success.value
-        .set(HowManyImportsPage, LitresInBands(3,4)).success.value
-        .set(StartDatePage, userAnswerDate).success.value
+      val userAnswers = {
+        emptyUserAnswers
+          .set(VerifyPage, YesRegister).success.value
+          .set(OrganisationTypePage, LimitedCompany).success.value
+          .set(HowManyLitresGloballyPage, Large).success.value
+          .set(OperatePackagingSitesPage, true).success.value
+          .set(HowManyOperatePackagingSitesPage, LitresInBands(1,2)).success.value
+          .set(ContractPackingPage, true).success.value
+          .set(HowManyContractPackingPage, LitresInBands(3,4)).success.value
+          .set(ImportsPage, true).success.value
+          .set(HowManyImportsPage, LitresInBands(3,4)).success.value
+          .set(StartDatePage, userAnswerDate).success.value
+          .set(PackAtBusinessAddressPage, true).success.value
+          .set(PackagingSiteDetailsPage, true).success.value
+          .set(AskSecondaryWarehousesPage, true).success.value
+          .set(WarehouseDetailsPage, true).success.value
+          .set(ContactDetailsPage, ContactDetails("foo", "bar", "wizz", "bang")).success.value
+      }
 
       val application = applicationBuilder(userAnswers = Some(userAnswers), rosmRegistration = rosmRegistration).build()
 
@@ -80,13 +119,13 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
         val startDate: (String, SummaryList) = {
           "startDate.checkYourAnswersLabel" -> StartDateSummary.summaryList(userAnswers = userAnswers, isCheckAnswers = true)
         }
+        val contactDetails: (String, SummaryList) = ContactDetailsSummary.headingAndSummary(userAnswers = userAnswers, isCheckAnswers = true).get
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(Seq(operatePackagingSites, contractPacking, imports, startDate),
+        contentAsString(result) mustEqual view(Seq(operatePackagingSites, contractPacking, imports, startDate, contactDetails),
           routes.CheckYourAnswersController.onSubmit())(request, messages(application)).toString
       }
     }
-
     "must redirect to Journey Recovery for a GET if no existing data is found" in {
 
       val application = applicationBuilder(userAnswers = None, rosmRegistration = rosmRegistration).build()
@@ -100,8 +139,27 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
       }
     }
-    "must Redirect to next page when data is correct for POST" in {
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+    "must Redirect to next page when full user answers on POST" in {
+      val userAnswerDate: LocalDate = LocalDate.of(2023, 6, 1)
+      val userAnswers = {
+        emptyUserAnswers
+          .set(VerifyPage, YesRegister).success.value
+          .set(OrganisationTypePage, LimitedCompany).success.value
+          .set(HowManyLitresGloballyPage, Large).success.value
+          .set(OperatePackagingSitesPage, true).success.value
+          .set(HowManyOperatePackagingSitesPage, LitresInBands(1,2)).success.value
+          .set(ContractPackingPage, true).success.value
+          .set(HowManyContractPackingPage, LitresInBands(3,4)).success.value
+          .set(ImportsPage, true).success.value
+          .set(HowManyImportsPage, LitresInBands(3,4)).success.value
+          .set(StartDatePage, userAnswerDate).success.value
+          .set(PackAtBusinessAddressPage, true).success.value
+          .set(PackagingSiteDetailsPage, true).success.value
+          .set(AskSecondaryWarehousesPage, true).success.value
+          .set(WarehouseDetailsPage, true).success.value
+          .set(ContactDetailsPage, ContactDetails("foo", "bar", "wizz", "bang")).success.value
+      }
+      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
       running(application) {
         val request = FakeRequest(POST, CheckYourAnswersController.onSubmit().url).withFormUrlEncodedBody()
@@ -112,6 +170,49 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
         redirectLocation(result).value mustEqual IndexController.onPageLoad().url
       }
     }
+    "must Redirect to verify controller when empty user answers on POST" in {
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+
+      running(application) {
+        val request = FakeRequest(POST, CheckYourAnswersController.onSubmit().url).withFormUrlEncodedBody()
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual VerifyController.onPageLoad(NormalMode).url
+      }
+    }
+      "must Redirect to verify controller when full user answers 1 missing on POST" in {
+        val userAnswerDate: LocalDate = LocalDate.of(2023, 6, 1)
+        val userAnswers = {
+          emptyUserAnswers
+            .set(VerifyPage, YesRegister).success.value
+            .set(OrganisationTypePage, LimitedCompany).success.value
+            .set(HowManyLitresGloballyPage, Large).success.value
+            .set(OperatePackagingSitesPage, true).success.value
+            .set(HowManyOperatePackagingSitesPage, LitresInBands(1,2)).success.value
+            .set(ContractPackingPage, true).success.value
+            .set(HowManyContractPackingPage, LitresInBands(3,4)).success.value
+            .set(ImportsPage, true).success.value
+            .set(HowManyImportsPage, LitresInBands(3,4)).success.value
+            .set(StartDatePage, userAnswerDate).success.value
+            .set(PackAtBusinessAddressPage, true).success.value
+            .set(PackagingSiteDetailsPage, true).success.value
+            .set(AskSecondaryWarehousesPage, true).success.value
+            .set(WarehouseDetailsPage, true).success.value
+        }
+        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+
+        running(application) {
+          val request = FakeRequest(POST, CheckYourAnswersController.onSubmit().url).withFormUrlEncodedBody()
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual VerifyController.onPageLoad(NormalMode).url
+        }
+      }
     "must redirect to Journey Recovery for a POST if no existing data is found" in {
 
       val application = applicationBuilder(userAnswers = None).build()
