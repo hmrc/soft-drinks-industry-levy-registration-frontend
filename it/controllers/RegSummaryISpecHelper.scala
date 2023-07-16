@@ -321,6 +321,27 @@ trait RegSummaryISpecHelper extends ControllerITTestHelper {
     }
   }
 
+
+  def validatePackingSiteDetailsSummary(summaryList: Element,
+                                        isCheckAnswers: Boolean = true) = {
+    val rows = summaryList.getElementsByClass("govuk-summary-list__row")
+    rows.size() mustBe 2
+    val packingRow = rows.get(0)
+    val warehouseRow = rows.get(1)
+    packingRow.getElementsByClass("govuk-summary-list__value").first().text() mustBe "3"
+    if (isCheckAnswers) {
+      packingRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByTag("a").first().text() mustBe "Change Pack At Business Address"
+      packingRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByClass("govuk-visually-hidden").first().text() mustBe "Pack At Business Address"
+      packingRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByTag("a").first().attr("href") mustBe routes.PackAtBusinessAddressController.onPageLoad(CheckMode).url
+
+      warehouseRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByTag("a").first().text() mustBe "Change Ask Secondary Warehouses"
+      warehouseRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByClass("govuk-visually-hidden").first().text() mustBe "Ask Secondary Warehouses"
+      warehouseRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByTag("a").first().attr("href") mustBe routes.AskSecondaryWarehousesController.onPageLoad(CheckMode).url
+    } else {
+      packingRow.getElementsByClass("govuk-summary-list__actions").size() mustBe 0
+    }
+  }
+
   def validateContactDetailsSummaryList(summaryList: Element,
                                         contactDetails: ContactDetails,
                                         isCheckAnswers: Boolean = true) = {

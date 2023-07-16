@@ -21,7 +21,6 @@ import controllers.routes
 import models.backend.UkAddress
 import models.{NormalMode, Warehouse}
 import uk.gov.hmrc.govukfrontend.views.Aliases.HtmlContent
-import viewmodels.summary.WarehouseDetailsSummary
 
 class AskSecondaryWarehousesSummarySpec extends SpecBase {
 

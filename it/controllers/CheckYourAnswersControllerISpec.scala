@@ -19,6 +19,8 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
 
   val route = "/check-your-answers"
 
+  val rosmAddress = UkAddress(List("105B Godfrey Marchant Grove", "Guildford"), "GU14 8NL")
+  val newAddress = UkAddress(List("10 Linden Close", "Langly"), "LA16 3KL")
 
   "GET " + routes.CheckYourAnswersController.onPageLoad.url - {
     "when the userAnswers contains no data" - {
@@ -78,6 +80,10 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
             val contactDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(5)
             page.getElementsByTag("h2").get(5).text() mustBe "Contact person details"
             validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, true)
+
+            val packingSiteDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(5)
+            page.getElementsByTag("h2").get(5).text() mustBe "Uk site details"
+            validatePackingSiteDetailsSummary(packingSiteDetailsSummaryListItem, true)
 
             page.getElementsByTag("form").first().attr("action") mustBe routes.CheckYourAnswersController.onSubmit.url
             page.getElementsByTag("form").first().getElementsByTag("button").first().text() mustBe "Confirm details and apply"

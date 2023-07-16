@@ -17,17 +17,16 @@
 package views.summary
 
 import controllers.routes
-import models.{CheckMode, UserAnswers}
 import models.backend.Site
-import pages.{AskSecondaryWarehousesPage, ContactDetailsPage, PackAtBusinessAddressPage}
+import models.{CheckMode, UserAnswers}
+import pages.{AskSecondaryWarehousesPage, PackAtBusinessAddressPage}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.{Actions, SummaryList}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryList, SummaryListRow}
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListRow}
 import viewmodels.AddressFormattingHelper
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
-import viewmodels.summary.ContactDetailsSummary.rows
 
 object PackagingSiteDetailsSummary {
 
@@ -66,7 +65,7 @@ object PackagingSiteDetailsSummary {
               actions = if (isCheckAnswers) {
                 Seq(
                   ActionItemViewModel("site.change", routes.AskSecondaryWarehousesController.onPageLoad(CheckMode).url)
-                    .withAttribute(("id", "change-packaging-sites"))
+                    .withAttribute(("id", "change-warehouse-sites"))
                     .withVisuallyHiddenText(messages("SecondaryWarehouse.change.hidden"))
                 )
               } else {
@@ -101,8 +100,8 @@ object PackagingSiteDetailsSummary {
                 actions = if (isCheckAnswers) {
                   Seq(
                     ActionItemViewModel("site.change", routes.AskSecondaryWarehousesController.onPageLoad(CheckMode).url)
-                      .withAttribute(("id", "change-packaging-sites"))
-                      .withVisuallyHiddenText(messages("SecondaryWarehouse.change.hidden"))
+                      .withAttribute(("id", "change-warehouse-sites"))
+                      .withVisuallyHiddenText(messages("askSecondaryWarehouses.change.hidden"))
                   )
                 } else {
                   Seq.empty
