@@ -130,6 +130,10 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
             page.getElementsByTag("h2").get(5).text() mustBe "Contact person details"
             validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, true)
 
+            val packingSiteDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(5)
+            page.getElementsByTag("h2").get(5).text() mustBe "Uk site details"
+            validatePackingSiteDetailsSummary(packingSiteDetailsSummaryListItem, true)
+
             page.getElementsByTag("form").first().attr("action") mustBe routes.CheckYourAnswersController.onSubmit.url
             page.getElementsByTag("form").first().getElementsByTag("button").first().text() mustBe "Confirm details and apply"
           }

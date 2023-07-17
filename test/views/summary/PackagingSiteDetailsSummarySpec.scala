@@ -80,8 +80,6 @@ class PackagingSiteDetailsSummarySpec extends SpecBase {
     Some("Test Trading Name Inc"),
     None)
 
-  val packagingSiteListWith3 = Map(("rieajnldkaljnk13", address45Characters), ("jfkladnlr12", address47Characters), ("jgklaj;ll;e;o", address49Characters))
-
   "row2" - {
 
     "should return an empty list of summaryListRows when no packaging site list is passed in" in {

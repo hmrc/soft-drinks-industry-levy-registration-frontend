@@ -34,7 +34,7 @@ object RegistrationSummary {
     val imports: Option[(String, SummaryList)] = ImportsSummary.headingAndSummary(userAnswers, isCheckYourAnswers)
     val startDate: Option[(String, SummaryList)] = StartDateSummary.headingAndSummary(userAnswers, isCheckYourAnswers)
     val contactDetails: Option[(String, SummaryList)] = ContactDetailsSummary.headingAndSummary(userAnswers, isCheckYourAnswers)
-    val packingDetails: Option[(String, SummaryList)] = PackagingSiteDetailsSummary.summaryList(userAnswers, isCheckYourAnswers)
+    val packingDetails: Option[(String, SummaryList)] = UKSitesSummary.summaryList(userAnswers, isCheckYourAnswers)
     Seq(
       businessDetails,
       operatePackagingSites,
