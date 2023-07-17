@@ -73,7 +73,7 @@ class AskSecondaryWarehousesController @Inject()(
             onwardUrl <-
               if (value) {
                 updateDatabaseWithoutRedirect(updatedAnswers, AskSecondaryWarehousesPage).flatMap(_ =>
-                  addressLookupService.initJourneyAndReturnOnRampUrl(WarehouseDetails))
+                  addressLookupService.initJourneyAndReturnOnRampUrl(WarehouseDetails, mode = mode))
               } else {
                 mode match {
                   case CheckMode =>

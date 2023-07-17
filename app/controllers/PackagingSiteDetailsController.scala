@@ -19,7 +19,7 @@ package controllers
 import controllers.actions._
 import forms.PackagingSiteDetailsFormProvider
 import handlers.ErrorHandler
-import models.Mode
+import models.{Mode, NormalMode}
 import navigation.Navigator
 import pages.PackagingSiteDetailsPage
 import play.api.i18n.MessagesApi
@@ -70,9 +70,11 @@ class PackagingSiteDetailsController @Inject()(
             updatedAnswers <- Future.fromTry(request.userAnswers.set(PackagingSiteDetailsPage, value))
             _              <- updateDatabaseWithoutRedirect(updatedAnswers, PackagingSiteDetailsPage)
             onwardUrl              <- if(value){
-              addressLookupService.initJourneyAndReturnOnRampUrl(PackingDetails)
-            }else{
+              addressLookupService.initJourneyAndReturnOnRampUrl(PackingDetails, mode = mode)
+            } else if(mode == NormalMode){
              Future.successful(routes.AskSecondaryWarehousesController.onPageLoad(mode).url)
+            } else {
+              Future.successful(routes.CheckYourAnswersController.onPageLoad().url)
             }
           }yield Redirect(onwardUrl)
         }

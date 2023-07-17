@@ -94,7 +94,7 @@ trait TestConfiguration
   )
 
   override implicit lazy val app: Application = appBuilder().build()
-  val sessionCache = app.injector.instanceOf[SDILSessionCacheRepository]
+  lazy val sessionCache = app.injector.instanceOf[SDILSessionCacheRepository]
   lazy val mongo: SessionRepository = app.injector.instanceOf[SessionRepository]
 
   def configParams: Map[String, Any] = Map()
@@ -111,7 +111,7 @@ trait TestConfiguration
       )
   }
 
-  app.injector.instanceOf[HealthController]
+  //app.injector.instanceOf[HealthController]
 
   val wireMockServer = new WireMockServer(wireMockConfig().port(wiremockPort))
 

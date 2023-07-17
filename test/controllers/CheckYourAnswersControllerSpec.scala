@@ -20,14 +20,14 @@ import base.SpecBase
 import controllers.routes._
 import models.HowManyLitresGlobally.Large
 import models.OrganisationType.LimitedCompany
-import models.{ContactDetails, LitresInBands, NormalMode}
 import models.Verify.YesRegister
-import pages.{AskSecondaryWarehousesPage, ContactDetailsPage, ContractPackingPage, HowManyContractPackingPage, HowManyImportsPage, HowManyLitresGloballyPage, HowManyOperatePackagingSitesPage, ImportsPage, OperatePackagingSitesPage, OrganisationTypePage, PackAtBusinessAddressPage, PackagingSiteDetailsPage, StartDatePage, VerifyPage, WarehouseDetailsPage}
+import models.{ContactDetails, LitresInBands, NormalMode}
+import pages._
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import viewmodels.govuk.SummaryListFluency
-import viewmodels.summary.ContactDetailsSummary
+import viewmodels.summary.{BusinessDetailsSummary, ContactDetailsSummary}
 import views.html.CheckYourAnswersView
 import views.summary._
 
@@ -99,7 +99,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
           .set(ContactDetailsPage, ContactDetails("foo", "bar", "wizz", "bang")).success.value
       }
 
-      val application = applicationBuilder(userAnswers = Some(userAnswers), rosmRegistration = rosmRegistration).build()
+      val application = applicationBuilder(userAnswers = Some(userAnswers), utr = Some("0000000022"), rosmRegistration = rosmRegistration).build()
 
       running(application) {
         val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad().url)
@@ -107,6 +107,9 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
         val result = route(application, request).value
 
         val view = application.injector.instanceOf[CheckYourAnswersView]
+
+        val businessDetails: (String, SummaryList) = BusinessDetailsSummary.headingAndSummary(userAnswers, rosmRegistration, true).get
+
         val operatePackagingSites: (String, SummaryList) = {
           "operatePackagingSites.checkYourAnswersLabel" -> OperatePackagingSitesSummary.summaryList(userAnswers = userAnswers, isCheckAnswers = true)
         }
@@ -122,7 +125,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
         val contactDetails: (String, SummaryList) = ContactDetailsSummary.headingAndSummary(userAnswers = userAnswers, isCheckAnswers = true).get
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(Seq(operatePackagingSites, contractPacking, imports, startDate, contactDetails),
+        contentAsString(result) mustEqual view(Seq(businessDetails, operatePackagingSites, contractPacking, imports, startDate, contactDetails),
           routes.CheckYourAnswersController.onSubmit())(request, messages(application)).toString
       }
     }

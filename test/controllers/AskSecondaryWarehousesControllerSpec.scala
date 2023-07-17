@@ -90,7 +90,7 @@ class AskSecondaryWarehousesControllerSpec extends SpecBase with MockitoSugar wi
 
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
       when(mockAddressLookupService.initJourneyAndReturnOnRampUrl(
-        ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any())(
+        ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any(), ArgumentMatchers.any())(
         ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(onwardUrlForALF))
 
@@ -114,7 +114,7 @@ class AskSecondaryWarehousesControllerSpec extends SpecBase with MockitoSugar wi
         redirectLocation(result).value mustEqual onwardUrlForALF
 
         verify(mockAddressLookupService, times(1)).initJourneyAndReturnOnRampUrl(
-          ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any())(
+          ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any(), ArgumentMatchers.any())(
           ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
       }
     }
@@ -126,7 +126,7 @@ class AskSecondaryWarehousesControllerSpec extends SpecBase with MockitoSugar wi
 
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
       when(mockAddressLookupService.initJourneyAndReturnOnRampUrl(
-        ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any())(
+        ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any(), ArgumentMatchers.any())(
         ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(onwardUrlForALF))
 
@@ -151,7 +151,7 @@ class AskSecondaryWarehousesControllerSpec extends SpecBase with MockitoSugar wi
         redirectLocation(result).value mustEqual routes.ContactDetailsController.onPageLoad(NormalMode).url
 
         verify(mockAddressLookupService, times(0)).initJourneyAndReturnOnRampUrl(
-          ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any())(
+          ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any(), ArgumentMatchers.any())(
           ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
       }
     }
@@ -160,7 +160,7 @@ class AskSecondaryWarehousesControllerSpec extends SpecBase with MockitoSugar wi
       val mockAddressLookupService = mock[AddressLookupService]
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
       when(mockAddressLookupService.initJourneyAndReturnOnRampUrl(
-        ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any())(
+        ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any(), ArgumentMatchers.any())(
         ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.failed(new Exception("uh oh spaghetio")))
 
@@ -182,7 +182,7 @@ class AskSecondaryWarehousesControllerSpec extends SpecBase with MockitoSugar wi
 
 
         verify(mockAddressLookupService, times(1)).initJourneyAndReturnOnRampUrl(
-          ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any())(
+          ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any(), ArgumentMatchers.any())(
           ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
       }
     }

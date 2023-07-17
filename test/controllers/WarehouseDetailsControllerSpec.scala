@@ -111,7 +111,7 @@ class WarehouseDetailsControllerSpec extends SpecBase with MockitoSugar with Log
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       when(mockAddressLookupService.initJourneyAndReturnOnRampUrl(
-        ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any())(
+        ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any(), ArgumentMatchers.any())(
         ArgumentMatchers.any(), ArgumentMatchers.any(),ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(onwardUrlForALF))
 
@@ -135,7 +135,7 @@ class WarehouseDetailsControllerSpec extends SpecBase with MockitoSugar with Log
         redirectLocation(result).value mustEqual onwardUrlForALF
 
         verify(mockAddressLookupService, times(1)).initJourneyAndReturnOnRampUrl(
-          ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any())(
+          ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any(), ArgumentMatchers.any())(
           ArgumentMatchers.any(), ArgumentMatchers.any(),ArgumentMatchers.any(), ArgumentMatchers.any())
       }
     }
@@ -164,7 +164,7 @@ class WarehouseDetailsControllerSpec extends SpecBase with MockitoSugar with Log
         redirectLocation(result).value mustEqual controllers.routes.ContactDetailsController.onPageLoad(NormalMode).url
 
         verify(mockAddressLookupService, times(0)).initJourneyAndReturnOnRampUrl(
-          ArgumentMatchers.any(), ArgumentMatchers.any())(
+          ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(
           ArgumentMatchers.any(), ArgumentMatchers.any(),ArgumentMatchers.any(), ArgumentMatchers.any())
       }
     }
@@ -205,7 +205,7 @@ class WarehouseDetailsControllerSpec extends SpecBase with MockitoSugar with Log
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       when(mockAddressLookupService.initJourneyAndReturnOnRampUrl(
-        ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any())(
+        ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any(), ArgumentMatchers.any())(
         ArgumentMatchers.any(), ArgumentMatchers.any(),ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.failed(new Exception("uh oh spaghetio")))
 
@@ -227,7 +227,7 @@ class WarehouseDetailsControllerSpec extends SpecBase with MockitoSugar with Log
 
 
         verify(mockAddressLookupService, times(1)).initJourneyAndReturnOnRampUrl(
-          ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any())(
+          ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any(), ArgumentMatchers.any())(
           ArgumentMatchers.any(), ArgumentMatchers.any(),ArgumentMatchers.any(), ArgumentMatchers.any())
       }
     }

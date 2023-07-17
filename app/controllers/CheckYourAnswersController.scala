@@ -40,7 +40,7 @@ class CheckYourAnswersController @Inject()(
   def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
       requiredUserAnswers.requireData(CheckYourAnswersPage) {
-        val summaryList = RegistrationSummary.summaryList(request.userAnswers)
+        val summaryList = RegistrationSummary.summaryList(request.userAnswers, request.rosmWithUtr)
         Future.successful(Ok(view(summaryList, routes.CheckYourAnswersController.onSubmit())))
       }
   }

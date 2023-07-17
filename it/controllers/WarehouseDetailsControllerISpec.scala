@@ -285,7 +285,7 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
 
         whenReady(result) { res =>
           res.status mustBe 303
-          res.header(HeaderNames.LOCATION) mustBe Some(routes.ContactDetailsController.onPageLoad(CheckMode).url)
+          res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
         }
       }
     }

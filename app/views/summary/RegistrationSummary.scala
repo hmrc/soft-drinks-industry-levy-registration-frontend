@@ -16,21 +16,23 @@
 
 package views.summary
 
-import models.UserAnswers
+import models.{RosmWithUtr, UserAnswers}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
-import viewmodels.summary.ContactDetailsSummary
+import viewmodels.summary.{BusinessDetailsSummary, ContactDetailsSummary}
 
 object RegistrationSummary {
 
-  def summaryList(userAnswers: UserAnswers, isCheckYourAnswers: Boolean = true)
+  def summaryList(userAnswers: UserAnswers, rosmWithUtr: RosmWithUtr, isCheckYourAnswers: Boolean = true)
                  (implicit messages: Messages): Seq[(String, SummaryList)] = {
+    val businessDetails: Option[(String, SummaryList)] = BusinessDetailsSummary.headingAndSummary(userAnswers, rosmWithUtr)
     val operatePackagingSites: Option[(String, SummaryList)] = OperatePackagingSitesSummary.headingAndSummary(userAnswers, isCheckYourAnswers)
     val contractPacking: Option[(String, SummaryList)] = ContractPackingSummary.headingAndSummary(userAnswers, isCheckYourAnswers)
     val imports: Option[(String, SummaryList)] = ImportsSummary.headingAndSummary(userAnswers, isCheckYourAnswers)
     val startDate: Option[(String, SummaryList)] = StartDateSummary.headingAndSummary(userAnswers)
     val contactDetails: Option[(String, SummaryList)] = ContactDetailsSummary.headingAndSummary(userAnswers, isCheckYourAnswers)
     Seq(
+      businessDetails,
       operatePackagingSites,
       contractPacking,
       imports,

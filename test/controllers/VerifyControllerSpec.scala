@@ -119,7 +119,7 @@ class VerifyControllerSpec extends SpecBase with MockitoSugar with LoggerHelper 
 
       when(mockSessionService.set(any())) thenReturn Future.successful(Right(true))
       when(mockAlfService
-        .initJourneyAndReturnOnRampUrl(ArgumentMatchers.eq(BusinessAddress),any())(any(),any(),any(), any()))
+        .initJourneyAndReturnOnRampUrl(ArgumentMatchers.eq(BusinessAddress),any(),any())(any(),any(),any(), any()))
         .thenReturn(Future.successful("alfOnRamp"))
 
       val application =
