@@ -176,7 +176,7 @@ askSecondaryWarehouses.detailsLink = Why should I register a warehouse?
 askSecondaryWarehouses.detailsContent = You can delay the point you will have to report liable drinks in a return and pay the levy on them if you register the warehouses you use to store them.
 askSecondaryWarehouses.checkYourAnswersLabel = Do you want to register any of the UK warehouses you use to store liable drinks?
 askSecondaryWarehouses.error.required = Select yes if you want to register any of the UK warehouses you use to store liable drinks
-askSecondaryWarehouses.change.hidden = Ask Secondary Warehouses
+askSecondaryWarehouses.change.hidden = The UK warehouses you use to store liable drinks
 
 operatePackagingSites.title = Do you operate any packaging sites in the UK to package liable drinks for the brands you own?
 operatePackagingSites.heading = Do you operate any packaging sites in the UK to package liable drinks for the brands you own?
@@ -259,7 +259,7 @@ packAtBusinessAddress.title = Your business address
 packAtBusinessAddress.heading2 = Is your registered business address a UK packaging site that you operate to produce liable drinks?
 packAtBusinessAddress.checkYourAnswersLabel = Is your registered business address a UK packaging site that you operate to produce liable drinks?
 packAtBusinessAddress.error.required = Select yes if packAtBusinessAddress
-packAtBusinessAddress.change.hidden = Pack At Business Address
+packAtBusinessAddress.change.hidden = The UK packaging site that you operate to produce liable drinks
 
 warehouseDetails.title.heading = You added {0} UK warehouse{1}
 wareshousDetails.add.another = Do you want to register another UK warehouse?
