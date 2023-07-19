@@ -330,12 +330,12 @@ trait RegSummaryISpecHelper extends ControllerITTestHelper {
     val warehouseRow = rows.get(1)
     packingRow.getElementsByClass("govuk-summary-list__value").first().text() mustBe "3"
     if (isCheckAnswers) {
-      packingRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByTag("a").first().text() mustBe "Change Pack At Business Address"
-      packingRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByClass("govuk-visually-hidden").first().text() mustBe "Pack At Business Address"
+      packingRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByTag("a").first().text() mustBe "Change the UK packaging site that you operate to produce liable drinks"
+      packingRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByClass("govuk-visually-hidden").first().text() mustBe "the UK packaging site that you operate to produce liable drinks"
       packingRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByTag("a").first().attr("href") mustBe routes.PackAtBusinessAddressController.onPageLoad(CheckMode).url
 
-      warehouseRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByTag("a").first().text() mustBe "Change Ask Secondary Warehouses"
-      warehouseRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByClass("govuk-visually-hidden").first().text() mustBe "Ask Secondary Warehouses"
+      warehouseRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByTag("a").first().text() mustBe "Change the UK warehouses you use to store liable drinks"
+      warehouseRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByClass("govuk-visually-hidden").first().text() mustBe "the UK warehouses you use to store liable drinks"
       warehouseRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByTag("a").first().attr("href") mustBe routes.AskSecondaryWarehousesController.onPageLoad(CheckMode).url
     } else {
       packingRow.getElementsByClass("govuk-summary-list__actions").size() mustBe 0
