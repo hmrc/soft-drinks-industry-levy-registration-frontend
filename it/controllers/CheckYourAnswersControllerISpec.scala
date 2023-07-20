@@ -82,7 +82,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
             validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, true)
 
             val packingSiteDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(6)
-            page.getElementsByTag("h2").get(6).text() mustBe "Uk site details"
+            page.getElementsByTag("h2").get(6).text() mustBe "UK site details"
             validatePackingSiteDetailsSummary(packingSiteDetailsSummaryListItem, true)
 
             page.getElementsByTag("form").first().attr("action") mustBe routes.CheckYourAnswersController.onSubmit.url
@@ -131,7 +131,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
             validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, true)
 
             val packingSiteDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(6)
-            page.getElementsByTag("h2").get(6).text() mustBe "Uk site details"
+            page.getElementsByTag("h2").get(6).text() mustBe "UK site details"
             validatePackingSiteDetailsSummary(packingSiteDetailsSummaryListItem, true)
 
             page.getElementsByTag("form").first().attr("action") mustBe routes.CheckYourAnswersController.onSubmit.url
