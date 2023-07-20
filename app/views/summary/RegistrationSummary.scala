@@ -50,9 +50,8 @@ object RegistrationSummary {
     val timeFormatter = DateTimeFormatter.ofPattern("h:mma")
 
     val registeredDate = dateTime.format(dateFormatter)
-    val registeredTime = dateTime.format(timeFormatter)
+    val registeredTime = dateTime.format(timeFormatter).toLowerCase
 
     messages("registrationConfirmation.applicationSent.at", registeredDate, registeredTime)
   }
-
 }
