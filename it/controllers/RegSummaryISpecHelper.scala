@@ -101,7 +101,7 @@ trait RegSummaryISpecHelper extends ControllerITTestHelper {
     applicationSentAt.text() mustBe "Your application to register for the Soft Drinks Industry Levy was sent on 10 July 2023 at 2:30pm."
 
     val applicationSentEmailed = document.getElementById("applicationSentEmailed")
-    applicationSentEmailed.text() mustBe s"We have sent a registration-confirmation email to ${contactDetails.email}."
+    applicationSentEmailed.text() mustBe s"We have sent a registration confirmation email to ${contactDetails.email}."
 
     document.getElementById("whatNextHeader").text() mustEqual "What happens next"
     document.getElementById("whatNextTextP1").text() mustEqual "You do not need to do anything at this time."

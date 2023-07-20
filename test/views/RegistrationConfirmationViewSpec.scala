@@ -85,7 +85,7 @@ class RegistrationConfirmationViewSpec extends ViewSpecHelper {
 
       "which states a confirmation email sent" in {
         val applicationSentEmailed = document.getElementById("applicationSentEmailed")
-        applicationSentEmailed.text() mustBe s"We have sent a registration-confirmation email to $emailAddress."
+        applicationSentEmailed.text() mustBe s"We have sent a registration confirmation email to $emailAddress."
       }
 
       "which includes a what happens next section" - {
