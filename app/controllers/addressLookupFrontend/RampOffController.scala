@@ -44,7 +44,7 @@ class RampOffController @Inject()(identify: IdentifierAction,
         val redirectUrl = if(mode == NormalMode) {
           controllers.routes.OrganisationTypeController.onPageLoad(NormalMode)
         } else {
-          controllers.routes.CheckYourAnswersController.onPageLoad()
+          controllers.routes.CheckYourAnswersController.onPageLoad
         }
         Redirect(redirectUrl)
       }
@@ -60,7 +60,7 @@ class RampOffController @Inject()(identify: IdentifierAction,
         val redirectUrl = if (mode == NormalMode) {
           controllers.routes.WarehouseDetailsController.onPageLoad(NormalMode)
         } else {
-          controllers.routes.CheckYourAnswersController.onPageLoad()
+          controllers.routes.CheckYourAnswersController.onPageLoad
         }
         Redirect(redirectUrl)
       }
@@ -76,7 +76,7 @@ class RampOffController @Inject()(identify: IdentifierAction,
         val redirectUrl = if (mode == NormalMode) {
           controllers.routes.PackagingSiteDetailsController.onPageLoad(NormalMode)
         } else {
-          controllers.routes.CheckYourAnswersController.onPageLoad()
+          controllers.routes.CheckYourAnswersController.onPageLoad
         }
         Redirect(redirectUrl)
       }

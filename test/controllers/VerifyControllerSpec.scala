@@ -165,7 +165,7 @@ class VerifyControllerSpec extends SpecBase with MockitoSugar with LoggerHelper 
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual auth.routes.AuthController.signOutNoSurvey().url
+        redirectLocation(result).value mustEqual auth.routes.AuthController.signOutNoSurvey.url
       }
     }
 

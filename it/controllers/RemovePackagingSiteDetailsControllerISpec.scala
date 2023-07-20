@@ -45,7 +45,7 @@ class RemovePackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
       }
     }
 
-    testOtherSuccessUserTypes(baseUrl + normalRoutePath(ref), Messages("removePackagingSiteDetails" + ".title"), userAnswers = updatedUserAnswers)
+    testOtherSuccessUserTypes(baseUrl + normalRoutePath(ref), Messages("removePackagingSiteDetails" + ".title"), ua = updatedUserAnswers)
     testUnauthorisedUser(baseUrl + normalRoutePath(ref))
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath(ref))
   }

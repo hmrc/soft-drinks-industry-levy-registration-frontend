@@ -88,7 +88,7 @@ class RampOffControllerSpec extends SpecBase with MockitoSugar {
             val result = route(app, request).value
             status(result) mustBe SEE_OTHER
             val expectedLocation = if(mode == CheckMode) {
-              controllers.routes.CheckYourAnswersController.onPageLoad().url
+              controllers.routes.CheckYourAnswersController.onPageLoad.url
             } else {
               controllers.routes.OrganisationTypeController.onPageLoad(NormalMode).url
             }
@@ -203,7 +203,7 @@ class RampOffControllerSpec extends SpecBase with MockitoSugar {
             val result = route(app, request).value
             status(result) mustBe SEE_OTHER
             val expectedLocation = if (mode == CheckMode) {
-              controllers.routes.CheckYourAnswersController.onPageLoad().url
+              controllers.routes.CheckYourAnswersController.onPageLoad.url
             } else {
               controllers.routes.WarehouseDetailsController.onPageLoad(NormalMode).url
             }
@@ -317,7 +317,7 @@ class RampOffControllerSpec extends SpecBase with MockitoSugar {
             val result = route(application, request).value
             status(result) mustBe SEE_OTHER
             val expectedLocation = if (mode == CheckMode) {
-              controllers.routes.CheckYourAnswersController.onPageLoad().url
+              controllers.routes.CheckYourAnswersController.onPageLoad.url
             } else {
               controllers.routes.PackagingSiteDetailsController.onPageLoad(NormalMode).url
             }

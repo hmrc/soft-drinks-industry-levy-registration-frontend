@@ -321,7 +321,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
 
             whenReady(result) { res =>
               res.status mustBe 303
-              res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad().url)
+              res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
               val dataStoredForPage = getAnswers(identifier).fold[Option[LocalDate]](None)(_.get(StartDatePage))
               dataStoredForPage.nonEmpty mustBe true
               dataStoredForPage.get mustBe date
@@ -343,7 +343,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
 
             whenReady(result) { res =>
               res.status mustBe 303
-              res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad().url)
+              res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
               val dataStoredForPage = getAnswers(identifier).fold[Option[LocalDate]](None)(_.get(StartDatePage))
               dataStoredForPage.nonEmpty mustBe true
               dataStoredForPage.get mustBe date

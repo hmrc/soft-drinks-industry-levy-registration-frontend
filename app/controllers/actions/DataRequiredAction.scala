@@ -40,7 +40,7 @@ class DataRequiredActionImpl @Inject()(sdilConnector: SoftDrinksIndustryLevyConn
         Right(DataRequest(request, request.internalId, request.hasCTEnrolment, request.authUtr, data, result))
       case None =>
         genericLogger.logger.warn(s"User has no rosm data for UTR on auth or from Identify ${hc.requestId}")
-        Left(Redirect(routes.IndexController.onPageLoad()))
+        Left(Redirect(routes.IndexController.onPageLoad))
     }
   }
 
@@ -48,7 +48,7 @@ class DataRequiredActionImpl @Inject()(sdilConnector: SoftDrinksIndustryLevyConn
     sdilConnector.checkPendingQueue(utr).map {
       case Registered =>
         genericLogger.logger.info(s"User already registered on pending queue ${hc.requestId}")
-        Left(Redirect(routes.IndexController.onPageLoad()))
+        Left(Redirect(routes.IndexController.onPageLoad))
       case Pending =>
         genericLogger.logger.info(s"User already pending subscription on pending queue ${hc.requestId}")
         Left(Redirect(routes.RegistrationPendingController.onPageLoad.url))
@@ -83,3 +83,4 @@ class DataRequiredActionImpl @Inject()(sdilConnector: SoftDrinksIndustryLevyConn
 }
 
 trait DataRequiredAction extends ActionRefiner[OptionalDataRequest, DataRequest]
+

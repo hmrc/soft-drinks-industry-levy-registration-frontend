@@ -21,7 +21,7 @@ class HowManyContractPackingControllerISpec extends LitresISpecHelper {
     val (path, redirectLocation) = if(mode == NormalMode) {
       (normalRoutePath, routes.ImportsController.onPageLoad(NormalMode).url)
     } else {
-      (checkRoutePath, routes.CheckYourAnswersController.onPageLoad().url)
+      (checkRoutePath, routes.CheckYourAnswersController.onPageLoad.url)
     }
 
     "GET " + path - {

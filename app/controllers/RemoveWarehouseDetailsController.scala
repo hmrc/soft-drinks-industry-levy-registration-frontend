@@ -57,7 +57,7 @@ class RemoveWarehouseDetailsController @Inject()(
           Ok(view(form, mode, formattedAddress, index))
         case _ => genericLogger.logger.warn(s"Warehouse index $index doesn't exist ${request.userAnswers.id} warehouse list length:" +
           s"${request.userAnswers.warehouseList.size}")
-          Redirect(routes.IndexController.onPageLoad())
+          Redirect(routes.IndexController.onPageLoad)
       }
   }
 

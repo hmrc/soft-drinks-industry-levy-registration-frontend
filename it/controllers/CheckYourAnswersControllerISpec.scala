@@ -19,9 +19,8 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
 
   val route = "/check-your-answers"
 
-  val rosmAddress = UkAddress(List("105B Godfrey Marchant Grove", "Guildford"), "GU14 8NL")
-  val newAddress = UkAddress(List("10 Linden Close", "Langly"), "LA16 3KL")
-  "GET " + routes.CheckYourAnswersController.onPageLoad().url - {
+
+  "GET " + routes.CheckYourAnswersController.onPageLoad.url - {
     "when the userAnswers contains no data" - {
       "should redirect to verify controller" in {
         given
@@ -44,26 +43,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
         given
           .commonPrecondition
 
-        val userAnswers = {
-          emptyUserAnswers
-            .set(VerifyPage, Verify.No).success.value
-            .set(OrganisationTypePage, LimitedCompany).success.value
-            .set(HowManyLitresGloballyPage, Large).success.value
-            .set(OperatePackagingSitesPage, true).success.value
-            .set(HowManyOperatePackagingSitesPage, operatePackagingSiteLitres).success.value
-            .set(ContractPackingPage, true).success.value
-            .set(HowManyContractPackingPage, contractPackingLitres).success.value
-            .set(ImportsPage, true).success.value
-            .set(HowManyImportsPage, importsLitres).success.value
-            .set(StartDatePage, startDate).success.value
-            .set(PackAtBusinessAddressPage, true).success.value
-            .set(PackagingSiteDetailsPage, true).success.value
-            .set(AskSecondaryWarehousesPage, true).success.value
-            .set(WarehouseDetailsPage, true).success.value
-            .set(ContactDetailsPage, contactDetails).success.value
-        }
-
-        setAnswers(userAnswers)
+        setAnswers(userAnswersWithLitres)
 
         WsTestClient.withClient { client =>
           val result = createClientRequestGet(client, baseUrl + route)
@@ -99,7 +79,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
             page.getElementsByTag("h2").get(5).text() mustBe "Contact person details"
             validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, true)
 
-            page.getElementsByTag("form").first().attr("action") mustBe routes.CheckYourAnswersController.onSubmit().url
+            page.getElementsByTag("form").first().attr("action") mustBe routes.CheckYourAnswersController.onSubmit.url
             page.getElementsByTag("form").first().getElementsByTag("button").first().text() mustBe "Confirm details and apply"
           }
         }
@@ -108,25 +88,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
         given
           .commonPrecondition
 
-        val userAnswers = {
-          emptyUserAnswers
-            .copy(address = Some(newAddress))
-            .set(VerifyPage, YesRegister).success.value
-            .set(OrganisationTypePage, LimitedCompany).success.value
-            .set(HowManyLitresGloballyPage, Small).success.value
-            .set(ThirdPartyPackagersPage, true).success.value
-            .set(OperatePackagingSitesPage, false).success.value
-            .set(ContractPackingPage, false).success.value
-            .set(ImportsPage, false).success.value
-            .set(StartDatePage, startDate).success.value
-            .set(PackAtBusinessAddressPage, true).success.value
-            .set(PackagingSiteDetailsPage, true).success.value
-            .set(AskSecondaryWarehousesPage, true).success.value
-            .set(WarehouseDetailsPage, true).success.value
-            .set(ContactDetailsPage, contactDetails).success.value
-        }
-
-        setAnswers(userAnswers)
+        setAnswers(userAnswersWithAllNo)
 
         WsTestClient.withClient { client =>
           val result = createClientRequestGet(client, baseUrl + route)
@@ -162,7 +124,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
             page.getElementsByTag("h2").get(5).text() mustBe "Contact person details"
             validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, true)
 
-            page.getElementsByTag("form").first().attr("action") mustBe routes.CheckYourAnswersController.onSubmit().url
+            page.getElementsByTag("form").first().attr("action") mustBe routes.CheckYourAnswersController.onSubmit.url
             page.getElementsByTag("form").first().getElementsByTag("button").first().text() mustBe "Confirm details and apply"
           }
         }
@@ -173,7 +135,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
     testAuthenticatedUserButNoUserAnswers(baseUrl + route)
   }
 
-  "POST " + routes.CheckYourAnswersController.onPageLoad().url - {
+  "POST " + routes.CheckYourAnswersController.onPageLoad.url - {
     "should redirect to verify controller when user answers empty" in {
       given
         .commonPrecondition
@@ -218,7 +180,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
 
         whenReady(result) { res =>
           res.status mustBe 303
-          res.header(HeaderNames.LOCATION) mustBe Some(routes.IndexController.onPageLoad().url)
+          res.header(HeaderNames.LOCATION) mustBe Some(routes.RegistrationConfirmationController.onPageLoad.url)
         }
       }
     }

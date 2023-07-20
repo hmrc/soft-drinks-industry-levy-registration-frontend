@@ -187,7 +187,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
         options = JourneyOptions(
           continueUrl = s"http://localhost:8706/soft-drinks-industry-levy-registration/off-ramp/warehouses/${sdilNumber}",
           homeNavHref = None,
-          signOutHref = Some(controllers.auth.routes.AuthController.signOut().url),
+          signOutHref = Some(controllers.auth.routes.AuthController.signOut.url),
           accessibilityFooterUrl = None,
           phaseFeedbackLink = Some(s"http://localhost:9250/contact/beta-feedback?service=soft-drinks-industry-levy-registration&backUrl=http%3A%2F%2Flocalhost%3A8706%2Fsoft-drinks-industry-levy-registration%2Fask-secondary-warehouses"),
           deskProServiceName = None,
@@ -210,10 +210,10 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
           )),
           timeoutConfig = Some(TimeoutConfig(
             timeoutAmount = 900,
-            timeoutUrl = controllers.auth.routes.AuthController.signOut().url,
+            timeoutUrl = controllers.auth.routes.AuthController.signOut.url,
             timeoutKeepAliveUrl = Some(routes.KeepAliveController.keepAlive.url)
           )),
-          serviceHref = Some(routes.IndexController.onPageLoad().url),
+          serviceHref = Some(routes.IndexController.onPageLoad.url),
           pageHeadingStyle = Some("govuk-heading-m")
         ),
         labels = Some(
@@ -358,7 +358,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
 
         whenReady(result) { res =>
           res.status mustBe 303
-          res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad().url)
+          res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
           getAnswers(identifier).map(userAnswers => userAnswers.data) mustBe expectedResult
           getAnswers(identifier).map(userAnswers => userAnswers.warehouseList).get mustBe Map.empty
 
@@ -381,7 +381,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
 
             whenReady(result) { res =>
               res.status mustBe 303
-              res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad().url)
+              res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
               val dataStoredForPage = getAnswers(identifier).fold[Option[Boolean]](None)(_.get(AskSecondaryWarehousesPage))
               dataStoredForPage.get mustBe radioNo
             }
@@ -399,7 +399,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
         options = JourneyOptions(
           continueUrl = s"http://localhost:8706/soft-drinks-industry-levy-registration/off-ramp/warehouses/${sdilNumber}",
           homeNavHref = None,
-          signOutHref = Some(controllers.auth.routes.AuthController.signOut().url),
+          signOutHref = Some(controllers.auth.routes.AuthController.signOut.url),
           accessibilityFooterUrl = None,
           phaseFeedbackLink = Some(s"http://localhost:9250/contact/beta-feedback?service=soft-drinks-industry-levy-registration&backUrl=http%3A%2F%2Flocalhost%3A8706%2Fsoft-drinks-industry-levy-registration%2Fchange-ask-secondary-warehouses"),
           deskProServiceName = None,
@@ -422,10 +422,10 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
           )),
           timeoutConfig = Some(TimeoutConfig(
             timeoutAmount = 900,
-            timeoutUrl = controllers.auth.routes.AuthController.signOut().url,
+            timeoutUrl = controllers.auth.routes.AuthController.signOut.url,
             timeoutKeepAliveUrl = Some(routes.KeepAliveController.keepAlive.url)
           )),
-          serviceHref = Some(routes.IndexController.onPageLoad().url),
+          serviceHref = Some(routes.IndexController.onPageLoad.url),
           pageHeadingStyle = Some("govuk-heading-m")
         ),
         labels = Some(

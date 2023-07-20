@@ -20,7 +20,6 @@ import repositories.{SDILSessionCacheRepository, SessionRepository}
 import testSupport.databases.SessionDatabaseOperations
 import uk.gov.hmrc.crypto.PlainText
 import uk.gov.hmrc.play.bootstrap.frontend.filters.crypto.SessionCookieCrypto
-import uk.gov.hmrc.play.health.HealthController
 
 import java.time.{Clock, ZoneOffset}
 import scala.concurrent.ExecutionContext

@@ -123,7 +123,7 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
                 smallProducerList = List(SmallProducer("","", (0,0))),
                 packagingSiteList = Map("" -> Site(UkAddress(List.empty,""),None,None,None)),
                 warehouseList = Map("" -> Warehouse(None, UkAddress(List.empty,""))),
-                submitted = true
+                submittedOn = None
               )
           }
           given
@@ -145,7 +145,7 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
               updatedAnswers.get.address mustBe None
               updatedAnswers.get.warehouseList mustBe Map.empty
               updatedAnswers.get.packagingSiteList mustBe Map.empty
-              updatedAnswers.get.submitted mustBe false
+              updatedAnswers.get.submittedOn mustBe None
               updatedAnswers.get.smallProducerList mustBe List.empty
               updatedAnswers.get.data mustBe Json.obj("enterBusinessDetails" -> Json.obj("utr" -> "0000001611", "postcode" -> "GU14 8NL"))
             }
@@ -160,7 +160,7 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
                 smallProducerList = List(SmallProducer("","", (0,0))),
                 packagingSiteList = Map("" -> Site(UkAddress(List.empty,""),None,None,None)),
                 warehouseList = Map("" -> Warehouse(None, UkAddress(List.empty,""))),
-                submitted = true
+                submittedOn = None
               )
           }
           given
@@ -179,7 +179,7 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
               updatedAnswers.get.address mustBe userAnswersWithIdenticalData.address
               updatedAnswers.get.warehouseList mustBe userAnswersWithIdenticalData.warehouseList
               updatedAnswers.get.packagingSiteList mustBe userAnswersWithIdenticalData.packagingSiteList
-              updatedAnswers.get.submitted mustBe userAnswersWithIdenticalData.submitted
+              updatedAnswers.get.submittedOn mustBe userAnswersWithIdenticalData.submittedOn
               updatedAnswers.get.smallProducerList mustBe userAnswersWithIdenticalData.smallProducerList
               updatedAnswers.get.data mustBe userAnswersWithIdenticalData.data
             }

@@ -30,7 +30,7 @@ class RampOffControllerISpec extends ControllerITTestHelper {
             updatedUserAnswers.id mustBe emptyUserAnswers.id
             updatedUserAnswers.data mustBe emptyUserAnswers.data
             updatedUserAnswers.packagingSiteList mustBe emptyUserAnswers.packagingSiteList
-            updatedUserAnswers.submitted mustBe emptyUserAnswers.submitted
+            updatedUserAnswers.submittedOn mustBe emptyUserAnswers.submittedOn
             updatedUserAnswers.smallProducerList mustBe emptyUserAnswers.smallProducerList
             updatedUserAnswers.address mustBe Some(UkAddress(List("line 1", "line 2", "line 3", "line 4"), "aa1 1aa", alfId = Some(alfId)))
             updatedUserAnswers.warehouseList mustBe emptyUserAnswers.warehouseList
@@ -58,7 +58,7 @@ class RampOffControllerISpec extends ControllerITTestHelper {
             updatedUserAnswers.id mustBe emptyUserAnswers.id
             updatedUserAnswers.data mustBe emptyUserAnswers.data
             updatedUserAnswers.packagingSiteList mustBe emptyUserAnswers.packagingSiteList
-            updatedUserAnswers.submitted mustBe emptyUserAnswers.submitted
+            updatedUserAnswers.submittedOn mustBe emptyUserAnswers.submittedOn
             updatedUserAnswers.address mustBe Some(UkAddress(List("line 1", "line 2", "line 3", "line 4"), "aa1 1aa", alfId = Some(alfId)))
             updatedUserAnswers.smallProducerList mustBe emptyUserAnswers.smallProducerList
             updatedUserAnswers.warehouseList mustBe emptyUserAnswers.warehouseList
@@ -88,7 +88,7 @@ class RampOffControllerISpec extends ControllerITTestHelper {
             updatedUserAnswers.id mustBe emptyUserAnswers.id
             updatedUserAnswers.data mustBe emptyUserAnswers.data
             updatedUserAnswers.packagingSiteList mustBe emptyUserAnswers.packagingSiteList
-            updatedUserAnswers.submitted mustBe emptyUserAnswers.submitted
+            updatedUserAnswers.submittedOn mustBe emptyUserAnswers.submittedOn
             updatedUserAnswers.smallProducerList mustBe emptyUserAnswers.smallProducerList
             updatedUserAnswers.warehouseList mustBe emptyUserAnswers.warehouseList
             updatedUserAnswers.address mustBe emptyUserAnswers.address
@@ -115,7 +115,7 @@ class RampOffControllerISpec extends ControllerITTestHelper {
             updatedUserAnswers.id mustBe emptyUserAnswers.id
             updatedUserAnswers.data mustBe emptyUserAnswers.data
             updatedUserAnswers.packagingSiteList mustBe emptyUserAnswers.packagingSiteList
-            updatedUserAnswers.submitted mustBe emptyUserAnswers.submitted
+            updatedUserAnswers.submittedOn mustBe emptyUserAnswers.submittedOn
             updatedUserAnswers.smallProducerList mustBe emptyUserAnswers.smallProducerList
             updatedUserAnswers.warehouseList mustBe Map(sdilId -> Warehouse(Some("soft drinks ltd"), UkAddress(List("line 1", "line 2", "line 3", "line 4"), "aa1 1aa", alfId = Some(alfId))))
             updatedUserAnswers.address mustBe emptyUserAnswers.address
@@ -143,7 +143,7 @@ class RampOffControllerISpec extends ControllerITTestHelper {
             updatedUserAnswers.id mustBe emptyUserAnswers.id
             updatedUserAnswers.data mustBe emptyUserAnswers.data
             updatedUserAnswers.packagingSiteList mustBe emptyUserAnswers.packagingSiteList
-            updatedUserAnswers.submitted mustBe emptyUserAnswers.submitted
+            updatedUserAnswers.submittedOn mustBe emptyUserAnswers.submittedOn
             updatedUserAnswers.smallProducerList mustBe emptyUserAnswers.smallProducerList
             updatedUserAnswers.warehouseList mustBe Map(sdilId -> Warehouse(Some("soft drinks ltd"), UkAddress(List("line 1", "line 2", "line 3", "line 4"), "aa1 1aa", alfId = Some(alfId))))
             updatedUserAnswers.address mustBe emptyUserAnswers.address
@@ -173,7 +173,7 @@ class RampOffControllerISpec extends ControllerITTestHelper {
             updatedUserAnswers.id mustBe emptyUserAnswers.id
             updatedUserAnswers.data mustBe emptyUserAnswers.data
             updatedUserAnswers.packagingSiteList mustBe emptyUserAnswers.packagingSiteList
-            updatedUserAnswers.submitted mustBe emptyUserAnswers.submitted
+            updatedUserAnswers.submittedOn mustBe emptyUserAnswers.submittedOn
             updatedUserAnswers.smallProducerList mustBe emptyUserAnswers.smallProducerList
             updatedUserAnswers.warehouseList mustBe emptyUserAnswers.warehouseList
             updatedUserAnswers.address mustBe emptyUserAnswers.address
@@ -201,7 +201,7 @@ class RampOffControllerISpec extends ControllerITTestHelper {
             updatedUserAnswers.data mustBe emptyUserAnswers.data
             updatedUserAnswers.packagingSiteList mustBe Map(sdilId ->
               Site(UkAddress(List("line 1", "line 2", "line 3", "line 4"), "aa1 1aa", alfId = Some(alfId)), None, Some("soft drinks ltd"), None))
-            updatedUserAnswers.submitted mustBe emptyUserAnswers.submitted
+            updatedUserAnswers.submittedOn mustBe emptyUserAnswers.submittedOn
             updatedUserAnswers.smallProducerList mustBe emptyUserAnswers.smallProducerList
             updatedUserAnswers.warehouseList mustBe emptyUserAnswers.warehouseList
             updatedUserAnswers.address mustBe emptyUserAnswers.address
@@ -230,7 +230,7 @@ class RampOffControllerISpec extends ControllerITTestHelper {
             updatedUserAnswers.data mustBe emptyUserAnswers.data
             updatedUserAnswers.packagingSiteList mustBe Map(sdilId ->
               Site(UkAddress(List("line 1", "line 2", "line 3", "line 4"), "aa1 1aa", alfId = Some(alfId)), None, Some("soft drinks ltd"), None))
-            updatedUserAnswers.submitted mustBe emptyUserAnswers.submitted
+            updatedUserAnswers.submittedOn mustBe emptyUserAnswers.submittedOn
             updatedUserAnswers.smallProducerList mustBe emptyUserAnswers.smallProducerList
             updatedUserAnswers.warehouseList mustBe emptyUserAnswers.warehouseList
             updatedUserAnswers.address mustBe emptyUserAnswers.address
@@ -260,7 +260,7 @@ class RampOffControllerISpec extends ControllerITTestHelper {
             updatedUserAnswers.id mustBe emptyUserAnswers.id
             updatedUserAnswers.data mustBe emptyUserAnswers.data
             updatedUserAnswers.packagingSiteList mustBe emptyUserAnswers.packagingSiteList
-            updatedUserAnswers.submitted mustBe emptyUserAnswers.submitted
+            updatedUserAnswers.submittedOn mustBe emptyUserAnswers.submittedOn
             updatedUserAnswers.smallProducerList mustBe emptyUserAnswers.smallProducerList
             updatedUserAnswers.warehouseList mustBe emptyUserAnswers.warehouseList
             updatedUserAnswers.address mustBe emptyUserAnswers.address

@@ -49,7 +49,8 @@ class RequiredUserAnswers @Inject()(genericLogger: GenericLogger)(implicit val e
     }
   }
 
-  private[controllers] def returnMissingAnswers[A: ClassTag, B: ClassTag](list: List[RequiredPage[_,_,_]])(implicit request: DataRequest[_]): List[RequiredPage[_,_,_]] = {
+  private[controllers] def returnMissingAnswers[A: ClassTag, B: ClassTag](list: List[RequiredPage[_,_,_]])
+                                                                         (implicit request: DataRequest[_]): List[RequiredPage[_,_,_]] = {
     list.filterNot { listItem =>
       val currentPage: Option[A] = request.userAnswers.get(listItem.pageRequired.asInstanceOf[QuestionPage[A]])(listItem.reads.asInstanceOf[Reads[A]])
       (currentPage.isDefined, listItem.basedOnPreviousPage.isDefined) match {
@@ -69,7 +70,8 @@ class RequiredUserAnswers @Inject()(genericLogger: GenericLogger)(implicit val e
       RequiredPage(OrganisationTypePage, Option.empty)(implicitly[Reads[OrganisationType]]),
       RequiredPage(HowManyLitresGloballyPage, Option.empty)(implicitly[Reads[HowManyLitresGlobally]]),
       RequiredPage(ThirdPartyPackagersPage,
-        Some(PreviousPage(HowManyLitresGloballyPage, List(HowManyLitresGlobally.enumerable.withName("small").get))(implicitly[Reads[HowManyLitresGlobally]])))(implicitly[Reads[Boolean]]),
+        Some(PreviousPage(HowManyLitresGloballyPage,
+          List(HowManyLitresGlobally.enumerable.withName("small").get))(implicitly[Reads[HowManyLitresGlobally]])))(implicitly[Reads[Boolean]]),
       RequiredPage(OperatePackagingSitesPage,
         Some(PreviousPage(HowManyLitresGloballyPage,
           List(HowManyLitresGlobally.enumerable.withName("small").get,
