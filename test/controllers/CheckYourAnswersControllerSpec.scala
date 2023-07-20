@@ -152,6 +152,8 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
       val userAnswerDate: LocalDate = LocalDate.of(2023, 6, 1)
       val userAnswers = {
         emptyUserAnswers
+          .copy(packagingSiteList = packagingSiteListWith3)
+          .copy(warehouseList = warehouseListWith1)
           .set(VerifyPage, YesRegister).success.value
           .set(OrganisationTypePage, LimitedCompany).success.value
           .set(HowManyLitresGloballyPage, Large).success.value
@@ -197,7 +199,6 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
         val userAnswers = {
           emptyUserAnswers
             .copy(packagingSiteList = packagingSiteListWith3)
-            .copy(warehouseList = warehouseListWith1)
             .set(VerifyPage, YesRegister).success.value
             .set(OrganisationTypePage, LimitedCompany).success.value
             .set(HowManyLitresGloballyPage, Large).success.value

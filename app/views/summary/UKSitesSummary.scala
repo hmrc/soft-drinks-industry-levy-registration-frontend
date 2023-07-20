@@ -21,10 +21,45 @@ import models.{CheckMode, UserAnswers}
 import pages.{AskSecondaryWarehousesPage, PackAtBusinessAddressPage}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
 
 object UKSitesSummary {
+
+  def getPackAtBusinessAddressRow(userAnswers: UserAnswers, isCheckAnswers: Boolean)(implicit messages: Messages): SummaryListRow = {
+      SummaryListRowViewModel(
+        key = messages("packagingSiteDetails.checkYourAnswersLabel" ,
+          userAnswers.packagingSiteList.size.toString, if(userAnswers.packagingSiteList.size > 1) {"s"} else {""}),
+        value = ValueViewModel(userAnswers.packagingSiteList.size.toString).withCssClass("align-right"),
+        actions = if (isCheckAnswers) {
+          Seq(
+            ActionItemViewModel("site.change", routes.PackAtBusinessAddressController.onPageLoad(CheckMode).url)
+              .withAttribute(("id", "change-packaging-sites"))
+              .withVisuallyHiddenText(messages("packAtBusinessAddress.change.hidden"))
+          )
+        } else {
+          Seq.empty
+        }
+      )
+  }
+
+  def getAskSecondaryWarehouseRow (userAnswers: UserAnswers, isCheckAnswers: Boolean)(implicit messages: Messages): SummaryListRow = {
+      SummaryListRowViewModel(
+        key = messages("warehouseDetails.checkYourAnswersLabel",
+          userAnswers.warehouseList.size.toString, if(userAnswers.warehouseList.size > 1) {"s"} else {""}),
+        value = ValueViewModel(userAnswers.warehouseList.size.toString).withCssClass("align-right"),
+        actions = if (isCheckAnswers) {
+          Seq(
+            ActionItemViewModel("site.change", routes.AskSecondaryWarehousesController.onPageLoad(CheckMode).url)
+              .withAttribute(("id", "change-warehouse-sites"))
+              .withVisuallyHiddenText(messages("askSecondaryWarehouses.change.hidden"))
+          )
+        } else {
+          Seq.empty
+        }
+      )
+  }
 
   def summaryList(userAnswers: UserAnswers, isCheckAnswers: Boolean)
                  (implicit messages: Messages): Option[(String, SummaryList)] = {
@@ -32,75 +67,21 @@ object UKSitesSummary {
       case (Some(true), Some(false)) =>
         Option(
           SummaryListViewModel(
-            rows = Seq(SummaryListRowViewModel(
-              key = messages("packagingSiteDetails.checkYourAnswersLabel" ,
-                userAnswers.packagingSiteList.size.toString, if(userAnswers.packagingSiteList.size > 1) {"s"} else {""}),
-              value = ValueViewModel(userAnswers.packagingSiteList.size.toString).withCssClass("align-right"),
-              actions = if (isCheckAnswers) {
-                Seq(
-                  ActionItemViewModel("site.change", routes.PackAtBusinessAddressController.onPageLoad(CheckMode).url)
-                    .withAttribute(("id", "change-packaging-sites"))
-                    .withVisuallyHiddenText(messages("packAtBusinessAddress.change.hidden"))
-                )
-              } else {
-                Seq.empty
-              }
-            )
-            )
+            rows = Seq(getPackAtBusinessAddressRow(userAnswers,isCheckAnswers))
           )
         ).map(list => "checkYourAnswers.sites" -> list)
       case (Some(false), Some(true)) =>
         Some(
           SummaryListViewModel(
-            rows = Seq(SummaryListRowViewModel(
-              key = messages("warehouseDetails.checkYourAnswersLabel",
-                userAnswers.warehouseList.size.toString, if(userAnswers.warehouseList.size > 1) {"s"} else {""}),
-              value = ValueViewModel(userAnswers.warehouseList.size.toString).withCssClass("align-right"),
-              actions = if (isCheckAnswers) {
-                Seq(
-                  ActionItemViewModel("site.change", routes.AskSecondaryWarehousesController.onPageLoad(CheckMode).url)
-                    .withAttribute(("id", "change-warehouse-sites"))
-                    .withVisuallyHiddenText(messages("SecondaryWarehouse.change.hidden"))
-                )
-              } else {
-                Seq.empty
-              }
-            )
-            )
+            rows = Seq(getAskSecondaryWarehouseRow(userAnswers, isCheckAnswers))
           )
         ).map(list => "checkYourAnswers.sites" -> list)
       case (Some(true), Some(true)) =>
         Some(
           SummaryListViewModel(
             Seq(
-              SummaryListRowViewModel(
-                key = messages("packagingSiteDetails.checkYourAnswersLabel" ,
-                  userAnswers.packagingSiteList.size.toString, if(userAnswers.packagingSiteList.size > 1) {"s"} else {""}),
-                value = ValueViewModel(userAnswers.packagingSiteList.size.toString).withCssClass("align-right"),
-                actions = if (isCheckAnswers) {
-                  Seq(
-                    ActionItemViewModel("site.change", routes.PackAtBusinessAddressController.onPageLoad(CheckMode).url)
-                      .withAttribute(("id", "change-packaging-sites"))
-                      .withVisuallyHiddenText(messages("packAtBusinessAddress.change.hidden"))
-                  )
-                } else {
-                  Seq.empty
-                }
-              ),
-              SummaryListRowViewModel(
-                key = messages("warehouseDetails.checkYourAnswersLabel",
-                  userAnswers.warehouseList.size.toString, if(userAnswers.warehouseList.size > 1) {"s"} else {""}),
-                value = ValueViewModel(userAnswers.warehouseList.size.toString).withCssClass("align-right"),
-                actions = if (isCheckAnswers) {
-                  Seq(
-                    ActionItemViewModel("site.change", routes.AskSecondaryWarehousesController.onPageLoad(CheckMode).url)
-                      .withAttribute(("id", "change-warehouse-sites"))
-                      .withVisuallyHiddenText(messages("askSecondaryWarehouses.change.hidden"))
-                  )
-                } else {
-                  Seq.empty
-                }
-              )
+              getPackAtBusinessAddressRow(userAnswers,isCheckAnswers),
+              getAskSecondaryWarehouseRow(userAnswers, isCheckAnswers)
             )
           )
         ).map(list => "checkYourAnswers.sites" -> list)
