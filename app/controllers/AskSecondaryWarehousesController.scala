@@ -78,7 +78,7 @@ class AskSecondaryWarehousesController @Inject()(
                 mode match {
                   case CheckMode =>
                     updateDatabaseWithoutRedirect(updatedAnswers.copy(warehouseList = Map.empty), AskSecondaryWarehousesPage).flatMap(_ =>
-                      Future.successful(routes.CheckYourAnswersController.onPageLoad().url))
+                      Future.successful(routes.CheckYourAnswersController.onPageLoad.url))
                   case _ =>
                     updateDatabaseWithoutRedirect(updatedAnswers.copy(warehouseList = Map.empty), AskSecondaryWarehousesPage).flatMap(_ =>
                       Future.successful(routes.ContactDetailsController.onPageLoad(mode).url))

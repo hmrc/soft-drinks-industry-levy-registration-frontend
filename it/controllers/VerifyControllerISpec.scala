@@ -266,7 +266,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
 
             whenReady(result) { res =>
               res.status mustBe 303
-              res.header(HeaderNames.LOCATION) mustBe Some(auth.routes.AuthController.signOutNoSurvey().url)
+              res.header(HeaderNames.LOCATION) mustBe Some(auth.routes.AuthController.signOutNoSurvey.url)
 
             }
           }
@@ -321,7 +321,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
 
               whenReady(result) { res =>
                 res.status mustBe 303
-                res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad().url)
+                res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
                 val userAnswersAfterPOST = getAnswers(identifier)
                 val dataStoredForPage = userAnswersAfterPOST.fold[Option[Verify]](None)(_.get(VerifyPage))
                 dataStoredForPage.nonEmpty mustBe true
@@ -346,7 +346,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
 
               whenReady(result) { res =>
                 res.status mustBe 303
-                res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad().url)
+                res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
                 val userAnswersAfterPOST = getAnswers(identifier)
                 val dataStoredForPage = userAnswersAfterPOST.fold[Option[Verify]](None)(_.get(VerifyPage))
                 dataStoredForPage.nonEmpty mustBe true
@@ -425,7 +425,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
 
           whenReady(result) { res =>
             res.status mustBe 303
-            res.header(HeaderNames.LOCATION) mustBe Some(auth.routes.AuthController.signOutNoSurvey().url)
+            res.header(HeaderNames.LOCATION) mustBe Some(auth.routes.AuthController.signOutNoSurvey.url)
 
           }
         }

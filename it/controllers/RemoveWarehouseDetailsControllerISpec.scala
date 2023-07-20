@@ -27,7 +27,7 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
 
           whenReady(result) { res =>
             res.status mustBe 303
-            res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.IndexController.onPageLoad().url)
+            res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.IndexController.onPageLoad.url)
           }
         }
       }
@@ -76,7 +76,7 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
 
           whenReady(result) { res =>
             res.status mustBe 303
-            res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.IndexController.onPageLoad().url)
+            res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.IndexController.onPageLoad.url)
           }
         }
       }

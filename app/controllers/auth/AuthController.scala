@@ -34,7 +34,7 @@ class AuthController @Inject()(
                                 identify: IdentifierAction
                               )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
-  def signOut(): Action[AnyContent] = identify.async {
+  def signOut: Action[AnyContent] = identify.async {
     implicit request =>
       sessionService
         .clear(request.internalId)
@@ -44,13 +44,13 @@ class AuthController @Inject()(
         }
   }
 
-  def signOutNoSurvey(): Action[AnyContent] = identify.async {
+  def signOutNoSurvey: Action[AnyContent] = identify.async {
     implicit request =>
     sessionService
       .clear(request.internalId)
       .map {
         _ =>
-        Redirect(config.signOutUrl, Map("continue" -> Seq(routes.SignedOutController.onPageLoad().url)))
+        Redirect(config.signOutUrl, Map("continue" -> Seq(routes.SignedOutController.onPageLoad.url)))
       }
   }
 }

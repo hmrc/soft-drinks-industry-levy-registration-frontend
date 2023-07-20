@@ -237,7 +237,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
                 val expectedLocation = if(yesSelected) {
                   routes.HowManyContractPackingController.onPageLoad(CheckMode).url
                 } else {
-                  routes.CheckYourAnswersController.onPageLoad().url
+                  routes.CheckYourAnswersController.onPageLoad.url
                 }
                 res.header(HeaderNames.LOCATION) mustBe Some(expectedLocation)
                 val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(ContractPackingPage))
@@ -263,7 +263,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
                 val expectedLocation = if (yesSelected) {
                   routes.HowManyContractPackingController.onPageLoad(CheckMode).url
                 } else {
-                  routes.CheckYourAnswersController.onPageLoad().url
+                  routes.CheckYourAnswersController.onPageLoad.url
                 }
                 res.header(HeaderNames.LOCATION) mustBe Some(expectedLocation)
                 val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(ContractPackingPage))

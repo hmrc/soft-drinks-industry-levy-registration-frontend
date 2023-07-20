@@ -16,12 +16,16 @@
 
 package controllers
 
+import models.HowManyLitresGlobally.{Large, Small}
+import models.OrganisationType.LimitedCompany
+import models.Verify.YesRegister
 import models.backend.UkAddress
-import models.{CheckMode, ContactDetails, LitresInBands}
-import org.jsoup.nodes.Element
+import models.{CheckMode, ContactDetails, LitresInBands, Verify}
+import org.jsoup.nodes.{Document, Element}
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
+import pages._
 
-import java.time.LocalDate
+import java.time.{LocalDate, LocalDateTime, ZoneOffset}
 import java.time.format.DateTimeFormatter
 
 
@@ -36,13 +40,80 @@ trait RegSummaryISpecHelper extends ControllerITTestHelper {
     val form = "form"
   }
 
+  val rosmAddress = UkAddress(List("105B Godfrey Marchant Grove", "Guildford"), "GU14 8NL")
+  val newAddress = UkAddress(List("10 Linden Close", "Langly"), "LA16 3KL")
+
   val dateFormatter = DateTimeFormatter.ofPattern("dd MM yyyy")
+
+  val submittedDate = LocalDateTime.of(2023, 7, 10, 14, 30).toInstant(ZoneOffset.UTC)
 
 
   val operatePackagingSiteLitres = LitresInBands(1000, 2000)
   val contractPackingLitres = LitresInBands(3000, 4000)
   val importsLitres = LitresInBands(5000, 6000)
   val startDate = LocalDate.of(2022, 6, 1)
+
+  val userAnswersWithLitres = emptyUserAnswers
+    .set(VerifyPage, Verify.No).success.value
+    .set(OrganisationTypePage, LimitedCompany).success.value
+    .set(HowManyLitresGloballyPage, Large).success.value
+    .set(OperatePackagingSitesPage, true).success.value
+    .set(HowManyOperatePackagingSitesPage, operatePackagingSiteLitres).success.value
+    .set(ContractPackingPage, true).success.value
+    .set(HowManyContractPackingPage, contractPackingLitres).success.value
+    .set(ImportsPage, true).success.value
+    .set(HowManyImportsPage, importsLitres).success.value
+    .set(StartDatePage, startDate).success.value
+    .set(PackAtBusinessAddressPage, true).success.value
+    .set(PackagingSiteDetailsPage, true).success.value
+    .set(AskSecondaryWarehousesPage, true).success.value
+    .set(WarehouseDetailsPage, true).success.value
+    .set(ContactDetailsPage, contactDetails).success.value
+
+  val userAnswersWithAllNo = emptyUserAnswers
+    .copy(address = Some(newAddress))
+    .set(VerifyPage, YesRegister).success.value
+    .set(OrganisationTypePage, LimitedCompany).success.value
+    .set(HowManyLitresGloballyPage, Small).success.value
+    .set(ThirdPartyPackagersPage, true).success.value
+    .set(OperatePackagingSitesPage, false).success.value
+    .set(ContractPackingPage, false).success.value
+    .set(ImportsPage, false).success.value
+    .set(StartDatePage, startDate).success.value
+    .set(PackAtBusinessAddressPage, true).success.value
+    .set(PackagingSiteDetailsPage, true).success.value
+    .set(AskSecondaryWarehousesPage, true).success.value
+    .set(WarehouseDetailsPage, true).success.value
+    .set(ContactDetailsPage, contactDetails).success.value
+
+  def validatePanel(panel: Element) = {
+    panel.getElementsByClass("govuk-panel__title").text() mustEqual "Application complete"
+    panel.getElementsByClass("govuk-panel__body").text() mustEqual s"We have received your application to register Super Lemonade Plc for the Soft Drinks Industry Levy"
+  }
+
+  def validateSummaryContent(document: Document) = {
+    val printPageElements = document.getElementById("printPage")
+    val link = printPageElements.getElementsByClass("govuk-link")
+    link.text() mustEqual "Print this page"
+    link.attr("href") mustEqual "javascript:window.print()"
+
+    val applicationSentAt = document.getElementById("applicationSentAt")
+    applicationSentAt.text() mustBe "Your application to register for the Soft Drinks Industry Levy was sent on 10 July 2023 at 2:30pm."
+
+    val applicationSentEmailed = document.getElementById("applicationSentEmailed")
+    applicationSentEmailed.text() mustBe s"We have sent a registration-confirmation email to ${contactDetails.email}."
+
+    document.getElementById("whatNextHeader").text() mustEqual "What happens next"
+    document.getElementById("whatNextTextP1").text() mustEqual "You do not need to do anything at this time."
+    document.getElementById("whatNextTextP2").text() mustEqual s"We will send your Soft Drinks Industry Levy reference number to ${contactDetails.email} within 24 hours."
+
+    document.getElementById("needHelp").text() mustEqual "Help using this service"
+    document.getElementById("needHelpP1").text() mustEqual "Call the Soft Drinks Industry Helpline on 0300 200 1000 if you:"
+    val listItems = document.getElementById("helpList").getElementsByTag("li")
+    listItems.size() mustBe 2
+    listItems.get(0).text() mustBe "do not receive your reference number"
+    listItems.get(1).text() mustBe "need to make a change to your application"
+  }
 
   def validateBusinessDetailsSummaryList(summaryList: Element,
                                          utr: String,

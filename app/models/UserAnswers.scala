@@ -28,14 +28,14 @@ import java.time.Instant
 import scala.util.{Failure, Success, Try}
 
 case class UserAnswers(
-                              id: String,
-                              data: JsObject = Json.obj(),
-                              address: Option[UkAddress] = None,
-                              smallProducerList: List[SmallProducer] = List.empty,
-                              packagingSiteList: Map[String, Site] = Map.empty,
-                              warehouseList: Map[String, Warehouse] = Map.empty,
-                              submitted: Boolean = false,
-                              lastUpdated: Instant = Instant.now
+                        id: String,
+                        data: JsObject = Json.obj(),
+                        address: Option[UkAddress] = None,
+                        smallProducerList: List[SmallProducer] = List.empty,
+                        packagingSiteList: Map[String, Site] = Map.empty,
+                        warehouseList: Map[String, Warehouse] = Map.empty,
+                        submittedOn: Option[Instant] = None,
+                        lastUpdated: Instant = Instant.now
                             ) {
 
   def get[A](page: Gettable[A])(implicit rds: Reads[A]): Option[A] =
@@ -128,14 +128,14 @@ object UserAnswers {
             (__ \ "smallProducerList").read[EncryptedValue] and
             (__ \ "packagingSiteList").read[Map[String, EncryptedValue]] and
             (__ \ "warehouseList").read[Map[String, EncryptedValue]] and
-            (__ \ "submitted").read[Boolean] and
+            (__ \ "submittedOn").readNullable[Instant] and
             (__ \ "lastUpdated").read[Instant]
           )(ModelEncryption.decryptUserAnswers _)
       }
 
       def writes(implicit encryption: Encryption): OWrites[UserAnswers] = new OWrites[UserAnswers] {
         override def writes(userAnswers: UserAnswers): JsObject = {
-          val encryptedValue: (String, EncryptedValue, EncryptedValue, EncryptedValue, Map[String, EncryptedValue], Map[String, EncryptedValue], Boolean, Instant) = {
+          val encryptedValue: (String, EncryptedValue, EncryptedValue, EncryptedValue, Map[String, EncryptedValue], Map[String, EncryptedValue], Option[Instant], Instant) = {
             ModelEncryption.encryptUserAnswers(userAnswers)
           }
           Json.obj(
@@ -145,7 +145,7 @@ object UserAnswers {
             "smallProducerList" -> encryptedValue._4,
             "packagingSiteList" -> encryptedValue._5,
             "warehouseList" -> encryptedValue._6,
-            "submitted" -> encryptedValue._7,
+            "submittedOn" -> encryptedValue._7,
             "lastUpdated" -> encryptedValue._8
           )
         }

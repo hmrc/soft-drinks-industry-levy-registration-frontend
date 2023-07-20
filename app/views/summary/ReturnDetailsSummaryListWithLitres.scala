@@ -56,7 +56,7 @@ trait ReturnDetailsSummaryListWithLitres extends ReturnDetailsSummaryRowHelper {
   private def getLitresForSmallProducer(userAnswers: UserAnswers, isCheckAnswers: Boolean)
                                        (implicit messages: Messages): Seq[SummaryListRow] = {
     val smallProducerList = userAnswers.smallProducerList
-    if(userAnswers.get(page).contains(true) && smallProducerList.nonEmpty) {
+    if(userAnswers.get(page).getOrElse(false) && smallProducerList.nonEmpty) {
       val lowBandLitres = smallProducerList.map(_.litreage._1).sum
       val highBandLitres = smallProducerList.map(_.litreage._2).sum
       val litresInBands = LitresInBands(lowBandLitres, highBandLitres)

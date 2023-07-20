@@ -84,7 +84,7 @@ class WarehouseDetailsController @Inject()(
             }else if(mode == NormalMode){
               Future.successful(routes.ContactDetailsController.onPageLoad(mode).url)
             } else {
-              Future.successful(routes.CheckYourAnswersController.onPageLoad().url)
+              Future.successful(routes.CheckYourAnswersController.onPageLoad.url)
             }
           } yield Redirect(onwardUrl)
         }

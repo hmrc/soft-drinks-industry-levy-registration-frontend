@@ -42,7 +42,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration).build()
 
       running(application) {
-        val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad().url)
+        val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad.url)
 
         val result = route(application, request).value
 
@@ -71,7 +71,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
       val application = applicationBuilder(userAnswers = Some(userAnswers), rosmRegistration = rosmRegistration).build()
 
       running(application) {
-        val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad().url)
+        val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad.url)
 
         val result = route(application, request).value
 
@@ -102,7 +102,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
       val application = applicationBuilder(userAnswers = Some(userAnswers), utr = Some("0000000022"), rosmRegistration = rosmRegistration).build()
 
       running(application) {
-        val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad().url)
+        val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad.url)
 
         val result = route(application, request).value
 
@@ -126,7 +126,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(Seq(businessDetails, operatePackagingSites, contractPacking, imports, startDate, contactDetails),
-          routes.CheckYourAnswersController.onSubmit())(request, messages(application)).toString
+          routes.CheckYourAnswersController.onSubmit)(request, messages(application)).toString
       }
     }
     "must redirect to Journey Recovery for a GET if no existing data is found" in {
@@ -134,7 +134,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
       val application = applicationBuilder(userAnswers = None, rosmRegistration = rosmRegistration).build()
 
       running(application) {
-        val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad().url)
+        val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad.url)
 
         val result = route(application, request).value
 
@@ -165,12 +165,12 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(POST, CheckYourAnswersController.onSubmit().url).withFormUrlEncodedBody()
+        val request = FakeRequest(POST, CheckYourAnswersController.onSubmit.url).withFormUrlEncodedBody()
 
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual IndexController.onPageLoad().url
+        redirectLocation(result).value mustEqual RegistrationConfirmationController.onPageLoad.url
       }
     }
     "must Redirect to verify controller when empty user answers on POST" in {
@@ -178,7 +178,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(POST, CheckYourAnswersController.onSubmit().url).withFormUrlEncodedBody()
+        val request = FakeRequest(POST, CheckYourAnswersController.onSubmit.url).withFormUrlEncodedBody()
 
         val result = route(application, request).value
 
@@ -208,7 +208,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
         val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
         running(application) {
-          val request = FakeRequest(POST, CheckYourAnswersController.onSubmit().url).withFormUrlEncodedBody()
+          val request = FakeRequest(POST, CheckYourAnswersController.onSubmit.url).withFormUrlEncodedBody()
 
           val result = route(application, request).value
 
@@ -221,7 +221,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
       val application = applicationBuilder(userAnswers = None).build()
 
       running(application) {
-        val request = FakeRequest(POST, CheckYourAnswersController.onSubmit().url).withFormUrlEncodedBody()
+        val request = FakeRequest(POST, CheckYourAnswersController.onSubmit.url).withFormUrlEncodedBody()
 
         val result = route(application, request).value
 

@@ -23,11 +23,13 @@ import uk.gov.hmrc.auth.core.{AffinityGroup, Assistant, CredentialRole, Enrolmen
 trait ActionHelpers {
 
   val registrationRetrieval = allEnrolments and credentialRole and internalId and affinityGroup
+  val TWO = 2
+  val FOUR = 4
 
   protected def getSdilEnrolment(enrolments: Enrolments): Option[EnrolmentIdentifier] = {
     val sdil = for {
       enrolment <- enrolments.enrolments if enrolment.key.equalsIgnoreCase("HMRC-OBTDS-ORG")
-      sdil      <- enrolment.getIdentifier("EtmpRegistrationNumber") if sdil.value.slice(2, 4) == "SD"
+      sdil      <- enrolment.getIdentifier("EtmpRegistrationNumber") if sdil.value.slice(TWO, FOUR) == "SD"
     } yield {
       sdil
     }

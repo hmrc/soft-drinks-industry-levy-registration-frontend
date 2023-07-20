@@ -344,7 +344,7 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
             options = JourneyOptions(
               continueUrl = s"$offRampBaseUrl/${if(mode == CheckMode){"change-"}else{""}}packing-site-details/$sdilId",
               homeNavHref = None,
-              signOutHref = Some(controllers.auth.routes.AuthController.signOut().url),
+              signOutHref = Some(controllers.auth.routes.AuthController.signOut.url),
               accessibilityFooterUrl = None,
               phaseFeedbackLink = Some(s"http://localhost:9250/contact/beta-feedback?service=soft-drinks-industry-levy-registration&backUrl=http%3A%2F%2Flocalhost%3A8706bar"),
               deskProServiceName = None,
@@ -367,10 +367,10 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
               )),
               timeoutConfig = Some(TimeoutConfig(
                 timeoutAmount = frontendAppConfig.timeout,
-                timeoutUrl = controllers.auth.routes.AuthController.signOut().url,
+                timeoutUrl = controllers.auth.routes.AuthController.signOut.url,
                 timeoutKeepAliveUrl = Some(routes.KeepAliveController.keepAlive.url)
               )),
-              serviceHref = Some(routes.IndexController.onPageLoad().url),
+              serviceHref = Some(routes.IndexController.onPageLoad.url),
               pageHeadingStyle = Some("govuk-heading-m")
             ),
             labels = Some(
@@ -417,7 +417,7 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
             options = JourneyOptions(
               continueUrl = s"$offRampBaseUrl/${if(mode == CheckMode){"change-"}else{""}}warehouses/$sdilId",
               homeNavHref = None,
-              signOutHref = Some(controllers.auth.routes.AuthController.signOut().url),
+              signOutHref = Some(controllers.auth.routes.AuthController.signOut.url),
               accessibilityFooterUrl = None,
               phaseFeedbackLink = Some(s"http://localhost:9250/contact/beta-feedback?service=soft-drinks-industry-levy-registration&backUrl=http%3A%2F%2Flocalhost%3A8706bar"),
               deskProServiceName = None,
@@ -440,10 +440,10 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
               )),
               timeoutConfig = Some(TimeoutConfig(
                 timeoutAmount = frontendAppConfig.timeout,
-                timeoutUrl = controllers.auth.routes.AuthController.signOut().url,
+                timeoutUrl = controllers.auth.routes.AuthController.signOut.url,
                 timeoutKeepAliveUrl = Some(routes.KeepAliveController.keepAlive.url)
               )),
-              serviceHref = Some(routes.IndexController.onPageLoad().url),
+              serviceHref = Some(routes.IndexController.onPageLoad.url),
               pageHeadingStyle = Some("govuk-heading-m")
             ),
             labels = Some(
@@ -491,7 +491,7 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
             options = JourneyOptions(
               continueUrl = s"$offRampBaseUrl/${if(mode == CheckMode){"change-"}else{""}}new-contact-address/$sdilId",
               homeNavHref = None,
-              signOutHref = Some(controllers.auth.routes.AuthController.signOut().url),
+              signOutHref = Some(controllers.auth.routes.AuthController.signOut.url),
               accessibilityFooterUrl = None,
               phaseFeedbackLink = Some(s"http://localhost:9250/contact/beta-feedback?service=soft-drinks-industry-levy-registration&backUrl=http%3A%2F%2Flocalhost%3A8706bar"),
               deskProServiceName = None,
@@ -514,10 +514,10 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
               )),
               timeoutConfig = Some(TimeoutConfig(
                 timeoutAmount = frontendAppConfig.timeout,
-                timeoutUrl = controllers.auth.routes.AuthController.signOut().url,
+                timeoutUrl = controllers.auth.routes.AuthController.signOut.url,
                 timeoutKeepAliveUrl = Some(routes.KeepAliveController.keepAlive.url)
               )),
-              serviceHref = Some(routes.IndexController.onPageLoad().url),
+              serviceHref = Some(routes.IndexController.onPageLoad.url),
               pageHeadingStyle = Some("govuk-heading-m")
             ),
             labels = Some(
@@ -576,7 +576,7 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
             options = JourneyOptions(
               continueUrl = s"$offRampBaseUrl/${if(mode == CheckMode){"change-"}else{""}}warehouses/$exampleSdilIdWeGenerate",
               homeNavHref = None,
-              signOutHref = Some(controllers.auth.routes.AuthController.signOut().url),
+              signOutHref = Some(controllers.auth.routes.AuthController.signOut.url),
               accessibilityFooterUrl = None,
               phaseFeedbackLink = Some(s"http://localhost:9250/contact/beta-feedback?service=soft-drinks-industry-levy-registration&backUrl=http%3A%2F%2Flocalhost%3A8706${request.uri}"),
               deskProServiceName = None,
@@ -599,10 +599,10 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
               )),
               timeoutConfig = Some(TimeoutConfig(
                 timeoutAmount = frontendAppConfig.timeout,
-                timeoutUrl = controllers.auth.routes.AuthController.signOut().url,
+                timeoutUrl = controllers.auth.routes.AuthController.signOut.url,
                 timeoutKeepAliveUrl = Some(routes.KeepAliveController.keepAlive.url)
               )),
-              serviceHref = Some(routes.IndexController.onPageLoad().url),
+              serviceHref = Some(routes.IndexController.onPageLoad.url),
               pageHeadingStyle = Some("govuk-heading-m")
             ),
             labels = Some(
@@ -648,7 +648,7 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
             options = JourneyOptions(
               continueUrl = s"$offRampBaseUrl/${if(mode == CheckMode){"change-"}else{""}}packing-site-details/$exampleSdilIdWeGenerate",
               homeNavHref = None,
-              signOutHref = Some(controllers.auth.routes.AuthController.signOut().url),
+              signOutHref = Some(controllers.auth.routes.AuthController.signOut.url),
               accessibilityFooterUrl = None,
               phaseFeedbackLink = Some(s"http://localhost:9250/contact/beta-feedback?service=soft-drinks-industry-levy-registration&backUrl=http%3A%2F%2Flocalhost%3A8706${request.uri}"),
               deskProServiceName = None,
@@ -671,10 +671,10 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
               )),
               timeoutConfig = Some(TimeoutConfig(
                 timeoutAmount = frontendAppConfig.timeout,
-                timeoutUrl = controllers.auth.routes.AuthController.signOut().url,
+                timeoutUrl = controllers.auth.routes.AuthController.signOut.url,
                 timeoutKeepAliveUrl = Some(routes.KeepAliveController.keepAlive.url)
               )),
-              serviceHref = Some(routes.IndexController.onPageLoad().url),
+              serviceHref = Some(routes.IndexController.onPageLoad.url),
               pageHeadingStyle = Some("govuk-heading-m")
             ),
             labels = Some(

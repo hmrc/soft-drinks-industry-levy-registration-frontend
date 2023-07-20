@@ -35,14 +35,14 @@ class NavigatorSpec extends SpecBase {
       "must go from a page that doesn't exist in the route map to Index" in {
 
         case object UnknownPage extends Page
-        navigator.nextPage(UnknownPage, NormalMode, UserAnswers("id")) mustBe routes.IndexController.onPageLoad()
+        navigator.nextPage(UnknownPage, NormalMode, UserAnswers("id")) mustBe routes.IndexController.onPageLoad
       }
 
       "when on organisation type page" - {
         "must navigate to cannot register partnership page and partnership is selected" in {
           val result = navigator.nextPage(OrganisationTypePage, NormalMode,
             UserAnswers("id", Json.obj(OrganisationTypePage.toString -> Partnership.toString)))
-          result mustBe routes.CannotRegisterPartnershipController.onPageLoad()
+          result mustBe routes.CannotRegisterPartnershipController.onPageLoad
         }
 
         "must navigate to how many litres globally page and limited company is selected" in {
@@ -93,7 +93,7 @@ class NavigatorSpec extends SpecBase {
         "must navigate to index controller page when no answer available in user answers" in {
           val result = navigator.nextPage(HowManyLitresGloballyPage, NormalMode,
             UserAnswers("id", Json.obj()))
-          result mustBe routes.IndexController.onPageLoad()
+          result mustBe routes.IndexController.onPageLoad
         }
 
       }
@@ -164,20 +164,20 @@ class NavigatorSpec extends SpecBase {
       "must go from a page that doesn't exist in the edit route map to CheckYourAnswers" in {
 
         case object UnknownPage extends Page
-        navigator.nextPage(UnknownPage, CheckMode, UserAnswers("id")) mustBe routes.CheckYourAnswersController.onPageLoad()
+        navigator.nextPage(UnknownPage, CheckMode, UserAnswers("id")) mustBe routes.CheckYourAnswersController.onPageLoad
       }
 
       "when on organisation type page" - {
         "must navigate to cannot register partnership page in check mode" in {
           val result = navigator.nextPage(OrganisationTypePage, CheckMode,
             UserAnswers("id", Json.obj(OrganisationTypePage.toString -> Partnership.toString)))
-          result mustBe routes.CannotRegisterPartnershipController.onPageLoad()
+          result mustBe routes.CannotRegisterPartnershipController.onPageLoad
         }
 
         "must navigate to check your answers page in check mode" in {
           val result = navigator.nextPage(OrganisationTypePage, CheckMode,
             UserAnswers("id", Json.obj(OrganisationTypePage.toString -> LimitedCompany.toString)))
-          result mustBe routes.CheckYourAnswersController.onPageLoad()
+          result mustBe routes.CheckYourAnswersController.onPageLoad
         }
       }
 
@@ -203,7 +203,7 @@ class NavigatorSpec extends SpecBase {
         "must navigate to index controller page when no answer available in user answers" in {
           val result = navigator.nextPage(HowManyLitresGloballyPage, CheckMode,
             UserAnswers("id", Json.obj()))
-          result mustBe routes.IndexController.onPageLoad()
+          result mustBe routes.IndexController.onPageLoad
         }
       }
 
@@ -211,13 +211,13 @@ class NavigatorSpec extends SpecBase {
         "must navigate to operate packaging sites page when yes is selected" in {
           val result = navigator.nextPage(ThirdPartyPackagersPage, CheckMode,
             UserAnswers("id", Json.obj(ThirdPartyPackagersPage.toString -> true)))
-          result mustBe routes.CheckYourAnswersController.onPageLoad()
+          result mustBe routes.CheckYourAnswersController.onPageLoad
         }
 
         "must navigate to operate packaging sites page when no is selected" in {
           val result = navigator.nextPage(ThirdPartyPackagersPage, CheckMode,
             UserAnswers("id", Json.obj(ThirdPartyPackagersPage.toString -> false)))
-          result mustBe routes.CheckYourAnswersController.onPageLoad()
+          result mustBe routes.CheckYourAnswersController.onPageLoad
         }
       }
 
@@ -231,7 +231,7 @@ class NavigatorSpec extends SpecBase {
         "must navigate to check your answers when no is selected" in {
           val result = navigator.nextPage(OperatePackagingSitesPage, CheckMode,
             UserAnswers("id", Json.obj(OperatePackagingSitesPage.toString -> false)))
-          result mustBe routes.CheckYourAnswersController.onPageLoad()
+          result mustBe routes.CheckYourAnswersController.onPageLoad
         }
       }
 
@@ -239,7 +239,7 @@ class NavigatorSpec extends SpecBase {
         "must navigate to check your answers controller in case of valid litreage" in {
           val result = navigator.nextPage(HowManyOperatePackagingSitesPage, CheckMode,
             UserAnswers("id", Json.obj(HowManyOperatePackagingSitesPage.toString -> Json.obj("lowBand" -> "123", "highBand" -> "123"))))
-          result mustBe routes.CheckYourAnswersController.onPageLoad()
+          result mustBe routes.CheckYourAnswersController.onPageLoad
         }
       }
 
@@ -253,7 +253,7 @@ class NavigatorSpec extends SpecBase {
         "must navigate to check your answers when no is selected" in {
           val result = navigator.nextPage(ContractPackingPage, CheckMode,
             UserAnswers("id", Json.obj(ContractPackingPage.toString -> false)))
-          result mustBe routes.CheckYourAnswersController.onPageLoad()
+          result mustBe routes.CheckYourAnswersController.onPageLoad
         }
       }
 
@@ -261,7 +261,7 @@ class NavigatorSpec extends SpecBase {
         "must navigate to check your answers controller in case of valid litreage" in {
           val result = navigator.nextPage(HowManyContractPackingPage, CheckMode,
             UserAnswers("id", Json.obj(HowManyContractPackingPage.toString -> Json.obj("lowBand" -> "123", "highBand" -> "123"))))
-          result mustBe routes.CheckYourAnswersController.onPageLoad()
+          result mustBe routes.CheckYourAnswersController.onPageLoad
         }
       }
     }

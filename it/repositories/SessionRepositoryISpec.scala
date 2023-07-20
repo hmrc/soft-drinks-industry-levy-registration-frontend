@@ -63,7 +63,7 @@ class SessionRepositoryISpec
       assert(updatedRecord.lastUpdated.toEpochMilli < timeAfterTest.toEpochMilli || updatedRecord.lastUpdated.toEpochMilli == timeAfterTest.toEpochMilli)
 
       updatedRecord.id mustBe userAnswersBefore.id
-      updatedRecord.submitted mustBe userAnswersBefore.submitted
+      updatedRecord.submittedOn mustBe userAnswersBefore.submittedOn
       updatedRecord.data mustBe userAnswersBefore.data
       updatedRecord.address mustBe userAnswersBefore.address
       updatedRecord.smallProducerList mustBe userAnswersBefore.smallProducerList
@@ -79,7 +79,7 @@ class SessionRepositoryISpec
         List(SmallProducer("foo", "bar", (1,1))),
         Map("foo" -> Site(UkAddress(List("foo"),"foo", Some("foo")),Some("foo"), Some("foo"),Some(LocalDate.now()))),
         Map("foo" -> Warehouse(Some("foo"),UkAddress(List("foo"),"foo", Some("foo")))),
-        false,
+        None,
         Instant.ofEpochSecond(1))
       val setResult = await(repository.set(userAnswersBefore))
       setResult mustBe true
@@ -108,7 +108,7 @@ class SessionRepositoryISpec
       businessAddressDecrypted mustBe userAnswersBefore.address
       packagingSiteListDecrypted mustBe userAnswersBefore.packagingSiteList
       warehouseListDecrypted mustBe userAnswersBefore.warehouseList
-      (resultParsedToJson \ "submitted").get.as[Boolean] mustBe userAnswersBefore.submitted
+      (resultParsedToJson \ "submittedOn").get.asOpt[Instant] mustBe userAnswersBefore.submittedOn
     }
   }
 
@@ -132,7 +132,7 @@ class SessionRepositoryISpec
         assert(updatedRecord.lastUpdated.toEpochMilli < timeAfterTest.toEpochMilli || updatedRecord.lastUpdated.toEpochMilli == timeAfterTest.toEpochMilli)
 
         updatedRecord.id mustBe userAnswersBefore.id
-        updatedRecord.submitted mustBe userAnswersBefore.submitted
+        updatedRecord.submittedOn mustBe userAnswersBefore.submittedOn
         updatedRecord.data mustBe userAnswersBefore.data
         updatedRecord.address mustBe userAnswersBefore.address
         updatedRecord.smallProducerList mustBe userAnswersBefore.smallProducerList
@@ -194,7 +194,7 @@ class SessionRepositoryISpec
         assert(updatedRecord.lastUpdated.toEpochMilli < timeAfterTest.toEpochMilli || updatedRecord.lastUpdated.toEpochMilli == timeAfterTest.toEpochMilli)
 
         updatedRecord.id mustBe userAnswersBefore.id
-        updatedRecord.submitted mustBe userAnswersBefore.submitted
+        updatedRecord.submittedOn mustBe userAnswersBefore.submittedOn
         updatedRecord.data mustBe userAnswersBefore.data
         updatedRecord.address mustBe userAnswersBefore.address
         updatedRecord.smallProducerList mustBe userAnswersBefore.smallProducerList

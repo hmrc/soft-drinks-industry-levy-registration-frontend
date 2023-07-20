@@ -18,14 +18,17 @@ package controllers
 
 import com.google.inject.Inject
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, RequiredUserAnswers}
+import handlers.ErrorHandler
 import pages.CheckYourAnswersPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import services.SessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.CheckYourAnswersView
 import views.summary.RegistrationSummary
 
-import scala.concurrent.Future
+import java.time.Instant
+import scala.concurrent.{ExecutionContext, Future}
 
 class CheckYourAnswersController @Inject()(
                                             override val messagesApi: MessagesApi,
@@ -33,22 +36,30 @@ class CheckYourAnswersController @Inject()(
                                             getData: DataRetrievalAction,
                                             requireData: DataRequiredAction,
                                             requiredUserAnswers: RequiredUserAnswers,
+                                            sessionService: SessionService,
                                             val controllerComponents: MessagesControllerComponents,
-                                            view: CheckYourAnswersView
-                                          ) extends FrontendBaseController with I18nSupport {
+                                            view: CheckYourAnswersView,
+                                            errorHandler: ErrorHandler
+                                          )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
-  def onPageLoad(): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
       requiredUserAnswers.requireData(CheckYourAnswersPage) {
         val summaryList = RegistrationSummary.summaryList(request.userAnswers, request.rosmWithUtr)
-        Future.successful(Ok(view(summaryList, routes.CheckYourAnswersController.onSubmit())))
+        Future.successful(Ok(view(summaryList, routes.CheckYourAnswersController.onSubmit)))
       }
   }
 
-  def onSubmit(): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onSubmit: Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
       requiredUserAnswers.requireData(CheckYourAnswersPage) {
-        Future.successful(Redirect(controllers.routes.IndexController.onPageLoad().url))
+        //ToDo submit the registration request to the backend
+        val submittedDateTime = Instant.now
+        val updatedUserAnswers = request.userAnswers.copy(submittedOn = Some(submittedDateTime))
+        sessionService.set(updatedUserAnswers).map{
+          case Right(_) => Redirect(controllers.routes.RegistrationConfirmationController.onPageLoad.url)
+          case Left(_) => InternalServerError(errorHandler.internalServerErrorTemplate)
+        }
     }
   }
 }
