@@ -41,19 +41,18 @@ class RegistrationConfirmationController @Inject()(
 
   def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      request.userAnswers.submittedOn match {
-        case None =>
-          Redirect(routes.VerifyController.onPageLoad(NormalMode).url)
-        case Some(dtInstant) =>
+      (request.userAnswers.submittedOn, request.userAnswers.get(ContactDetailsPage)) match {
+        case (Some(dtInstant), Some(contactDetails)) =>
           val sentDateTime = LocalDateTime.ofInstant(dtInstant, ZoneId.of("UTC"))
           val summaryList = RegistrationSummary.summaryList(request.userAnswers, request.rosmWithUtr, false)
-          val email = request.userAnswers.get(ContactDetailsPage).fold("")(_.email)
           Ok(view(
             summaryList,
             sentDateTime,
             request.rosmWithUtr.rosmRegistration.organisationName,
-            email
+            contactDetails.email
           ))
+        case _ =>
+          Redirect(routes.VerifyController.onPageLoad(NormalMode).url)
       }
   }
 }
