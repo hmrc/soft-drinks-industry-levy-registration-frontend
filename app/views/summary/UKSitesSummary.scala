@@ -27,7 +27,7 @@ import viewmodels.implicits._
 
 object UKSitesSummary {
 
-  def getPackAtBusinessAddressRow(userAnswers: UserAnswers, isCheckAnswers: Boolean)(implicit messages: Messages): SummaryListRow = {
+  private def getPackAtBusinessAddressRow(userAnswers: UserAnswers, isCheckAnswers: Boolean)(implicit messages: Messages): SummaryListRow = {
       SummaryListRowViewModel(
         key = messages("packagingSiteDetails.checkYourAnswersLabel" ,
           userAnswers.packagingSiteList.size.toString, if(userAnswers.packagingSiteList.size > 1) {"s"} else {""}),
@@ -44,7 +44,7 @@ object UKSitesSummary {
       )
   }
 
-  def getAskSecondaryWarehouseRow (userAnswers: UserAnswers, isCheckAnswers: Boolean)(implicit messages: Messages): SummaryListRow = {
+  private def getAskSecondaryWarehouseRow (userAnswers: UserAnswers, isCheckAnswers: Boolean)(implicit messages: Messages): SummaryListRow = {
       SummaryListRowViewModel(
         key = messages("warehouseDetails.checkYourAnswersLabel",
           userAnswers.warehouseList.size.toString, if(userAnswers.warehouseList.size > 1) {"s"} else {""}),
@@ -67,7 +67,7 @@ object UKSitesSummary {
       case (Some(true), Some(false)) =>
         Option(
           SummaryListViewModel(
-            rows = Seq(getPackAtBusinessAddressRow(userAnswers,isCheckAnswers))
+            rows = Seq(getPackAtBusinessAddressRow(userAnswers, isCheckAnswers))
           )
         ).map(list => "checkYourAnswers.sites" -> list)
       case (Some(false), Some(true)) =>
@@ -80,7 +80,7 @@ object UKSitesSummary {
         Some(
           SummaryListViewModel(
             Seq(
-              getPackAtBusinessAddressRow(userAnswers,isCheckAnswers),
+              getPackAtBusinessAddressRow(userAnswers, isCheckAnswers),
               getAskSecondaryWarehouseRow(userAnswers, isCheckAnswers)
             )
           )
