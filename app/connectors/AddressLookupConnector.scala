@@ -31,14 +31,14 @@ class AddressLookupConnector @Inject()(val http: HttpClient,
                                        implicit val config: FrontendAppConfig) {
   private[connectors] def getAddressUrl(id: String, addressLookupFrontendTestEnabled: Boolean): String = {
     if(addressLookupFrontendTestEnabled) {
-      s"${config.host}${controllers.test.routes.AddressFrontendStubController.addresses(id).url}"
+      s"${config.registrationBaseUrl}${controllers.test.routes.AddressFrontendStubController.addresses(id).url}"
     } else {
       s"${config.addressLookupService}/api/confirmed?id=$id"
     }
   }
   private[connectors] def initJourneyUrl(addressLookupFrontendTestEnabled: Boolean): String = {
     if(addressLookupFrontendTestEnabled) {
-      s"${config.host}${controllers.test.routes.AddressFrontendStubController.initialise().url}"
+      s"${config.registrationBaseUrl}${controllers.test.routes.AddressFrontendStubController.initialise().url}"
     } else {
       s"${config.addressLookupService}/api/init"
     }
