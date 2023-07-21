@@ -19,7 +19,7 @@ package controllers
 import models.HowManyLitresGlobally.{Large, Small}
 import models.OrganisationType.LimitedCompany
 import models.Verify.YesRegister
-import models.backend.UkAddress
+import models.backend.{Site, UkAddress}
 import models.{CheckMode, ContactDetails, LitresInBands, Verify}
 import org.jsoup.nodes.{Document, Element}
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
@@ -54,6 +54,7 @@ trait RegSummaryISpecHelper extends ControllerITTestHelper {
   val startDate = LocalDate.of(2022, 6, 1)
 
   val userAnswersWithLitres = emptyUserAnswers
+    .copy(packagingSiteList = packagingSiteListWith3, warehouseList = warehouseListWith1)
     .set(VerifyPage, Verify.No).success.value
     .set(OrganisationTypePage, LimitedCompany).success.value
     .set(HowManyLitresGloballyPage, Large).success.value
@@ -71,7 +72,7 @@ trait RegSummaryISpecHelper extends ControllerITTestHelper {
     .set(ContactDetailsPage, contactDetails).success.value
 
   val userAnswersWithAllNo = emptyUserAnswers
-    .copy(address = Some(newAddress))
+    .copy(address = Some(newAddress), packagingSiteList = packagingSiteListWith3, warehouseList = warehouseListWith1)
     .set(VerifyPage, YesRegister).success.value
     .set(OrganisationTypePage, LimitedCompany).success.value
     .set(HowManyLitresGloballyPage, Small).success.value
