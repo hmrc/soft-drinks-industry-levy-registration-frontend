@@ -65,6 +65,8 @@ class FrontendAppConfig @Inject() (servicesConfig: ServicesConfig, configuration
   val addressLookupService: String  = servicesConfig.baseUrl("address-lookup-frontend")
   val addressLookUpFrontendTestEnabled: Boolean = servicesConfig.getBoolean("addressLookupFrontendTest.enabled")
   val findALostUtrLink: String = servicesConfig.getString("findALostUtrLink")
+  val addressLookupOffRampUrl: String  = servicesConfig.getString("addressLookupOffRampUrl")
+
   object AddressLookupConfig {
 
     private val addressLookupInitConfig: Config = configuration
@@ -78,19 +80,19 @@ class FrontendAppConfig @Inject() (servicesConfig: ServicesConfig, configuration
 
     object BusinessAddress {
       def offRampUrl(sdilId: String, mode: Mode): String = {
-        s"$registrationBaseUrl${controllers.addressLookupFrontend.routes.RampOffController.businessAddressOffRamp(sdilId, "", mode).url.replace("?id=", "")}"
+        s"$addressLookupOffRampUrl${controllers.addressLookupFrontend.routes.RampOffController.businessAddressOffRamp(sdilId, "", mode).url.replace("?id=", "")}"
       }
     }
 
     object WarehouseDetails {
       def offRampUrl(sdilId: String, mode: Mode): String = {
-        s"$registrationBaseUrl${controllers.addressLookupFrontend.routes.RampOffController.wareHouseDetailsOffRamp(sdilId, "", mode).url.replace("?id=", "")}"
+        s"$addressLookupOffRampUrl${controllers.addressLookupFrontend.routes.RampOffController.wareHouseDetailsOffRamp(sdilId, "", mode).url.replace("?id=", "")}"
       }
     }
 
     object PackingDetails {
       def offRampUrl(sdilId: String, mode: Mode): String = {
-        s"$registrationBaseUrl${controllers.addressLookupFrontend.routes.RampOffController.packingSiteDetailsOffRamp(sdilId, "", mode).url.replace("?id=", "")}"
+        s"$addressLookupOffRampUrl${controllers.addressLookupFrontend.routes.RampOffController.packingSiteDetailsOffRamp(sdilId, "", mode).url.replace("?id=", "")}"
       }
     }
 
