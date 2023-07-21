@@ -20,18 +20,24 @@ import controllers.routes
 import models.{CheckMode, UserAnswers}
 import pages.{AskSecondaryWarehousesPage, PackAtBusinessAddressPage}
 import play.api.i18n.Messages
-import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
+import uk.gov.hmrc.govukfrontend.views.Aliases.{SummaryList, Value}
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{Content, Empty, HtmlContent}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
+
+import javax.swing.text.AbstractDocument.Content
+import scala.reflect.internal.util.NoSourceFile.content
 
 object UKSitesSummary {
 
   private def getPackAtBusinessAddressRow(userAnswers: UserAnswers, isCheckAnswers: Boolean)(implicit messages: Messages): SummaryListRow = {
       SummaryListRowViewModel(
-        key = messages("packagingSiteDetails.checkYourAnswersLabel" ,
-          userAnswers.packagingSiteList.size.toString, if(userAnswers.packagingSiteList.size > 1) {"s"} else {""}),
-        value = ValueViewModel(userAnswers.packagingSiteList.size.toString).withCssClass("align-right"),
+        key =  if(userAnswers.packagingSiteList.size > 1){
+          messages("packagingSiteDetails.checkYourAnswersLabel.multiple",  {userAnswers.packagingSiteList.size.toString})}else{
+          messages("packagingSiteDetails.checkYourAnswersLabel.one")
+        },
+        value = Value(),
         actions = if (isCheckAnswers) {
           Seq(
             ActionItemViewModel("site.change", routes.PackAtBusinessAddressController.onPageLoad(CheckMode).url)
@@ -46,9 +52,11 @@ object UKSitesSummary {
 
   private def getAskSecondaryWarehouseRow (userAnswers: UserAnswers, isCheckAnswers: Boolean)(implicit messages: Messages): SummaryListRow = {
       SummaryListRowViewModel(
-        key = messages("warehouseDetails.checkYourAnswersLabel",
-          userAnswers.warehouseList.size.toString, if(userAnswers.warehouseList.size > 1) {"s"} else {""}),
-        value = ValueViewModel(userAnswers.warehouseList.size.toString).withCssClass("align-right"),
+        key = if(userAnswers.warehouseList.size > 1){
+          messages("warehouseDetails.checkYourAnswersLabel.multiple",  {userAnswers.warehouseList.size.toString})}else{
+          messages("warehouseDetails.checkYourAnswersLabel.one")
+        },
+        value = Value(),
         actions = if (isCheckAnswers) {
           Seq(
             ActionItemViewModel("site.change", routes.AskSecondaryWarehousesController.onPageLoad(CheckMode).url)

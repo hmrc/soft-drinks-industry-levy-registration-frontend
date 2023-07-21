@@ -20,7 +20,7 @@ import base.SpecBase
 import models.Warehouse
 import models.backend.{Site, UkAddress}
 import pages.{AskSecondaryWarehousesPage, PackAtBusinessAddressPage}
-import uk.gov.hmrc.govukfrontend.views.Aliases.{ActionItem, Actions, Key, SummaryList, SummaryListRow, Text, Value}
+import uk.gov.hmrc.govukfrontend.views.Aliases.{ActionItem, Actions, Empty, Key, SummaryList, SummaryListRow, Text, Value}
 
 class UKSitesSummarySpec extends SpecBase {
 
@@ -54,15 +54,11 @@ class UKSitesSummarySpec extends SpecBase {
 
       packagingSiteSummaryRowList mustBe
         Some((
-          "checkYourAnswers.sites",
-          SummaryList(List(
-            SummaryListRow(Key(Text("Packaging sites"), ""),
-              Value(Text("1"), " align-right"), "",
-              Some(Actions("", List(ActionItem("/soft-drinks-industry-levy-registration/change-pack-at-business-address",
-                Text("Change"), Some("the UK packaging site that you operate to produce liable drinks"),
-                "", Map("id" -> "change-packaging-sites"))))))
-          ), None, "", Map())
-        ))
+          "checkYourAnswers.sites", SummaryList(List(SummaryListRow(Key(Text("You have 1 packaging site"), ""),
+          Value(Empty, ""), "",
+          Some(Actions("", List(ActionItem("/soft-drinks-industry-levy-registration/change-pack-at-business-address",
+            Text("Change"), Some("the UK packaging site that you operate to produce liable drinks"), "",
+            Map("id" -> "change-packaging-sites"))))))), None, "", Map())))
     }
 
     "should return summary for warehouses when one warehouse and no packing site is passed in" in {
@@ -73,15 +69,11 @@ class UKSitesSummarySpec extends SpecBase {
         ,true)
 
       warehouseSummaryRowList mustBe
-        Some((
-          "checkYourAnswers.sites",
-          SummaryList(List(SummaryListRow(Key(Text("You added 1 UK warehouse"), ""),
-            Value(Text("1"), " align-right"), "",
-            Some(Actions("", List(ActionItem("/soft-drinks-industry-levy-registration/change-ask-secondary-warehouses",
-              Text("Change"), Some("the UK warehouses you use to store liable drinks"),
-              "", Map("id" -> "change-warehouse-sites"))))))
-          ), None, "", Map())
-        ))
+        Some(("checkYourAnswers.sites", SummaryList(List(SummaryListRow(Key(Text("You have 1 warehouse"), ""),
+          Value(Empty, ""), "",
+          Some(Actions("", List(ActionItem("/soft-drinks-industry-levy-registration/change-ask-secondary-warehouses",
+            Text("Change"), Some("the UK warehouses you use to store liable drinks"), "",
+            Map("id" -> "change-warehouse-sites"))))))), None, "", Map())))
     }
 
 
@@ -94,19 +86,13 @@ class UKSitesSummarySpec extends SpecBase {
         ,true)
 
       warehouseSummaryRowList mustBe
-        Some((
-          "checkYourAnswers.sites",
-          SummaryList(List(
-            SummaryListRow(Key(Text("Packaging sites"), ""),
-            Value(Text("1"), " align-right"), "",
-            Some(Actions("", List(ActionItem("/soft-drinks-industry-levy-registration/change-pack-at-business-address",
-              Text("Change"), Some("the UK packaging site that you operate to produce liable drinks"), "",
-              Map("id" -> "change-packaging-sites")))))),
-            SummaryListRow(Key(Text("You added 1 UK warehouse"), ""),
-              Value(Text("1"), " align-right"), "",
-              Some(Actions("", List(ActionItem("/soft-drinks-industry-levy-registration/change-ask-secondary-warehouses",
-              Text("Change"), Some("the UK warehouses you use to store liable drinks"), "",
-              Map("id" -> "change-warehouse-sites"))))))), None, "", Map())))
+        Some(("checkYourAnswers.sites", SummaryList(List(SummaryListRow(Key(Text("You have 1 packaging site"), ""),
+          Value(Empty, ""), "", Some(Actions("", List(ActionItem("/soft-drinks-industry-levy-registration/change-pack-at-business-address",
+            Text("Change"), Some("the UK packaging site that you operate to produce liable drinks"), "",
+            Map("id" -> "change-packaging-sites")))))), SummaryListRow(Key(Text("You have 1 warehouse"), ""),
+          Value(Empty, ""), "", Some(Actions("", List(ActionItem("/soft-drinks-industry-levy-registration/change-ask-secondary-warehouses",
+            Text("Change"), Some("the UK warehouses you use to store liable drinks"), "",
+            Map("id" -> "change-warehouse-sites"))))))), None, "", Map())))
     }
   }
 

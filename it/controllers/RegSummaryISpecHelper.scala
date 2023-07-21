@@ -329,7 +329,6 @@ trait RegSummaryISpecHelper extends ControllerITTestHelper {
     rows.size() mustBe 2
     val packingRow = rows.get(0)
     val warehouseRow = rows.get(1)
-    packingRow.getElementsByClass("govuk-summary-list__value").first().text() mustBe "3"
     if (isCheckAnswers) {
       packingRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByTag("a").first().text() mustBe "Change the UK packaging site that you operate to produce liable drinks"
       packingRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByClass("govuk-visually-hidden").first().text() mustBe "the UK packaging site that you operate to produce liable drinks"
