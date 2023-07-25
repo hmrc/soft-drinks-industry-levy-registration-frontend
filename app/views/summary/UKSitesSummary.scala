@@ -34,15 +34,15 @@ object UKSitesSummary {
   private def getPackAtBusinessAddressRow(userAnswers: UserAnswers, isCheckAnswers: Boolean)(implicit messages: Messages): SummaryListRow = {
       SummaryListRowViewModel(
         key =  if(userAnswers.packagingSiteList.size > 1){
-          messages("packagingSiteDetails.checkYourAnswersLabel.multiple",  {userAnswers.packagingSiteList.size.toString})}else{
-          messages("packagingSiteDetails.checkYourAnswersLabel.one")
+          messages("checkYourAnswers.packing.checkYourAnswersLabel.multiple",  {userAnswers.packagingSiteList.size.toString})}else{
+          messages("checkYourAnswers.packing.checkYourAnswersLabel.one")
         },
         value = Value(),
         actions = if (isCheckAnswers) {
           Seq(
             ActionItemViewModel("site.change", routes.PackAtBusinessAddressController.onPageLoad(CheckMode).url)
               .withAttribute(("id", "change-packaging-sites"))
-              .withVisuallyHiddenText(messages("packAtBusinessAddress.change.hidden"))
+              .withVisuallyHiddenText(messages("checkYourAnswers.sites.packing.change.hidden"))
           )
         } else {
           Seq.empty
@@ -53,15 +53,15 @@ object UKSitesSummary {
   private def getAskSecondaryWarehouseRow (userAnswers: UserAnswers, isCheckAnswers: Boolean)(implicit messages: Messages): SummaryListRow = {
       SummaryListRowViewModel(
         key = if(userAnswers.warehouseList.size > 1){
-          messages("warehouseDetails.checkYourAnswersLabel.multiple",  {userAnswers.warehouseList.size.toString})}else{
-          messages("warehouseDetails.checkYourAnswersLabel.one")
+          messages("checkYourAnswers.warehouse.checkYourAnswersLabel.multiple",  {userAnswers.warehouseList.size.toString})}else{
+          messages("checkYourAnswers.warehouse.checkYourAnswersLabel.one")
         },
         value = Value(),
         actions = if (isCheckAnswers) {
           Seq(
             ActionItemViewModel("site.change", routes.AskSecondaryWarehousesController.onPageLoad(CheckMode).url)
               .withAttribute(("id", "change-warehouse-sites"))
-              .withVisuallyHiddenText(messages("askSecondaryWarehouses.change.hidden"))
+              .withVisuallyHiddenText(messages("checkYourAnswers.sites.warehouse.change.hidden"))
           )
         } else {
           Seq.empty
