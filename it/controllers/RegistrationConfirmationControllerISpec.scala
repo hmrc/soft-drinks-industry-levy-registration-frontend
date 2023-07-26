@@ -32,7 +32,7 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                 val page = Jsoup.parse(res.body)
                 page.title must include(Messages("Application complete"))
 
-                page.getElementsByClass("govuk-summary-list").size() mustBe 6
+                page.getElementsByClass("govuk-summary-list").size() mustBe 7
 
                 validateSummaryContent(page)
                 val detailsSection = page.getElementsByClass("govuk-details").get(0)
@@ -80,7 +80,7 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                 val page = Jsoup.parse(res.body)
                 page.title must include(Messages("Application complete"))
 
-                page.getElementsByClass("govuk-summary-list").size() mustBe 6
+                page.getElementsByClass("govuk-summary-list").size() mustBe 7
 
                 validateSummaryContent(page)
                 val detailsSection = page.getElementsByClass("govuk-details").get(0)

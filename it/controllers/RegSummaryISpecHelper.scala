@@ -19,7 +19,7 @@ package controllers
 import models.HowManyLitresGlobally.{Large, Small}
 import models.OrganisationType.LimitedCompany
 import models.Verify.YesRegister
-import models.backend.UkAddress
+import models.backend.{Site, UkAddress}
 import models.{CheckMode, ContactDetails, LitresInBands, Verify}
 import org.jsoup.nodes.{Document, Element}
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
@@ -54,6 +54,7 @@ trait RegSummaryISpecHelper extends ControllerITTestHelper {
   val startDate = LocalDate.of(2022, 6, 1)
 
   val userAnswersWithLitres = emptyUserAnswers
+    .copy(packagingSiteList = packagingSiteListWith3, warehouseList = warehouseListWith1)
     .set(VerifyPage, Verify.No).success.value
     .set(OrganisationTypePage, LimitedCompany).success.value
     .set(HowManyLitresGloballyPage, Large).success.value
@@ -71,7 +72,7 @@ trait RegSummaryISpecHelper extends ControllerITTestHelper {
     .set(ContactDetailsPage, contactDetails).success.value
 
   val userAnswersWithAllNo = emptyUserAnswers
-    .copy(address = Some(newAddress))
+    .copy(address = Some(newAddress), packagingSiteList = packagingSiteListWith3, warehouseList = warehouseListWith1)
     .set(VerifyPage, YesRegister).success.value
     .set(OrganisationTypePage, LimitedCompany).success.value
     .set(HowManyLitresGloballyPage, Small).success.value
@@ -318,6 +319,26 @@ trait RegSummaryISpecHelper extends ControllerITTestHelper {
       fullNameAction.getElementById("change-startDate").attr("href") mustBe routes.StartDateController.onPageLoad(CheckMode).url
     } else {
       startDateRow.getElementsByClass("govuk-summary-list__actions").size() mustBe 0
+    }
+  }
+
+
+  def validatePackingSiteDetailsSummary(summaryList: Element,
+                                        isCheckAnswers: Boolean = true) = {
+    val rows = summaryList.getElementsByClass("govuk-summary-list__row")
+    rows.size() mustBe 2
+    val packingRow = rows.get(0)
+    val warehouseRow = rows.get(1)
+    if (isCheckAnswers) {
+      packingRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByTag("a").first().text() mustBe "Change the UK packaging site that you operate to produce liable drinks"
+      packingRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByClass("govuk-visually-hidden").first().text() mustBe "the UK packaging site that you operate to produce liable drinks"
+      packingRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByTag("a").first().attr("href") mustBe routes.PackAtBusinessAddressController.onPageLoad(CheckMode).url
+
+      warehouseRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByTag("a").first().text() mustBe "Change the UK warehouses you use to store liable drinks"
+      warehouseRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByClass("govuk-visually-hidden").first().text() mustBe "the UK warehouses you use to store liable drinks"
+      warehouseRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByTag("a").first().attr("href") mustBe routes.AskSecondaryWarehousesController.onPageLoad(CheckMode).url
+    } else {
+      packingRow.getElementsByClass("govuk-summary-list__actions").size() mustBe 0
     }
   }
 

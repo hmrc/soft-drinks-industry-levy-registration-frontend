@@ -19,7 +19,6 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
 
   val route = "/check-your-answers"
 
-
   "GET " + routes.CheckYourAnswersController.onPageLoad.url - {
     "when the userAnswers contains no data" - {
       "should redirect to verify controller" in {
@@ -52,7 +51,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
             res.status mustBe OK
             val page = Jsoup.parse(res.body)
             page.title must include(Messages("checkYourAnswers.title"))
-            page.getElementsByClass("govuk-summary-list").size() mustBe 6
+            page.getElementsByClass("govuk-summary-list").size() mustBe 7
 
             val businessDetails = page.getElementsByClass("govuk-summary-list").first()
             page.getElementsByTag("h2").first().text() mustBe "Business details"
@@ -79,6 +78,10 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
             page.getElementsByTag("h2").get(5).text() mustBe "Contact person details"
             validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, true)
 
+            val packingSiteDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(6)
+            page.getElementsByTag("h2").get(6).text() mustBe "UK site details"
+            validatePackingSiteDetailsSummary(packingSiteDetailsSummaryListItem, true)
+
             page.getElementsByTag("form").first().attr("action") mustBe routes.CheckYourAnswersController.onSubmit.url
             page.getElementsByTag("form").first().getElementsByTag("button").first().text() mustBe "Confirm details and apply"
           }
@@ -97,7 +100,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
             res.status mustBe OK
             val page = Jsoup.parse(res.body)
             page.title must include(Messages("checkYourAnswers.title"))
-            page.getElementsByClass("govuk-summary-list").size() mustBe 6
+            page.getElementsByClass("govuk-summary-list").size() mustBe 7
 
             val businessDetails = page.getElementsByClass("govuk-summary-list").first()
             page.getElementsByTag("h2").first().text() mustBe "Business details"
@@ -123,6 +126,10 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
             val contactDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(5)
             page.getElementsByTag("h2").get(5).text() mustBe "Contact person details"
             validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, true)
+
+            val packingSiteDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(6)
+            page.getElementsByTag("h2").get(6).text() mustBe "UK site details"
+            validatePackingSiteDetailsSummary(packingSiteDetailsSummaryListItem, true)
 
             page.getElementsByTag("form").first().attr("action") mustBe routes.CheckYourAnswersController.onSubmit.url
             page.getElementsByTag("form").first().getElementsByTag("button").first().text() mustBe "Confirm details and apply"
