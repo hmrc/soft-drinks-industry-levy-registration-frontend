@@ -35,9 +35,9 @@ trait RegistrationSubscriptionHelper extends SpecBase {
     None)
 
   lazy val packagingSiteListWith1: Map[String, Site] = Map(("78941132", PackagingSite1))
-  val warehouse1 = Warehouse(Some("ABC Ltd"), UkAddress(List("33 Rhes Priordy", "East London"), "WR53 7CX"))
+  val warehouse = Warehouse(Some("ABC Ltd"), UkAddress(List("33 Rhes Priordy", "East London"), "WR53 7CX"))
   val warehouses: Map[String, Warehouse] = Map(
-    "1" -> warehouse1,
+    "1" -> warehouse,
   )
   val orgName = "test company"
 
@@ -56,7 +56,7 @@ trait RegistrationSubscriptionHelper extends SpecBase {
   )
 
   val subscriptionAllFieldsPresent = Subscription(
-    utr, orgName, "1", address, activityWithLitres, userAnswerDate, Seq(PackagingSite1), Seq(Site.fromWarehouse(warehouse1)), contact
+    utr, orgName, "1", address, activityWithLitres, userAnswerDate, Seq(PackagingSite1), Seq(Site.fromWarehouse(warehouse)), contact
   )
 
   val userAnswerTwoWarehouses: UserAnswers = UserAnswers(sdilNumber, Json.obj(), warehouseList = warehouses)
@@ -158,7 +158,7 @@ trait RegistrationSubscriptionHelper extends SpecBase {
       if(litresPopulated) {activityWithLitres(litresGlobally)} else {activityWithNoLitres(litresGlobally)},
       userAnswerDate,
       if(litresPopulated) {Seq(PackagingSite1)} else {Seq.empty},
-      if(litresPopulated) {Seq(Site.fromWarehouse(warehouse1))} else {Seq.empty},
+      if(litresPopulated) {Seq(Site.fromWarehouse(warehouse))} else {Seq.empty},
       contact
     )
 
