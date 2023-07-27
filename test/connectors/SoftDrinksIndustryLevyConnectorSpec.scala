@@ -24,10 +24,9 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Json
 import repositories.{CacheMap, SDILSessionCache}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.http.HttpClient
 import utilities.GenericLogger
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class SoftDrinksIndustryLevyConnectorSpec extends SpecBase with MockitoSugar with ScalaFutures {
@@ -37,8 +36,6 @@ class SoftDrinksIndustryLevyConnectorSpec extends SpecBase with MockitoSugar wit
   val mockHttp = mock[HttpClient]
   val mockSDILSessionCache = mock[SDILSessionCache]
   val softDrinksIndustryLevyConnector = new SoftDrinksIndustryLevyConnector(http = mockHttp, frontendAppConfig, mockSDILSessionCache, application.injector.instanceOf[GenericLogger])
-
-  implicit val hc = HeaderCarrier()
 
   val identifierMap = Map("sdil" -> sdilNumber, "utr" -> utr)
 

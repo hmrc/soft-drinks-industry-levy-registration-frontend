@@ -21,7 +21,7 @@ import models.requests.{IdentifierRequest, OptionalDataRequest}
 import play.api.mvc.Results.InternalServerError
 import play.api.mvc.{ActionRefiner, Result}
 import services.SessionService
-
+import cats.implicits._
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -30,7 +30,7 @@ class DataRetrievalActionImpl @Inject()(val sessionService: SessionService,
                                        )(implicit val executionContext: ExecutionContext) extends DataRetrievalAction {
 
   override protected def refine[A](request: IdentifierRequest[A]): Future[Either[Result, OptionalDataRequest[A]]] = {
-    sessionService.get(request.internalId).map {
+    sessionService.get(request.internalId).value.map {
       case Right(userAnsOps) =>
         Right(
           OptionalDataRequest(request, request.internalId, request.hasCTEnrolment, request.utr, userAnsOps))

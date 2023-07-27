@@ -35,8 +35,6 @@ import utilities.GenericLogger
 import viewmodels.AddressFormattingHelper
 import views.html.RemoveWarehouseDetailsView
 
-import scala.concurrent.Future
-
 class RemoveWarehouseDetailsControllerSpec extends SpecBase with MockitoSugar with LoggerHelper {
 
   def onwardRoute = Call("GET", "/foo")
@@ -74,7 +72,7 @@ class RemoveWarehouseDetailsControllerSpec extends SpecBase with MockitoSugar wi
 
       val mockSessionService = mock[SessionService]
 
-      when(mockSessionService.set(any())) thenReturn Future.successful(Right(true))
+      when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(true)
 
       val application =
         applicationBuilder(userAnswers = Some(userAnswersWithWarehouse))
@@ -149,7 +147,7 @@ class RemoveWarehouseDetailsControllerSpec extends SpecBase with MockitoSugar wi
     "should log an error message when internal server error is returned when user answers are not set in session repository" in {
       val mockSessionService = mock[SessionService]
 
-      when(mockSessionService.set(any())) thenReturn Future.successful(Left(SessionDatabaseInsertError))
+      when(mockSessionService.set(any())) thenReturn createFailureRegistrationResult(SessionDatabaseInsertError)
 
       val application =
         applicationBuilder(userAnswers = Some(userAnswersWithWarehouse))

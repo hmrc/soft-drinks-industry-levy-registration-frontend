@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-package models
+import cats.data.EitherT
+import errors.RegistrationErrors
 
-import base.SpecBase
-import org.scalatestplus.mockito.MockitoSugar
+import scala.concurrent.Future
 
-class LiterageModelSpec extends SpecBase with MockitoSugar with DataHelper {
+package object service {
 
-    "Litreage" - {
-      "total with equal the atLowRate plus the atHighRate" in {
-        val data: Litreage = testLiterage(atLowRate = 100, atHighRate = 100)
-        data.total mustBe 200
-      }
-    }
+  type EitherF[A, B] = EitherT[Future, A, B]
+  type RegistrationResult[T] = EitherF[RegistrationErrors, T]
 }

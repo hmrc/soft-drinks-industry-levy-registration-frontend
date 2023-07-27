@@ -24,3 +24,9 @@ object SessionDatabaseDeleteError extends RegistrationErrors
 
 object SessionDatabaseGetError extends RegistrationErrors
 
+object UnexpectedResponseFromSDIL extends RegistrationErrors
+
+object MissingRequiredUserAnswers extends RegistrationErrors
+
+
+

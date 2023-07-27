@@ -82,7 +82,7 @@ class PackAtBusinessAddressController @Inject()(
                 Site(
                   address = rosmReg.address,
                   ref = None,
-                  tradingName = Some(rosmReg.organisationName),
+                  tradingName = None,
                   closureDate = None
                 )
               )), PackAtBusinessAddressPage).flatMap(_ =>

@@ -30,7 +30,6 @@ import play.api.test.FakeRequest
 import play.twirl.api.Html
 import services.SessionService
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class DataRetrievalActionSpec extends SpecBase with MockitoSugar {
@@ -47,7 +46,7 @@ class DataRetrievalActionSpec extends SpecBase with MockitoSugar {
 
         val sessionService = mock[SessionService]
         val errorHandler = mock[ErrorHandler]
-        when(sessionService.get("id")) thenReturn Future(Right(None))
+        when(sessionService.get("id")) thenReturn createSuccessRegistrationResult(None)
         val action = new Harness(sessionService, errorHandler)
 
         val result = action.callRefine(IdentifierRequest(FakeRequest(), "id")).futureValue
@@ -62,7 +61,7 @@ class DataRetrievalActionSpec extends SpecBase with MockitoSugar {
 
         val sessionService = mock[SessionService]
         val errorHandler = mock[ErrorHandler]
-        when(sessionService.get("id")) thenReturn Future(Right(Some(UserAnswers("id"))))
+        when(sessionService.get("id")) thenReturn createSuccessRegistrationResult(Some(UserAnswers("id")))
         val action = new Harness(sessionService, errorHandler)
 
         val result = action.callRefine(new IdentifierRequest(FakeRequest(), "id")).futureValue
@@ -75,7 +74,7 @@ class DataRetrievalActionSpec extends SpecBase with MockitoSugar {
       "must render the internal error page" in {
         val sessionService = mock[SessionService]
         val errorHandler = mock[ErrorHandler]
-        when(sessionService.get("id")) thenReturn Future(Left(SessionDatabaseGetError))
+        when(sessionService.get("id")) thenReturn createFailureRegistrationResult(SessionDatabaseGetError)
         when(errorHandler.internalServerErrorTemplate(any())) thenReturn(Html("error"))
         val action = new Harness(sessionService, errorHandler)
 

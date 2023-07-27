@@ -23,12 +23,11 @@ import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import repositories.SessionRepository
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 class SessionServiceSpec extends SpecBase with MockitoSugar {
 
   val mockSessionRepository: SessionRepository = mock[SessionRepository]
-  implicit val ec: ExecutionContext = application.injector.instanceOf[ExecutionContext]
 
   val sessionService = new SessionService(mockSessionRepository)
 
@@ -41,7 +40,7 @@ class SessionServiceSpec extends SpecBase with MockitoSugar {
 
         val res = sessionService.set(emptyUserAnswers)
 
-        whenReady(res) {result =>
+        whenReady(res.value) {result =>
           result mustBe Right(true)
         }
       }
@@ -54,7 +53,7 @@ class SessionServiceSpec extends SpecBase with MockitoSugar {
 
         val res = sessionService.set(emptyUserAnswers)
 
-        whenReady(res) { result =>
+        whenReady(res.value) { result =>
           result mustBe Left(SessionDatabaseInsertError)
         }
       }
@@ -71,7 +70,7 @@ class SessionServiceSpec extends SpecBase with MockitoSugar {
 
         val res = sessionService.get("id")
 
-        whenReady(res) { result =>
+        whenReady(res.value) { result =>
           result mustBe Right(Some(record))
         }
       }
@@ -85,7 +84,7 @@ class SessionServiceSpec extends SpecBase with MockitoSugar {
 
         val res = sessionService.get("id")
 
-        whenReady(res) { result =>
+        whenReady(res.value) { result =>
           result mustBe Right(None)
         }
       }
@@ -98,7 +97,7 @@ class SessionServiceSpec extends SpecBase with MockitoSugar {
 
         val res = sessionService.get("id")
 
-        whenReady(res) { result =>
+        whenReady(res.value) { result =>
           result mustBe Left(SessionDatabaseGetError)
         }
       }
@@ -114,7 +113,7 @@ class SessionServiceSpec extends SpecBase with MockitoSugar {
 
         val res = sessionService.clear("id")
 
-        whenReady(res) { result =>
+        whenReady(res.value) { result =>
           result mustBe Right(true)
         }
       }
@@ -127,7 +126,7 @@ class SessionServiceSpec extends SpecBase with MockitoSugar {
 
         val res = sessionService.clear("id")
 
-        whenReady(res) { result =>
+        whenReady(res.value) { result =>
           result mustBe Left(SessionDatabaseDeleteError)
         }
       }
@@ -143,7 +142,7 @@ class SessionServiceSpec extends SpecBase with MockitoSugar {
 
         val res = sessionService.keepAlive("id")
 
-        whenReady(res) { result =>
+        whenReady(res.value) { result =>
           result mustBe Right(true)
         }
       }
@@ -156,7 +155,7 @@ class SessionServiceSpec extends SpecBase with MockitoSugar {
 
         val res = sessionService.keepAlive("id")
 
-        whenReady(res) { result =>
+        whenReady(res.value) { result =>
           result mustBe Left(SessionDatabaseInsertError)
         }
       }

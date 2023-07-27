@@ -165,7 +165,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
               val dataStoredForPage = userAnswersAfterPOST.fold[Option[Verify]](None)(_.get(VerifyPage))
               dataStoredForPage.nonEmpty mustBe true
               dataStoredForPage.get mustBe YesRegister
-              userAnswersAfterPOST.get.address.get mustBe UkAddress(List("Super Lemonade Plc", "105B Godfrey Marchant Grove", "Guildford", "", ""), "GU14 8NL", None)
+              userAnswersAfterPOST.get.address.get mustBe UkAddress(List("105B Godfrey Marchant Grove", "Guildford"), "GU14 8NL", None)
             }
           }
         }
@@ -192,7 +192,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
               val dataStoredForPage = userAnswersAfterPOST.fold[Option[Verify]](None)(_.get(VerifyPage))
               dataStoredForPage.nonEmpty mustBe true
               dataStoredForPage.get mustBe YesRegister
-              userAnswersAfterPOST.get.address.get mustBe UkAddress(List("Super Lemonade Plc", "105B Godfrey Marchant Grove", "Guildford", "", ""), "GU14 8NL", None)
+              userAnswersAfterPOST.get.address.get mustBe UkAddress(List("105B Godfrey Marchant Grove", "Guildford"), "GU14 8NL", None)
             }
           }
         }
@@ -326,7 +326,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
                 val dataStoredForPage = userAnswersAfterPOST.fold[Option[Verify]](None)(_.get(VerifyPage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe YesRegister
-                userAnswersAfterPOST.get.address.get mustBe UkAddress(List("Super Lemonade Plc", "105B Godfrey Marchant Grove", "Guildford", "", ""), "GU14 8NL", None)
+                userAnswersAfterPOST.get.address.get mustBe UkAddress(List("105B Godfrey Marchant Grove", "Guildford"), "GU14 8NL", None)
 
               }
             }
@@ -351,7 +351,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
                 val dataStoredForPage = userAnswersAfterPOST.fold[Option[Verify]](None)(_.get(VerifyPage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe YesRegister
-                userAnswersAfterPOST.get.address.get mustBe UkAddress(List("Super Lemonade Plc", "105B Godfrey Marchant Grove", "Guildford", "", ""), "GU14 8NL", None)
+                userAnswersAfterPOST.get.address.get mustBe UkAddress(List("105B Godfrey Marchant Grove", "Guildford"), "GU14 8NL", None)
               }
             }
           }

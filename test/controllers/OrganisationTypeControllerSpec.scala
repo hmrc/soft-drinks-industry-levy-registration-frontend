@@ -36,8 +36,6 @@ import services.SessionService
 import utilities.GenericLogger
 import views.html.OrganisationTypeView
 
-import scala.concurrent.Future
-
 class OrganisationTypeControllerSpec extends SpecBase with MockitoSugar with LoggerHelper {
 
   def onwardRoute: Call = Call("GET", "/foo")
@@ -102,7 +100,7 @@ class OrganisationTypeControllerSpec extends SpecBase with MockitoSugar with Log
 
       val mockSessionService = mock[SessionService]
 
-      when(mockSessionService.set(any())) thenReturn Future.successful(Right(true))
+      when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(true)
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration)
@@ -196,7 +194,7 @@ class OrganisationTypeControllerSpec extends SpecBase with MockitoSugar with Log
     "should log an error message when internal server error is returned when user answers are not set in session repository" in {
       val mockSessionService = mock[SessionService]
 
-      when(mockSessionService.set(any())) thenReturn Future.successful(Left(SessionDatabaseInsertError))
+      when(mockSessionService.set(any())) thenReturn createFailureRegistrationResult(SessionDatabaseInsertError)
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration)

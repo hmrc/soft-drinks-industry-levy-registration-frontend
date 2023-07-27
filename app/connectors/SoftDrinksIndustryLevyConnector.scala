@@ -16,14 +16,20 @@
 
 package connectors
 
+import cats.data.EitherT
 import config.FrontendAppConfig
+import errors.UnexpectedResponseFromSDIL
 import models._
+import models.backend.Subscription
 import play.api.http.Status.{ACCEPTED, OK}
 import repositories.{SDILSessionCache, SDILSessionKeys}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpException, HttpResponse, NotFoundException}
+import service.RegistrationResult
+import uk.gov.hmrc.http._
 import utilities.GenericLogger
+
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+//import uk.gov.hmrc.http.HttpReads.Implicits._
 
 class SoftDrinksIndustryLevyConnector @Inject()(
                                                  val http: HttpClient,
@@ -80,6 +86,18 @@ class SoftDrinksIndustryLevyConnector @Inject()(
               .map{_ =>
                 optRetrievedSubscription}
         }
+    }
+  }
+
+  def createSubscription(subscription: Subscription, safeId: String)
+                        (implicit hc: HeaderCarrier): RegistrationResult[Unit] = EitherT {
+    val url = s"$sdilUrl/subscription/utr/${subscription.utr}/$safeId"
+    http.POST[Subscription, HttpResponse](url, subscription).map{ _ =>
+      Right((): Unit)
+    }.recover{
+      case _ =>
+        genericLogger.logger.error(s"[SoftDrinksIndustryLevyConnector][createSubscription] - unexpected response for ${subscription.utr}")
+        Left(UnexpectedResponseFromSDIL)
     }
   }
 }

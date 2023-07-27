@@ -27,7 +27,6 @@ import play.api.test.Helpers._
 import services.SessionService
 
 import java.net.URLEncoder
-import scala.concurrent.Future
 
 class AuthControllerSpec extends SpecBase with MockitoSugar {
 
@@ -36,7 +35,7 @@ class AuthControllerSpec extends SpecBase with MockitoSugar {
     "must clear user answers and redirect to sign out, specifying the exit survey as the continue URL" in {
 
       val mockSessionService = mock[SessionService]
-      when(mockSessionService.clear(any())) thenReturn Future.successful(Right(true))
+      when(mockSessionService.clear(any())) thenReturn createSuccessRegistrationResult(true)
 
       val application =
         applicationBuilder(rosmRegistration = rosmRegistration)
@@ -65,7 +64,7 @@ class AuthControllerSpec extends SpecBase with MockitoSugar {
     "must clear users answers and redirect to sign out, specifying SignedOut as the continue URL" in {
 
       val mockSessionService = mock[SessionService]
-      when(mockSessionService.clear(any())) thenReturn Future.successful(Right(true))
+      when(mockSessionService.clear(any())) thenReturn createSuccessRegistrationResult(true)
 
       val application =
         applicationBuilder(rosmRegistration = rosmRegistration)

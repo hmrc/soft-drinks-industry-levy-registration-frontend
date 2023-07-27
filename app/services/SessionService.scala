@@ -16,17 +16,19 @@
 
 package services
 
+import cats.data.EitherT
 import com.google.inject.{Inject, Singleton}
 import errors._
 import models.UserAnswers
 import repositories.SessionRepository
+import service.RegistrationResult
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class SessionService @Inject()(sessionRepository: SessionRepository)(implicit ec: ExecutionContext) {
 
-  def keepAlive(id: String): Future[Either[RegistrationErrors, Boolean]] = {
+  def keepAlive(id: String): RegistrationResult[Boolean] = EitherT{
     sessionRepository.keepAlive(id)
       .map(Right(_))
       .recover {
@@ -34,7 +36,7 @@ class SessionService @Inject()(sessionRepository: SessionRepository)(implicit ec
       }
   }
 
-  def get(id: String): Future[Either[RegistrationErrors, Option[UserAnswers]]] = {
+  def get(id: String): RegistrationResult[Option[UserAnswers]] = EitherT {
     sessionRepository.get(id)
       .map(Right(_))
       .recover {
@@ -42,7 +44,7 @@ class SessionService @Inject()(sessionRepository: SessionRepository)(implicit ec
       }
   }
 
-  def set(answers: UserAnswers): Future[Either[RegistrationErrors, Boolean]] = {
+  def set(answers: UserAnswers): RegistrationResult[Boolean] = EitherT {
     sessionRepository.set(answers)
     .map(Right(_))
       .recover {
@@ -50,7 +52,7 @@ class SessionService @Inject()(sessionRepository: SessionRepository)(implicit ec
       }
   }
 
-  def clear(id: String): Future[Either[RegistrationErrors, Boolean]] = {
+  def clear(id: String): RegistrationResult[Boolean] = EitherT {
     sessionRepository.clear(id)
       .map(Right(_))
       .recover {

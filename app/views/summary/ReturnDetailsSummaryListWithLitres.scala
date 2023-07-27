@@ -28,6 +28,7 @@ trait ReturnDetailsSummaryListWithLitres extends ReturnDetailsSummaryRowHelper {
   val page: QuestionPage[Boolean]
   val optLitresPage: Option[QuestionPage[LitresInBands]]
   val summaryLitres: SummaryListRowLitresHelper
+  //LDS ignore
   val key: String
   val action: String
   val actionId: String

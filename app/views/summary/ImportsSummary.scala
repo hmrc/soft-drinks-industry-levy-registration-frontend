@@ -28,6 +28,7 @@ object ImportsSummary extends ReturnDetailsSummaryListWithLitres  {
   override val page: QuestionPage[Boolean] = ImportsPage
   override val optLitresPage: Option[QuestionPage[LitresInBands]] = Some(HowManyImportsPage)
   override val summaryLitres: SummaryListRowLitresHelper = HowManyImportsSummary
+  //LDS ignore
   override val key: String = "imports"
   override val action: String = routes.ImportsController.onPageLoad(CheckMode).url
   override val actionId: String = "change-imports"

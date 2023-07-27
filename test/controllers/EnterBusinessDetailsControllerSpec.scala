@@ -33,11 +33,10 @@ import play.api.mvc.{Call, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.SessionService
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.http.HttpClient
 import utilities.GenericLogger
 import views.html.EnterBusinessDetailsView
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with LoggerHelper {
@@ -52,7 +51,6 @@ class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with
   val softDrinksIndustryLevyConnector = mock[SoftDrinksIndustryLevyConnector]
   val mockSessionService = mock[SessionService]
 
-  implicit val hc: HeaderCarrier = HeaderCarrier()
   val formProvider = new EnterBusinessDetailsFormProvider()
   val form = formProvider()
 
@@ -80,7 +78,7 @@ class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with
 
       when(softDrinksIndustryLevyConnector.retreiveRosmSubscription(any(),any())(any()))
         .thenReturn(Future.successful(Some(rosmRegistration)))
-      when(mockSessionService.set(any())) thenReturn Future.successful(Right(true))
+      when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(true)
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -106,7 +104,7 @@ class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with
     "must return a Bad Request and errors when utr or postcode is found from rosm data when submitted" in {
 
       when(softDrinksIndustryLevyConnector.retreiveRosmSubscription(any(),any())(any())) thenReturn Future.successful(None)
-      when(mockSessionService.set(any())) thenReturn Future.successful(Right(true))
+      when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(true)
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -135,7 +133,7 @@ class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with
     "must return a Bad Request and errors when invalid data is submitted" in {
 
       when(softDrinksIndustryLevyConnector.retreiveRosmSubscription(any(),any())(any())) thenReturn Future.successful(Some(rosmRegistration))
-      when(mockSessionService.set(any())) thenReturn Future.successful(Right(true))
+      when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(true)
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -166,7 +164,7 @@ class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with
 
       when(softDrinksIndustryLevyConnector.retreiveRosmSubscription(any(),any())(any()))
         .thenReturn(Future.successful(Some(rosmRegistration)))
-      when(mockSessionService.set(any())) thenReturn Future.successful(Left(SessionDatabaseInsertError))
+      when(mockSessionService.set(any())) thenReturn createFailureRegistrationResult(SessionDatabaseInsertError)
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))

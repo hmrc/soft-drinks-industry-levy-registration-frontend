@@ -18,10 +18,12 @@ package models
 
 import play.api.libs.json.{Json, OFormat}
 
-case class Litreage(atLowRate: BigDecimal, atHighRate: BigDecimal) {
-  val total: BigDecimal = atLowRate + atHighRate
-}
+case class Litreage(lower: Long, upper: Long)
 
 object Litreage {
   implicit val format: OFormat[Litreage] = Json.format[Litreage]
+
+  def fromLitresInBands(litresInBands: LitresInBands): Litreage = Litreage(
+    lower = litresInBands.lowBand, upper = litresInBands.highBand
+  )
 }

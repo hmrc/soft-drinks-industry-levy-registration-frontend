@@ -20,15 +20,27 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 
-sealed trait OrganisationType
+sealed trait OrganisationType {
+  val enumNum: String
+}
 
 object OrganisationType extends Enumerable.Implicits {
 
-  case object LimitedCompany extends WithName("limitedcompany") with OrganisationType
-  case object LimitedLiabilityPartnership extends WithName("limitedliabilitypartnership") with OrganisationType
-  case object Partnership extends WithName("partnership") with OrganisationType
-  case object SoleTrader extends WithName("soletrader") with OrganisationType
-  case object UnincorporatedBody extends WithName("unincorporatedbody") with OrganisationType
+  case object LimitedCompany extends WithName("limitedcompany") with OrganisationType {
+    override val enumNum: String = "7"
+  }
+  case object LimitedLiabilityPartnership extends WithName("limitedliabilitypartnership") with OrganisationType {
+    override val enumNum: String = "2"
+  }
+  case object Partnership extends WithName("partnership") with OrganisationType {
+    override val enumNum: String = "3"
+  }
+  case object SoleTrader extends WithName("soletrader") with OrganisationType {
+    override val enumNum: String = "1"
+  }
+  case object UnincorporatedBody extends WithName("unincorporatedbody") with OrganisationType {
+    override val enumNum: String = "5"
+  }
 
   val values: Seq[OrganisationType] = Seq(
     LimitedCompany, LimitedLiabilityPartnership, Partnership, UnincorporatedBody
@@ -50,5 +62,5 @@ object OrganisationType extends Enumerable.Implicits {
   }
 
   implicit val enumerable: Enumerable[OrganisationType] =
-    Enumerable(values.map(v => v.toString -> v): _*)
+    Enumerable(valuesWithST.map(v => v.toString -> v): _*)
 }

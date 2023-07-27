@@ -151,36 +151,76 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
         }
       }
     }
-    "should submit successfully and redirect to the next page when user answers full" in {
-      given
-        .commonPrecondition
 
-      val userAnswers = {
-        emptyUserAnswers
-          .set(VerifyPage, YesRegister).success.value
-          .set(OrganisationTypePage, LimitedCompany).success.value
-          .set(HowManyLitresGloballyPage, Large).success.value
-          .set(OperatePackagingSitesPage, true).success.value
-          .set(HowManyOperatePackagingSitesPage, operatePackagingSiteLitres).success.value
-          .set(ContractPackingPage, true).success.value
-          .set(HowManyContractPackingPage, contractPackingLitres).success.value
-          .set(ImportsPage, true).success.value
-          .set(HowManyImportsPage, importsLitres).success.value
-          .set(StartDatePage, startDate).success.value
-          .set(PackAtBusinessAddressPage, true).success.value
-          .set(PackagingSiteDetailsPage, true).success.value
-          .set(AskSecondaryWarehousesPage, true).success.value
-          .set(WarehouseDetailsPage, true).success.value
-          .set(ContactDetailsPage, contactDetails).success.value
+    "should create a subscription and send to back end then redirect to the next page" - {
+      "when all required user answers are present" in {
+        given
+          .commonPrecondition
+          .sdilBackend.createSubscription("0000001611")
+
+        val userAnswers = {
+          emptyUserAnswers
+            .set(VerifyPage, YesRegister).success.value
+            .set(OrganisationTypePage, LimitedCompany).success.value
+            .set(HowManyLitresGloballyPage, Large).success.value
+            .set(OperatePackagingSitesPage, true).success.value
+            .set(HowManyOperatePackagingSitesPage, operatePackagingSiteLitres).success.value
+            .set(ContractPackingPage, true).success.value
+            .set(HowManyContractPackingPage, contractPackingLitres).success.value
+            .set(ImportsPage, true).success.value
+            .set(HowManyImportsPage, importsLitres).success.value
+            .set(StartDatePage, startDate).success.value
+            .set(PackAtBusinessAddressPage, true).success.value
+            .set(PackagingSiteDetailsPage, true).success.value
+            .set(AskSecondaryWarehousesPage, true).success.value
+            .set(WarehouseDetailsPage, true).success.value
+            .set(ContactDetailsPage, contactDetails).success.value
+        }
+        setAnswers(userAnswers)
+
+        WsTestClient.withClient { client =>
+          val result = createClientRequestPOST(client, baseUrl + route, Json.obj())
+
+          whenReady(result) { res =>
+            res.status mustBe 303
+            res.header(HeaderNames.LOCATION) mustBe Some(routes.RegistrationConfirmationController.onPageLoad.url)
+          }
+        }
       }
-      setAnswers(userAnswers)
+    }
 
-      WsTestClient.withClient { client =>
-        val result = createClientRequestPOST(client, baseUrl + route, Json.obj())
+    "should render the error page" - {
+      "when the sending of the created subscription fails" in {
+        given
+          .commonPrecondition
+          .sdilBackend.createSubscriptionError("0000001611")
 
-        whenReady(result) { res =>
-          res.status mustBe 303
-          res.header(HeaderNames.LOCATION) mustBe Some(routes.RegistrationConfirmationController.onPageLoad.url)
+        val userAnswers = {
+          emptyUserAnswers
+            .set(VerifyPage, YesRegister).success.value
+            .set(OrganisationTypePage, LimitedCompany).success.value
+            .set(HowManyLitresGloballyPage, Large).success.value
+            .set(OperatePackagingSitesPage, true).success.value
+            .set(HowManyOperatePackagingSitesPage, operatePackagingSiteLitres).success.value
+            .set(ContractPackingPage, true).success.value
+            .set(HowManyContractPackingPage, contractPackingLitres).success.value
+            .set(ImportsPage, true).success.value
+            .set(HowManyImportsPage, importsLitres).success.value
+            .set(StartDatePage, startDate).success.value
+            .set(PackAtBusinessAddressPage, true).success.value
+            .set(PackagingSiteDetailsPage, true).success.value
+            .set(AskSecondaryWarehousesPage, true).success.value
+            .set(WarehouseDetailsPage, true).success.value
+            .set(ContactDetailsPage, contactDetails).success.value
+        }
+        setAnswers(userAnswers)
+
+        WsTestClient.withClient { client =>
+          val result = createClientRequestPOST(client, baseUrl + route, Json.obj())
+
+          whenReady(result) { res =>
+            res.status mustBe 500
+          }
         }
       }
     }

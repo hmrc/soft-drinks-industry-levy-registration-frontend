@@ -135,7 +135,7 @@ class PackagingSiteDetailsControllerSpec extends SpecBase with MockitoSugar with
     "must redirect to the next page when valid data is submitted (false)" in {
       val mockSessionService = mock[SessionService]
 
-      when(mockSessionService.set(any())) thenReturn Future.successful(Right(true))
+      when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(true)
 
       val application =
         applicationBuilder(userAnswers = Some(userAnswersWithPackagingSite), rosmRegistration = rosmRegistration)
