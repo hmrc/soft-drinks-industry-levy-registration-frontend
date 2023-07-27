@@ -22,7 +22,7 @@ import controllers.actions._
 import controllers.routes
 import errors.RegistrationErrors
 import models.backend.{Site, UkAddress}
-import models.{Contact, IndividualDetails, LitresInBands, OrganisationDetails, RetrievedActivity, RetrievedSubscription, RosmRegistration, RosmWithUtr, UserAnswers}
+import models.{Contact, IndividualDetails, LitresInBands, OrganisationDetails, RetrievedActivity, RetrievedSubscription, RosmRegistration, RosmWithUtr, UserAnswers, Warehouse}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -142,6 +142,31 @@ trait SpecBase
         bind[DataRequiredAction].toInstance(new FakeDataRequiredAction(rosmRegistration, userAnswers))
       )
   }
+
+  val packingSiteAddress45Characters = Site(
+    UkAddress(List("29 Station Pl.", "The Railyard", "Cambridge"), "CB1 2FP"),
+    None,
+    None,
+    None)
+
+  val packingSiteAddress47Characters = Site(
+    UkAddress(List("29 Station Place", "The Railyard", "Cambridge"), "CB1 2FP"),
+    Some("10"),
+    None,
+    None)
+
+  val packingSiteAddress49Characters = Site(
+    UkAddress(List("29 Station PlaceDr", "The Railyard", "Cambridge"), "CB1 2FP"),
+    None,
+    None,
+    None)
+
+  def packagingSiteListWith3 = Map(("12345678", packingSiteAddress45Characters), ("23456789", packingSiteAddress47Characters), ("34567890", packingSiteAddress49Characters))
+
+  def warehouse1 = Warehouse(Some("Warehouse One"), UkAddress(List("29 Station Place", "The Railyard", "Cambridge"), "CB1 2FP"))
+  def warehouse2 = Warehouse(Some("Warehouse Two"), UkAddress(List("42 Hitch Place", "The Railyard", "Cambridge"), "CB1 2FF"))
+  def warehouseListWith1 = Map("78941132" -> warehouse1)
+  def warehouseListWith2 = Map("78941132" -> warehouse1, "11111111" -> warehouse2)
 
   val aSubscription = RetrievedSubscription(
     utr = "0000000022",

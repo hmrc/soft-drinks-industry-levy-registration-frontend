@@ -24,6 +24,8 @@ import pages._
 import models._
 import play.api.libs.json.Json
 
+import java.time.LocalDate
+
 class NavigatorSpec extends SpecBase {
 
   val navigator = new Navigator
@@ -123,6 +125,20 @@ class NavigatorSpec extends SpecBase {
           val result = navigator.nextPage(OperatePackagingSitesPage, NormalMode,
             UserAnswers("id", Json.obj(OperatePackagingSitesPage.toString -> false)))
           result mustBe routes.ContractPackingController.onPageLoad(NormalMode)
+        }
+      }
+
+      "when on Start Date page" - {
+        "must navigate to pack at business address when yes is selected" in {
+          val result = navigator.nextPage(StartDatePage, NormalMode,
+            UserAnswers("id", Json.obj(StartDatePage.toString -> LocalDate.of(2017, 9, 23))))
+          result mustBe routes.PackAtBusinessAddressController.onPageLoad(NormalMode)
+        }
+
+        "must navigate to pack at business address when no is selected" in {
+          val result = navigator.nextPage(StartDatePage, NormalMode,
+            UserAnswers("id", Json.obj(StartDatePage.toString -> LocalDate.of(2017, 9, 23))))
+          result mustBe routes.PackAtBusinessAddressController.onPageLoad(NormalMode)
         }
       }
 

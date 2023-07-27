@@ -21,17 +21,8 @@ import controllers.routes
 import models.backend.UkAddress
 import models.{NormalMode, Warehouse}
 import uk.gov.hmrc.govukfrontend.views.Aliases.HtmlContent
-import viewmodels.summary.WarehouseDetailsSummary
 
 class AskSecondaryWarehousesSummarySpec extends SpecBase {
-
-  val warehouse1 = Warehouse(
-    tradingName = None,
-    address = UkAddress(List("33 Rhes Priordy", "East London"), "E73 2RP")
-  )
-
-  lazy val warehouseListWith1 = Map(("78941132", warehouse1))
-
 
   val addressWith3AddressLines = Warehouse(
     tradingName = None,

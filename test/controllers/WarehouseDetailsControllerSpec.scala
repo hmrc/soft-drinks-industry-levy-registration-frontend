@@ -41,7 +41,7 @@ import play.api.libs.json.Json
 import repositories.SessionRepository
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, SummaryListRow}
 import viewmodels.govuk.SummaryListFluency
-import viewmodels.summary.WarehouseDetailsSummary
+import views.summary.WarehouseDetailsSummary
 
 import scala.collection.immutable.Map
 

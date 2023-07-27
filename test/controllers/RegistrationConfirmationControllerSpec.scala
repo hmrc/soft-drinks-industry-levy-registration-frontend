@@ -28,7 +28,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import viewmodels.summary.{BusinessDetailsSummary, ContactDetailsSummary}
 import views.html.RegistrationConfirmationView
-import views.summary.{ContractPackingSummary, ImportsSummary, OperatePackagingSitesSummary, StartDateSummary}
+import views.summary.{ContractPackingSummary, ImportsSummary, OperatePackagingSitesSummary, StartDateSummary, UKSitesSummary}
 
 import java.time.{LocalDate, LocalDateTime, ZoneOffset}
 
@@ -41,6 +41,8 @@ class RegistrationConfirmationControllerSpec extends SpecBase {
       val submittedDateTime = LocalDateTime.of(2023, 6, 1, 10, 30)
       val userAnswers = {
         emptyUserAnswers
+          .copy(warehouseList = warehouseListWith1)
+          .copy(packagingSiteList = packagingSiteListWith3)
           .copy(submittedOn = Some(submittedDateTime.toInstant(ZoneOffset.UTC)))
           .set(VerifyPage, YesRegister).success.value
           .set(OrganisationTypePage, LimitedCompany).success.value
@@ -84,8 +86,11 @@ class RegistrationConfirmationControllerSpec extends SpecBase {
         }
         val contactDetails: (String, SummaryList) = ContactDetailsSummary.headingAndSummary(userAnswers = userAnswers, isCheckAnswers = false).get
 
-        val headingAndSummaryItems = Seq(businessDetails, operatePackagingSites, contractPacking, imports, startDate, contactDetails)
+        val ukSites: (String, SummaryList) = {
+          UKSitesSummary.summaryList(userAnswers = userAnswers, isCheckAnswers = false).get
+        }
 
+        val headingAndSummaryItems = Seq(businessDetails, operatePackagingSites, contractPacking, imports, startDate, contactDetails, ukSites)
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(headingAndSummaryItems, submittedDateTime, rosmRegistration.rosmRegistration.organisationName, "bang")(request, messages(application), config).toString

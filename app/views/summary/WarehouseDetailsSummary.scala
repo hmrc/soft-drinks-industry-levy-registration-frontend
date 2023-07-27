@@ -14,36 +14,19 @@
  * limitations under the License.
  */
 
-package viewmodels.summary
+package views.summary
 
 import controllers.routes
-import models.{CheckMode, NormalMode, UserAnswers, Warehouse}
-import pages.WarehouseDetailsPage
+import models.{NormalMode, Warehouse}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.Actions
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListRow}
+import viewmodels.AddressFormattingHelper
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
-import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
-import viewmodels.AddressFormattingHelper
 
 object WarehouseDetailsSummary  {
-
-  def row(answers: UserAnswers)(implicit messages: Messages): Option[SummaryListRow] =
-    answers.get(WarehouseDetailsPage).map {
-      answer =>
-
-        val value = if (answer) "site.yes" else "site.no"
-
-        SummaryListRowViewModel(
-          key     = "warehouseDetails.checkYourAnswersLabel",
-          value   = ValueViewModel(value).withCssClass("govuk-!-text-align-right"),
-          actions = Seq(
-            ActionItemViewModel("site.change", routes.WarehouseDetailsController.onPageLoad(CheckMode).url)
-              .withVisuallyHiddenText(messages("warehouseDetails.change.hidden"))
-          )
-        )
-    }
 
   def warehouseDetailsRow(warehouseList: Map[String, Warehouse])(implicit messages: Messages): List[SummaryListRow] = {
     val numberOfWarehouses = warehouseList.size

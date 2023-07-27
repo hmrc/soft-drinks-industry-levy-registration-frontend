@@ -27,8 +27,8 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{AddressLookupService, SessionService, WarehouseDetails}
 import utilities.GenericLogger
 import viewmodels.govuk.SummaryListFluency
-import viewmodels.summary.WarehouseDetailsSummary
 import views.html.WarehouseDetailsView
+import views.summary.WarehouseDetailsSummary
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}

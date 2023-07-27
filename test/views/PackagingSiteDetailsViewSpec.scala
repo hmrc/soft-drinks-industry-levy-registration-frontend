@@ -55,8 +55,6 @@ class PackagingSiteDetailsViewSpec extends ViewSpecHelper {
     None,
     None)
 
-  val packagingSiteListWith3 = Map(("12345678", address45Characters), ("23456789", address47Characters), ("34567890", address49Characters))
-
   lazy val packagingSiteListWith1 = Map(("78941132", PackagingSite1))
 
 

@@ -91,6 +91,8 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
       val userAnswerDate: LocalDate = LocalDate.of(2023, 6, 1)
       val userAnswers = {
         emptyUserAnswers
+          .copy(packagingSiteList = packagingSiteListWith3)
+          .copy(warehouseList = warehouseListWith1)
           .set(VerifyPage, YesRegister).success.value
           .set(OrganisationTypePage, LimitedCompany).success.value
           .set(HowManyLitresGloballyPage, Large).success.value
@@ -133,8 +135,12 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
         }
         val contactDetails: (String, SummaryList) = ContactDetailsSummary.headingAndSummary(userAnswers = userAnswers, isCheckAnswers = true).get
 
+        val ukSites: (String, SummaryList) = {
+           UKSitesSummary.summaryList(userAnswers = userAnswers, isCheckAnswers = true).get
+        }
+
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(Seq(businessDetails, operatePackagingSites, contractPacking, imports, startDate, contactDetails),
+        contentAsString(result) mustEqual view(Seq(businessDetails, operatePackagingSites, contractPacking, imports, startDate, contactDetails, ukSites),
           routes.CheckYourAnswersController.onSubmit)(request, messages(application)).toString
       }
     }
@@ -155,6 +161,8 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
       val userAnswerDate: LocalDate = LocalDate.of(2023, 6, 1)
       val userAnswers = {
         emptyUserAnswers
+          .copy(packagingSiteList = packagingSiteListWith3)
+          .copy(warehouseList = warehouseListWith1)
           .set(VerifyPage, YesRegister).success.value
           .set(OrganisationTypePage, LimitedCompany).success.value
           .set(HowManyLitresGloballyPage, Large).success.value
@@ -237,6 +245,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
         val userAnswerDate: LocalDate = LocalDate.of(2023, 6, 1)
         val userAnswers = {
           emptyUserAnswers
+            .copy(packagingSiteList = packagingSiteListWith3)
             .set(VerifyPage, YesRegister).success.value
             .set(OrganisationTypePage, LimitedCompany).success.value
             .set(HowManyLitresGloballyPage, Large).success.value
