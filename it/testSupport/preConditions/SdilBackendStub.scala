@@ -129,5 +129,23 @@ case class SdilBackendStub()
     builder
   }
 
+  def createSubscription(utr: String) = {
+    stubFor(
+      post(
+        urlEqualTo(s"/subscription/utr/$utr/safeid"))
+        .willReturn(
+          ok()))
+    builder
+  }
+
+  def createSubscriptionError(utr: String) = {
+    stubFor(
+      post(
+        urlEqualTo(s"/subscription/utr/$utr/safeid"))
+        .willReturn(
+          serverError()))
+    builder
+  }
+
 }
 

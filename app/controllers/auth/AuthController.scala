@@ -38,6 +38,7 @@ class AuthController @Inject()(
     implicit request =>
       sessionService
         .clear(request.internalId)
+        .value
         .map {
           _ =>
             Redirect(config.signOutUrl, Map("continue" -> Seq(config.exitSurveyUrl)))
@@ -48,6 +49,7 @@ class AuthController @Inject()(
     implicit request =>
     sessionService
       .clear(request.internalId)
+      .value
       .map {
         _ =>
         Redirect(config.signOutUrl, Map("continue" -> Seq(routes.SignedOutController.onPageLoad.url)))

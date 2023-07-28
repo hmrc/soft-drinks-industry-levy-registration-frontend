@@ -16,9 +16,11 @@
 
 package base
 
+import cats.data.EitherT
 import config.FrontendAppConfig
 import controllers.actions._
 import controllers.routes
+import errors.RegistrationErrors
 import models.backend.{Site, UkAddress}
 import models.{Contact, IndividualDetails, LitresInBands, OrganisationDetails, RetrievedActivity, RetrievedSubscription, RosmRegistration, RosmWithUtr, UserAnswers, Warehouse}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
@@ -34,8 +36,13 @@ import play.api.mvc.{Call, MessagesControllerComponents}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.stubControllerComponents
 import queries.Settable
+import service.RegistrationResult
+import cats.implicits._
+import uk.gov.hmrc.http.HeaderCarrier
+import utilities.GenericLogger
 
 import java.time.LocalDate
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Try}
 
 object SpecBase {
@@ -89,6 +96,12 @@ trait SpecBase
     with IntegrationPatience
     with BeforeAndAfterEach {
 
+  def createSuccessRegistrationResult[T](result: T): RegistrationResult[T] =
+    EitherT.right[RegistrationErrors](Future.successful(result))
+
+  def createFailureRegistrationResult[T](error: RegistrationErrors): RegistrationResult[T] =
+    EitherT.left(Future.successful(error))
+
   def recoveryCall: Call = routes.JourneyRecoveryController.onPageLoad()
 
   def identifier: String = "id"
@@ -106,6 +119,10 @@ trait SpecBase
     individual = Some(IndividualDetails(firstName = "Ava" , lastName = "Adams")),
     address = UkAddress(List("105B Godfrey Marchant Grove", "Guildford"), "GU14 8NL")
   ))
+  lazy val logger = application.injector.instanceOf[GenericLogger]
+  implicit lazy val ec: ExecutionContext = application.injector.instanceOf[ExecutionContext]
+  implicit val hc = HeaderCarrier()
+
 
   override def afterEach(): Unit = {
     Play.stop(application)

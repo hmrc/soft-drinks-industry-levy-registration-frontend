@@ -27,10 +27,8 @@ import pages.EnterBusinessDetailsPage
 import play.api.mvc.Result
 import play.api.mvc.Results.Redirect
 import play.api.test.FakeRequest
-import uk.gov.hmrc.http.HeaderCarrier
 import utilities.GenericLogger
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class DataRequiredActionSpec extends SpecBase with MockitoSugar {
@@ -38,7 +36,6 @@ class DataRequiredActionSpec extends SpecBase with MockitoSugar {
   class Harness(connector: SoftDrinksIndustryLevyConnector) extends DataRequiredActionImpl(connector, application.injector.instanceOf[GenericLogger]) {
     def callRefine[A](request: OptionalDataRequest[A]): Future[Either[Result, DataRequest[A]]] = refine(request)
   }
-  implicit val hc: HeaderCarrier = HeaderCarrier()
   val connector = mock[SoftDrinksIndustryLevyConnector]
   val request = FakeRequest()
 

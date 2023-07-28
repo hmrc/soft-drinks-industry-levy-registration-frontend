@@ -23,6 +23,7 @@ import pages.{QuestionPage, ThirdPartyPackagersPage}
 object ThirdPartyPackersSummary extends ReturnDetailsSummaryRowHelper  {
 
   override val page: QuestionPage[Boolean] = ThirdPartyPackagersPage
+  //LDS ignore
   override val key: String = "reportingthirdPartyPackers"
   override val action: String = routes.ThirdPartyPackagersController.onPageLoad(CheckMode).url
   override val actionId: String = "change-thirdPartyPackers"

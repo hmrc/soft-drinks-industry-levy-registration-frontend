@@ -18,11 +18,18 @@ package controllers
 
 import base.SpecBase
 import controllers.routes._
+import errors.{MissingRequiredUserAnswers, UnexpectedResponseFromSDIL}
 import models.HowManyLitresGlobally.Large
 import models.OrganisationType.LimitedCompany
 import models.Verify.YesRegister
 import models.{ContactDetails, LitresInBands, NormalMode}
+import orchestrators.RegistrationOrchestrator
+import org.jsoup.Jsoup
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
+import org.mockito.MockitoSugar.mock
 import pages._
+import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
@@ -34,6 +41,8 @@ import views.summary._
 import java.time.LocalDate
 
 class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
+
+  val mockRegistrationOrchestrator = mock[RegistrationOrchestrator]
 
   "Check Your Answers Controller" - {
 
@@ -148,7 +157,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
       }
     }
-    "must Redirect to next page when full user answers on POST" in {
+    "must Redirect to confirmation page when full user answers on POST" in {
       val userAnswerDate: LocalDate = LocalDate.of(2023, 6, 1)
       val userAnswers = {
         emptyUserAnswers
@@ -170,15 +179,53 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
           .set(WarehouseDetailsPage, true).success.value
           .set(ContactDetailsPage, ContactDetails("foo", "bar", "wizz", "bang")).success.value
       }
-      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(userAnswers))
+        .overrides(bind[RegistrationOrchestrator].to(mockRegistrationOrchestrator)).build()
 
       running(application) {
+        when(mockRegistrationOrchestrator.createSubscriptionAndUpdateUserAnswers(any(), any(), any())) thenReturn(createSuccessRegistrationResult((): Unit))
+
         val request = FakeRequest(POST, CheckYourAnswersController.onSubmit.url).withFormUrlEncodedBody()
 
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual RegistrationConfirmationController.onPageLoad.url
+      }
+    }
+
+    "must Redirect to verify page when creating of subscription model fails" in {
+      val userAnswerDate: LocalDate = LocalDate.of(2023, 6, 1)
+      val userAnswers = {
+        emptyUserAnswers
+          .set(VerifyPage, YesRegister).success.value
+          .set(OrganisationTypePage, LimitedCompany).success.value
+          .set(HowManyLitresGloballyPage, Large).success.value
+          .set(OperatePackagingSitesPage, true).success.value
+          .set(HowManyOperatePackagingSitesPage, LitresInBands(1, 2)).success.value
+          .set(ContractPackingPage, true).success.value
+          .set(HowManyContractPackingPage, LitresInBands(3, 4)).success.value
+          .set(ImportsPage, true).success.value
+          .set(HowManyImportsPage, LitresInBands(3, 4)).success.value
+          .set(StartDatePage, userAnswerDate).success.value
+          .set(PackAtBusinessAddressPage, true).success.value
+          .set(PackagingSiteDetailsPage, true).success.value
+          .set(AskSecondaryWarehousesPage, true).success.value
+          .set(WarehouseDetailsPage, true).success.value
+          .set(ContactDetailsPage, ContactDetails("foo", "bar", "wizz", "bang")).success.value
+      }
+      val application = applicationBuilder(userAnswers = Some(userAnswers))
+        .overrides(bind[RegistrationOrchestrator].to(mockRegistrationOrchestrator)).build()
+
+      running(application) {
+        when(mockRegistrationOrchestrator.createSubscriptionAndUpdateUserAnswers(any(), any(), any())) thenReturn (createFailureRegistrationResult(MissingRequiredUserAnswers))
+
+        val request = FakeRequest(POST, CheckYourAnswersController.onSubmit.url).withFormUrlEncodedBody()
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual VerifyController.onPageLoad(NormalMode).url
       }
     }
     "must Redirect to verify controller when empty user answers on POST" in {
@@ -214,7 +261,8 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
             .set(AskSecondaryWarehousesPage, true).success.value
             .set(WarehouseDetailsPage, true).success.value
         }
-        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+        val application = applicationBuilder(userAnswers = Some(userAnswers))
+          .build()
 
         running(application) {
           val request = FakeRequest(POST, CheckYourAnswersController.onSubmit.url).withFormUrlEncodedBody()
@@ -236,6 +284,42 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual JourneyRecoveryController.onPageLoad().url
+      }
+    }
+
+    "must fail if the backend call fails" in {
+      val userAnswerDate: LocalDate = LocalDate.of(2023, 6, 1)
+      val userAnswers = {
+        emptyUserAnswers
+          .set(VerifyPage, YesRegister).success.value
+          .set(OrganisationTypePage, LimitedCompany).success.value
+          .set(HowManyLitresGloballyPage, Large).success.value
+          .set(OperatePackagingSitesPage, true).success.value
+          .set(HowManyOperatePackagingSitesPage, LitresInBands(1, 2)).success.value
+          .set(ContractPackingPage, true).success.value
+          .set(HowManyContractPackingPage, LitresInBands(3, 4)).success.value
+          .set(ImportsPage, true).success.value
+          .set(HowManyImportsPage, LitresInBands(3, 4)).success.value
+          .set(StartDatePage, userAnswerDate).success.value
+          .set(PackAtBusinessAddressPage, true).success.value
+          .set(PackagingSiteDetailsPage, true).success.value
+          .set(AskSecondaryWarehousesPage, true).success.value
+          .set(WarehouseDetailsPage, true).success.value
+          .set(ContactDetailsPage, ContactDetails("foo", "bar", "wizz", "bang")).success.value
+      }
+      val application = applicationBuilder(userAnswers = Some(userAnswers))
+        .overrides(bind[RegistrationOrchestrator].to(mockRegistrationOrchestrator)).build()
+
+      running(application) {
+        when(mockRegistrationOrchestrator.createSubscriptionAndUpdateUserAnswers(any(), any(), any())) thenReturn (createFailureRegistrationResult(UnexpectedResponseFromSDIL))
+
+        val request = FakeRequest(POST, CheckYourAnswersController.onSubmit.url).withFormUrlEncodedBody()
+
+        val result = route(application, request).value
+
+        status(result) mustEqual INTERNAL_SERVER_ERROR
+        val page = Jsoup.parse(contentAsString(result))
+        page.title() mustBe "Sorry, we are experiencing technical difficulties - 500 - Soft Drinks Industry Levy - GOV.UK"
       }
     }
   }

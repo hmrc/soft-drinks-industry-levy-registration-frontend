@@ -91,7 +91,7 @@ class VerifyControllerSpec extends SpecBase with MockitoSugar with LoggerHelper 
 
       val mockSessionService = mock[SessionService]
 
-      when(mockSessionService.set(any())) thenReturn Future.successful(Right(true))
+      when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(true)
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -117,7 +117,7 @@ class VerifyControllerSpec extends SpecBase with MockitoSugar with LoggerHelper 
       val mockSessionService = mock[SessionService]
       val mockAlfService = mock[AddressLookupService]
 
-      when(mockSessionService.set(any())) thenReturn Future.successful(Right(true))
+      when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(true)
       when(mockAlfService
         .initJourneyAndReturnOnRampUrl(ArgumentMatchers.eq(BusinessAddress),any(),any())(any(),any(),any(), any()))
         .thenReturn(Future.successful("alfOnRamp"))
@@ -147,7 +147,7 @@ class VerifyControllerSpec extends SpecBase with MockitoSugar with LoggerHelper 
 
       val mockSessionService = mock[SessionService]
 
-      when(mockSessionService.set(any())) thenReturn Future.successful(Right(true))
+      when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(true)
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -256,7 +256,7 @@ class VerifyControllerSpec extends SpecBase with MockitoSugar with LoggerHelper 
     "should log an error message when internal server error is returned when user answers are not set in session repository" in {
       val mockSessionService = mock[SessionService]
 
-      when(mockSessionService.set(any())) thenReturn Future.successful(Left(SessionDatabaseInsertError))
+      when(mockSessionService.set(any())) thenReturn createFailureRegistrationResult(SessionDatabaseInsertError)
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))

@@ -18,16 +18,17 @@ package controllers
 
 import com.google.inject.Inject
 import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, RequiredUserAnswers}
+import errors.MissingRequiredUserAnswers
 import handlers.ErrorHandler
+import models.NormalMode
+import orchestrators.RegistrationOrchestrator
 import pages.CheckYourAnswersPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.SessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.CheckYourAnswersView
 import views.summary.RegistrationSummary
 
-import java.time.Instant
 import scala.concurrent.{ExecutionContext, Future}
 
 class CheckYourAnswersController @Inject()(
@@ -36,7 +37,7 @@ class CheckYourAnswersController @Inject()(
                                             getData: DataRetrievalAction,
                                             requireData: DataRequiredAction,
                                             requiredUserAnswers: RequiredUserAnswers,
-                                            sessionService: SessionService,
+                                            registrationOrchestrator: RegistrationOrchestrator,
                                             val controllerComponents: MessagesControllerComponents,
                                             view: CheckYourAnswersView,
                                             errorHandler: ErrorHandler
@@ -53,11 +54,9 @@ class CheckYourAnswersController @Inject()(
   def onSubmit: Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
       requiredUserAnswers.requireData(CheckYourAnswersPage) {
-        //ToDo submit the registration request to the backend
-        val submittedDateTime = Instant.now
-        val updatedUserAnswers = request.userAnswers.copy(submittedOn = Some(submittedDateTime))
-        sessionService.set(updatedUserAnswers).map{
+        registrationOrchestrator.createSubscriptionAndUpdateUserAnswers.value.map{
           case Right(_) => Redirect(controllers.routes.RegistrationConfirmationController.onPageLoad.url)
+          case Left(MissingRequiredUserAnswers) => Redirect(controllers.routes.VerifyController.onPageLoad(NormalMode))
           case Left(_) => InternalServerError(errorHandler.internalServerErrorTemplate)
         }
     }

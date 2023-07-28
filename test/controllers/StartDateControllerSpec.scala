@@ -19,11 +19,11 @@ package controllers
 import base.SpecBase
 import config.FrontendAppConfig
 import errors.SessionDatabaseInsertError
-import helpers.LoggerHelper
-import utilities.GenericLogger
 import forms.StartDateFormProvider
+import helpers.LoggerHelper
 import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
+import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
@@ -33,10 +33,8 @@ import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Call}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.SessionService
+import utilities.GenericLogger
 import views.html.StartDateView
-
-import scala.concurrent.Future
-import org.jsoup.Jsoup
 
 import java.time.{LocalDate, ZoneOffset}
 
@@ -103,7 +101,7 @@ class StartDateControllerSpec extends SpecBase with MockitoSugar with LoggerHelp
 
       val mockSessionService = mock[SessionService]
 
-      when(mockSessionService.set(any())) thenReturn Future.successful(Right(true))
+      when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(true)
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration)
@@ -172,7 +170,7 @@ class StartDateControllerSpec extends SpecBase with MockitoSugar with LoggerHelp
     "must fail if the setting of userAnswers fails" in {
       val mockSessionService = mock[SessionService]
 
-      when(mockSessionService.set(any())) thenReturn Future.successful(Right(true))
+      when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(true)
 
       val application =
         applicationBuilder(userAnswers = Some(userDetailsWithSetMethodsReturningFailure), rosmRegistration = rosmRegistration)
@@ -194,7 +192,7 @@ class StartDateControllerSpec extends SpecBase with MockitoSugar with LoggerHelp
     "should log an error message when internal server error is returned when user answers are not set in session repository" in {
       val mockSessionService = mock[SessionService]
 
-      when(mockSessionService.set(any())) thenReturn Future.successful(Left(SessionDatabaseInsertError))
+      when(mockSessionService.set(any())) thenReturn createFailureRegistrationResult(SessionDatabaseInsertError)
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration)

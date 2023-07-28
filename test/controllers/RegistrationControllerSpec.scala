@@ -24,14 +24,12 @@ import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.SessionService
 import viewmodels.govuk.SummaryListFluency
-import play.api.inject.bind
-
-import scala.concurrent.Future
 
 class RegistrationControllerSpec extends SpecBase with SummaryListFluency with MockitoSugar{
 
@@ -52,7 +50,7 @@ class RegistrationControllerSpec extends SpecBase with SummaryListFluency with M
       "should generate a user answers record" - {
         "and redirect to Verify Controller when the user has a IR-CT enrolment" in {
           val application = applicationBuilderForHome().build()
-          when(mockSessionService.set(any())) thenReturn Future.successful(Right(true))
+          when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(true)
 
           running(application) {
             val request = FakeRequest(GET, routes.RegistrationController.start.url)
@@ -68,7 +66,7 @@ class RegistrationControllerSpec extends SpecBase with SummaryListFluency with M
 
     "should render the error page when the database call fails" in {
       val application = applicationBuilderForHome().build()
-      when(mockSessionService.set(any())) thenReturn Future.successful(Left(SessionDatabaseInsertError))
+      when(mockSessionService.set(any())) thenReturn createFailureRegistrationResult(SessionDatabaseInsertError)
 
       running(application) {
         val request = FakeRequest(GET, routes.RegistrationController.start.url)

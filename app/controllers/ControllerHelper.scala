@@ -25,6 +25,7 @@ import play.api.mvc.{AnyContent, Request, Result}
 import services.SessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utilities.GenericLogger
+import cats.implicits._
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success, Try}
@@ -44,7 +45,7 @@ trait ControllerHelper extends FrontendBaseController with I18nSupport {
       case Failure(_) =>
         genericLogger.logger.error(s"Failed to resolve user answers while on ${page.toString}")
         Future.successful(InternalServerError(errorHandler.internalServerErrorTemplate))
-      case Success(answers) => sessionService.set(answers).map {
+      case Success(answers) => sessionService.set(answers).value.map {
         case Right(_) => Redirect(navigator.nextPage(page, mode, answers, previousAnswer))
         case Left(_) =>
           genericLogger.logger.error(sessionRepo500ErrorMessage(page))
@@ -55,7 +56,7 @@ trait ControllerHelper extends FrontendBaseController with I18nSupport {
 
   def updateDatabaseWithoutRedirect(updatedAnswers: UserAnswers, page: Page)
                                    (implicit ec: ExecutionContext, request: Request[AnyContent]): Future[Status] = {
-    sessionService.set(updatedAnswers).map {
+    sessionService.set(updatedAnswers).value.map {
       case Right(_) => Ok
       case Left(_) =>
         genericLogger.logger.error(sessionRepo500ErrorMessage(page))
@@ -65,7 +66,7 @@ trait ControllerHelper extends FrontendBaseController with I18nSupport {
 
   def updateDatabaseAndRedirect(updatedAnswers: UserAnswers, page: Page, mode: Mode)
                                (implicit ec: ExecutionContext, request: Request[AnyContent]): Future[Result] = {
-    sessionService.set(updatedAnswers).map {
+    sessionService.set(updatedAnswers).value.map {
       case Right(_) => Redirect(navigator.nextPage(page, mode, updatedAnswers))
       case Left(_) =>
         genericLogger.logger.error(sessionRepo500ErrorMessage(page))
@@ -79,7 +80,7 @@ trait ControllerHelper extends FrontendBaseController with I18nSupport {
          genericLogger.logger.error(s"Failed to resolve user answers while on ${page.toString}")
          Future.successful(InternalServerError(errorHandler.internalServerErrorTemplate))
        case Success(userAnswers) =>
-         sessionService.set(userAnswers).flatMap {
+         sessionService.set(userAnswers).value.flatMap {
            case Right(_) => success
            case Left(_) =>
              genericLogger.logger.error(sessionRepo500ErrorMessage(page))

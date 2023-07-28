@@ -43,14 +43,6 @@ trait DataHelper {
     isLarge = isLarge
   )
 
-  def testLiterage(
-                    atLowRate: BigDecimal,
-                    atHighRate: BigDecimal
-                  ): Litreage = Litreage(
-    atLowRate = atLowRate,
-    atHighRate = atHighRate
-  )
-
   def testRetrievedActivity(
                              smallProducer: Boolean = false,
                              largeProducer: Boolean = false,

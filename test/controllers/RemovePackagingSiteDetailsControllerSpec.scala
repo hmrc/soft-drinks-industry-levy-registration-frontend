@@ -39,8 +39,6 @@ import utilities.GenericLogger
 import viewmodels.AddressFormattingHelper
 import views.html.RemovePackagingSiteDetailsView
 
-import scala.concurrent.Future
-
 class RemovePackagingSiteDetailsControllerSpec extends SpecBase with MockitoSugar with LoggerHelper {
 
   def onwardRoute = Call("GET", "/foo")
@@ -146,7 +144,7 @@ class RemovePackagingSiteDetailsControllerSpec extends SpecBase with MockitoSuga
         None))
       val mockSessionRepository = mock[SessionService]
 
-      when(mockSessionRepository.set(any())) thenReturn Future.successful(Right(true))
+      when(mockSessionRepository.set(any())) thenReturn createSuccessRegistrationResult(true)
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers.copy(packagingSiteList = packagingSite)))
@@ -236,7 +234,7 @@ class RemovePackagingSiteDetailsControllerSpec extends SpecBase with MockitoSuga
         None))
       val mockSessionService = mock[SessionService]
 
-      when(mockSessionService.set(any())) thenReturn Future.successful(Left(SessionDatabaseInsertError))
+      when(mockSessionService.set(any())) thenReturn createFailureRegistrationResult(SessionDatabaseInsertError)
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers.copy(packagingSiteList = packagingSite)))

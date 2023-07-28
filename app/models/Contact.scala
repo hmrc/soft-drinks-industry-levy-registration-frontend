@@ -25,4 +25,11 @@ case class Contact(name: Option[String],
 
 object Contact {
   implicit val format: Format[Contact] = Json.format[Contact]
+
+  def fromContactDetails(contactDetails: ContactDetails): Contact = Contact(
+    name = Some(contactDetails.fullName),
+    positionInCompany = Some(contactDetails.position),
+    phoneNumber = contactDetails.phoneNumber,
+    email = contactDetails.email
+  )
 }

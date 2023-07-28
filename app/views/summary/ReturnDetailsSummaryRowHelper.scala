@@ -26,6 +26,7 @@ import viewmodels.implicits._
 trait ReturnDetailsSummaryRowHelper {
 
   val page: QuestionPage[Boolean]
+  //LDS ignore
   val key: String
   val action: String
   val actionId: String

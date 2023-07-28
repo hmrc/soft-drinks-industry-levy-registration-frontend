@@ -27,16 +27,13 @@ import models.{CheckMode, NormalMode, Warehouse}
 import org.mockito.ArgumentMatchers
 import org.mockito.MockitoSugar.{mock, when}
 import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
-import uk.gov.hmrc.http.HeaderCarrier
 
-import scala.concurrent.ExecutionContext.Implicits._
 import scala.concurrent.Future
 
 class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAwaitTimeout {
 
   val mockALFConnector = mock[AddressLookupConnector]
   val service = new AddressLookupService(mockALFConnector, frontendAppConfig)
-  implicit val hc: HeaderCarrier = HeaderCarrier()
   val organisation = "soft drinks ltd"
   val addressLine1 = "line 1"
   val addressLine2 = "line 2"

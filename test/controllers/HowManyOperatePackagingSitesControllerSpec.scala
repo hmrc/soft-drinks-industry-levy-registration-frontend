@@ -18,11 +18,11 @@ package controllers
 
 import base.SpecBase
 import errors.SessionDatabaseInsertError
-import helpers.LoggerHelper
-import utilities.GenericLogger
 import forms.HowManyLitresFormProvider
-import models.{NormalMode, UserAnswers, LitresInBands}
+import helpers.LoggerHelper
+import models.{LitresInBands, NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
+import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
@@ -32,10 +32,8 @@ import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.SessionService
+import utilities.GenericLogger
 import views.html.HowManyOperatePackagingSitesView
-
-import scala.concurrent.Future
-import org.jsoup.Jsoup
 
 class HowManyOperatePackagingSitesControllerSpec extends SpecBase with MockitoSugar with LoggerHelper{
 
@@ -86,7 +84,7 @@ class HowManyOperatePackagingSitesControllerSpec extends SpecBase with MockitoSu
 
       val mockSessionService = mock[SessionService]
 
-      when(mockSessionService.set(any())) thenReturn Future.successful(Right(true))
+      when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(true)
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration)
@@ -178,7 +176,7 @@ class HowManyOperatePackagingSitesControllerSpec extends SpecBase with MockitoSu
     "should log an error message when internal server error is returned when user answers are not set in session repository" in {
       val mockSessionService = mock[SessionService]
 
-      when(mockSessionService.set(any())) thenReturn Future.successful(Left(SessionDatabaseInsertError))
+      when(mockSessionService.set(any())) thenReturn createFailureRegistrationResult(SessionDatabaseInsertError)
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration)
