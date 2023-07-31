@@ -68,12 +68,13 @@
             )
                     .withWidth(TwoThirds)
                     .withInputType("email")
+                    .withInputMode("email")
                     .withAutocomplete("email")
                     .withSpellcheck(on = false)
         )
 
         @govukButton(
-            ButtonViewModel(messages("site.continue"))
+            ButtonViewModel(messages("site.saveContinue"))
         )
     }
 }

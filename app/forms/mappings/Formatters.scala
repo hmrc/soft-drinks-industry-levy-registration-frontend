@@ -65,6 +65,7 @@ trait Formatters {
         baseFormatter
           .bind(key, data)
           .map(_.replace(",", ""))
+          .map(_.replace(" ", ""))
           .flatMap {
             case s if s.matches(decimalRegexp) =>
               Left(Seq(FormError(key, wholeNumberKey, args)))
@@ -123,6 +124,7 @@ trait Formatters {
         baseFormatter
           .bind(key, data)
           .map(_.replace(",", ""))
+          .map(_.replace(" ", ""))
           .flatMap {
             case s if s.matches(numberRegexp) =>
               if (totalLitresLessThanOne(data)) {

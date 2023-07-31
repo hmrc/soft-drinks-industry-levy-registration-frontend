@@ -102,8 +102,7 @@ class ContactDetailsViewSpec extends ViewSpecHelper {
 
 
     "contain the correct button" - {
-      document.getElementsByClass(Selectors.button).text() mustBe Messages("site.continue")
-      //file fails to compile if this is changed directly to "Save and continue"
+      document.getElementsByClass(Selectors.button).text() mustBe "Save and continue"
     }
 
     "contains a form with the correct action" - {
