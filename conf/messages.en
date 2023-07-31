@@ -263,7 +263,7 @@ packAtBusinessAddress.heading = Your business address
 packAtBusinessAddress.title = Your business address
 packAtBusinessAddress.heading2 = Is your registered business address a UK packaging site that you operate to produce liable drinks?
 packAtBusinessAddress.checkYourAnswersLabel = Is your registered business address a UK packaging site that you operate to produce liable drinks?
-packAtBusinessAddress.error.required = Select yes if packAtBusinessAddress
+packAtBusinessAddress.error.required = Select yes if your registered business address is a UK packaging site that you operate to produce liable drinks
 packAtBusinessAddress.change.hidden = the UK packaging site that you operate to produce liable drinks
 
 warehouseDetails.title.heading = You added {0} UK warehouse{1}
