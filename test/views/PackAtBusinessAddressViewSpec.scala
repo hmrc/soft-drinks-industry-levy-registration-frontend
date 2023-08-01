@@ -50,7 +50,7 @@ class PackAtBusinessAddressViewSpec extends ViewSpecHelper {
     val html = view(form, HtmlContent(""),  NormalMode)(request, messages(application))
     val document = doc(html)
     "should contain the expected title" in {
-      document.title() mustBe "Your business address - Soft Drinks Industry Levy - GOV-UK"
+      document.title() mustBe "Your business address - Soft Drinks Industry Levy - GOV.UK"
     }
 
     "should have the expected heading" in {
@@ -211,7 +211,7 @@ class PackAtBusinessAddressViewSpec extends ViewSpecHelper {
       val documentWithErrors = doc(htmlWithErrors)
 
       "should have a title containing error" in {
-        documentWithErrors.title mustBe "Error: Your business address - Soft Drinks Industry Levy - GOV-UK"
+        documentWithErrors.title mustBe "Error: Your business address - Soft Drinks Industry Levy - GOV.UK"
       }
 
       "contains a message that links to field with error" in {
