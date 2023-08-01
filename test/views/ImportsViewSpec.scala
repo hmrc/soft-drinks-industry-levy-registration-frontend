@@ -54,7 +54,7 @@ class ImportsViewSpec extends ViewSpecHelper {
     "should include a legend with the expected heading" in {
       val legend = document.getElementsByClass(Selectors.legend)
       legend.size() mustBe 1
-      legend.get(0).getElementsByClass(Selectors.heading).text() mustEqual Messages("imports.heading")
+      legend.get(0).getElementsByClass(Selectors.legend).text() mustEqual Messages("Do you bring liable drinks into the UK from anywhere outside of the UK?")
     }
 
     "when the form is not preoccupied and has no errors" - {

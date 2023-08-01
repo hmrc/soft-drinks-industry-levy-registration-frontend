@@ -24,6 +24,10 @@
 
 @(form: Form[_], addressRef: String, packagingSite: Html)(implicit request: Request[_], messages: Messages)
 
+@hintContent = {
+<span id="packagingSiteDetails" class="govuk-!-font-weight-bold">@packagingSite </span>
+}
+
 @layout(pageTitle = title(form, messages("removePackagingSiteDetails.title"))) {
 
     @formHelper(action = routes.RemovePackagingSiteDetailsController.onSubmit(addressRef), Symbol("autoComplete") -> "off") {
@@ -31,14 +35,12 @@
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
-        <h1 class="govuk-heading-m">@messages("removePackagingSiteDetails.heading")</h1>
-        <p class="govuk-body-m" id="packagingSiteDetails">@packagingSite</p>
 
         @govukRadios(
             RadiosViewModel.yesNo(
                 field = form("value"),
-                legend = LegendViewModel(""),
-                hint = None
+                legend = LegendViewModel("removePackagingSiteDetails.heading").withCssClass("govuk-fieldset__legend--m"),
+                hint = Some(Hint(content = HtmlContent(hintContent)))
             )
         )
 

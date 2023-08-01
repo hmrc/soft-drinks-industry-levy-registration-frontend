@@ -59,7 +59,8 @@ class RemovePackagingSiteDetailsViewSpec extends ViewSpecHelper {
 
     "should include a legend with the expected heading" in {
       val legend = document.getElementsByClass(Selectors.legend)
-      legend.size() mustBe 0
+      legend.size() mustBe 1
+      legend.get(0).getElementsByClass(Selectors.legend).text() mustEqual Messages("Are you sure you want to remove this packaging site?")
     }
 
     "when the form is not preoccupied and has no errors" - {

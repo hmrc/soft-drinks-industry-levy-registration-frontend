@@ -56,8 +56,7 @@ class HowManyLitresGloballyViewSpec extends ViewSpecHelper {
     "should include a legend with the expected heading" in {
       val legend = document.getElementsByClass(Selectors.legend)
       legend.size() mustBe 1
-      legend.get(0).getElementsByClass(Selectors.heading)
-        .text() mustEqual "How many litres of your own brands of liable drinks have been packaged globally in the past 12 months?"
+      legend.get(0).getElementsByClass(Selectors.legend).text() mustEqual "How many litres of your own brands of liable drinks have been packaged globally in the past 12 months?"
     }
 
     "should include 3 detail sections with the expected content" in {

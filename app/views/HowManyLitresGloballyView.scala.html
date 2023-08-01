@@ -41,7 +41,7 @@
         @govukRadios(
             RadiosViewModel(
                 field  = form("value"),
-                legend = LegendViewModel(messages("howManyLitresGlobally.title")).asPageHeading(),
+                legend = LegendViewModel(messages("howManyLitresGlobally.title")).withCssClass("govuk-fieldset__legend--m"),
                 items  = HowManyLitresGlobally.options
             )
             .withHint(Hint(content = Text(messages("brandsPackaged.hint"))))
