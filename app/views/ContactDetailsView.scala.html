@@ -43,6 +43,9 @@
                 label = LabelViewModel(messages("contactDetails.fullName"))
             )
             .withWidth(TwoThirds)
+            .withAutocomplete("name")
+            .withSpellcheck(on = false)
+
         )
 
         @govukInput(
@@ -59,6 +62,8 @@
                 label = LabelViewModel(messages("contactDetails.phoneNumber"))
             )
                     .withWidth(TwoThirds)
+                    .withInputType("tel")
+                    .withAutocomplete("tel")
         )
 
         @govukInput(
@@ -68,6 +73,7 @@
             )
                     .withWidth(TwoThirds)
                     .withInputType("email")
+                    .withInputMode("email")
                     .withAutocomplete("email")
                     .withSpellcheck(on = false)
         )
