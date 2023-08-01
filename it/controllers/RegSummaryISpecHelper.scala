@@ -32,7 +32,7 @@ import java.time.format.DateTimeFormatter
 trait RegSummaryISpecHelper extends ControllerITTestHelper {
 
   object Selectors {
-    val heading = "govuk-heading-m"
+    val heading = "govuk-heading-l"
     val body = "govuk-body"
     val govukFormGroup = "govuk-form-group"
     val label = "govuk-label"

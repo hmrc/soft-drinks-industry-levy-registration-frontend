@@ -33,7 +33,7 @@
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
 
-        <h1 class="govuk-heading-m">
+        <h1 class="govuk-heading-l">
         @messages("warehouseDetails.title.heading", numberOfWarehouses.toString, if(numberOfWarehouses == 1) "" else "s")
         </h1>
 
@@ -52,7 +52,7 @@
         @govukRadios(
             RadiosViewModel.yesNo(
                 field = form("value"),
-                legend = LegendViewModel(messages("wareshousDetails.add.another")).asPageHeading(),
+                legend = LegendViewModel(messages("warehouseDetails.add.another")).asPageSubHeading(),
                 hint = None
             )
         )
