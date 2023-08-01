@@ -36,7 +36,7 @@ object VerifySummary  {
           HtmlContent(
             HtmlFormat.escape(messages(s"verify.$answer"))
           )
-        ).withCssClass("govuk-!-text-align-right")
+        ).withCssClass("sdil-right-align--desktop")
 
         SummaryListRowViewModel(
           key     = "verify.checkYourAnswersLabel",

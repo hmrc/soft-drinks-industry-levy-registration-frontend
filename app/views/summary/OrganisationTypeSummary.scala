@@ -36,7 +36,7 @@ object OrganisationTypeSummary  {
           HtmlContent(
             HtmlFormat.escape(messages(s"organisationType.$answer"))
           )
-        ).withCssClass("govuk-!-text-align-right")
+        ).withCssClass("sdil-right-align--desktop")
 
         SummaryListRowViewModel(
           key     = "organisationType.checkYourAnswersLabel",

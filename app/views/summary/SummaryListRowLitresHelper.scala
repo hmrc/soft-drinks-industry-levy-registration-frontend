@@ -42,7 +42,7 @@ trait SummaryListRowLitresHelper {
     val value = HtmlFormat.escape(java.text.NumberFormat.getInstance.format(litres)).toString
     SummaryListRow(
       key = band,
-      value = ValueViewModel(HtmlContent(value)).withCssClass("govuk-!-text-align-right"),
+      value = ValueViewModel(HtmlContent(value)).withCssClass("sdil-right-align--desktop"),
       classes = "govuk-summary-list__row",
       actions = action(isCheckAnswers, band)
     )

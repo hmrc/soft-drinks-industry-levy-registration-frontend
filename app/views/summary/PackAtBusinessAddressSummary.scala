@@ -34,7 +34,7 @@ object PackAtBusinessAddressSummary  {
 
         SummaryListRowViewModel(
           key     = "packAtBusinessAddress.checkYourAnswersLabel",
-          value   = ValueViewModel(value).withCssClass("govuk-!-text-align-right"),
+          value   = ValueViewModel(value).withCssClass("sdil-right-align--desktop"),
           actions = Seq(
             ActionItemViewModel("site.change", routes.PackAtBusinessAddressController.onPageLoad(CheckMode).url)
               .withVisuallyHiddenText(messages("packAtBusinessAddress.change.hidden"))
