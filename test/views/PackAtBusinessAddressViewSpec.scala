@@ -34,7 +34,6 @@ class PackAtBusinessAddressViewSpec extends ViewSpecHelper {
 
   object Selectors {
     val heading = "govuk-heading-m"
-    val heading2 = "govuk-fieldset__heading"
     val legend = "govuk-fieldset__legend  govuk-fieldset__legend--m"
     val radios = "govuk-radios__item"
     val radioInput = "govuk-radios__input"
@@ -55,6 +54,10 @@ class PackAtBusinessAddressViewSpec extends ViewSpecHelper {
 
     "should have the expected heading" in {
       document.getElementsByClass(Selectors.heading).text() mustEqual Messages("packAtBusinessAddress.heading")
+    }
+
+    "should have the expected legend" in {
+      document.getElementsByClass(Selectors.legend).text() mustEqual Messages("packAtBusinessAddress.legend")
     }
 
     "when the form is not preoccupied and has no errors" - {

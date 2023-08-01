@@ -44,7 +44,7 @@
         @govukRadios(
             RadiosViewModel.yesNo(
                 field = form("value"),
-                legend = LegendViewModel(messages("packAtBusinessAddress.heading2")).asPageHeading(),
+                legend = LegendViewModel(messages("packAtBusinessAddress.legend")).withCssClass("govuk-fieldset__legend--m"),
                 hint = None
             )
         )
