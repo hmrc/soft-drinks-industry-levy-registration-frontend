@@ -19,6 +19,7 @@ package views
 import controllers.routes
 import forms.PackAtBusinessAddressFormProvider
 import models.{CheckMode, NormalMode}
+import play.api.data.Form
 import play.api.i18n.Messages
 import play.api.mvc.Request
 import play.api.test.FakeRequest
@@ -27,9 +28,9 @@ import views.html.PackAtBusinessAddressView
 
 class PackAtBusinessAddressViewSpec extends ViewSpecHelper {
 
-  val view = application.injector.instanceOf[PackAtBusinessAddressView]
+  val view: PackAtBusinessAddressView = application.injector.instanceOf[PackAtBusinessAddressView]
   val formProvider = new PackAtBusinessAddressFormProvider
-  val form = formProvider.apply()
+  val form: Form[Boolean] = formProvider.apply()
   implicit val request: Request[_] = FakeRequest()
 
   object Selectors {
@@ -37,7 +38,7 @@ class PackAtBusinessAddressViewSpec extends ViewSpecHelper {
     val legend = "govuk-fieldset__legend  govuk-fieldset__legend--m"
     val radios = "govuk-radios__item"
     val radioInput = "govuk-radios__input"
-    val radioLables = "govuk-label govuk-radios__label"
+    val radioLabels = "govuk-label govuk-radios__label"
     val body = "govuk-body"
     val errorSummaryTitle = "govuk-error-summary__title"
     val errorSummaryList = "govuk-list govuk-error-summary__list"
@@ -49,15 +50,16 @@ class PackAtBusinessAddressViewSpec extends ViewSpecHelper {
     val html = view(form, HtmlContent(""),  NormalMode)(request, messages(application))
     val document = doc(html)
     "should contain the expected title" in {
-      document.title() must include(Messages("packAtBusinessAddress" + ".title"))
+      document.title() mustBe "Your business address - Soft Drinks Industry Levy - GOV-UK"
     }
 
     "should have the expected heading" in {
-      document.getElementsByClass(Selectors.heading).text() mustEqual Messages("packAtBusinessAddress.heading")
+      document.getElementsByClass(Selectors.heading).text() mustBe "Your business address"
     }
 
     "should have the expected legend" in {
-      document.getElementsByClass(Selectors.legend).text() mustEqual Messages("packAtBusinessAddress.legend")
+      document.getElementsByClass(Selectors.legend).text() mustBe
+        "Is your registered business address a UK packaging site that you operate to produce liable drinks?"
     }
 
     "when the form is not preoccupied and has no errors" - {
@@ -68,7 +70,7 @@ class PackAtBusinessAddressViewSpec extends ViewSpecHelper {
           val radioButton1 = radioButtons
             .get(0)
           radioButton1
-            .getElementsByClass(Selectors.radioLables)
+            .getElementsByClass(Selectors.radioLabels)
             .text() mustBe "Yes"
           radioButton1
             .getElementsByClass(Selectors.radioInput)
@@ -82,7 +84,7 @@ class PackAtBusinessAddressViewSpec extends ViewSpecHelper {
           val radioButton1 = radioButtons
             .get(1)
           radioButton1
-            .getElementsByClass(Selectors.radioLables)
+            .getElementsByClass(Selectors.radioLabels)
             .text() mustBe "No"
           radioButton1
             .getElementsByClass(Selectors.radioInput)
@@ -103,7 +105,7 @@ class PackAtBusinessAddressViewSpec extends ViewSpecHelper {
           val radioButton1 = radioButtons
             .get(0)
           radioButton1
-            .getElementsByClass(Selectors.radioLables)
+            .getElementsByClass(Selectors.radioLabels)
             .text() mustBe "Yes"
           radioButton1
             .getElementsByClass(Selectors.radioInput)
@@ -117,7 +119,7 @@ class PackAtBusinessAddressViewSpec extends ViewSpecHelper {
           val radioButton1 = radioButtons
             .get(1)
           radioButton1
-            .getElementsByClass(Selectors.radioLables)
+            .getElementsByClass(Selectors.radioLabels)
             .text() mustBe "No"
           radioButton1
             .getElementsByClass(Selectors.radioInput)
@@ -138,7 +140,7 @@ class PackAtBusinessAddressViewSpec extends ViewSpecHelper {
           val radioButton1 = radioButtons
             .get(0)
           radioButton1
-            .getElementsByClass(Selectors.radioLables)
+            .getElementsByClass(Selectors.radioLabels)
             .text() mustBe "Yes"
           radioButton1
             .getElementsByClass(Selectors.radioInput)
@@ -152,7 +154,7 @@ class PackAtBusinessAddressViewSpec extends ViewSpecHelper {
           val radioButton1 = radioButtons
             .get(1)
           radioButton1
-            .getElementsByClass(Selectors.radioLables)
+            .getElementsByClass(Selectors.radioLabels)
             .text() mustBe "No"
           radioButton1
             .getElementsByClass(Selectors.radioInput)
@@ -165,7 +167,7 @@ class PackAtBusinessAddressViewSpec extends ViewSpecHelper {
     }
 
     "contain the correct button" - {
-      document.getElementsByClass(Selectors.button).text() mustBe Messages("site.continue")
+      document.getElementsByClass(Selectors.button).text() mustBe "Save and continue"
     }
 
     "contains a form with the correct action" - {
@@ -209,8 +211,7 @@ class PackAtBusinessAddressViewSpec extends ViewSpecHelper {
       val documentWithErrors = doc(htmlWithErrors)
 
       "should have a title containing error" in {
-        val titleMessage = Messages("packAtBusinessAddress.title")
-        documentWithErrors.title must include("Error: " + titleMessage)
+        documentWithErrors.title mustBe "Error: Your business address - Soft Drinks Industry Levy - GOV-UK"
       }
 
       "contains a message that links to field with error" in {
@@ -220,7 +221,7 @@ class PackAtBusinessAddressViewSpec extends ViewSpecHelper {
         errorSummary
           .select("a")
           .attr("href") mustBe "#value"
-        errorSummary.text() mustBe Messages("packAtBusinessAddress.error.required")
+        errorSummary.text() mustBe "Select yes if your registered business address is a UK packaging site that you operate to produce liable drinks"
       }
     }
 
