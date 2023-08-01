@@ -23,7 +23,7 @@ class AlreadyRegisteredControllerISpec extends ControllerITTestHelper {
           res.status mustBe 200
           val page = Jsoup.parse(res.body)
           page.title must include(Messages("alreadyRegistered.heading.title"))
-          page.getElementsByClass("govuk-heading-m").text() mustEqual Messages("alreadyRegistered.heading.title")
+          page.getElementsByClass("govuk-heading-l").text() mustEqual Messages("alreadyRegistered.heading.title")
           page.getElementById("subheader").text() mustEqual s"These are the details we hold for Unique Taxpayer Reference (UTR) 0000001611:"
           page.getElementById("utrField").text() mustEqual "0000001611:"
           page.getElementById("addressForUTR").text() mustBe "Super Lemonade Plc 105B Godfrey Marchant Grove Guildford GU14 8NL"
