@@ -70,7 +70,6 @@ class PackagingSiteDetailsViewSpec extends ViewSpecHelper {
     val summaryList = "govuk-summary-list"
     val summaryListRow = "govuk-summary-list__row"
     val summaryListKey = "govuk-summary-list__key"
-    val summaryListValue = "govuk-summary-list__value  align-right"
     val summaryListActions = "govuk-summary-list__value"
     val hidden = "govuk-visually-hidden"
     val link = "govuk-link"

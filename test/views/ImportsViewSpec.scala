@@ -56,6 +56,7 @@ class ImportsViewSpec extends ViewSpecHelper {
       val legend = document.getElementsByClass(Selectors.legend)
       legend.size() mustBe 1
       legend.get(0).getElementsByClass(Selectors.heading).text() mustBe "Do you bring liable drinks into the UK from anywhere outside of the UK?"
+
     }
 
     "when the form is not preoccupied and has no errors" - {

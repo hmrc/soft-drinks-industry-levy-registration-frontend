@@ -58,7 +58,7 @@ class StartDateViewSpec extends ViewSpecHelper {
     "should include a legend with the expected heading" in {
       val legend = document.getElementsByClass(Selectors.legend)
       legend.size() mustBe 1
-      legend.get(0).getElementsByClass(Selectors.heading).text() mustEqual Messages("startDate" + ".heading")
+      legend.get(0).getElementsByClass(Selectors.legend).text() mustEqual Messages("What date did you become liable to register for the Soft Drinks Industry Levy?")
     }
 
     "when the form is not prepopulated and has no errors" - {

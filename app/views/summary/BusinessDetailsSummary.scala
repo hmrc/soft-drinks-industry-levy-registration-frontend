@@ -76,7 +76,7 @@ object BusinessDetailsSummary  {
                                    (implicit messages: Messages): SummaryListRow = {
     SummaryListRowViewModel(
       key = s"checkYourAnswers.businessDetails.$fieldName",
-      value = ValueViewModel(content).withCssClass("govuk-!-text-align-right"),
+      value = ValueViewModel(content).withCssClass("sdil-right-align--desktop"),
       actions = actions
     )
   }

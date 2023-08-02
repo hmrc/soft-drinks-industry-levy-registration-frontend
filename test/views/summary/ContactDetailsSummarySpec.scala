@@ -51,7 +51,7 @@ class ContactDetailsSummarySpec extends SpecBase {
             val fullNameRow = summaryRows.head
             fullNameRow.key.content.asHtml mustBe Html("Full name")
             fullNameRow.value.content.asHtml mustBe Html(NAME)
-            fullNameRow.value.classes.trim mustBe "govuk-!-text-align-right"
+            fullNameRow.value.classes.trim mustBe "sdil-right-align--desktop"
             fullNameRow.actions.fold(0)(_.items.size) mustBe 1
             val fullNameAction = fullNameRow.actions.get.items.head
             fullNameAction.content.asHtml mustBe Html("Change")
@@ -61,7 +61,7 @@ class ContactDetailsSummarySpec extends SpecBase {
             val positionRow = summaryRows(1)
             positionRow.key.content.asHtml mustBe Html("Job title")
             positionRow.value.content.asHtml mustBe Html(POSITION)
-            positionRow.value.classes.trim mustBe "govuk-!-text-align-right"
+            positionRow.value.classes.trim mustBe "sdil-right-align--desktop"
             positionRow.actions.fold(0)(_.items.size) mustBe 1
             val positionAction = positionRow.actions.get.items.head
             positionAction.content.asHtml mustBe Html("Change")
@@ -71,7 +71,7 @@ class ContactDetailsSummarySpec extends SpecBase {
             val phoneRow = summaryRows(2)
             phoneRow.key.content.asHtml mustBe Html("Telephone number")
             phoneRow.value.content.asHtml mustBe Html(PHONE)
-            phoneRow.value.classes.trim mustBe "govuk-!-text-align-right"
+            phoneRow.value.classes.trim mustBe "sdil-right-align--desktop"
             phoneRow.actions.fold(0)(_.items.size) mustBe 1
             val phoneAction = phoneRow.actions.get.items.head
             phoneAction.content.asHtml mustBe Html("Change")
@@ -81,7 +81,7 @@ class ContactDetailsSummarySpec extends SpecBase {
             val emailRow = summaryRows(3)
             emailRow.key.content.asHtml mustBe Html("Email address")
             emailRow.value.content.asHtml mustBe Html(EMAIL)
-            emailRow.value.classes.trim mustBe "govuk-!-text-align-right"
+            emailRow.value.classes.trim mustBe "sdil-right-align--desktop"
             emailRow.actions.fold(0)(_.items.size) mustBe 1
             val emailAction = emailRow.actions.get.items.head
             emailAction.content.asHtml mustBe Html("Change")
@@ -101,25 +101,25 @@ class ContactDetailsSummarySpec extends SpecBase {
             val fullNameRow = summaryRows.head
             fullNameRow.key.content.asHtml mustBe Html("Full name")
             fullNameRow.value.content.asHtml mustBe Html(NAME)
-            fullNameRow.value.classes.trim mustBe "govuk-!-text-align-right"
+            fullNameRow.value.classes.trim mustBe "sdil-right-align--desktop"
             fullNameRow.actions.fold(0)(_.items.size) mustBe 0
 
             val positionRow = summaryRows(1)
             positionRow.key.content.asHtml mustBe Html("Job title")
             positionRow.value.content.asHtml mustBe Html(POSITION)
-            positionRow.value.classes.trim mustBe "govuk-!-text-align-right"
+            positionRow.value.classes.trim mustBe "sdil-right-align--desktop"
             positionRow.actions.fold(0)(_.items.size) mustBe 0
 
             val phoneRow = summaryRows(2)
             phoneRow.key.content.asHtml mustBe Html("Telephone number")
             phoneRow.value.content.asHtml mustBe Html(PHONE)
-            phoneRow.value.classes.trim mustBe "govuk-!-text-align-right"
+            phoneRow.value.classes.trim mustBe "sdil-right-align--desktop"
             phoneRow.actions.fold(0)(_.items.size) mustBe 0
 
             val emailRow = summaryRows(3)
             emailRow.key.content.asHtml mustBe Html("Email address")
             emailRow.value.content.asHtml mustBe Html(EMAIL)
-            emailRow.value.classes.trim mustBe "govuk-!-text-align-right"
+            emailRow.value.classes.trim mustBe "sdil-right-align--desktop"
             emailRow.actions.fold(0)(_.items.size) mustBe 0
           }
         }

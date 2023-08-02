@@ -53,7 +53,7 @@ object ContactDetailsSummary  {
                                    (implicit messages: Messages): SummaryListRow = {
     SummaryListRowViewModel(
       key = s"contactDetails.$fieldName",
-      value = ValueViewModel(Text(fieldValue)).withCssClass("govuk-!-text-align-right"),
+      value = ValueViewModel(Text(fieldValue)).withCssClass("sdil-right-align--desktop"),
       actions = if (isCheckAnswers) {
           Seq(
             getAction(fieldName)

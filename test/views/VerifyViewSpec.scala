@@ -63,13 +63,11 @@ class VerifyViewSpec extends ViewSpecHelper {
     "should include the expected address" in {
       document.getElementById("addressForUTR").text() mustBe address.value.toString()
     }
-    "should include the expected subHeading" in {
-      document.getElementById("subHeading").text() mustBe "Is this the business you want to register?"
-    }
 
     "should not include a legend with the expected heading" in {
       val legend = document.getElementsByClass(Selectors.legend)
-      legend.size() mustBe 0
+      legend.size() mustBe 1
+      legend.get(0).getElementsByClass(Selectors.legend).text() mustEqual Messages("Is this the business you want to register?")
     }
 
     "when the form is not preoccupied and has no errors" - {

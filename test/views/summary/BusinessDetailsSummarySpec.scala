@@ -60,19 +60,19 @@ class BusinessDetailsSummarySpec extends SpecBase {
               val utrRow = summaryRows.head
               utrRow.key.content.asHtml mustBe Html("Unique Taxpayer Reference (UTR)")
               utrRow.value.content.asHtml mustBe Html(UTR)
-              utrRow.value.classes.trim mustBe "govuk-!-text-align-right"
+              utrRow.value.classes.trim mustBe "sdil-right-align--desktop"
               utrRow.actions.fold(0)(_.items.size) mustBe 0
 
               val nameRow = summaryRows(1)
               nameRow.key.content.asHtml mustBe Html("Business name")
               nameRow.value.content.asHtml mustBe Html(ORG_NAME)
-              nameRow.value.classes.trim mustBe "govuk-!-text-align-right"
+              nameRow.value.classes.trim mustBe "sdil-right-align--desktop"
               nameRow.actions.fold(0)(_.items.size) mustBe 0
 
               val addressRow = summaryRows(2)
               addressRow.key.content.asHtml mustBe Html("Business address")
               addressRow.value.content mustBe HtmlContent(formatAddress(ROSM_ADDRESS))
-              addressRow.value.classes.trim mustBe "govuk-!-text-align-right"
+              addressRow.value.classes.trim mustBe "sdil-right-align--desktop"
               addressRow.actions.fold(0)(_.items.size) mustBe 1
               val addressAction = addressRow.actions.get.items.head
               addressAction.content.asHtml mustBe Html("Change")
@@ -82,7 +82,7 @@ class BusinessDetailsSummarySpec extends SpecBase {
               val globalLitresRow = summaryRows(3)
               globalLitresRow.key.content.asHtml mustBe Html("Litres of your own brands of liable drinks packaged globally in the past 12 months")
               globalLitresRow.value.content.asHtml mustBe Html(expectedLitresContent(numberOfLitresGlobally))
-              globalLitresRow.value.classes.trim mustBe "govuk-!-text-align-right"
+              globalLitresRow.value.classes.trim mustBe "sdil-right-align--desktop"
               globalLitresRow.actions.fold(0)(_.items.size) mustBe 1
               val globalLitresAction = globalLitresRow.actions.get.items.head
               globalLitresAction.content.asHtml mustBe Html("Change")
@@ -100,25 +100,25 @@ class BusinessDetailsSummarySpec extends SpecBase {
               val utrRow = summaryRows.head
               utrRow.key.content.asHtml mustBe Html("Unique Taxpayer Reference (UTR)")
               utrRow.value.content.asHtml mustBe Html(UTR)
-              utrRow.value.classes.trim mustBe "govuk-!-text-align-right"
+              utrRow.value.classes.trim mustBe "sdil-right-align--desktop"
               utrRow.actions.fold(0)(_.items.size) mustBe 0
 
               val nameRow = summaryRows(1)
               nameRow.key.content.asHtml mustBe Html("Business name")
               nameRow.value.content.asHtml mustBe Html(ORG_NAME)
-              nameRow.value.classes.trim mustBe "govuk-!-text-align-right"
+              nameRow.value.classes.trim mustBe "sdil-right-align--desktop"
               nameRow.actions.fold(0)(_.items.size) mustBe 0
 
               val addressRow = summaryRows(2)
               addressRow.key.content.asHtml mustBe Html("Business address")
               addressRow.value.content mustBe HtmlContent(formatAddress(ROSM_ADDRESS))
-              addressRow.value.classes.trim mustBe "govuk-!-text-align-right"
+              addressRow.value.classes.trim mustBe "sdil-right-align--desktop"
               addressRow.actions.fold(0)(_.items.size) mustBe 0
 
               val globalLitresRow = summaryRows(3)
               globalLitresRow.key.content.asHtml mustBe Html("Litres of your own brands of liable drinks packaged globally in the past 12 months")
               globalLitresRow.value.content.asHtml mustBe Html(expectedLitresContent(numberOfLitresGlobally))
-              globalLitresRow.value.classes.trim mustBe "govuk-!-text-align-right"
+              globalLitresRow.value.classes.trim mustBe "sdil-right-align--desktop"
               globalLitresRow.actions.fold(0)(_.items.size) mustBe 0
             }
           }
@@ -134,19 +134,19 @@ class BusinessDetailsSummarySpec extends SpecBase {
               val utrRow = summaryRows.head
               utrRow.key.content.asHtml mustBe Html("Unique Taxpayer Reference (UTR)")
               utrRow.value.content.asHtml mustBe Html(UTR)
-              utrRow.value.classes.trim mustBe "govuk-!-text-align-right"
+              utrRow.value.classes.trim mustBe "sdil-right-align--desktop"
               utrRow.actions.fold(0)(_.items.size) mustBe 0
 
               val nameRow = summaryRows(1)
               nameRow.key.content.asHtml mustBe Html("Business name")
               nameRow.value.content.asHtml mustBe Html(ORG_NAME)
-              nameRow.value.classes.trim mustBe "govuk-!-text-align-right"
+              nameRow.value.classes.trim mustBe "sdil-right-align--desktop"
               nameRow.actions.fold(0)(_.items.size) mustBe 0
 
               val addressRow = summaryRows(2)
               addressRow.key.content.asHtml mustBe Html("Business address")
               addressRow.value.content mustBe HtmlContent(formatAddress(CHANGED_ADDRESS))
-              addressRow.value.classes.trim mustBe "govuk-!-text-align-right"
+              addressRow.value.classes.trim mustBe "sdil-right-align--desktop"
               addressRow.actions.fold(0)(_.items.size) mustBe 1
               val addressAction = addressRow.actions.get.items.head
               addressAction.content.asHtml mustBe Html("Change")
@@ -156,7 +156,7 @@ class BusinessDetailsSummarySpec extends SpecBase {
               val globalLitresRow = summaryRows(3)
               globalLitresRow.key.content.asHtml mustBe Html("Litres of your own brands of liable drinks packaged globally in the past 12 months")
               globalLitresRow.value.content.asHtml mustBe Html(expectedLitresContent(numberOfLitresGlobally))
-              globalLitresRow.value.classes.trim mustBe "govuk-!-text-align-right"
+              globalLitresRow.value.classes.trim mustBe "sdil-right-align--desktop"
               globalLitresRow.actions.fold(0)(_.items.size) mustBe 1
               val globalLitresAction = globalLitresRow.actions.get.items.head
               globalLitresAction.content.asHtml mustBe Html("Change")
@@ -174,25 +174,25 @@ class BusinessDetailsSummarySpec extends SpecBase {
               val utrRow = summaryRows.head
               utrRow.key.content.asHtml mustBe Html("Unique Taxpayer Reference (UTR)")
               utrRow.value.content.asHtml mustBe Html(UTR)
-              utrRow.value.classes.trim mustBe "govuk-!-text-align-right"
+              utrRow.value.classes.trim mustBe "sdil-right-align--desktop"
               utrRow.actions.fold(0)(_.items.size) mustBe 0
 
               val nameRow = summaryRows(1)
               nameRow.key.content.asHtml mustBe Html("Business name")
               nameRow.value.content.asHtml mustBe Html(ORG_NAME)
-              nameRow.value.classes.trim mustBe "govuk-!-text-align-right"
+              nameRow.value.classes.trim mustBe "sdil-right-align--desktop"
               nameRow.actions.fold(0)(_.items.size) mustBe 0
 
               val addressRow = summaryRows(2)
               addressRow.key.content.asHtml mustBe Html("Business address")
               addressRow.value.content mustBe HtmlContent(formatAddress(CHANGED_ADDRESS))
-              addressRow.value.classes.trim mustBe "govuk-!-text-align-right"
+              addressRow.value.classes.trim mustBe "sdil-right-align--desktop"
               addressRow.actions.fold(0)(_.items.size) mustBe 0
 
               val globalLitresRow = summaryRows(3)
               globalLitresRow.key.content.asHtml mustBe Html("Litres of your own brands of liable drinks packaged globally in the past 12 months")
               globalLitresRow.value.content.asHtml mustBe Html(expectedLitresContent(numberOfLitresGlobally))
-              globalLitresRow.value.classes.trim mustBe "govuk-!-text-align-right"
+              globalLitresRow.value.classes.trim mustBe "sdil-right-align--desktop"
               globalLitresRow.actions.fold(0)(_.items.size) mustBe 0
             }
           }
