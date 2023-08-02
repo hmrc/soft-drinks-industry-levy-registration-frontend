@@ -29,6 +29,10 @@
 
     @formHelper(action = routes.PackAtBusinessAddressController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
+        @if(form.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummaryViewModel(form))
+        }
+
         <h1 class="govuk-heading-l">@messages("packAtBusinessAddress.heading")</h1>
 
         @govukInsetText(InsetText(
@@ -36,10 +40,6 @@
         content = formattedAddress,
         classes = "govuk-!-margin-top-0"
         ))
-
-        @if(form.errors.nonEmpty) {
-            @govukErrorSummary(ErrorSummaryViewModel(form))
-        }
 
         @govukRadios(
             RadiosViewModel.yesNo(
@@ -50,7 +50,7 @@
         )
 
         @govukButton(
-            ButtonViewModel(messages("site.continue"))
+            ButtonViewModel(messages("site.saveContinue"))
         )
     }
 }
