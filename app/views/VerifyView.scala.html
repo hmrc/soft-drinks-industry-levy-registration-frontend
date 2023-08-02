@@ -40,11 +40,10 @@
             content = formattedAddress,
             classes = "govuk-!-margin-top-0"
         ))
-        <h2 class="govuk-heading-m" id="subHeading">@messages("verify.subHeading")</h2>
         @govukRadios(
             RadiosViewModel(
                 field  = form("value"),
-                legend = LegendViewModel(""),
+                legend = LegendViewModel("verify.subHeading").withCssClass("govuk-fieldset__legend--m"),
                 items  = Verify.options
             )
         )

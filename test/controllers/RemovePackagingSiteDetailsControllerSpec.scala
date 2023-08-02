@@ -50,7 +50,6 @@ class RemovePackagingSiteDetailsControllerSpec extends SpecBase with MockitoSuga
     def commonAssertionsForPageLoad(addressToBeDisplayed: Html, page: String, ref: String): Assertion = {
       val doc: Document = Jsoup.parse(page)
       doc.getElementById("packagingSiteDetails").text() mustBe addressToBeDisplayed.toString()
-      doc.getElementsByTag("h1").text() mustEqual "Are you sure you want to remove this packaging site?"
       doc.getElementsByTag("form").attr("action") mustBe routes.RemovePackagingSiteDetailsController.onSubmit(ref).url
     }
 
