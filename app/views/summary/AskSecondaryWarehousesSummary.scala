@@ -34,7 +34,7 @@ object AskSecondaryWarehousesSummary  {
 
         SummaryListRowViewModel(
           key     = "askSecondaryWarehouses.checkYourAnswersLabel",
-          value   = ValueViewModel(value).withCssClass("govuk-!-text-align-right"),
+          value   = ValueViewModel(value).withCssClass("sdil-right-align--desktop"),
           actions = Seq(
             ActionItemViewModel("site.change", routes.AskSecondaryWarehousesController.onPageLoad(CheckMode).url)
               .withVisuallyHiddenText(messages("askSecondaryWarehouses.change.hidden"))
