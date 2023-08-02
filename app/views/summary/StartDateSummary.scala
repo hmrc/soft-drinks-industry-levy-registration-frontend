@@ -35,7 +35,7 @@ object StartDateSummary {
     answers.get(page) match {
       case None => Seq.empty
       case Some(answered) =>
-        val dateFormatter = DateTimeFormatter.ofPattern("dd MM yyyy")
+        val dateFormatter = DateTimeFormatter.ofPattern("dd MMMM yyyy")
         val value: String = answered.format(dateFormatter)
         Seq(
           SummaryListRowViewModel(
