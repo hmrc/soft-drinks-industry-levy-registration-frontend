@@ -33,15 +33,13 @@
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
 
-        <h1 class="govuk-heading-m">@messages("packAtBusinessAddress.heading")</h1>
+        <h1 class="govuk-heading-l">@messages("packAtBusinessAddress.heading")</h1>
 
         @govukInsetText(InsetText(
         id = Some("utrNo"),
         content = formattedAddress,
         classes = "govuk-!-margin-top-0"
         ))
-
-
 
         @govukRadios(
             RadiosViewModel.yesNo(

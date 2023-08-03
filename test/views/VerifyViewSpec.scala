@@ -52,7 +52,7 @@ class VerifyViewSpec extends ViewSpecHelper {
     val html = view(form, NormalMode, utr, address)(request, messages(application))
     val document = doc(html)
     "should contain the expected title" in {
-      document.title() must include(Messages("verify" + ".title"))
+      document.title() mustBe "Your business details - Soft Drinks Industry Levy - GOV.UK"
     }
     "should include the expected subtext" in {
       document.getElementById("subText").text() mustBe s"These are the details we hold for Unique Taxpayer Reference (UTR) $utr:"

@@ -20,6 +20,7 @@ import controllers.routes
 import forms.PackagingSiteDetailsFormProvider
 import models.backend.{Site, UkAddress}
 import models.{CheckMode, NormalMode}
+import play.api.data.Form
 import play.api.i18n.Messages
 import play.api.mvc.Request
 import play.api.test.FakeRequest
@@ -27,35 +28,35 @@ import views.html.PackagingSiteDetailsView
 
 class PackagingSiteDetailsViewSpec extends ViewSpecHelper {
 
-  val view = application.injector.instanceOf[PackagingSiteDetailsView]
+  val view: PackagingSiteDetailsView = application.injector.instanceOf[PackagingSiteDetailsView]
   val formProvider = new PackagingSiteDetailsFormProvider
-  val form = formProvider.apply()
+  val form: Form[Boolean] = formProvider.apply()
   implicit val request: Request[_] = FakeRequest()
 
-  val PackagingSite1 = Site(
+  val PackagingSite1: Site = Site(
     UkAddress(List("33 Rhes Priordy", "East London"), "E73 2RP"),
     None,
     Some("Wild Lemonade Group"),
     None)
-  val address45Characters = Site(
+  val address45Characters: Site = Site(
     UkAddress(List("29 Station Pl.", "The Railyard", "Cambridge"), "CB1 2FP"),
     None,
     None,
     None)
 
-  val address47Characters = Site(
+  val address47Characters: Site = Site(
     UkAddress(List("29 Station Place", "The Railyard", "Cambridge"), "CB1 2FP"),
     Some("10"),
     None,
     None)
 
-  val address49Characters = Site(
+  val address49Characters: Site = Site(
     UkAddress(List("29 Station PlaceDr", "The Railyard", "Cambridge"), "CB1 2FP"),
     None,
     None,
     None)
 
-  lazy val packagingSiteListWith1 = Map(("78941132", PackagingSite1))
+  lazy val packagingSiteListWith1: Map[String, Site] = Map(("78941132", PackagingSite1))
 
 
 
@@ -64,7 +65,7 @@ class PackagingSiteDetailsViewSpec extends ViewSpecHelper {
     val legend = "govuk-fieldset__legend  govuk-fieldset__legend--m"
     val radios = "govuk-radios__item"
     val radioInput = "govuk-radios__input"
-    val radioLables = "govuk-label govuk-radios__label"
+    val radioLabels = "govuk-label govuk-radios__label"
     val body = "govuk-body"
     val summaryList = "govuk-summary-list"
     val summaryListRow = "govuk-summary-list__row"
@@ -147,7 +148,7 @@ class PackagingSiteDetailsViewSpec extends ViewSpecHelper {
           val radioButton1 = radioButtons
             .get(0)
           radioButton1
-            .getElementsByClass(Selectors.radioLables)
+            .getElementsByClass(Selectors.radioLabels)
             .text() mustBe "Yes"
           radioButton1
             .getElementsByClass(Selectors.radioInput)
@@ -161,7 +162,7 @@ class PackagingSiteDetailsViewSpec extends ViewSpecHelper {
           val radioButton1 = radioButtons
             .get(1)
           radioButton1
-            .getElementsByClass(Selectors.radioLables)
+            .getElementsByClass(Selectors.radioLabels)
             .text() mustBe "No"
           radioButton1
             .getElementsByClass(Selectors.radioInput)
@@ -182,7 +183,7 @@ class PackagingSiteDetailsViewSpec extends ViewSpecHelper {
           val radioButton1 = radioButtons
             .get(0)
           radioButton1
-            .getElementsByClass(Selectors.radioLables)
+            .getElementsByClass(Selectors.radioLabels)
             .text() mustBe "Yes"
           radioButton1
             .getElementsByClass(Selectors.radioInput)
@@ -196,7 +197,7 @@ class PackagingSiteDetailsViewSpec extends ViewSpecHelper {
           val radioButton1 = radioButtons
             .get(1)
           radioButton1
-            .getElementsByClass(Selectors.radioLables)
+            .getElementsByClass(Selectors.radioLabels)
             .text() mustBe "No"
           radioButton1
             .getElementsByClass(Selectors.radioInput)
@@ -217,7 +218,7 @@ class PackagingSiteDetailsViewSpec extends ViewSpecHelper {
           val radioButton1 = radioButtons
             .get(0)
           radioButton1
-            .getElementsByClass(Selectors.radioLables)
+            .getElementsByClass(Selectors.radioLabels)
             .text() mustBe "Yes"
           radioButton1
             .getElementsByClass(Selectors.radioInput)
@@ -231,7 +232,7 @@ class PackagingSiteDetailsViewSpec extends ViewSpecHelper {
           val radioButton1 = radioButtons
             .get(1)
           radioButton1
-            .getElementsByClass(Selectors.radioLables)
+            .getElementsByClass(Selectors.radioLabels)
             .text() mustBe "No"
           radioButton1
             .getElementsByClass(Selectors.radioInput)

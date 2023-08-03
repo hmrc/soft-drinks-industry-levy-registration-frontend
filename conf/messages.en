@@ -267,7 +267,7 @@ packAtBusinessAddress.error.required = Select yes if your registered business ad
 packAtBusinessAddress.change.hidden = the UK packaging site that you operate to produce liable drinks
 
 warehouseDetails.title.heading = You added {0} UK warehouse{1}
-wareshousDetails.add.another = Do you want to register another UK warehouse?
+warehouseDetails.add.another = Do you want to register another UK warehouse?
 warehouseDetails.error.required = Select yes if you want to register another UK warehouse
 warehouseDetails.remove.hidden = remove UK warehouse
 warehouseDetails.change.hidden = Change warehouses

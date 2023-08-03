@@ -36,7 +36,7 @@ class EnterBusinessDetailsViewSpec extends ViewSpecHelper {
 
   object Selectors {
     val formGroup = "govuk-form-group"
-    val heading = "govuk-heading-m"
+    val heading = "govuk-heading-l"
     val hint = "govuk-hint"
     val errorSummaryList = "govuk-list govuk-error-summary__list"
     val button = "govuk-button"

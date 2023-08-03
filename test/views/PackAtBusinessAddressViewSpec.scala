@@ -34,7 +34,7 @@ class PackAtBusinessAddressViewSpec extends ViewSpecHelper {
   implicit val request: Request[_] = FakeRequest()
 
   object Selectors {
-    val heading = "govuk-heading-m"
+    val heading = "govuk-heading-l"
     val legend = "govuk-fieldset__legend  govuk-fieldset__legend--m"
     val radios = "govuk-radios__item"
     val radioInput = "govuk-radios__input"

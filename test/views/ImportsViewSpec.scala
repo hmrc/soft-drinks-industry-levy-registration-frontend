@@ -19,6 +19,7 @@ package views
 import controllers.routes
 import forms.ImportsFormProvider
 import models.{CheckMode, NormalMode}
+import play.api.data.Form
 import play.api.i18n.Messages
 import play.api.mvc.Request
 import play.api.test.FakeRequest
@@ -26,17 +27,17 @@ import views.html.ImportsView
 
 class ImportsViewSpec extends ViewSpecHelper {
 
-  val view = application.injector.instanceOf[ImportsView]
+  val view: ImportsView = application.injector.instanceOf[ImportsView]
   val formProvider = new ImportsFormProvider
-  val form = formProvider.apply()
+  val form: Form[Boolean] = formProvider.apply()
   implicit val request: Request[_] = FakeRequest()
 
   object Selectors {
     val heading = "govuk-fieldset__heading"
-    val legend = "govuk-fieldset__legend  govuk-fieldset__legend--m"
+    val legend = "govuk-fieldset__legend  govuk-fieldset__legend--l"
     val radios = "govuk-radios__item"
     val radioInput = "govuk-radios__input"
-    val radioLables = "govuk-label govuk-radios__label"
+    val radioLabels = "govuk-label govuk-radios__label"
     val body = "govuk-body"
     val errorSummaryTitle = "govuk-error-summary__title"
     val errorSummaryList = "govuk-list govuk-error-summary__list"
@@ -48,13 +49,14 @@ class ImportsViewSpec extends ViewSpecHelper {
     val html = view(form, NormalMode)(request, messages(application))
     val document = doc(html)
     "should contain the expected title" in {
-      document.title() must include(Messages("imports" + ".title"))
+      document.title() mustBe "Do you bring liable drinks into the UK from anywhere outside of the UK? - Soft Drinks Industry Levy - GOV.UK"
     }
 
     "should include a legend with the expected heading" in {
       val legend = document.getElementsByClass(Selectors.legend)
       legend.size() mustBe 1
-      legend.get(0).getElementsByClass(Selectors.legend).text() mustEqual Messages("Do you bring liable drinks into the UK from anywhere outside of the UK?")
+      legend.get(0).getElementsByClass(Selectors.heading).text() mustBe "Do you bring liable drinks into the UK from anywhere outside of the UK?"
+
     }
 
     "when the form is not preoccupied and has no errors" - {
@@ -65,7 +67,7 @@ class ImportsViewSpec extends ViewSpecHelper {
           val radioButton1 = radioButtons
             .get(0)
           radioButton1
-            .getElementsByClass(Selectors.radioLables)
+            .getElementsByClass(Selectors.radioLabels)
             .text() mustBe "Yes"
           radioButton1
             .getElementsByClass(Selectors.radioInput)
@@ -79,7 +81,7 @@ class ImportsViewSpec extends ViewSpecHelper {
           val radioButton1 = radioButtons
             .get(1)
           radioButton1
-            .getElementsByClass(Selectors.radioLables)
+            .getElementsByClass(Selectors.radioLabels)
             .text() mustBe "No"
           radioButton1
             .getElementsByClass(Selectors.radioInput)
@@ -100,7 +102,7 @@ class ImportsViewSpec extends ViewSpecHelper {
           val radioButton1 = radioButtons
             .get(0)
           radioButton1
-            .getElementsByClass(Selectors.radioLables)
+            .getElementsByClass(Selectors.radioLabels)
             .text() mustBe "Yes"
           radioButton1
             .getElementsByClass(Selectors.radioInput)
@@ -114,7 +116,7 @@ class ImportsViewSpec extends ViewSpecHelper {
           val radioButton1 = radioButtons
             .get(1)
           radioButton1
-            .getElementsByClass(Selectors.radioLables)
+            .getElementsByClass(Selectors.radioLabels)
             .text() mustBe "No"
           radioButton1
             .getElementsByClass(Selectors.radioInput)
@@ -135,7 +137,7 @@ class ImportsViewSpec extends ViewSpecHelper {
           val radioButton1 = radioButtons
             .get(0)
           radioButton1
-            .getElementsByClass(Selectors.radioLables)
+            .getElementsByClass(Selectors.radioLabels)
             .text() mustBe "Yes"
           radioButton1
             .getElementsByClass(Selectors.radioInput)
@@ -149,7 +151,7 @@ class ImportsViewSpec extends ViewSpecHelper {
           val radioButton1 = radioButtons
             .get(1)
           radioButton1
-            .getElementsByClass(Selectors.radioLables)
+            .getElementsByClass(Selectors.radioLabels)
             .text() mustBe "No"
           radioButton1
             .getElementsByClass(Selectors.radioInput)
@@ -162,7 +164,7 @@ class ImportsViewSpec extends ViewSpecHelper {
     }
 
     "contain the correct button" - {
-      document.getElementsByClass(Selectors.button).text() mustBe Messages("site.continue")
+      document.getElementsByClass(Selectors.button).text() mustBe "Save and continue"
     }
 
     "contains a form with the correct action" - {
