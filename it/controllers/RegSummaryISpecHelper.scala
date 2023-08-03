@@ -43,7 +43,7 @@ trait RegSummaryISpecHelper extends ControllerITTestHelper {
   val rosmAddress = UkAddress(List("105B Godfrey Marchant Grove", "Guildford"), "GU14 8NL")
   val newAddress = UkAddress(List("10 Linden Close", "Langly"), "LA16 3KL")
 
-  val dateFormatter = DateTimeFormatter.ofPattern("dd MM yyyy")
+  val dateFormatter = DateTimeFormatter.ofPattern("dd MMMM yyyy")
 
   val submittedDate = LocalDateTime.of(2023, 7, 10, 14, 30).toInstant(ZoneOffset.UTC)
 
