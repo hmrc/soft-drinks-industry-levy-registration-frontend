@@ -338,9 +338,10 @@ alreadyRegistered.account.link.text = your Soft Drinks Industry Levy account.
 
 enterBusinessDetails.title = Enter your business details
 enterBusinessDetails.heading = Enter your business details
-enterBusinessDetails.subtext = This will help us match your details against information we currently hold.
+enterBusinessDetails.subtext1 = This will help us match your details against information we currently hold.
+enterBusinessDetails.subtext2 = You will need to enter your Corporation Tax or company Unique Taxpayer Reference number (UTR). You can <a href={0} target="_blank">find a lost UTR (opens in new tab).</a>
 enterBusinessDetails.utr.heading = Corporation Tax or company Unique Taxpayer Reference number (UTR)
-enterBusinessDetails.utr.hint = This is 10 numbers, for example 1234567890. It will be on tax returns and other letters about Corporation Tax. It may be called ‘reference’, ‘UTR’ or ‘official use’. You can <a href={0} target="_blank">find a lost UTR (opens in new tab).</a>
+enterBusinessDetails.utr.hint = This is 10 numbers, for example 1234567890. It will be on tax returns and other letters about Corporation Tax. It may be called ‘reference’, ‘UTR’ or ‘official use’.
 enterBusinessDetails.postcode.heading = Registered business postcode
 enterBusinessDetails.postcode.hint = This is the postcode of your registered business address
 enterBusinessDetails.checkYourAnswersLabel = Enter your business details

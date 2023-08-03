@@ -36,27 +36,28 @@
         }
 
         <h1 class="govuk-heading-l">@messages("enterBusinessDetails.heading")</h1>
-        <p class="govuk-body-m">@messages("enterBusinessDetails.subtext")</p>
+        <p class="govuk-body-m">@messages("enterBusinessDetails.subtext1")</p>
+        <p class="govuk-body-m">@Html(messages("enterBusinessDetails.subtext2", config.findALostUtrLink))</p>
 
         @govukInput(
             Input(
                 id = "utr",
                 name = "utr",
-                label = LabelViewModel(messages("enterBusinessDetails.utr.heading")),
+                label = LabelViewModel(messages("enterBusinessDetails.utr.heading")).withCssClass("govuk-!-font-weight-bold"),
                 classes = "govuk-input--width-10",
                 errorMessage = if (form("utr").hasErrors) {
                     Some(ErrorMessage(content = Text(messages(s"${form.errors.head.message}"))))
                 } else None,
                 value = form.data.get("utr")
             )
-            .withHint(Hint(content = HtmlContent(messages("enterBusinessDetails.utr.hint", config.findALostUtrLink))))
+            .withHint(Hint(content = HtmlContent(messages("enterBusinessDetails.utr.hint"))))
         )
 
         @govukInput(
         Input(
             id = "postcode",
             name = "postcode",
-            label = LabelViewModel(messages("enterBusinessDetails.postcode.heading")),
+            label = LabelViewModel(messages("enterBusinessDetails.postcode.heading")).withCssClass("govuk-!-font-weight-bold"),
             classes = "govuk-input--width-5",
             errorMessage = if (form("postcode").hasErrors) {
                 Some(ErrorMessage(content = Text(messages(s"${form.errors.last.message}"))))
