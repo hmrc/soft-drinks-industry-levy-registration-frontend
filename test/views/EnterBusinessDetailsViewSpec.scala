@@ -37,6 +37,7 @@ class EnterBusinessDetailsViewSpec extends ViewSpecHelper {
   object Selectors {
     val formGroup = "govuk-form-group"
     val heading = "govuk-heading-l"
+    val body = "govuk-body-m"
     val hint = "govuk-hint"
     val errorSummaryList = "govuk-list govuk-error-summary__list"
     val button = "govuk-button"
@@ -52,6 +53,13 @@ class EnterBusinessDetailsViewSpec extends ViewSpecHelper {
       document.title() must include(Messages("enterBusinessDetails" + ".title"))
     }
 
+    "should contain the expected subtext" in {
+      val subtext = document.getElementsByClass(Selectors.body)
+      subtext.size() mustBe 2
+      subtext.get(0).text() mustBe Messages("enterBusinessDetails.subtext1")
+      subtext.get(1).html() mustBe Messages("enterBusinessDetails.subtext2", "\"https://www.gov.uk/find-utr-number\"")
+    }
+
     "should contain a govuk form group" - {
       "that contains the page heading" in {
         document.getElementsByClass(Selectors.heading)
@@ -60,8 +68,7 @@ class EnterBusinessDetailsViewSpec extends ViewSpecHelper {
 
       "that contains the expected hint test" in {
         formGroup.get(0).getElementsByClass(Selectors.hint)
-          .text() mustBe Messages("This is 10 numbers, for example 1234567890. It will be on tax returns and other letters about Corporation Tax. It may be called ‘reference’, ‘UTR’ or ‘official use’. You can find a lost UTR (opens in new tab).")
-        formGroup.get(0).getElementsByClass(Selectors.hint).toString.contains("https://www.gov.uk/find-utr-number") mustBe true
+          .text() mustBe Messages("This is 10 numbers, for example 1234567890. It will be on tax returns and other letters about Corporation Tax. It may be called ‘reference’, ‘UTR’ or ‘official use’.")
       }
 
       "that contains a text area" in {
