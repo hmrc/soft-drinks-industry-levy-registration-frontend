@@ -17,15 +17,9 @@
 package models
 
 import base.RegistrationSubscriptionHelper
-import errors.MissingRequiredUserAnswers
 import models.backend.Subscription
-import models.requests.DataRequest
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
 import pages.{ContactDetailsPage, OrganisationTypePage, StartDatePage}
 import play.api.libs.json.{JsBoolean, JsNumber, JsString, Json}
-import play.api.mvc.AnyContent
-import play.api.test.FakeRequest
 
 class SubscriptionSpec extends RegistrationSubscriptionHelper {
 

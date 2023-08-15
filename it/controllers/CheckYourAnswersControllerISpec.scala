@@ -1,10 +1,9 @@
 package controllers
 
-import models.HowManyLitresGlobally.{Large, Small}
+import models.HowManyLitresGlobally.Large
+import models.NormalMode
 import models.OrganisationType.LimitedCompany
-import models.{NormalMode, Verify}
 import models.Verify.YesRegister
-import models.backend.UkAddress
 import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
 import pages._
