@@ -19,14 +19,14 @@ package controllers
 import models.HowManyLitresGlobally.{Large, Small}
 import models.OrganisationType.LimitedCompany
 import models.Verify.YesRegister
-import models.backend.{Site, UkAddress}
+import models.backend.UkAddress
 import models.{CheckMode, ContactDetails, LitresInBands, Verify}
 import org.jsoup.nodes.{Document, Element}
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import pages._
 
-import java.time.{LocalDate, LocalDateTime, ZoneOffset}
 import java.time.format.DateTimeFormatter
+import java.time.{LocalDate, LocalDateTime, ZoneOffset}
 
 
 trait RegSummaryISpecHelper extends ControllerITTestHelper {
