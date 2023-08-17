@@ -138,20 +138,10 @@ class Navigator @Inject()() {
   }
 
   private def navigationForStartDate(userAnswers: UserAnswers, mode: Mode): Call = {
-    if (userAnswers.get(page = StartDatePage).isEmpty) {
-      routes.StartDateController.onPageLoad(mode)
-    }
-    if (mode == CheckMode) {
-      routes.CheckYourAnswersController.onPageLoad
-    }
     if (isLarge(userAnswers)) {
       largeProducerToPackagingSiteOrWarehouse(userAnswers, mode)
-    } else if (isSmall(userAnswers)) {
-        smallProducerToPackagingSiteOrWarehouse(userAnswers, mode)
-      } else if (notAProducer(userAnswers) && !copackerAll(userAnswers)) {
-        routes.AskSecondaryWarehousesController.onPageLoad(mode)
-      } else {
-      routes.PackAtBusinessAddressController.onPageLoad(mode)
+    } else {
+      notALargeProducerToPackagingSiteOrWarehouse(userAnswers, mode)
     }
   }
 
@@ -163,57 +153,19 @@ class Navigator @Inject()() {
   private def importer(userAnswers: UserAnswers): Boolean = UserTypeCheck.importer(userAnswers)
   private def operatesPackagingSite(userAnswers: UserAnswers): Boolean = UserTypeCheck.operatesPackagingSite(userAnswers)
 
-  private def whatIsUser(userAnswers: UserAnswers) = {
-    (copackee(userAnswers), operatesPackagingSite(userAnswers),
-      copackerAll(userAnswers), importer(userAnswers))
-  }
   private def largeProducerToPackagingSiteOrWarehouse(userAnswers: UserAnswers, mode: Mode): Call = {
-    whatIsUser(userAnswers) match {
-      case (_, false, false, false) => routes.AskSecondaryWarehousesController.onPageLoad(mode)
-      case (_, false, false, true) => routes.AskSecondaryWarehousesController.onPageLoad(mode)
-      case (_, false, true, false) => routes.PackAtBusinessAddressController.onPageLoad(mode)
-      case (_, false, true, true) => routes.PackAtBusinessAddressController.onPageLoad(mode)
-      case (_, true, false, false) => routes.PackAtBusinessAddressController.onPageLoad(mode)
-      case (_, true, false, true) => routes.PackAtBusinessAddressController.onPageLoad(mode)
-      case (_, true, true, false) => routes.PackAtBusinessAddressController.onPageLoad(mode)
-      case (_, true, true, true) => routes.PackAtBusinessAddressController.onPageLoad(mode)
-      case _ => routes.JourneyRecoveryController.onPageLoad()
-    }
-  }
-
-  private def smallProducerToPackagingSiteOrWarehouse(userAnswers: UserAnswers, mode: Mode): Call = {
-    if (copackee(userAnswers)) {
-      smallProducerCopakee(userAnswers, mode)
+    if (!operatesPackagingSite(userAnswers) && (!copackerAll(userAnswers))) {
+      routes.AskSecondaryWarehousesController.onPageLoad(mode)
     } else {
-      smallProducerNotACopakee(userAnswers, mode)
+      routes.PackAtBusinessAddressController.onPageLoad(mode)
     }
   }
 
-  private def smallProducerCopakee(userAnswers: UserAnswers, mode: Mode): Call = {
-    whatIsUser(userAnswers) match {
-      case (true, false, false, true) => routes.AskSecondaryWarehousesController.onPageLoad(mode)
-      case (true, false, true, false) => routes.PackAtBusinessAddressController.onPageLoad(mode)
-      case (true, false, true, true) => routes.PackAtBusinessAddressController.onPageLoad(mode)
-      case (true, true, false, true) => routes.AskSecondaryWarehousesController.onPageLoad(mode)
-      case (true, true, true, false) => routes.PackAtBusinessAddressController.onPageLoad(mode)
-      case (true, true, true, true) => routes.PackAtBusinessAddressController.onPageLoad(mode)
-//      case (true, false, false, false) => routes.ContactDetailsController.onPageLoad(mode)
-//      case (true, true, false, false) => routes.ContactDetailsController.onPageLoad(mode)
-      case _ => routes.JourneyRecoveryController.onPageLoad()
-    }
-  }
-
-  private def smallProducerNotACopakee(userAnswers: UserAnswers, mode: Mode): Call = {
-    whatIsUser(userAnswers) match {
-      case (false, false, false, true) => routes.AskSecondaryWarehousesController.onPageLoad(mode)
-      case (false, false, true, false) => routes.PackAtBusinessAddressController.onPageLoad(mode)
-      case (false, false, true, true) => routes.PackAtBusinessAddressController.onPageLoad(mode)
-      case (false, true, false, true) => routes.AskSecondaryWarehousesController.onPageLoad(mode)
-      case (false, true, true, false) => routes.PackAtBusinessAddressController.onPageLoad(mode)
-      case (false, true, true, true) => routes.PackAtBusinessAddressController.onPageLoad(mode)
-//      case (false, false, false, false) => routes.DoNotRegisterController.onPageLoad
-//      case (false, true, false, false) => routes.DoNotRegisterController.onPageLoad
-      case _ => routes.JourneyRecoveryController.onPageLoad()
+  private def notALargeProducerToPackagingSiteOrWarehouse(userAnswers: UserAnswers, mode: Mode): Call = {
+    if ((isSmall(userAnswers) || notAProducer(userAnswers)) && copackerAll(userAnswers)) {
+      routes.PackAtBusinessAddressController.onPageLoad(mode)
+    } else {
+      routes.AskSecondaryWarehousesController.onPageLoad(mode)
     }
   }
 

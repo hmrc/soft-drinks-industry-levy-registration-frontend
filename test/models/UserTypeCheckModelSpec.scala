@@ -23,7 +23,7 @@ import play.api.libs.json.Json
 
 class UserTypeCheckModelSpec extends SpecBase with MockitoSugar with DataHelper {
   val largeProducerUserAnswersNoContractPacking: UserAnswers = UserAnswers("id", Json.obj("howManyLitresGlobally" -> "large",
-    "thirdPartyPackagers" -> true, "howManyImports" -> Json.obj("lowBand" -> 1,"highBand" -> 1)))
+    "howManyImports" -> Json.obj("lowBand" -> 1,"highBand" -> 1)))
   val smallProducerUserAnswersNoOperatePackagingSites: UserAnswers = UserAnswers("id", Json.obj("howManyLitresGlobally" -> "small",
     "howManyContractPacking" -> Json.obj("lowBand" -> 1,"highBand" -> 1), "thirdPartyPackagers" -> true,
     "howManyImports" -> Json.obj("lowBand" -> 1,"highBand" -> 1)))
@@ -108,10 +108,8 @@ class UserTypeCheckModelSpec extends SpecBase with MockitoSugar with DataHelper 
     }
 
     "copackee returns true if ThirdPartyPackagersPage was answered yes" in {
-      val data = UserTypeCheck.copackee(largeProducerUserAnswersNoContractPacking)
+      val data = UserTypeCheck.copackee(smallProducerUserAnswersNoOperatePackagingSites)
       data mustBe true
-      val data1 = UserTypeCheck.copackee(smallProducerUserAnswersNoOperatePackagingSites)
-      data1 mustBe true
     }
 
     "copackee returns false if ThirdPartyPackagersPage was not answered or answered no" in {
