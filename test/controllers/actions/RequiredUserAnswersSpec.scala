@@ -210,16 +210,16 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
       val res = requiredUserAnswers.returnMissingAnswers(requiredUserAnswers.journey)
       res mustBe
         List(
-          RequiredPage(VerifyPage, None)(implicitly[Reads[Verify]]),
-          RequiredPage(OrganisationTypePage, None)(implicitly[Reads[OrganisationType]]),
-          RequiredPage(HowManyLitresGloballyPage, None)(implicitly[Reads[HowManyLitresGlobally]]),
-          RequiredPage(ContractPackingPage, None)(implicitly[Reads[Boolean]]),
-          RequiredPage(ImportsPage, None)(implicitly[Reads[Boolean]]),
-          RequiredPage(StartDatePage, None)(implicitly[Reads[LocalDate]]),
-          RequiredPage(PackAtBusinessAddressPage, None)(implicitly[Reads[Boolean]]),
-          RequiredPage(PackagingSiteDetailsPage, None)(implicitly[Reads[Boolean]]),
-          RequiredPage(AskSecondaryWarehousesPage, None)(implicitly[Reads[Boolean]]),
-          RequiredPage(ContactDetailsPage, None)(implicitly[Reads[ContactDetails]])
+          RequiredPage(VerifyPage, List.empty)(implicitly[Reads[Verify]]),
+          RequiredPage(OrganisationTypePage, List.empty)(implicitly[Reads[OrganisationType]]),
+          RequiredPage(HowManyLitresGloballyPage, List.empty)(implicitly[Reads[HowManyLitresGlobally]]),
+          RequiredPage(ContractPackingPage, List.empty)(implicitly[Reads[Boolean]]),
+          RequiredPage(ImportsPage, List.empty)(implicitly[Reads[Boolean]]),
+          RequiredPage(StartDatePage, List.empty)(implicitly[Reads[LocalDate]]),
+          RequiredPage(PackAtBusinessAddressPage, List.empty)(implicitly[Reads[Boolean]]),
+          RequiredPage(PackagingSiteDetailsPage, List.empty)(implicitly[Reads[Boolean]]),
+          RequiredPage(AskSecondaryWarehousesPage, List.empty)(implicitly[Reads[Boolean]]),
+          RequiredPage(ContactDetailsPage, List.empty)(implicitly[Reads[ContactDetails]])
         )
     }
     "should return all but 1 missing answers when user answers is fully populated apart from 1 answer" in {
@@ -244,7 +244,84 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
         FakeRequest(),"", false, None, userAnswers, RosmWithUtr("", RosmRegistration("", None, None, UkAddress(List.empty,"", None)))
       )
       val res = requiredUserAnswers.returnMissingAnswers(requiredUserAnswers.journey)
-      res mustBe List(RequiredPage(ContactDetailsPage, None)(implicitly[Reads[ContactDetails]]))
+      res mustBe List(RequiredPage(ContactDetailsPage, List.empty)(implicitly[Reads[ContactDetails]]))
+    }
+    "should return nothing when a list is provided for previous pages and previous pages don't exist" in {
+      val requiredPages = {
+        List(RequiredPage(ContactDetailsPage,
+          List(
+            PreviousPage(HowManyImportsPage, List(LitresInBands(1,1)))(implicitly[Reads[LitresInBands]]),
+            PreviousPage(PackAtBusinessAddressPage, List(true))(implicitly[Reads[Boolean]])
+          )
+        )(implicitly[Reads[ContactDetails]]))
+      }
+      implicit val dataRequest = DataRequest(
+        FakeRequest(),"", false, None, emptyUserAnswers, RosmWithUtr("", RosmRegistration("", None, None, UkAddress(List.empty,"", None)))
+      )
+      val res = requiredUserAnswers.returnMissingAnswers(requiredPages)
+      res mustBe List.empty
+    }
+    "should return Required Page when both previous pages have correct matching data" in {
+      val requiredPages = {
+        List(RequiredPage(ContactDetailsPage,
+          List(
+            PreviousPage(HowManyImportsPage, List(LitresInBands(1,1)))(implicitly[Reads[LitresInBands]]),
+            PreviousPage(PackAtBusinessAddressPage, List(true))(implicitly[Reads[Boolean]])
+          )
+        )(implicitly[Reads[ContactDetails]]))
+      }
+      val userAnswers = {
+        emptyUserAnswers
+          .set(HowManyImportsPage, LitresInBands(1,1)).success.value
+          .set(PackAtBusinessAddressPage, true).success.value
+      }
+      implicit val dataRequest = DataRequest(
+        FakeRequest(),"", false, None, userAnswers, RosmWithUtr("", RosmRegistration("", None, None, UkAddress(List.empty,"", None)))
+      )
+      val res = requiredUserAnswers.returnMissingAnswers(requiredPages)
+      res mustBe requiredPages
+    }
+    "should NOT return Required Page when both previous pages have data but one doesnt match" in {
+      val requiredPages = {
+        List(RequiredPage(ContactDetailsPage,
+          List(
+            PreviousPage(HowManyImportsPage, List(LitresInBands(2,3)))(implicitly[Reads[LitresInBands]]),
+            PreviousPage(PackAtBusinessAddressPage, List(true))(implicitly[Reads[Boolean]])
+          )
+        )(implicitly[Reads[ContactDetails]]))
+      }
+      val userAnswers = {
+        emptyUserAnswers
+          .set(HowManyImportsPage, LitresInBands(1,1)).success.value
+          .set(PackAtBusinessAddressPage, true).success.value
+      }
+
+      implicit val dataRequest = DataRequest(
+        FakeRequest(),"", false, None, userAnswers, RosmWithUtr("", RosmRegistration("", None, None, UkAddress(List.empty,"", None)))
+      )
+      val res = requiredUserAnswers.returnMissingAnswers(requiredPages)
+      res mustBe List.empty
+    }
+    "should NOT return Required Page when both previous pages have data both match and current required page is populated" in {
+      val requiredPages = {
+        List(RequiredPage(ContactDetailsPage,
+          List(
+            PreviousPage(HowManyImportsPage, List(LitresInBands(1,1)))(implicitly[Reads[LitresInBands]]),
+            PreviousPage(PackAtBusinessAddressPage, List(true))(implicitly[Reads[Boolean]])
+          )
+        )(implicitly[Reads[ContactDetails]]))
+      }
+      val userAnswers = {
+        emptyUserAnswers
+          .set(HowManyImportsPage, LitresInBands(1,1)).success.value
+          .set(PackAtBusinessAddressPage, true).success.value
+          .set(ContactDetailsPage, ContactDetails("", "", "", "")).success.value
+      }
+      implicit val dataRequest = DataRequest(
+        FakeRequest(),"", false, None, userAnswers, RosmWithUtr("", RosmRegistration("", None, None, UkAddress(List.empty,"", None)))
+      )
+      val res = requiredUserAnswers.returnMissingAnswers(requiredPages)
+      res mustBe List.empty
     }
   }
   "checkYourAnswersRequiredData" - {
