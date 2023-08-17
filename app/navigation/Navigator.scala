@@ -164,19 +164,19 @@ class Navigator @Inject()() {
   private def operatesPackagingSite(userAnswers: UserAnswers): Boolean = UserTypeCheck.operatesPackagingSite(userAnswers)
 
   private def whatIsUser(userAnswers: UserAnswers) = {
-    (isLarge(userAnswers), isSmall(userAnswers), notAProducer(userAnswers), copackee(userAnswers), operatesPackagingSite(userAnswers),
+    (copackee(userAnswers), operatesPackagingSite(userAnswers),
       copackerAll(userAnswers), importer(userAnswers))
   }
   private def largeProducerToPackagingSiteOrWarehouse(userAnswers: UserAnswers, mode: Mode): Call = {
     whatIsUser(userAnswers) match {
-      case (true, false, false, _, false, false, false) => routes.AskSecondaryWarehousesController.onPageLoad(mode)
-      case (true, false, false, _, false, false, true) => routes.AskSecondaryWarehousesController.onPageLoad(mode)
-      case (true, false, false, _, false, true, false) => routes.PackAtBusinessAddressController.onPageLoad(mode)
-      case (true, false, false, _, false, true, true) => routes.PackAtBusinessAddressController.onPageLoad(mode)
-      case (true, false, false, _, true, false, false) => routes.PackAtBusinessAddressController.onPageLoad(mode)
-      case (true, false, false, _, true, false, true) => routes.PackAtBusinessAddressController.onPageLoad(mode)
-      case (true, false, false, _, true, true, false) => routes.PackAtBusinessAddressController.onPageLoad(mode)
-      case (true, false, false, _, true, true, true) => routes.PackAtBusinessAddressController.onPageLoad(mode)
+      case (_, false, false, false) => routes.AskSecondaryWarehousesController.onPageLoad(mode)
+      case (_, false, false, true) => routes.AskSecondaryWarehousesController.onPageLoad(mode)
+      case (_, false, true, false) => routes.PackAtBusinessAddressController.onPageLoad(mode)
+      case (_, false, true, true) => routes.PackAtBusinessAddressController.onPageLoad(mode)
+      case (_, true, false, false) => routes.PackAtBusinessAddressController.onPageLoad(mode)
+      case (_, true, false, true) => routes.PackAtBusinessAddressController.onPageLoad(mode)
+      case (_, true, true, false) => routes.PackAtBusinessAddressController.onPageLoad(mode)
+      case (_, true, true, true) => routes.PackAtBusinessAddressController.onPageLoad(mode)
       case _ => routes.JourneyRecoveryController.onPageLoad()
     }
   }
@@ -191,28 +191,28 @@ class Navigator @Inject()() {
 
   private def smallProducerCopakee(userAnswers: UserAnswers, mode: Mode): Call = {
     whatIsUser(userAnswers) match {
-      case (false, true, false, true, false, false, false) => routes.ContactDetailsController.onPageLoad(mode)
-      case (false, true, false, true, false, false, true) => routes.AskSecondaryWarehousesController.onPageLoad(mode)
-      case (false, true, false, true, false, true, false) => routes.PackAtBusinessAddressController.onPageLoad(mode)
-      case (false, true, false, true, false, true, true) => routes.PackAtBusinessAddressController.onPageLoad(mode)
-      case (false, true, false, true, true, false, false) => routes.ContactDetailsController.onPageLoad(mode)
-      case (false, true, false, true, true, false, true) => routes.AskSecondaryWarehousesController.onPageLoad(mode)
-      case (false, true, false, true, true, true, false) => routes.PackAtBusinessAddressController.onPageLoad(mode)
-      case (false, true, false, true, true, true, true) => routes.PackAtBusinessAddressController.onPageLoad(mode)
+      case (true, false, false, true) => routes.AskSecondaryWarehousesController.onPageLoad(mode)
+      case (true, false, true, false) => routes.PackAtBusinessAddressController.onPageLoad(mode)
+      case (true, false, true, true) => routes.PackAtBusinessAddressController.onPageLoad(mode)
+      case (true, true, false, true) => routes.AskSecondaryWarehousesController.onPageLoad(mode)
+      case (true, true, true, false) => routes.PackAtBusinessAddressController.onPageLoad(mode)
+      case (true, true, true, true) => routes.PackAtBusinessAddressController.onPageLoad(mode)
+//      case (true, false, false, false) => routes.ContactDetailsController.onPageLoad(mode)
+//      case (true, true, false, false) => routes.ContactDetailsController.onPageLoad(mode)
       case _ => routes.JourneyRecoveryController.onPageLoad()
     }
   }
 
   private def smallProducerNotACopakee(userAnswers: UserAnswers, mode: Mode): Call = {
     whatIsUser(userAnswers) match {
-      case (false, true, false, false, false, false, false) => routes.DoNotRegisterController.onPageLoad
-      case (false, true, false, false, false, false, true) => routes.AskSecondaryWarehousesController.onPageLoad(mode)
-      case (false, true, false, false, false, true, false) => routes.PackAtBusinessAddressController.onPageLoad(mode)
-      case (false, true, false, false, false, true, true) => routes.PackAtBusinessAddressController.onPageLoad(mode)
-      case (false, true, false, false, true, false, false) => routes.DoNotRegisterController.onPageLoad
-      case (false, true, false, false, true, false, true) => routes.AskSecondaryWarehousesController.onPageLoad(mode)
-      case (false, true, false, false, true, true, false) => routes.PackAtBusinessAddressController.onPageLoad(mode)
-      case (false, true, false, false, true, true, true) => routes.PackAtBusinessAddressController.onPageLoad(mode)
+      case (false, false, false, true) => routes.AskSecondaryWarehousesController.onPageLoad(mode)
+      case (false, false, true, false) => routes.PackAtBusinessAddressController.onPageLoad(mode)
+      case (false, false, true, true) => routes.PackAtBusinessAddressController.onPageLoad(mode)
+      case (false, true, false, true) => routes.AskSecondaryWarehousesController.onPageLoad(mode)
+      case (false, true, true, false) => routes.PackAtBusinessAddressController.onPageLoad(mode)
+      case (false, true, true, true) => routes.PackAtBusinessAddressController.onPageLoad(mode)
+//      case (false, false, false, false) => routes.DoNotRegisterController.onPageLoad
+//      case (false, true, false, false) => routes.DoNotRegisterController.onPageLoad
       case _ => routes.JourneyRecoveryController.onPageLoad()
     }
   }
