@@ -18,11 +18,11 @@ package controllers.actions
 
 import models.HowManyLitresGlobally._
 import models.requests.DataRequest
-import models.{ContactDetails, HowManyLitresGlobally, LitresInBands, NormalMode, OrganisationType, UserAnswers, Verify}
+import models.{ContactDetails, HowManyLitresGlobally, LitresInBands, NormalMode, OrganisationType, Producer, UserAnswers, Verify}
 import pages._
 import play.api.libs.json.Reads
 import play.api.mvc.Result
-import play.api.mvc.Results.Redirect
+import play.api.mvc.Results.{Redirect, contentDispositionHeader}
 import utilities.GenericLogger
 
 import java.time.LocalDate
@@ -84,15 +84,20 @@ class RequiredUserAnswers @Inject()(genericLogger: GenericLogger)(implicit val e
             HowManyLitresGlobally.enumerable.withName("large").get))(implicitly[Reads[HowManyLitresGlobally]])))(implicitly[Reads[Boolean]]),
       RequiredPage(HowManyOperatePackagingSitesPage,
         List(PreviousPage(OperatePackagingSitesPage, List(true))(implicitly[Reads[Boolean]])))(implicitly[Reads[LitresInBands]]),
-      RequiredPage(ContractPackingPage, List.empty)(implicitly[Reads[Boolean]]),
       RequiredPage(HowManyContractPackingPage,
         List(PreviousPage(ContractPackingPage, List(true))(implicitly[Reads[Boolean]])))(implicitly[Reads[LitresInBands]]),
       RequiredPage(ImportsPage, List.empty)(implicitly[Reads[Boolean]]),
       RequiredPage(HowManyImportsPage,
         List(PreviousPage(ImportsPage, List(true))(implicitly[Reads[Boolean]])))(implicitly[Reads[LitresInBands]]),
       RequiredPage(StartDatePage, List.empty)(implicitly[Reads[LocalDate]]),
-      RequiredPage(PackAtBusinessAddressPage, List.empty)(implicitly[Reads[Boolean]]),
-      RequiredPage(PackagingSiteDetailsPage, List.empty)(implicitly[Reads[Boolean]]),
+//      RequiredPage(PackAtBusinessAddressPage, List.empty)(implicitly[Reads[Boolean]]),
+      RequiredPage(PackAtBusinessAddressPage,
+        List(PreviousPage(HowManyLitresGloballyPage,
+          List(HowManyLitresGlobally.enumerable.withName("small").get, HowManyLitresGlobally.enumerable.withName("xnot").get))(implicitly[Reads[HowManyLitresGlobally]]),
+            PreviousPage(HowManyOperatePackagingSitesPage, List(true))(implicitly[Reads[Boolean]]),
+            PreviousPage(ContractPackingPage, List(true))(implicitly[Reads[Boolean]])))(implicitly[Reads[Boolean]]),
+
+        RequiredPage(PackagingSiteDetailsPage, List.empty)(implicitly[Reads[Boolean]]),
       RequiredPage(AskSecondaryWarehousesPage, List.empty)(implicitly[Reads[Boolean]]),
       RequiredPage(WarehouseDetailsPage,
         List(PreviousPage(AskSecondaryWarehousesPage, List(true))(implicitly[Reads[Boolean]])))(implicitly[Reads[Boolean]]),
@@ -103,3 +108,27 @@ class RequiredUserAnswers @Inject()(genericLogger: GenericLogger)(implicit val e
 
 case class RequiredPage[+A >: QuestionPage[C], +B >: PreviousPage[_, _], C](pageRequired: A, basedOnPreviousPages: List[B])(val reads: Reads[C])
 case class PreviousPage[+B >: QuestionPage[C],C](page: B, previousPageAnswerRequired: List[C])(val reads: Reads[C])
+//
+//Large producer
+//  Show packaging site
+//OperatePackagingSitesPage = false && ContractPackingPage = true
+//or
+//OperatePackagingSitesPage = true && ContractPackingPage = false
+//or
+//OperatePackagingSitesPage = true && ContractPackingPage = true
+//
+//RequiredPage(PackAtBusinessAddressPage,
+//List(PreviousPage(HowManyOperatePackagingSitesPage, List(false))(implicitly[Reads[Boolean]]), PreviousPage(ContractPackingPage, List(true))(implicitly[Reads[Boolean]])))
+//
+//RequiredPage(PackAtBusinessAddressPage,
+//List(PreviousPage(HowManyOperatePackagingSitesPage, List(true))(implicitly[Reads[Boolean]]), PreviousPage(ContractPackingPage, List(false))(implicitly[Reads[Boolean]])))
+//
+//RequiredPage(PackAtBusinessAddressPage,
+//  List(PreviousPage(HowManyLitresGloballyPage,
+//    List(HowManyLitresGlobally.enumerable.withName("small").get))(implicitly[Reads[HowManyLitresGlobally]]), PreviousPage(HowManyOperatePackagingSitesPage, List(true))(implicitly[Reads[Boolean]]), PreviousPage(ContractPackingPage, List(true))(implicitly[Reads[Boolean]])))
+//
+//Small Producer & NonProducer
+//  Show packaging site
+//ContractPackingPage = true
+//  RequiredPage(PackAtBusinessAddressPage,
+//  List(PreviousPage(ContractPackingPage, List(true))(implicitly[Reads[Boolean]])))
