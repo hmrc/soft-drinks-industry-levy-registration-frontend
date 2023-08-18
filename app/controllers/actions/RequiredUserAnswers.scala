@@ -90,11 +90,12 @@ class RequiredUserAnswers @Inject()(genericLogger: GenericLogger)(implicit val e
       RequiredPage(HowManyImportsPage,
         List(PreviousPage(ImportsPage, List(true))(implicitly[Reads[Boolean]])))(implicitly[Reads[LitresInBands]]),
       RequiredPage(StartDatePage, List.empty)(implicitly[Reads[LocalDate]]),
-//      RequiredPage(PackAtBusinessAddressPage, List.empty)(implicitly[Reads[Boolean]]),
+  //    RequiredPage(PackAtBusinessAddressPage, List.empty)(implicitly[Reads[Boolean]]),
       RequiredPage(PackAtBusinessAddressPage,
-        List(PreviousPage(HowManyLitresGloballyPage,
-          List(HowManyLitresGlobally.enumerable.withName("small").get, HowManyLitresGlobally.enumerable.withName("xnot").get))(implicitly[Reads[HowManyLitresGlobally]]),
-            PreviousPage(HowManyOperatePackagingSitesPage, List(true))(implicitly[Reads[Boolean]]),
+        List
+//        (PreviousPage(HowManyLitresGloballyPage,
+//          List(HowManyLitresGlobally.enumerable.withName("small").get, HowManyLitresGlobally.enumerable.withName("xnot").get))(implicitly[Reads[HowManyLitresGlobally]]),
+        (PreviousPage(HowManyOperatePackagingSitesPage, List(true))(implicitly[Reads[Boolean]]),
             PreviousPage(ContractPackingPage, List(true))(implicitly[Reads[Boolean]])))(implicitly[Reads[Boolean]]),
 
         RequiredPage(PackagingSiteDetailsPage, List.empty)(implicitly[Reads[Boolean]]),
