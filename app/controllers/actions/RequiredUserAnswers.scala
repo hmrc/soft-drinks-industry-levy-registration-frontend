@@ -71,7 +71,6 @@ class RequiredUserAnswers @Inject()(genericLogger: GenericLogger)(implicit val e
     }
   }
   private[controllers] def journey(implicit request: DataRequest[_]): List[RequiredPage[_,_,_]] = {
-   // if (request.userAnswers.get(HowManyLitresGloballyPage).contains("small") || request.userAnswers.get(HowManyLitresGloballyPage).contains("xnot")) { //(List[RequiredPage[_,_,_]]) {
     List(
       RequiredPage(VerifyPage, List.empty)(implicitly[Reads[Verify]]),
       RequiredPage(OrganisationTypePage, List.empty)(implicitly[Reads[OrganisationType]]),
@@ -97,44 +96,25 @@ class RequiredUserAnswers @Inject()(genericLogger: GenericLogger)(implicit val e
         PreviousPage(ContractPackingPage, List(true))(implicitly[Reads[Boolean]])))(implicitly[Reads[Boolean]]),
       RequiredPage(PackAtBusinessAddressPage, List(
         PreviousPage(HowManyLitresGloballyPage, List(HowManyLitresGlobally.enumerable.withName("large").get))(implicitly[Reads[HowManyLitresGlobally]]),
-        PreviousPage(HowManyOperatePackagingSitesPage, List(true))(implicitly[Reads[Boolean]]),
+        PreviousPage(OperatePackagingSitesPage, List(false))(implicitly[Reads[Boolean]]),
         PreviousPage(ContractPackingPage, List(true))(implicitly[Reads[Boolean]])))(implicitly[Reads[Boolean]]),
+      RequiredPage(PackAtBusinessAddressPage, List(
+        PreviousPage(HowManyLitresGloballyPage, List(HowManyLitresGlobally.enumerable.withName("large").get))(implicitly[Reads[HowManyLitresGlobally]]),
+        PreviousPage(OperatePackagingSitesPage, List(true))(implicitly[Reads[Boolean]]),
+        PreviousPage(ContractPackingPage, List(true))(implicitly[Reads[Boolean]])))(implicitly[Reads[Boolean]]),
+      RequiredPage(PackAtBusinessAddressPage, List(
+        PreviousPage(HowManyLitresGloballyPage, List(HowManyLitresGlobally.enumerable.withName("large").get))(implicitly[Reads[HowManyLitresGlobally]]),
+        PreviousPage(OperatePackagingSitesPage, List(true))(implicitly[Reads[Boolean]]),
+        PreviousPage(ContractPackingPage, List(false))(implicitly[Reads[Boolean]])))(implicitly[Reads[Boolean]]),
       RequiredPage(PackagingSiteDetailsPage,
         List(PreviousPage(PackAtBusinessAddressPage, List(true, false))(implicitly[Reads[Boolean]])))(implicitly[Reads[Boolean]]),
       RequiredPage(AskSecondaryWarehousesPage, List.empty)(implicitly[Reads[Boolean]]),
       RequiredPage(WarehouseDetailsPage,
         List(PreviousPage(AskSecondaryWarehousesPage, List(true))(implicitly[Reads[Boolean]])))(implicitly[Reads[Boolean]]),
       RequiredPage(ContactDetailsPage, List.empty)(implicitly[Reads[ContactDetails]])
-     // }
-      )
+    )
   }
 }
 
 case class RequiredPage[+A >: QuestionPage[C], +B >: PreviousPage[_, _], C](pageRequired: A, basedOnPreviousPages: List[B])(val reads: Reads[C])
 case class PreviousPage[+B >: QuestionPage[C],C](page: B, previousPageAnswerRequired: List[C])(val reads: Reads[C])
-//
-//Large producer
-//  Show packaging site
-//OperatePackagingSitesPage = false && ContractPackingPage = true
-//or
-//OperatePackagingSitesPage = true && ContractPackingPage = false
-//or
-//OperatePackagingSitesPage = true && ContractPackingPage = true
-
-
-//
-//RequiredPage(PackAtBusinessAddressPage,
-//List(PreviousPage(HowManyOperatePackagingSitesPage, List(true))(implicitly[Reads[Boolean]]), PreviousPage(ContractPackingPage, List(false))(implicitly[Reads[Boolean]])))(implicitly[Reads[Boolean]])
-//
-//RequiredPage(PackAtBusinessAddressPage,
-//  List(PreviousPage(HowManyOperatePackagingSitesPage, List(true))(implicitly[Reads[Boolean]]), PreviousPage(ContractPackingPage, List(true))(implicitly[Reads[Boolean]])))(implicitly[Reads[Boolean]])
-//
-//RequiredPage(PackAtBusinessAddressPage,
-//  List(PreviousPage(HowManyLitresGloballyPage,
-//    List(HowManyLitresGlobally.enumerable.withName("small").get))(implicitly[Reads[HowManyLitresGlobally]]), PreviousPage(HowManyOperatePackagingSitesPage, List(true))(implicitly[Reads[Boolean]]), PreviousPage(ContractPackingPage, List(true))(implicitly[Reads[Boolean]])))
-
-//Small Producer & NonProducer
-//  Show packaging site
-//ContractPackingPage = true
-//  RequiredPage(PackAtBusinessAddressPage,
-//  List(PreviousPage(ContractPackingPage, List(true))(implicitly[Reads[Boolean]])))
