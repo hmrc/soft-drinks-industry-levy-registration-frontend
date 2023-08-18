@@ -84,6 +84,7 @@ class RequiredUserAnswers @Inject()(genericLogger: GenericLogger)(implicit val e
             HowManyLitresGlobally.enumerable.withName("large").get))(implicitly[Reads[HowManyLitresGlobally]])))(implicitly[Reads[Boolean]]),
       RequiredPage(HowManyOperatePackagingSitesPage,
         List(PreviousPage(OperatePackagingSitesPage, List(true))(implicitly[Reads[Boolean]])))(implicitly[Reads[LitresInBands]]),
+      RequiredPage(ContractPackingPage, List.empty)(implicitly[Reads[Boolean]]),
       RequiredPage(HowManyContractPackingPage,
         List(PreviousPage(ContractPackingPage, List(true))(implicitly[Reads[Boolean]])))(implicitly[Reads[LitresInBands]]),
       RequiredPage(ImportsPage, List.empty)(implicitly[Reads[Boolean]]),
