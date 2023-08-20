@@ -51,11 +51,11 @@ class HowManyOperatePackagingSitesViewSpec extends LitresSpecHelper {
         val documentFormErrorsOutOfRange = doc(htmlFormErrorsOutOfRange)
 
         "should have the expected title" in {
-          document.title() must include(Messages("howManyOperatePackagingSites.title"))
+          document.title() must include(Messages("How many litres of your own brands will you package in the next 12 months?"))
         }
 
         "should have the expected heading" in {
-          document.getElementsByClass(Selectors.heading).text() mustBe Messages("howManyOperatePackagingSites.heading")
+          document.getElementsByClass(Selectors.heading).text() mustBe Messages("How many litres of your own brands will you package in the next 12 months?")
         }
 
         "should include a govuk body with the expected content" in {
