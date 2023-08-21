@@ -226,11 +226,23 @@ trait ITCoreTestData extends TryValues {
       .set(ThirdPartyPackagersPage, true).success.value
       .set(OperatePackagingSitesPage, false).success.value
       .set(ContractPackingPage, false).success.value
-      .set(ImportsPage, false).success.value
+      .set(ImportsPage, true).success.value
+      .set(HowManyImportsPage, LitresInBands(1, 1)).success.value
       .set(StartDatePage, LocalDate.now()).success.value
       .set(AskSecondaryWarehousesPage, true).success.value
       .set(WarehouseDetailsPage, true).success.value
       .set(ContactDetailsPage, contactDetails).success.value
+  }
+
+  val smallProducerDoNotRegisterUserAnswers: UserAnswers = {
+    emptyUserAnswers
+      .set(VerifyPage, YesRegister).success.value
+      .set(OrganisationTypePage, LimitedCompany).success.value
+      .set(HowManyLitresGloballyPage, Small).success.value
+      .set(ThirdPartyPackagersPage, false).success.value
+      .set(OperatePackagingSitesPage, false).success.value
+      .set(ContractPackingPage, false).success.value
+      .set(ImportsPage, false).success.value
   }
 
   val nonProducerUserAnswers: UserAnswers = {
@@ -255,10 +267,21 @@ trait ITCoreTestData extends TryValues {
       .set(OrganisationTypePage, LimitedCompany).success.value
       .set(HowManyLitresGloballyPage, HowManyLitresGlobally.None).success.value
       .set(ContractPackingPage, false).success.value
-      .set(ImportsPage, false).success.value
+      .set(ImportsPage, true).success.value
+      .set(HowManyImportsPage, LitresInBands(1, 1)).success.value
       .set(StartDatePage, LocalDate.now()).success.value
       .set(AskSecondaryWarehousesPage, true).success.value
       .set(WarehouseDetailsPage, true).success.value
       .set(ContactDetailsPage, contactDetails).success.value
   }
+
+  val nonProducerDeregisterUserAnswers: UserAnswers = {
+    emptyUserAnswers
+      .set(VerifyPage, YesRegister).success.value
+      .set(OrganisationTypePage, LimitedCompany).success.value
+      .set(HowManyLitresGloballyPage, HowManyLitresGlobally.None).success.value
+      .set(ContractPackingPage, false).success.value
+      .set(ImportsPage, false).success.value
+  }
+
 }

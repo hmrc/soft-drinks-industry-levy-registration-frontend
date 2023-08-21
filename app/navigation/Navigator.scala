@@ -19,6 +19,7 @@ package navigation
 import controllers.routes
 import models.HowManyLitresGlobally.{Large, Small}
 import models.OrganisationType.Partnership
+import models.UserTypeCheck.{copackerAll, importer}
 import models._
 import pages._
 import play.api.mvc.Call
@@ -46,7 +47,7 @@ class Navigator @Inject()() {
     case ContractPackingPage => userAnswers => navigationForContractPacking(userAnswers, NormalMode)
     case HowManyContractPackingPage => _ => routes.ImportsController.onPageLoad(NormalMode)
     case ImportsPage => userAnswers => navigationForImports(userAnswers, NormalMode)
-    case HowManyImportsPage => _ => routes.StartDateController.onPageLoad(NormalMode)
+    case HowManyImportsPage => userAnswers => navigationForHowManyImports(userAnswers, NormalMode)
     case OperatePackagingSitesPage => userAnswers => navigationForOperatePackagingSites(userAnswers, NormalMode)
     case HowManyOperatePackagingSitesPage => _ => routes.ContractPackingController.onPageLoad(NormalMode)
     case ThirdPartyPackagersPage => _ => routes.OperatePackagingSitesController.onPageLoad(NormalMode)
@@ -64,7 +65,7 @@ class Navigator @Inject()() {
     case ContractPackingPage => userAnswers => _ => navigationForContractPacking(userAnswers, CheckMode)
     case OperatePackagingSitesPage => userAnswers => _ =>  navigationForOperatePackagingSites(userAnswers, CheckMode)
     case ImportsPage => userAnswers => _ => navigationForImports(userAnswers, CheckMode)
-    case HowManyImportsPage => _ => _ => routes.CheckYourAnswersController.onPageLoad
+    case HowManyImportsPage =>userAnswers => _ => navigationForHowManyImports(userAnswers, CheckMode)
     case OrganisationTypePage => userAnswers => _ => navigationForOrganisationType(userAnswers, CheckMode)
     case HowManyLitresGloballyPage => userAnswers => previousAnswer => navigationForHowManyLitresGloballyCheckMode(userAnswers, previousAnswer)
     case _ => _ => _ => routes.CheckYourAnswersController.onPageLoad
@@ -122,10 +123,23 @@ class Navigator @Inject()() {
   private def navigationForImports(userAnswers: UserAnswers, mode: Mode): Call = {
     userAnswers.get(page = ImportsPage).contains(true) match {
       case true => routes.HowManyImportsController.onPageLoad(mode)
-      case false if mode == NormalMode => routes.StartDateController.onPageLoad(mode)
-      case _ => routes.CheckYourAnswersController.onPageLoad
+      case false =>
+        if (navigateToStartDate(userAnswers)) {
+          routes.StartDateController.onPageLoad(mode)
+        } else {
+          contactDetailsOrDoNotRegister(userAnswers, mode)
+        }
+      case _ =>  routes.CheckYourAnswersController.onPageLoad
     }
   }
+
+  private def navigationForHowManyImports(userAnswers: UserAnswers, mode: Mode): Call = {
+      if (navigateToStartDate(userAnswers)) {
+        routes.StartDateController.onPageLoad(mode)
+      } else {
+        contactDetailsOrDoNotRegister(userAnswers, mode)
+      }
+    }
 
   private def navigationForOperatePackagingSites(userAnswers: UserAnswers, mode: Mode): Call = {
     if (userAnswers.get(page = OperatePackagingSitesPage).contains(true)) {
@@ -166,6 +180,36 @@ class Navigator @Inject()() {
       routes.PackAtBusinessAddressController.onPageLoad(mode)
     } else {
       routes.AskSecondaryWarehousesController.onPageLoad(mode)
+    }
+  }
+
+  private def navigateToStartDate(userAnswers: UserAnswers): Boolean = {
+    if (isLarge(userAnswers)) {
+      true
+    } else if (notAProducer(userAnswers) && (!notACopackerOrImporter(userAnswers))) {
+        true
+    } else if (isSmall(userAnswers)) {
+        if (importer(userAnswers) || copackerAll(userAnswers)) {
+          true
+        } else {
+          false
+        }
+    } else {
+      false
+    }
+  }
+
+  private def notACopackerOrImporter(userAnswers: UserAnswers): Boolean = {
+    if (!copackerAll(userAnswers) && !importer(userAnswers)) true else false
+  }
+
+  private def contactDetailsOrDoNotRegister(userAnswers: UserAnswers, mode: Mode): Call = {
+    if (notAProducer(userAnswers)) {
+      routes.DoNotRegisterController.onPageLoad
+    } else if (copackee(userAnswers)) {
+      routes.ContactDetailsController.onPageLoad(mode)
+    } else {
+      routes.DoNotRegisterController.onPageLoad
     }
   }
 

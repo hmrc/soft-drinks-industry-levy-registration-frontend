@@ -1,9 +1,12 @@
 package controllers
 
-import models.{CheckMode, LitresInBands, NormalMode}
+import models.HowManyLitresGlobally.Small
+import models.OrganisationType.LimitedCompany
+import models.Verify.YesRegister
+import models.{CheckMode, LitresInBands, NormalMode, UserAnswers}
 import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
-import pages.{HowManyImportsPage, ImportsPage}
+import pages.{ContactDetailsPage, ContractPackingPage, HowManyImportsPage, HowManyLitresGloballyPage, HowManyOperatePackagingSitesPage, ImportsPage, OperatePackagingSitesPage, OrganisationTypePage, StartDatePage, ThirdPartyPackagersPage, VerifyPage}
 import play.api.http.HeaderNames
 import play.api.i18n.Messages
 import play.api.libs.json.Json
@@ -28,7 +31,7 @@ class ImportsControllerISpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include(Messages("imports" + ".title"))
+            page.title mustBe "Do you bring liable drinks into the UK from anywhere outside of the UK? - Soft Drinks Industry Levy - GOV.UK"
             val radioInputs = page.getElementsByClass("govuk-radios__input")
             radioInputs.size() mustBe 2
             radioInputs.get(0).attr("value") mustBe "true"
@@ -54,7 +57,7 @@ class ImportsControllerISpec extends ControllerITTestHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include(Messages("imports" + ".title"))
+              page.title mustBe "Do you bring liable drinks into the UK from anywhere outside of the UK? - Soft Drinks Industry Levy - GOV.UK"
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe 2
               radioInputs.get(0).attr("value") mustBe "true"
@@ -66,7 +69,8 @@ class ImportsControllerISpec extends ControllerITTestHelper {
         }
       }
     }
-    testOtherSuccessUserTypes(baseUrl + normalRoutePath, Messages("imports" + ".title"))
+    testOtherSuccessUserTypes(baseUrl + normalRoutePath,
+      "Do you bring liable drinks into the UK from anywhere outside of the UK? - Soft Drinks Industry Levy - GOV.UK")
     testUnauthorisedUser(baseUrl + normalRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)
   }
@@ -85,7 +89,7 @@ class ImportsControllerISpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include(Messages("imports" + ".title"))
+            page.title mustBe "Do you bring liable drinks into the UK from anywhere outside of the UK? - Soft Drinks Industry Levy - GOV.UK"
             val radioInputs = page.getElementsByClass("govuk-radios__input")
             radioInputs.size() mustBe 2
             radioInputs.get(0).attr("value") mustBe "true"
@@ -111,7 +115,7 @@ class ImportsControllerISpec extends ControllerITTestHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include(Messages("imports" + ".title"))
+              page.title mustBe "Do you bring liable drinks into the UK from anywhere outside of the UK? - Soft Drinks Industry Levy - GOV.UK"
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe 2
               radioInputs.get(0).attr("value") mustBe "true"
@@ -124,7 +128,8 @@ class ImportsControllerISpec extends ControllerITTestHelper {
       }
     }
 
-    testOtherSuccessUserTypes(baseUrl + checkRoutePath, Messages("imports" + ".title"))
+    testOtherSuccessUserTypes(baseUrl + checkRoutePath,
+      "Do you bring liable drinks into the UK from anywhere outside of the UK? - Soft Drinks Industry Levy - GOV.UK")
     testUnauthorisedUser(baseUrl + checkRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath)
   }
@@ -149,7 +154,7 @@ class ImportsControllerISpec extends ControllerITTestHelper {
                 val expectedLocation = if (yesSelected) {
                   routes.HowManyImportsController.onPageLoad(NormalMode).url
                 } else {
-                  routes.StartDateController.onPageLoad(NormalMode).url
+                  routes.DoNotRegisterController.onPageLoad.url
                 }
                 res.header(HeaderNames.LOCATION) mustBe Some(expectedLocation)
                 val dataStoredForPage = getAnswers(emptyUserAnswers.id).fold[Option[Boolean]](None)(_.get(ImportsPage))
@@ -179,14 +184,14 @@ class ImportsControllerISpec extends ControllerITTestHelper {
                 val expectedLocation = if (yesSelected) {
                   routes.HowManyImportsController.onPageLoad(NormalMode).url
                 } else {
-                  routes.StartDateController.onPageLoad(NormalMode).url
+                  routes.DoNotRegisterController.onPageLoad.url
                 }
                 res.header(HeaderNames.LOCATION) mustBe Some(expectedLocation)
                 val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(ImportsPage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe yesSelected
                 val dataStoreForNextPage = getAnswers(userAnswers.id).fold[Option[LitresInBands]](None)(_.get(HowManyImportsPage))
-                if(yesSelected) {
+                if (yesSelected) {
                   dataStoreForNextPage.isDefined mustBe true
                 } else {
                   dataStoreForNextPage mustBe None
@@ -212,13 +217,13 @@ class ImportsControllerISpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + Messages("imports" + ".title"))
+            page.title mustBe "Error: Do you bring liable drinks into the UK from anywhere outside of the UK? - Soft Drinks Industry Levy - GOV.UK"
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")
               .attr("href") mustBe "#value"
-            errorSummary.text() mustBe Messages("imports" + ".error.required")
+            errorSummary.text() mustBe "Select yes if you bring liable drinks into the UK from anywhere outside of the UK"
           }
         }
       }
@@ -244,10 +249,10 @@ class ImportsControllerISpec extends ControllerITTestHelper {
 
               whenReady(result) { res =>
                 res.status mustBe 303
-                val expectedLocation = if(yesSelected) {
+                val expectedLocation = if (yesSelected) {
                   routes.HowManyImportsController.onPageLoad(CheckMode).url
                 } else {
-                  routes.CheckYourAnswersController.onPageLoad.url
+                  routes.DoNotRegisterController.onPageLoad.url
                 }
                 res.header(HeaderNames.LOCATION) mustBe Some(expectedLocation)
                 val dataStoredForPage = getAnswers(emptyUserAnswers.id).fold[Option[Boolean]](None)(_.get(ImportsPage))
@@ -276,14 +281,14 @@ class ImportsControllerISpec extends ControllerITTestHelper {
                 val expectedLocation = if (yesSelected) {
                   routes.HowManyImportsController.onPageLoad(CheckMode).url
                 } else {
-                  routes.CheckYourAnswersController.onPageLoad.url
+                  routes.DoNotRegisterController.onPageLoad.url
                 }
                 res.header(HeaderNames.LOCATION) mustBe Some(expectedLocation)
                 val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(ImportsPage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe yesSelected
                 val dataStoreForNextPage = getAnswers(userAnswers.id).fold[Option[LitresInBands]](None)(_.get(HowManyImportsPage))
-                if(yesSelected) {
+                if (yesSelected) {
                   dataStoreForNextPage.isDefined mustBe true
                 } else {
                   dataStoreForNextPage mustBe None
@@ -309,18 +314,155 @@ class ImportsControllerISpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + Messages("imports" + ".title"))
+            page.title mustBe "Error: Do you bring liable drinks into the UK from anywhere outside of the UK? - Soft Drinks Industry Levy - GOV.UK"
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")
               .attr("href") mustBe "#value"
-            errorSummary.text() mustBe Messages("imports" + ".error.required")
+            errorSummary.text() mustBe "Select yes if you bring liable drinks into the UK from anywhere outside of the UK"
           }
         }
       }
     }
     testUnauthorisedUser(baseUrl + checkRoutePath, Some(Json.obj("value" -> "true")))
     testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath, Some(Json.obj("value" -> "true")))
+  }
+
+  "Post in either normal mode or check mode " - {
+    s"Should redirect to the $StartDatePage when the user is a large producer " in {
+      given
+        .commonPrecondition
+
+      setAnswers(largeProducerNoPackagingRouteUserAnswers)
+      WsTestClient.withClient { client =>
+
+        val result = createClientRequestPOST(
+          client, baseUrl + normalRoutePath, Json.obj("value" -> "no")
+        )
+
+        whenReady(result) { res =>
+          res.status mustBe 303
+          res.header(HeaderNames.LOCATION) mustBe routes.StartDateController.onPageLoad(NormalMode)
+          val dataStoredForPage = getAnswers(emptyUserAnswers.id).fold[Option[Boolean]](None)(_.get(ImportsPage))
+
+          dataStoredForPage.nonEmpty mustBe true
+          dataStoredForPage.get mustBe false
+        }
+      }
+    }
+
+    s"Should redirect to the $StartDatePage when the user is a non producer and selected yes on the $ContractPackingPage" in {
+      given
+        .commonPrecondition
+
+      setAnswers(nonProducerUserAnswers)
+      WsTestClient.withClient { client =>
+
+        val result = createClientRequestPOST(
+          client, baseUrl + normalRoutePath, Json.obj("value" -> "no")
+        )
+
+        whenReady(result) { res =>
+          res.status mustBe 303
+          res.header(HeaderNames.LOCATION) mustBe routes.StartDateController.onPageLoad(NormalMode)
+          val dataStoredForPage = getAnswers(emptyUserAnswers.id).fold[Option[Boolean]](None)(_.get(ImportsPage))
+
+          dataStoredForPage.nonEmpty mustBe true
+          dataStoredForPage.get mustBe false
+        }
+      }
+    }
+
+    s"Should redirect to the DoNotRegister page when the user is a non producer and selected no on the $ContractPackingPage" in {
+      given
+        .commonPrecondition
+
+      setAnswers(nonProducerDeregisterUserAnswers)
+      WsTestClient.withClient { client =>
+
+        val result = createClientRequestPOST(
+          client, baseUrl + normalRoutePath, Json.obj("value" -> "no")
+        )
+
+        whenReady(result) { res =>
+          res.status mustBe 303
+          res.header(HeaderNames.LOCATION) mustBe routes.DoNotRegisterController.onPageLoad
+          val dataStoredForPage = getAnswers(emptyUserAnswers.id).fold[Option[Boolean]](None)(_.get(ImportsPage))
+
+          dataStoredForPage.nonEmpty mustBe true
+          dataStoredForPage.get mustBe false
+        }
+      }
+    }
+
+    s"Should redirect to the $StartDatePage when the user is a small producer and selected yes on the $ContractPackingPage" in {
+      given
+        .commonPrecondition
+
+      setAnswers(smallProducerUserAnswers)
+      WsTestClient.withClient { client =>
+
+        val result = createClientRequestPOST(
+          client, baseUrl + normalRoutePath, Json.obj("value" -> "no")
+        )
+
+        whenReady(result) { res =>
+          res.status mustBe 303
+          res.header(HeaderNames.LOCATION) mustBe routes.StartDateController.onPageLoad(NormalMode)
+          val dataStoredForPage = getAnswers(emptyUserAnswers.id).fold[Option[Boolean]](None)(_.get(ImportsPage))
+
+          dataStoredForPage.nonEmpty mustBe true
+          dataStoredForPage.get mustBe false
+        }
+      }
+    }
+
+    s"Should redirect to the $ContactDetailsPage if user selected yes on the $ThirdPartyPackagersPage, no on the $OperatePackagingSitesPage, " +
+      s"and no on $ContractPackingPage" in {
+      given
+        .commonPrecondition
+
+      setAnswers(smallProducerNoPackagingRouteUserAnswers)
+      WsTestClient.withClient { client =>
+
+        val result = createClientRequestPOST(
+          client, baseUrl + normalRoutePath, Json.obj("value" -> "no")
+        )
+
+        whenReady(result) { res =>
+          res.status mustBe 303
+          res.header(HeaderNames.LOCATION) mustBe routes.ContactDetailsController.onPageLoad(NormalMode)
+          val dataStoredForPage = getAnswers(emptyUserAnswers.id).fold[Option[Boolean]](None)(_.get(ImportsPage))
+
+          dataStoredForPage.nonEmpty mustBe true
+          dataStoredForPage.get mustBe false
+        }
+      }
+    }
+
+    s"Should redirect to the DoNotRegister page if user selected no on the $ThirdPartyPackagersPage, no on the $OperatePackagingSitesPage, " +
+      s"and no on $ContractPackingPage" in {
+      given
+        .commonPrecondition
+
+      setAnswers(smallProducerDoNotRegisterUserAnswers)
+      WsTestClient.withClient { client =>
+
+        val result = createClientRequestPOST(
+          client, baseUrl + normalRoutePath, Json.obj("value" -> "no")
+        )
+
+        whenReady(result) { res =>
+          res.status mustBe 303
+          res.header(HeaderNames.LOCATION) mustBe routes.DoNotRegisterController.onPageLoad
+          val dataStoredForPage = getAnswers(emptyUserAnswers.id).fold[Option[Boolean]](None)(_.get(ImportsPage))
+
+          dataStoredForPage.nonEmpty mustBe true
+          dataStoredForPage.get mustBe false
+        }
+      }
+    }
+
   }
 }
