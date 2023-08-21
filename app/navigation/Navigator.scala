@@ -46,7 +46,7 @@ class Navigator @Inject()() {
     case ContractPackingPage => userAnswers => navigationForContractPacking(userAnswers, NormalMode)
     case HowManyContractPackingPage => _ => routes.ImportsController.onPageLoad(NormalMode)
     case ImportsPage => userAnswers => navigationForImports(userAnswers, NormalMode)
-    case HowManyImportsPage => _ => routes.StartDateController.onPageLoad(NormalMode) // How many will ALWAYS go to the date page.
+    case HowManyImportsPage => _ => routes.StartDateController.onPageLoad(NormalMode)
     case OperatePackagingSitesPage => userAnswers => navigationForOperatePackagingSites(userAnswers, NormalMode)
     case HowManyOperatePackagingSitesPage => _ => routes.ContractPackingController.onPageLoad(NormalMode)
     case ThirdPartyPackagersPage => _ => routes.OperatePackagingSitesController.onPageLoad(NormalMode)

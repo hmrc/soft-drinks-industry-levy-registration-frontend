@@ -543,7 +543,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
       }
     }
 
-    "Should redirect to the Pack-At-Business address controller when the user is a large producer and has answered No " +
+    "Should redirect to the Ask secondary warehouse controller when the user is a large producer and has answered No " +
       "to both Operate Packaging Sites and Contract Packer" in {
       given
         .commonPrecondition

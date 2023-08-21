@@ -18,11 +18,11 @@ package controllers.actions
 
 import models.HowManyLitresGlobally._
 import models.requests.DataRequest
-import models.{ContactDetails, HowManyLitresGlobally, LitresInBands, NormalMode, OrganisationType, Producer, UserAnswers, Verify}
+import models.{ContactDetails, HowManyLitresGlobally, LitresInBands, NormalMode, OrganisationType, Verify}
 import pages._
 import play.api.libs.json.Reads
 import play.api.mvc.Result
-import play.api.mvc.Results.{Redirect, contentDispositionHeader}
+import play.api.mvc.Results.Redirect
 import utilities.GenericLogger
 
 import java.time.LocalDate
@@ -102,11 +102,7 @@ class RequiredUserAnswers @Inject()(genericLogger: GenericLogger)(implicit val e
       RequiredPage(PackAtBusinessAddressPage, List(
         PreviousPage(HowManyLitresGloballyPage, List(HowManyLitresGlobally.enumerable.withName("large").get))(implicitly[Reads[HowManyLitresGlobally]]),
         PreviousPage(OperatePackagingSitesPage, List(true))(implicitly[Reads[Boolean]]),
-        PreviousPage(ContractPackingPage, List(true))(implicitly[Reads[Boolean]])))(implicitly[Reads[Boolean]]),
-      RequiredPage(PackAtBusinessAddressPage, List(
-        PreviousPage(HowManyLitresGloballyPage, List(HowManyLitresGlobally.enumerable.withName("large").get))(implicitly[Reads[HowManyLitresGlobally]]),
-        PreviousPage(OperatePackagingSitesPage, List(true))(implicitly[Reads[Boolean]]),
-        PreviousPage(ContractPackingPage, List(false))(implicitly[Reads[Boolean]])))(implicitly[Reads[Boolean]]),
+        PreviousPage(ContractPackingPage, List(true, false))(implicitly[Reads[Boolean]])))(implicitly[Reads[Boolean]]),
       RequiredPage(PackagingSiteDetailsPage,
         List(PreviousPage(PackAtBusinessAddressPage, List(true, false))(implicitly[Reads[Boolean]])))(implicitly[Reads[Boolean]]),
       RequiredPage(AskSecondaryWarehousesPage, List.empty)(implicitly[Reads[Boolean]]),
