@@ -412,7 +412,7 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
       res mustBe List(RequiredPage(PackAtBusinessAddressPage, List(
         PreviousPage(HowManyLitresGloballyPage, List(HowManyLitresGlobally.enumerable.withName("large").get))(implicitly[Reads[HowManyLitresGlobally]]),
         PreviousPage(OperatePackagingSitesPage, List(true))(implicitly[Reads[Boolean]]),
-        PreviousPage(ContractPackingPage, List(false))(implicitly[Reads[Boolean]])))(implicitly[Reads[Boolean]]))
+        PreviousPage(ContractPackingPage, List(true, false))(implicitly[Reads[Boolean]])))(implicitly[Reads[Boolean]]))
     }
 
     s"should return 1 item on the missing answer list when producer is $Large, contractPacking is true, OperatePackagingSites " +
@@ -440,7 +440,7 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
       res mustBe List(RequiredPage(PackAtBusinessAddressPage, List(
         PreviousPage(HowManyLitresGloballyPage, List(HowManyLitresGlobally.enumerable.withName("large").get))(implicitly[Reads[HowManyLitresGlobally]]),
         PreviousPage(OperatePackagingSitesPage, List(true))(implicitly[Reads[Boolean]]),
-        PreviousPage(ContractPackingPage, List(true))(implicitly[Reads[Boolean]])))(implicitly[Reads[Boolean]]))
+        PreviousPage(ContractPackingPage, List(true, false))(implicitly[Reads[Boolean]])))(implicitly[Reads[Boolean]]))
     }
 
     s"should return 1 item on the missing answer list when producer is $Small, contractPacking is true, OperatePackagingSites" +
