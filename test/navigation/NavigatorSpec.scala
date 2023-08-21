@@ -20,11 +20,9 @@ import base.SpecBase
 import controllers.routes
 import models.HowManyLitresGlobally.{Large, Small}
 import models.OrganisationType.{LimitedCompany, LimitedLiabilityPartnership, Partnership, SoleTrader, UnincorporatedBody}
-import pages._
 import models._
+import pages._
 import play.api.libs.json.Json
-
-import java.time.LocalDate
 
 class NavigatorSpec extends SpecBase {
 
@@ -128,25 +126,11 @@ class NavigatorSpec extends SpecBase {
         }
       }
 
-      "when on Start Date page" - {
-        "must navigate to pack at business address when yes is selected" in {
-          val result = navigator.nextPage(StartDatePage, NormalMode,
-            UserAnswers("id", Json.obj(StartDatePage.toString -> LocalDate.of(2017, 9, 23))))
-          result mustBe routes.PackAtBusinessAddressController.onPageLoad(NormalMode)
-        }
-
-        "must navigate to pack at business address when no is selected" in {
-          val result = navigator.nextPage(StartDatePage, NormalMode,
-            UserAnswers("id", Json.obj(StartDatePage.toString -> LocalDate.of(2017, 9, 23))))
-          result mustBe routes.PackAtBusinessAddressController.onPageLoad(NormalMode)
-        }
-      }
-
       "when on operate how many own brands in the next 12 months page" - {
 
         "must navigate to third party of co-packing in case of valid litreage" in {
           val result = navigator.nextPage(HowManyOperatePackagingSitesPage, NormalMode,
-            UserAnswers("id", Json.obj(HowManyOperatePackagingSitesPage.toString -> Json.obj("lowBand"-> "123" , "highBand"-> "123"))))
+            UserAnswers("id", Json.obj(HowManyOperatePackagingSitesPage.toString -> Json.obj("lowBand" -> "123", "highBand" -> "123"))))
           result mustBe routes.ContractPackingController.onPageLoad(NormalMode)
         }
       }
@@ -173,6 +157,200 @@ class NavigatorSpec extends SpecBase {
         }
       }
 
+      "when on start date page as a large producer" - {
+
+        "must navigate to Ask secondary warehouses page if user has answered " +
+          "no on the operate packaging sites page, no on the contract-packing page, and no on the imports page" in {
+          val result = navigator.nextPage(StartDatePage, NormalMode, UserAnswers("id", Json.obj("howManyLitresGlobally" -> "large",
+            "operatePackagingSites" -> false, "contractPacking" -> false, "imports" -> false)))
+          result mustBe routes.AskSecondaryWarehousesController.onPageLoad(NormalMode)
+        }
+
+        "must navigate to Ask secondary warehouses page if user has answered " +
+          "no on the operate packaging sites page, no on the contract-packing page, and yes on the imports page" in {
+          val result = navigator.nextPage(StartDatePage, NormalMode, emptyUserAnswers.copy(data = Json.obj("howManyLitresGlobally" -> "large",
+            "operatePackagingSites" -> false, "contractPacking" -> false, "imports" -> true, "howManyImports" -> Json.obj("lowBand" -> 1, "highBand" -> 1))))
+          result mustBe routes.AskSecondaryWarehousesController.onPageLoad(NormalMode)
+        }
+
+        "must navigate to Pack at business address page if user has answered " +
+          "no on the operate packaging sites page, yes on the contract-packing page, and no on the imports page" in {
+          val result = navigator.nextPage(StartDatePage, NormalMode, UserAnswers("id", Json.obj("howManyLitresGlobally" -> "large",
+            "operatePackagingSites" -> false, "contractPacking" -> true, "howManyContractPacking" -> Json.obj("lowBand" -> 1, "highBand" -> 1),
+            "imports" -> false)))
+          result mustBe routes.PackAtBusinessAddressController.onPageLoad(NormalMode)
+        }
+
+        "must navigate to Pack at business address page if user has answered " +
+          "no on the operate packaging sites page, yes on the contract-packing page, and yes on the imports page" in {
+          val result = navigator.nextPage(StartDatePage, NormalMode, UserAnswers("id", Json.obj("howManyLitresGlobally" -> "large",
+            "operatePackagingSites" -> false, "contractPacking" -> true, "howManyContractPacking" -> Json.obj("lowBand" -> 1, "highBand" -> 1),
+            "imports" -> true, "howManyImports" -> Json.obj("lowBand" -> 1, "highBand" -> 1))))
+          result mustBe routes.PackAtBusinessAddressController.onPageLoad(NormalMode)
+        }
+
+        "must navigate to Pack at business address page if user has answered " +
+          "yes on the operate packaging sites page, no on the contract-packing page, and no on the imports page" in {
+          val result = navigator.nextPage(StartDatePage, NormalMode, UserAnswers("id", Json.obj("howManyLitresGlobally" -> "large",
+            "operatePackagingSites" -> true, "howManyOperatePackagingSites" -> Json.obj("lowBand" -> 1, "highBand" -> 1),
+            "contractPacking" -> false, "imports" -> false)))
+          result mustBe routes.PackAtBusinessAddressController.onPageLoad(NormalMode)
+        }
+
+        "must navigate to Pack at business address page if user has answered " +
+          "yes on the operate packaging sites page, no on the contract-packing page, and yes on the imports page" in {
+          val result = navigator.nextPage(StartDatePage, NormalMode, UserAnswers("id", Json.obj("howManyLitresGlobally" -> "large",
+            "operatePackagingSites" -> true, "howManyOperatePackagingSites" -> Json.obj("lowBand" -> 1, "highBand" -> 1),
+            "contractPacking" -> false, "imports" -> true, "howManyImports" -> Json.obj("lowBand" -> 1, "highBand" -> 1))))
+          result mustBe routes.PackAtBusinessAddressController.onPageLoad(NormalMode)
+        }
+
+        "must navigate to Pack at business address page if user has answered " +
+          "yes on the operate packaging sites page, yes on the contract-packing page, and no on the imports page" in {
+          val result = navigator.nextPage(StartDatePage, NormalMode, UserAnswers("id", Json.obj("howManyLitresGlobally" -> "large",
+            "operatePackagingSites" -> true, "howManyOperatePackagingSites" -> Json.obj("lowBand" -> 1, "highBand" -> 1),
+            "contractPacking" -> true, "howManyContractPacking" -> Json.obj("lowBand" -> 1, "highBand" -> 1),
+            "imports" -> false)))
+          result mustBe routes.PackAtBusinessAddressController.onPageLoad(NormalMode)
+        }
+
+        "must navigate to Pack at business address page if user has answered " +
+          "yes on the operate packaging sites page, yes on the contract-packing page, and yes on the imports page" in {
+          val result = navigator.nextPage(StartDatePage, NormalMode, UserAnswers("id", Json.obj("howManyLitresGlobally" -> "large",
+            "operatePackagingSites" -> true, "howManyOperatePackagingSites" -> Json.obj("lowBand" -> 1, "highBand" -> 1),
+            "contractPacking" -> true, "howManyContractPacking" -> Json.obj("lowBand" -> 1, "highBand" -> 1),
+            "imports" -> true, "howManyImports" -> Json.obj("lowBand" -> 1, "highBand" -> 1))))
+          result mustBe routes.PackAtBusinessAddressController.onPageLoad(NormalMode)
+        }
+      }
+
+      "when on start date page as a small producer" - {
+
+        "must navigate to Ask secondary warehouses page if user has answered " +
+          "no on the third party packaging page, no on the operate packaging sites page, no on the contract-packing page, and yes on the imports page" in {
+          val result = navigator.nextPage(StartDatePage, NormalMode, emptyUserAnswers.copy(data = Json.obj("howManyLitresGlobally" -> "small",
+            "thirdPartyPackagers" -> false, "operatePackagingSites" -> false, "contractPacking" -> false, "imports" -> true,
+            "howManyImports" -> Json.obj("lowBand" -> 1, "highBand" -> 1))))
+          result mustBe routes.AskSecondaryWarehousesController.onPageLoad(NormalMode)
+        }
+
+        "must navigate to Pack at business address page if user has answered " +
+          "no on the third party packaging page, no on the operate packaging sites page, yes on the contract-packing page, and no on the imports page" in {
+          val result = navigator.nextPage(StartDatePage, NormalMode, UserAnswers("id", Json.obj("howManyLitresGlobally" -> "small",
+            "thirdPartyPackagers" -> false, "operatePackagingSites" -> false, "contractPacking" -> true,
+            "howManyContractPacking" -> Json.obj("lowBand" -> 1, "highBand" -> 1), "imports" -> false)))
+          result mustBe routes.PackAtBusinessAddressController.onPageLoad(NormalMode)
+        }
+
+        "must navigate to Pack at business address page if user has answered " +
+          "no on the third party packaging page, no on the operate packaging sites page, yes on the contract-packing page, and yes on the imports page" in {
+          val result = navigator.nextPage(StartDatePage, NormalMode, UserAnswers("id", Json.obj("howManyLitresGlobally" -> "small",
+            "thirdPartyPackagers" -> false, "operatePackagingSites" -> false, "contractPacking" -> true,
+            "howManyContractPacking" -> Json.obj("lowBand" -> 1, "highBand" -> 1), "imports" -> true,
+            "howManyImports" -> Json.obj("lowBand" -> 1, "highBand" -> 1))))
+          result mustBe routes.PackAtBusinessAddressController.onPageLoad(NormalMode)
+        }
+
+        "must navigate to Ask secondary warehouses page if user has answered " +
+          "no on the third party packaging page, yes on the operate packaging sites page, no on the contract-packing page, and yes on the imports page" in {
+          val result = navigator.nextPage(StartDatePage, NormalMode, emptyUserAnswers.copy(data = Json.obj("howManyLitresGlobally" -> "small",
+            "thirdPartyPackagers" -> false, "operatePackagingSites" -> true, "howManyOperatePackagingSites" -> Json.obj("lowBand" -> 1, "highBand" -> 1),
+            "contractPacking" -> false, "imports" -> true, "howManyImports" -> Json.obj("lowBand" -> 1, "highBand" -> 1))))
+          result mustBe routes.AskSecondaryWarehousesController.onPageLoad(NormalMode)
+        }
+
+        "must navigate to Pack at business address page if user has answered " +
+          "no on the third party packaging page, yes on the operate packaging sites page, yes on the contract-packing page, and no on the imports page" in {
+          val result = navigator.nextPage(StartDatePage, NormalMode, UserAnswers("id", Json.obj("howManyLitresGlobally" -> "small",
+            "thirdPartyPackagers" -> false, "operatePackagingSites" -> true, "howManyOperatePackagingSites" -> Json.obj("lowBand" -> 1, "highBand" -> 1),
+            "contractPacking" -> true, "howManyContractPacking" -> Json.obj("lowBand" -> 1, "highBand" -> 1), "imports" -> false)))
+          result mustBe routes.PackAtBusinessAddressController.onPageLoad(NormalMode)
+        }
+
+        "must navigate to Pack at business address page if user has answered " +
+          "no on the third party packaging page, yes on the operate packaging sites page, yes on the contract-packing page, and yes on the imports page" in {
+          val result = navigator.nextPage(StartDatePage, NormalMode, UserAnswers("id", Json.obj("howManyLitresGlobally" -> "small",
+            "thirdPartyPackagers" -> false, "operatePackagingSites" -> true, "howManyOperatePackagingSites" -> Json.obj("lowBand" -> 1, "highBand" -> 1),
+            "contractPacking" -> true, "howManyContractPacking" -> Json.obj("lowBand" -> 1, "highBand" -> 1),
+            "imports" -> true, "howManyImports" -> Json.obj("lowBand" -> 1, "highBand" -> 1))))
+          result mustBe routes.PackAtBusinessAddressController.onPageLoad(NormalMode)
+        }
+
+        "must navigate to Ask secondary warehouses page if user has answered " +
+          "yes on the third party packaging page, no on the operate packaging sites page, no on the contract-packing page, and yes on the imports page" in {
+          val result = navigator.nextPage(StartDatePage, NormalMode, emptyUserAnswers.copy(data = Json.obj("howManyLitresGlobally" -> "small",
+            "thirdPartyPackagers" -> true, "operatePackagingSites" -> false, "contractPacking" -> false,
+            "imports" -> true, "howManyImports" -> Json.obj("lowBand" -> 1, "highBand" -> 1))))
+          result mustBe routes.AskSecondaryWarehousesController.onPageLoad(NormalMode)
+        }
+
+        "must navigate to Pack at business address page if user has answered " +
+          "yes on the third party packaging page, no on the operate packaging sites page, yes on the contract-packing page, and no on the imports page" in {
+          val result = navigator.nextPage(StartDatePage, NormalMode, UserAnswers("id", Json.obj("howManyLitresGlobally" -> "small",
+            "thirdPartyPackagers" -> true, "operatePackagingSites" -> false, "contractPacking" -> true,
+            "howManyContractPacking" -> Json.obj("lowBand" -> 1, "highBand" -> 1), "imports" -> false)))
+          result mustBe routes.PackAtBusinessAddressController.onPageLoad(NormalMode)
+        }
+
+        "must navigate to Pack at business address page if user has answered " +
+          "yes on the third party packaging page, no on the operate packaging sites page, yes on the contract-packing page, and yes on the imports page" in {
+          val result = navigator.nextPage(StartDatePage, NormalMode, UserAnswers("id", Json.obj("howManyLitresGlobally" -> "small",
+            "thirdPartyPackagers" -> true, "operatePackagingSites" -> false, "contractPacking" -> true,
+            "howManyContractPacking" -> Json.obj("lowBand" -> 1, "highBand" -> 1),
+            "imports" -> true, "howManyImports" -> Json.obj("lowBand" -> 1, "highBand" -> 1))))
+          result mustBe routes.PackAtBusinessAddressController.onPageLoad(NormalMode)
+        }
+
+        "must navigate to Ask secondary warehouses page if user has answered " +
+          "yes on the third party packaging page, yes on the operate packaging sites page, no on the contract-packing page, and yes on the imports page" in {
+          val result = navigator.nextPage(StartDatePage, NormalMode, emptyUserAnswers.copy(data = Json.obj("howManyLitresGlobally" -> "small",
+            "thirdPartyPackagers" -> true, "operatePackagingSites" -> true, "howManyOperatePackagingSites" -> Json.obj("lowBand" -> 1, "highBand" -> 1),
+            "contractPacking" -> false, "imports" -> true, "howManyImports" -> Json.obj("lowBand" -> 1, "highBand" -> 1))))
+          result mustBe routes.AskSecondaryWarehousesController.onPageLoad(NormalMode)
+        }
+
+        "must navigate to Pack at business address page if user has answered " +
+          "yes on the third party packaging page, yes on the operate packaging sites page, yes on the contract-packing page, and no on the imports page" in {
+          val result = navigator.nextPage(StartDatePage, NormalMode, UserAnswers("id", Json.obj("howManyLitresGlobally" -> "small",
+            "thirdPartyPackagers" -> true, "operatePackagingSites" -> true, "howManyOperatePackagingSites" -> Json.obj("lowBand" -> 1, "highBand" -> 1),
+            "contractPacking" -> true, "howManyContractPacking" -> Json.obj("lowBand" -> 1, "highBand" -> 1), "imports" -> false)))
+          result mustBe routes.PackAtBusinessAddressController.onPageLoad(NormalMode)
+        }
+
+        "must navigate to Pack at business address page if user has answered " +
+          "yes on the third party packaging page, yes on the operate packaging sites page, yes on the contract-packing page, and yes on the imports page" in {
+          val result = navigator.nextPage(StartDatePage, NormalMode, UserAnswers("id", Json.obj("howManyLitresGlobally" -> "small",
+            "thirdPartyPackagers" -> true, "operatePackagingSites" -> true, "howManyOperatePackagingSites" -> Json.obj("lowBand" -> 1, "highBand" -> 1),
+            "contractPacking" -> true, "howManyContractPacking" -> Json.obj("lowBand" -> 1, "highBand" -> 1),
+            "imports" -> true, "howManyImports" -> Json.obj("lowBand" -> 1, "highBand" -> 1))))
+          result mustBe routes.PackAtBusinessAddressController.onPageLoad(NormalMode)
+        }
+      }
+
+      "when on start date page as a non producer" - {
+
+        "must navigate to Ask secondary warehouses page if user has answered " +
+          "no on the contract-packing page, and yes on the imports page" in {
+          val result = navigator.nextPage(StartDatePage, NormalMode, emptyUserAnswers.copy(data = Json.obj("howManyLitresGlobally" -> "small",
+            "contractPacking" -> false, "imports" -> true, "howManyImports" -> Json.obj("lowBand" -> 1, "highBand" -> 1))))
+          result mustBe routes.AskSecondaryWarehousesController.onPageLoad(NormalMode)
+        }
+
+        "must navigate to Pack at business address page if user has answered " +
+          "yes on the contract-packing page, and no on the imports page" in {
+          val result = navigator.nextPage(StartDatePage, NormalMode, UserAnswers("id", Json.obj("howManyLitresGlobally" -> "small",
+            "contractPacking" -> true, "howManyContractPacking" -> Json.obj("lowBand" -> 1, "highBand" -> 1), "imports" -> false)))
+          result mustBe routes.PackAtBusinessAddressController.onPageLoad(NormalMode)
+        }
+
+        "must navigate to Pack at business address page if user has answered " +
+          "yes on the contract-packing page, and yes on the imports page" in {
+          val result = navigator.nextPage(StartDatePage, NormalMode, UserAnswers("id", Json.obj("howManyLitresGlobally" -> "small",
+            "contractPacking" -> true, "howManyContractPacking" -> Json.obj("lowBand" -> 1, "highBand" -> 1),
+            "imports" -> true, "howManyImports" -> Json.obj("lowBand" -> 1, "highBand" -> 1))))
+          result mustBe routes.PackAtBusinessAddressController.onPageLoad(NormalMode)
+        }
+      }
     }
 
     "in Check mode" - {
@@ -278,6 +456,15 @@ class NavigatorSpec extends SpecBase {
           val result = navigator.nextPage(HowManyContractPackingPage, CheckMode,
             UserAnswers("id", Json.obj(HowManyContractPackingPage.toString -> Json.obj("lowBand" -> "123", "highBand" -> "123"))))
           result mustBe routes.CheckYourAnswersController.onPageLoad
+        }
+      }
+
+      "when on start date page in check mode" - {
+        "must navigate to the correct page as it does in normal mode" in {
+          val result = navigator.nextPage(StartDatePage, CheckMode, emptyUserAnswers.copy(data = Json.obj("howManyLitresGlobally" -> "small",
+            "thirdPartyPackagers" -> false, "operatePackagingSites" -> false, "contractPacking" -> false, "imports" -> true,
+            "howManyImports" -> Json.obj("lowBand" -> 1, "highBand" -> 1))))
+          result mustBe routes.AskSecondaryWarehousesController.onPageLoad(CheckMode)
         }
       }
     }

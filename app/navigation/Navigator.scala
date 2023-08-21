@@ -138,10 +138,34 @@ class Navigator @Inject()() {
   }
 
   private def navigationForStartDate(userAnswers: UserAnswers, mode: Mode): Call = {
-    if(userAnswers.get(page = StartDatePage).isDefined && mode == NormalMode) {
+    if (isLarge(userAnswers)) {
+      largeProducerToPackagingSiteOrWarehouse(userAnswers, mode)
+    } else {
+      notALargeProducerToPackagingSiteOrWarehouse(userAnswers, mode)
+    }
+  }
+
+  private def isSmall(userAnswers: UserAnswers): Boolean = UserTypeCheck.isSmall(userAnswers)
+  private def isLarge(userAnswers: UserAnswers): Boolean = UserTypeCheck.isLarge(userAnswers)
+  private def notAProducer(userAnswers: UserAnswers): Boolean = UserTypeCheck.notAProducer(userAnswers)
+  private def copackerAll(userAnswers: UserAnswers): Boolean = UserTypeCheck.copackerAll(userAnswers)
+  private def copackee(userAnswers: UserAnswers): Boolean = UserTypeCheck.copackee(userAnswers)
+  private def importer(userAnswers: UserAnswers): Boolean = UserTypeCheck.importer(userAnswers)
+  private def operatesPackagingSite(userAnswers: UserAnswers): Boolean = UserTypeCheck.operatesPackagingSite(userAnswers)
+
+  private def largeProducerToPackagingSiteOrWarehouse(userAnswers: UserAnswers, mode: Mode): Call = {
+    if (!operatesPackagingSite(userAnswers) && (!copackerAll(userAnswers))) {
+      routes.AskSecondaryWarehousesController.onPageLoad(mode)
+    } else {
+      routes.PackAtBusinessAddressController.onPageLoad(mode)
+    }
+  }
+
+  private def notALargeProducerToPackagingSiteOrWarehouse(userAnswers: UserAnswers, mode: Mode): Call = {
+    if ((isSmall(userAnswers) || notAProducer(userAnswers)) && copackerAll(userAnswers)) {
       routes.PackAtBusinessAddressController.onPageLoad(mode)
     } else {
-      routes.CheckYourAnswersController.onPageLoad
+      routes.AskSecondaryWarehousesController.onPageLoad(mode)
     }
   }
 
