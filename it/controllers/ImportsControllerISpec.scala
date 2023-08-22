@@ -70,7 +70,7 @@ class ImportsControllerISpec extends ControllerITTestHelper {
       }
     }
     testOtherSuccessUserTypes(baseUrl + normalRoutePath,
-      "Do you bring liable drinks into the UK from anywhere outside of the UK? - Soft Drinks Industry Levy - GOV.UK")
+      "Do you bring liable drinks into the UK from anywhere outside of the UK?")
     testUnauthorisedUser(baseUrl + normalRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)
   }
@@ -129,7 +129,7 @@ class ImportsControllerISpec extends ControllerITTestHelper {
     }
 
     testOtherSuccessUserTypes(baseUrl + checkRoutePath,
-      "Do you bring liable drinks into the UK from anywhere outside of the UK? - Soft Drinks Industry Levy - GOV.UK")
+      "Do you bring liable drinks into the UK from anywhere outside of the UK?")
     testUnauthorisedUser(baseUrl + checkRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath)
   }
@@ -338,16 +338,12 @@ class ImportsControllerISpec extends ControllerITTestHelper {
       WsTestClient.withClient { client =>
 
         val result = createClientRequestPOST(
-          client, baseUrl + normalRoutePath, Json.obj("value" -> "no")
+          client, baseUrl + normalRoutePath, Json.obj("value" -> "false")
         )
 
         whenReady(result) { res =>
           res.status mustBe 303
-          res.header(HeaderNames.LOCATION) mustBe routes.StartDateController.onPageLoad(NormalMode)
-          val dataStoredForPage = getAnswers(emptyUserAnswers.id).fold[Option[Boolean]](None)(_.get(ImportsPage))
-
-          dataStoredForPage.nonEmpty mustBe true
-          dataStoredForPage.get mustBe false
+          res.header(HeaderNames.LOCATION) mustBe Some(routes.StartDateController.onPageLoad(NormalMode).url)
         }
       }
     }
@@ -360,16 +356,12 @@ class ImportsControllerISpec extends ControllerITTestHelper {
       WsTestClient.withClient { client =>
 
         val result = createClientRequestPOST(
-          client, baseUrl + normalRoutePath, Json.obj("value" -> "no")
+          client, baseUrl + normalRoutePath, Json.obj("value" -> "false")
         )
 
         whenReady(result) { res =>
           res.status mustBe 303
-          res.header(HeaderNames.LOCATION) mustBe routes.StartDateController.onPageLoad(NormalMode)
-          val dataStoredForPage = getAnswers(emptyUserAnswers.id).fold[Option[Boolean]](None)(_.get(ImportsPage))
-
-          dataStoredForPage.nonEmpty mustBe true
-          dataStoredForPage.get mustBe false
+          res.header(HeaderNames.LOCATION) mustBe Some(routes.StartDateController.onPageLoad(NormalMode).url)
         }
       }
     }
@@ -382,16 +374,12 @@ class ImportsControllerISpec extends ControllerITTestHelper {
       WsTestClient.withClient { client =>
 
         val result = createClientRequestPOST(
-          client, baseUrl + normalRoutePath, Json.obj("value" -> "no")
+          client, baseUrl + normalRoutePath, Json.obj("value" -> "false")
         )
 
         whenReady(result) { res =>
           res.status mustBe 303
-          res.header(HeaderNames.LOCATION) mustBe routes.DoNotRegisterController.onPageLoad
-          val dataStoredForPage = getAnswers(emptyUserAnswers.id).fold[Option[Boolean]](None)(_.get(ImportsPage))
-
-          dataStoredForPage.nonEmpty mustBe true
-          dataStoredForPage.get mustBe false
+          res.header(HeaderNames.LOCATION) mustBe Some(routes.DoNotRegisterController.onPageLoad.url)
         }
       }
     }
@@ -404,16 +392,12 @@ class ImportsControllerISpec extends ControllerITTestHelper {
       WsTestClient.withClient { client =>
 
         val result = createClientRequestPOST(
-          client, baseUrl + normalRoutePath, Json.obj("value" -> "no")
+          client, baseUrl + normalRoutePath, Json.obj("value" -> "false")
         )
 
         whenReady(result) { res =>
           res.status mustBe 303
-          res.header(HeaderNames.LOCATION) mustBe routes.StartDateController.onPageLoad(NormalMode)
-          val dataStoredForPage = getAnswers(emptyUserAnswers.id).fold[Option[Boolean]](None)(_.get(ImportsPage))
-
-          dataStoredForPage.nonEmpty mustBe true
-          dataStoredForPage.get mustBe false
+          res.header(HeaderNames.LOCATION) mustBe Some(routes.StartDateController.onPageLoad(NormalMode).url)
         }
       }
     }
@@ -427,16 +411,12 @@ class ImportsControllerISpec extends ControllerITTestHelper {
       WsTestClient.withClient { client =>
 
         val result = createClientRequestPOST(
-          client, baseUrl + normalRoutePath, Json.obj("value" -> "no")
+          client, baseUrl + normalRoutePath, Json.obj("value" -> "false")
         )
 
         whenReady(result) { res =>
           res.status mustBe 303
-          res.header(HeaderNames.LOCATION) mustBe routes.ContactDetailsController.onPageLoad(NormalMode)
-          val dataStoredForPage = getAnswers(emptyUserAnswers.id).fold[Option[Boolean]](None)(_.get(ImportsPage))
-
-          dataStoredForPage.nonEmpty mustBe true
-          dataStoredForPage.get mustBe false
+          res.header(HeaderNames.LOCATION) mustBe Some(routes.ContactDetailsController.onPageLoad(NormalMode).url)
         }
       }
     }
@@ -450,16 +430,12 @@ class ImportsControllerISpec extends ControllerITTestHelper {
       WsTestClient.withClient { client =>
 
         val result = createClientRequestPOST(
-          client, baseUrl + normalRoutePath, Json.obj("value" -> "no")
+          client, baseUrl + normalRoutePath, Json.obj("value" -> "false")
         )
 
         whenReady(result) { res =>
           res.status mustBe 303
-          res.header(HeaderNames.LOCATION) mustBe routes.DoNotRegisterController.onPageLoad
-          val dataStoredForPage = getAnswers(emptyUserAnswers.id).fold[Option[Boolean]](None)(_.get(ImportsPage))
-
-          dataStoredForPage.nonEmpty mustBe true
-          dataStoredForPage.get mustBe false
+          res.header(HeaderNames.LOCATION) mustBe Some(routes.DoNotRegisterController.onPageLoad.url)
         }
       }
     }

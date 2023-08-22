@@ -195,9 +195,6 @@ trait ITCoreTestData extends TryValues {
       .set(ContractPackingPage, false).success.value
       .set(ImportsPage, false).success.value
       .set(StartDatePage, LocalDate.now()).success.value
-      .set(AskSecondaryWarehousesPage, true).success.value
-      .set(WarehouseDetailsPage, true).success.value
-      .set(ContactDetailsPage, contactDetails).success.value
   }
 
   val smallProducerUserAnswers: UserAnswers = {
