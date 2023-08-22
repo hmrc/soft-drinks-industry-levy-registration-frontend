@@ -169,7 +169,7 @@ trait ITCoreTestData extends TryValues {
       .set(ContactDetailsPage, contactDetails).success.value
   }
 
-  val largeProducerUserAnswers: UserAnswers = {
+  val largeProducerImportsTrueUserAnswers: UserAnswers = {
     emptyUserAnswers
       .set(VerifyPage, YesRegister).success.value
       .set(OrganisationTypePage, LimitedCompany).success.value
@@ -177,13 +177,7 @@ trait ITCoreTestData extends TryValues {
       .set(OperatePackagingSitesPage, false).success.value
       .set(ContractPackingPage, true).success.value
       .set(HowManyContractPackingPage, LitresInBands(1,1)).success.value
-      .set(ImportsPage, false).success.value
-      .set(StartDatePage, LocalDate.now()).success.value
-      .set(PackAtBusinessAddressPage, true).success.value
-      .set(PackagingSiteDetailsPage, true).success.value
-      .set(AskSecondaryWarehousesPage, true).success.value
-      .set(WarehouseDetailsPage, true).success.value
-      .set(ContactDetailsPage, contactDetails).success.value
+      .set(ImportsPage, true).success.value
   }
 
   val largeProducerNoPackagingRouteUserAnswers: UserAnswers = {

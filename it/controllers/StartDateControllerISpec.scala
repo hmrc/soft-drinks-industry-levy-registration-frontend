@@ -142,7 +142,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
           given
             .commonPrecondition
 
-          setAnswers(largeProducerUserAnswers)
+          setAnswers(largeProducerImportsTrueUserAnswers)
           WsTestClient.withClient { client =>
             val result = createClientRequestPOST(
               client, baseUrl + normalRoutePath, validDateJson
@@ -482,7 +482,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
       given
         .commonPrecondition
 
-      setAnswers(largeProducerUserAnswers)
+      setAnswers(largeProducerImportsTrueUserAnswers)
       WsTestClient.withClient { client =>
 
         val result = createClientRequestPOST(
