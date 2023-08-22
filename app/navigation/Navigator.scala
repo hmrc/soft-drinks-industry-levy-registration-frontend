@@ -19,7 +19,6 @@ package navigation
 import controllers.routes
 import models.HowManyLitresGlobally.{Large, Small}
 import models.OrganisationType.Partnership
-import models.UserTypeCheck.{copackerAll, importer}
 import models._
 import pages._
 import play.api.mvc.Call

@@ -8,7 +8,7 @@ import models._
 import models.backend.{Site, UkAddress}
 import org.scalatest.TryValues
 import pages._
-import play.api.libs.json.Json
+import play.api.libs.json.{JsObject, Json}
 
 import java.time.LocalDate
 import scala.concurrent.duration.DurationInt
@@ -92,15 +92,15 @@ trait ITCoreTestData extends TryValues {
   var day = 10
   val date = LocalDate.of(year, month, day)
 
-  val validDateJson = Json.obj(
+  val validDateJson: JsObject = Json.obj(
     "startDate.day" -> day.toString,
     "startDate.month" -> month.toString,
     "startDate.year" -> year.toString
   )
 
-  val dateMap = Map("day" -> day, "month" -> month, "year" -> year)
+  val dateMap: Map[String, Int] = Map("day" -> day, "month" -> month, "year" -> year)
 
-  val ukAddress = UkAddress(List("foo", "bar"),"wizz", None)
+  val ukAddress: UkAddress = UkAddress(List("foo", "bar"),"wizz", None)
 
   def sdilNumber = "XKSDIL000000022"
   val producerName = Some("Super Cola Ltd")

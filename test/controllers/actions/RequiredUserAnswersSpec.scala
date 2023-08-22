@@ -31,6 +31,7 @@ import play.api.test.Helpers.{contentAsString, redirectLocation}
 import play.api.test.{DefaultAwaitTimeout, FakeRequest}
 
 import java.time.LocalDate
+import scala.collection.immutable.List
 import scala.concurrent.Future
 
 class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
@@ -71,6 +72,7 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
         val action = Future.successful(Ok("woohoo"))
         contentAsString(requiredUserAnswers.requireData(CheckYourAnswersPage)(action)(dataRequest)) mustBe "woohoo"
       }
+    }
 
       s"should return result passed in when page is $CheckYourAnswersPage" - {
         s"when HowManyLitresGlobally is $Large and contractPacking and OperatePackagingSites are both false and pack at business address is not answered" in {
@@ -212,8 +214,49 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
           val action = Future.successful(Ok("woohoo"))
           contentAsString(requiredUserAnswers.requireData(CheckYourAnswersPage)(action)(dataRequest)) mustBe "woohoo"
         }
+
+        s"when HowManyLitresGlobally is $Small, $ThirdPartyPackagersPage is true, $ContractPackingPage is false, $OperatePackagingSitesPage " +
+          s"is false, $ImportsPage is false, and $ContactDetailsPage has been answered" in {
+          val userAnswers = {
+            emptyUserAnswers
+              .set(VerifyPage, YesRegister).success.value
+              .set(OrganisationTypePage, LimitedCompany).success.value
+              .set(HowManyLitresGloballyPage, Small).success.value
+              .set(ThirdPartyPackagersPage, true).success.value
+              .set(OperatePackagingSitesPage, false).success.value
+              .set(ContractPackingPage, false).success.value
+              .set(ImportsPage, false).success.value
+              .set(ContactDetailsPage, ContactDetails("aaa", "aaa", "123", "a@a.com")).success.value
+          }
+          val dataRequest = DataRequest(
+            FakeRequest(), "", hasCTEnrolment = false, None, userAnswers, RosmWithUtr("", RosmRegistration("", None, None, UkAddress(List.empty, "", None)))
+          )
+          val action = Future.successful(Ok("woohoo"))
+          contentAsString(requiredUserAnswers.requireData(CheckYourAnswersPage)(action)(dataRequest)) mustBe "woohoo"
+        }
+
+        s"when HowManyLitresGlobally is $Small, $ThirdPartyPackagersPage is true, $OperatePackagingSitesPage is true, $ContractPackingPage " +
+          s"is false, $ImportsPage is false, and $ContactDetailsPage has been answered" in {
+          val userAnswers = {
+            emptyUserAnswers
+              .set(VerifyPage, YesRegister).success.value
+              .set(OrganisationTypePage, LimitedCompany).success.value
+              .set(HowManyLitresGloballyPage, Small).success.value
+              .set(ThirdPartyPackagersPage, true).success.value
+              .set(OperatePackagingSitesPage, true).success.value
+              .set(HowManyOperatePackagingSitesPage, LitresInBands(1, 1)).success.value
+              .set(ContractPackingPage, false).success.value
+              .set(ImportsPage, false).success.value
+              .set(ContactDetailsPage, ContactDetails("", "", "", "")).success.value
+          }
+          val dataRequest = DataRequest(
+            FakeRequest(), "", hasCTEnrolment = false, None, userAnswers, RosmWithUtr("", RosmRegistration("", None, None, UkAddress(List.empty, "", None)))
+          )
+          val action = Future.successful(Ok("woohoo"))
+          contentAsString(requiredUserAnswers.requireData(CheckYourAnswersPage)(action)(dataRequest)) mustBe "woohoo"
+        }
       }
-    }
+
     s"should redirect to verify controller when missing answers for $CheckYourAnswersPage" - {
       "with no answers" in {
         val dataRequest = DataRequest(
@@ -295,12 +338,13 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
         res.get mustBe controllers.routes.VerifyController.onPageLoad(NormalMode).url
       }
 
-      s"when HowManyLitresGlobally is $Small and contractPacking is true, OperatePackagingSites is true and pack at business address is not answered" in {
+      s"when HowManyLitresGlobally is $Small, $OperatePackagingSitesPage is true, $ContractPackingPage is true, and " +
+        s"pack at business address is not answered" in {
         val userAnswers = {
           emptyUserAnswers
             .set(VerifyPage, YesRegister).success.value
             .set(OrganisationTypePage, LimitedCompany).success.value
-            .set(HowManyLitresGloballyPage, Large).success.value
+            .set(HowManyLitresGloballyPage, Small).success.value
             .set(ThirdPartyPackagersPage, true).success.value
             .set(OperatePackagingSitesPage, true).success.value
             .set(HowManyOperatePackagingSitesPage, LitresInBands(1, 1)).success.value
@@ -358,11 +402,9 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
           RequiredPage(HowManyLitresGloballyPage, List.empty)(implicitly[Reads[HowManyLitresGlobally]]),
           RequiredPage(ContractPackingPage, List.empty)(implicitly[Reads[Boolean]]),
           RequiredPage(ImportsPage, List.empty)(implicitly[Reads[Boolean]]),
-          RequiredPage(StartDatePage, List.empty)(implicitly[Reads[LocalDate]]),
-          RequiredPage(AskSecondaryWarehousesPage, List.empty)(implicitly[Reads[Boolean]]),
-          RequiredPage(ContactDetailsPage, List.empty)(implicitly[Reads[ContactDetails]])
         )
     }
+
     "should return all but 1 missing answers when user answers is fully populated apart from 1 answer" in {
       val userAnswers = {
         emptyUserAnswers
@@ -385,7 +427,9 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
         FakeRequest(),"", hasCTEnrolment = false, None, userAnswers, RosmWithUtr("", RosmRegistration("", None, None, UkAddress(List.empty,"", None)))
       )
       val res = requiredUserAnswers.returnMissingAnswers(requiredUserAnswers.journey)
-      res mustBe List(RequiredPage(ContactDetailsPage, List.empty)(implicitly[Reads[ContactDetails]]))
+      res mustBe List(RequiredPage(ContactDetailsPage, List(
+        PreviousPage(AskSecondaryWarehousesPage, List(true, false))
+        (implicitly[Reads[Boolean]])))(implicitly[Reads[ContactDetails]]))
     }
 
     s"should return 1 item on the missing answer list when producer is $Large, contractPacking is false, OperatePackagingSites " +
@@ -415,8 +459,8 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
         PreviousPage(ContractPackingPage, List(true, false))(implicitly[Reads[Boolean]])))(implicitly[Reads[Boolean]]))
     }
 
-    s"should return 1 item on the missing answer list when producer is $Large, contractPacking is true, OperatePackagingSites " +
-      "is true and pack at business address is not answered" in {
+    s"should return 1 item on the missing answer list when producer is $Large, $ContactDetailsPage is true, $OperatePackagingSitesPage " +
+      "is true and PackAtBusinessAddress is not answered" in {
       val userAnswers = {
         emptyUserAnswers
           .set(VerifyPage, YesRegister).success.value
@@ -443,8 +487,8 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
         PreviousPage(ContractPackingPage, List(true, false))(implicitly[Reads[Boolean]])))(implicitly[Reads[Boolean]]))
     }
 
-    s"should return 1 item on the missing answer list when producer is $Small, contractPacking is true, OperatePackagingSites" +
-      "is true and pack at business address is not answered" in {
+    s"should return 1 item on the missing answer list when producer is $Small, $ContractPackingPage is true, $OperatePackagingSitesPage " +
+      "is true, and pack at business address is not answered" in {
       val userAnswers = {
         emptyUserAnswers
           .set(VerifyPage, YesRegister).success.value
@@ -472,7 +516,7 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
         PreviousPage(ContractPackingPage, List(true))(implicitly[Reads[Boolean]])))(implicitly[Reads[Boolean]]))
     }
 
-    s"should return 1 item on the missing answer list when producer is $None, contractPacking is true and pack at business address is not answered" in {
+    s"should return 1 item on the missing answer list when producer is $None, $ContractPackingPage is true, and pack at business address is not answered" in {
       val userAnswers = {
         emptyUserAnswers
           .set(VerifyPage, YesRegister).success.value
@@ -495,6 +539,57 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
         PreviousPage(HowManyLitresGloballyPage, List(HowManyLitresGlobally.enumerable.withName("small").get,
           HowManyLitresGlobally.enumerable.withName("xnot").get))(implicitly[Reads[HowManyLitresGlobally]]),
         PreviousPage(ContractPackingPage, List(true))(implicitly[Reads[Boolean]])))(implicitly[Reads[Boolean]]))
+    }
+
+    s"should return 1 item on the missing answer list when user changes a $StartDatePage required answer from CYA, " +
+      s"such as change $ImportsPage from false to true" in {
+      val userAnswers = {
+        emptyUserAnswers
+          .set(VerifyPage, YesRegister).success.value
+          .set(OrganisationTypePage, LimitedCompany).success.value
+          .set(HowManyLitresGloballyPage, Small).success.value
+          .set(ThirdPartyPackagersPage, true).success.value
+          .set(OperatePackagingSitesPage, true).success.value
+          .set(HowManyOperatePackagingSitesPage, LitresInBands(1, 1)).success.value
+          .set(ContractPackingPage, false).success.value
+          .set(ImportsPage, true).success.value
+          .set(HowManyImportsPage, LitresInBands(1, 1)).success.value
+          .set(ContactDetailsPage, ContactDetails("", "", "", "")).success.value
+      }
+      implicit val dataRequest: DataRequest[AnyContentAsEmpty.type] = DataRequest(
+        FakeRequest(), "", hasCTEnrolment = false, None, userAnswers, RosmWithUtr("", RosmRegistration("", None, None, UkAddress(List.empty, "", None)))
+      )
+      val res = requiredUserAnswers.returnMissingAnswers(requiredUserAnswers.journey)
+      res mustBe List(
+        RequiredPage(StartDatePage, List(
+          PreviousPage(HowManyLitresGloballyPage, List(HowManyLitresGlobally.enumerable.withName("small").get,
+            HowManyLitresGlobally.enumerable.withName("xnot").get))(implicitly[Reads[HowManyLitresGlobally]]),
+          PreviousPage(ImportsPage, List(true))(implicitly[Reads[Boolean]])))(implicitly[Reads[LocalDate]]))
+    }
+
+    s"should return 1 item on the missing answer list when user is $Small with $ThirdPartyPackagersPage true, $OperatePackagingSitesPage " +
+      s"true, and $ImportsPage false" in {
+      val userAnswers = {
+        emptyUserAnswers
+          .set(VerifyPage, YesRegister).success.value
+          .set(OrganisationTypePage, LimitedCompany).success.value
+          .set(HowManyLitresGloballyPage, Small).success.value
+          .set(ThirdPartyPackagersPage, true).success.value
+          .set(OperatePackagingSitesPage, false).success.value
+          .set(ContractPackingPage, false).success.value
+          .set(ImportsPage, false).success.value
+      }
+      implicit val dataRequest: DataRequest[AnyContentAsEmpty.type] = DataRequest(
+        FakeRequest(), "", hasCTEnrolment = false, None, userAnswers, RosmWithUtr("", RosmRegistration("", None, None, UkAddress(List.empty, "", None)))
+      )
+      val res = requiredUserAnswers.returnMissingAnswers(requiredUserAnswers.journey)
+      res mustBe List(
+        RequiredPage(ContactDetailsPage, List(
+          PreviousPage(HowManyLitresGloballyPage, List(HowManyLitresGlobally.enumerable.withName("small").get))(implicitly[Reads[HowManyLitresGlobally]]),
+          PreviousPage(ThirdPartyPackagersPage, List(true))(implicitly[Reads[Boolean]]),
+          PreviousPage(OperatePackagingSitesPage, List(true, false))(implicitly[Reads[Boolean]]),
+          PreviousPage(ContractPackingPage, List(false))(implicitly[Reads[Boolean]]),
+          PreviousPage(ImportsPage, List(false))(implicitly[Reads[Boolean]])))(implicitly[Reads[ContactDetails]]))
     }
 
     "should return nothing when a list is provided for previous pages and previous pages don't exist" in {

@@ -49,66 +49,70 @@ class RequiredUserAnswers @Inject()(genericLogger: GenericLogger)(implicit val e
     }
   }
 
-  private[controllers] def returnMissingAnswers[A: ClassTag, B: ClassTag](list: List[RequiredPage[_,_,_]])
-                                                                         (implicit request: DataRequest[_]): List[RequiredPage[_,_,_]] = {
+  private[controllers] def returnMissingAnswers[A: ClassTag, B: ClassTag](list: List[RequiredPage[_, _, _]])
+                                                                         (implicit request: DataRequest[_]): List[RequiredPage[_, _, _]] = {
     list.filterNot { listItem =>
       val currentPage: Option[A] = request.userAnswers.get(listItem.pageRequired.asInstanceOf[QuestionPage[A]])(listItem.reads.asInstanceOf[Reads[A]])
       (currentPage.isDefined, listItem.basedOnPreviousPages.nonEmpty) match {
         case (false, true) =>
-           val userAnswersMatched:List[Boolean] = listItem.basedOnPreviousPages.map { previousListItem =>
+          val userAnswersMatched: List[Boolean] = listItem.basedOnPreviousPages.map { previousListItem =>
             val previousPage: PreviousPage[QuestionPage[B], B] = previousListItem.asInstanceOf[PreviousPage[QuestionPage[B], B]]
             val previousPageAnswer: Option[B] = request.userAnswers.get(previousPage.page)(previousPage.reads)
-            !previousPageAnswer.exists(i => previousPage.previousPageAnswerRequired.contains(i))
+            previousPage.previousPageAnswerRequired match {
+              case Nil => !previousPageAnswer.isDefined
+              case _ => !previousPageAnswer.exists(i => previousPage.previousPageAnswerRequired.contains(i))
+            }
           }
-          if(userAnswersMatched.contains(true) && userAnswersMatched.contains(false)) {
+          if (userAnswersMatched.contains(true) && userAnswersMatched.contains(false)) {
             true
           } else {
             !userAnswersMatched.contains(false)
           }
         case (false, _) => false
         case _ => true
-        }
+      }
     }
   }
+
   private[controllers] def journey(implicit request: DataRequest[_]): List[RequiredPage[_,_,_]] = {
+    val previousPageSmallAndNonProducer = PreviousPage(HowManyLitresGloballyPage, List(HowManyLitresGlobally.enumerable.withName("small").get,
+      HowManyLitresGlobally.enumerable.withName("xnot").get))(implicitly[Reads[HowManyLitresGlobally]])
+    val largeGlobal = HowManyLitresGlobally.enumerable.withName("large").get
+    val smallGlobal = HowManyLitresGlobally.enumerable.withName("small").get
+    val implicitBands = implicitly[Reads[LitresInBands]]
+    val implicitGlobally = implicitly[Reads[HowManyLitresGlobally]]
+    val implicitBoolean = implicitly[Reads[Boolean]]
+    val implicitDate = implicitly[Reads[LocalDate]]
     List(
       RequiredPage(VerifyPage, List.empty)(implicitly[Reads[Verify]]),
       RequiredPage(OrganisationTypePage, List.empty)(implicitly[Reads[OrganisationType]]),
-      RequiredPage(HowManyLitresGloballyPage, List.empty)(implicitly[Reads[HowManyLitresGlobally]]),
-      RequiredPage(ThirdPartyPackagersPage,
-        List(PreviousPage(HowManyLitresGloballyPage,
-          List(HowManyLitresGlobally.enumerable.withName("small").get))(implicitly[Reads[HowManyLitresGlobally]])))(implicitly[Reads[Boolean]]),
-      RequiredPage(OperatePackagingSitesPage,
-        List(PreviousPage(HowManyLitresGloballyPage,
-          List(HowManyLitresGlobally.enumerable.withName("small").get,
-            HowManyLitresGlobally.enumerable.withName("large").get))(implicitly[Reads[HowManyLitresGlobally]])))(implicitly[Reads[Boolean]]),
-      RequiredPage(HowManyOperatePackagingSitesPage,
-        List(PreviousPage(OperatePackagingSitesPage, List(true))(implicitly[Reads[Boolean]])))(implicitly[Reads[LitresInBands]]),
-      RequiredPage(ContractPackingPage, List.empty)(implicitly[Reads[Boolean]]),
-      RequiredPage(HowManyContractPackingPage,
-        List(PreviousPage(ContractPackingPage, List(true))(implicitly[Reads[Boolean]])))(implicitly[Reads[LitresInBands]]),
-      RequiredPage(ImportsPage, List.empty)(implicitly[Reads[Boolean]]),
-      RequiredPage(HowManyImportsPage,
-        List(PreviousPage(ImportsPage, List(true))(implicitly[Reads[Boolean]])))(implicitly[Reads[LitresInBands]]),
-      RequiredPage(StartDatePage, List.empty)(implicitly[Reads[LocalDate]]),
-      RequiredPage(PackAtBusinessAddressPage, List(
-        PreviousPage(HowManyLitresGloballyPage, List(HowManyLitresGlobally.enumerable.withName("small").get,
-            HowManyLitresGlobally.enumerable.withName("xnot").get))(implicitly[Reads[HowManyLitresGlobally]]),
-        PreviousPage(ContractPackingPage, List(true))(implicitly[Reads[Boolean]])))(implicitly[Reads[Boolean]]),
-      RequiredPage(PackAtBusinessAddressPage, List(
-        PreviousPage(HowManyLitresGloballyPage, List(HowManyLitresGlobally.enumerable.withName("large").get))(implicitly[Reads[HowManyLitresGlobally]]),
-        PreviousPage(OperatePackagingSitesPage, List(false))(implicitly[Reads[Boolean]]),
-        PreviousPage(ContractPackingPage, List(true))(implicitly[Reads[Boolean]])))(implicitly[Reads[Boolean]]),
-      RequiredPage(PackAtBusinessAddressPage, List(
-        PreviousPage(HowManyLitresGloballyPage, List(HowManyLitresGlobally.enumerable.withName("large").get))(implicitly[Reads[HowManyLitresGlobally]]),
-        PreviousPage(OperatePackagingSitesPage, List(true))(implicitly[Reads[Boolean]]),
-        PreviousPage(ContractPackingPage, List(true, false))(implicitly[Reads[Boolean]])))(implicitly[Reads[Boolean]]),
-      RequiredPage(PackagingSiteDetailsPage,
-        List(PreviousPage(PackAtBusinessAddressPage, List(true, false))(implicitly[Reads[Boolean]])))(implicitly[Reads[Boolean]]),
-      RequiredPage(AskSecondaryWarehousesPage, List.empty)(implicitly[Reads[Boolean]]),
-      RequiredPage(WarehouseDetailsPage,
-        List(PreviousPage(AskSecondaryWarehousesPage, List(true))(implicitly[Reads[Boolean]])))(implicitly[Reads[Boolean]]),
-      RequiredPage(ContactDetailsPage, List.empty)(implicitly[Reads[ContactDetails]])
+      RequiredPage(HowManyLitresGloballyPage, List.empty)(implicitGlobally),
+      RequiredPage(ThirdPartyPackagersPage, List(PreviousPage(HowManyLitresGloballyPage, List(smallGlobal))(implicitGlobally)))(implicitBoolean),
+      RequiredPage(OperatePackagingSitesPage, List(PreviousPage(HowManyLitresGloballyPage, List(smallGlobal, largeGlobal))(implicitGlobally)))(implicitBoolean),
+      RequiredPage(HowManyOperatePackagingSitesPage, List(PreviousPage(OperatePackagingSitesPage, List(true))(implicitBoolean)))(implicitBands),
+      RequiredPage(ContractPackingPage, List.empty)(implicitBoolean),
+      RequiredPage(HowManyContractPackingPage, List(PreviousPage(ContractPackingPage, List(true))(implicitBoolean)))(implicitBands),
+      RequiredPage(ImportsPage, List.empty)(implicitBoolean),
+      RequiredPage(HowManyImportsPage, List(PreviousPage(ImportsPage, List(true))(implicitBoolean)))(implicitBands),
+      RequiredPage(StartDatePage, List(PreviousPage(HowManyLitresGloballyPage, List(largeGlobal))(implicitGlobally)))(implicitDate),
+      RequiredPage(StartDatePage, List(previousPageSmallAndNonProducer, PreviousPage(ContractPackingPage, List(true))(implicitBoolean)))(implicitDate),
+      RequiredPage(StartDatePage, List(previousPageSmallAndNonProducer, PreviousPage(ImportsPage, List(true))(implicitBoolean)))(implicitDate),
+      RequiredPage(PackAtBusinessAddressPage, List(previousPageSmallAndNonProducer, PreviousPage(ContractPackingPage, List(true))
+        (implicitBoolean)))(implicitBoolean),
+      RequiredPage(PackAtBusinessAddressPage, List(PreviousPage(HowManyLitresGloballyPage, List(largeGlobal))(implicitGlobally),
+        PreviousPage(OperatePackagingSitesPage, List(false))(implicitBoolean), PreviousPage(ContractPackingPage, List(true))
+        (implicitBoolean)))(implicitBoolean),
+      RequiredPage(PackAtBusinessAddressPage, List(PreviousPage(HowManyLitresGloballyPage, List(largeGlobal))(implicitGlobally),
+        PreviousPage(OperatePackagingSitesPage, List(true))(implicitBoolean), PreviousPage(ContractPackingPage, List(true, false))
+        (implicitBoolean)))(implicitBoolean),
+      RequiredPage(PackagingSiteDetailsPage, List(PreviousPage(PackAtBusinessAddressPage, List(true, false))(implicitBoolean)))(implicitBoolean),
+      RequiredPage(AskSecondaryWarehousesPage, List(PreviousPage(StartDatePage, List.empty)(implicitDate)))(implicitBoolean),
+      RequiredPage(WarehouseDetailsPage, List(PreviousPage(AskSecondaryWarehousesPage, List(true))(implicitBoolean)))(implicitBoolean),
+      RequiredPage(ContactDetailsPage, List(PreviousPage(HowManyLitresGloballyPage, List(smallGlobal))(implicitGlobally),
+        PreviousPage(ThirdPartyPackagersPage, List(true))(implicitBoolean), PreviousPage(OperatePackagingSitesPage, List(true, false))(implicitBoolean),
+        PreviousPage(ContractPackingPage, List(false))(implicitBoolean), PreviousPage(ImportsPage, List(false))(implicitBoolean)))
+          (implicitly[Reads[ContactDetails]]),
+      RequiredPage(ContactDetailsPage, List(PreviousPage(AskSecondaryWarehousesPage, List(true, false))(implicitBoolean)))(implicitly[Reads[ContactDetails]])
     )
   }
 }
