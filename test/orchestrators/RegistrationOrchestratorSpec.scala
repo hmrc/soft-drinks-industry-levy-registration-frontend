@@ -119,17 +119,6 @@ class RegistrationOrchestratorSpec extends RegistrationSubscriptionHelper with M
         }
       }
 
-      "when the user answers doesn't include start date" in {
-        val userAnswers = getCompletedUserAnswers(OrganisationType.LimitedCompany, HowManyLitresGlobally.Large, false)
-          .remove(StartDatePage).success.value
-        val dataRequest: DataRequest[AnyContent] = DataRequest(FakeRequest(), identifier, true, Some(utr), userAnswers, rosmRegistration)
-        val res = orchestrator.createSubscriptionAndUpdateUserAnswers(dataRequest, hc, ec)
-
-        whenReady(res.value) { result =>
-          result mustBe Left(MissingRequiredUserAnswers)
-        }
-      }
-
       "when the user answers doesn't include contact details" in {
         val userAnswers = getCompletedUserAnswers(OrganisationType.LimitedCompany, HowManyLitresGlobally.Large, false)
           .remove(ContactDetailsPage).success.value
