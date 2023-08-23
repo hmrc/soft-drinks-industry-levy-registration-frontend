@@ -40,7 +40,7 @@ object Subscription {
 
     val organisationType = userAnswers.get(OrganisationTypePage).map(_.enumNum).getOrElse(throw new Exception("no organisation type in user answers"))
     val activity = Activity.fromUserAnswers(userAnswers)
-    val liabilityDate = userAnswers.get(StartDatePage).getOrElse(throw new Exception("no start date in user answers"))
+    val liabilityDate = userAnswers.get(StartDatePage).getOrElse(LocalDate.now())
     val productionSites = userAnswers.packagingSiteList.values.toSeq
     val warehouseSites = userAnswers.warehouseList.foldLeft[Seq[Site]](Seq.empty) {case (list, (_, warehouse)) =>
     list.+:(Site.fromWarehouse(warehouse))}
