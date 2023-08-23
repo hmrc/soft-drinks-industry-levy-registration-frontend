@@ -78,7 +78,7 @@ class Navigator @Inject()() {
       case (_, Some(HowManyLitresGlobally.None)) =>
         routes.ContractPackingController.onPageLoad(CheckMode)
       case (_, _) =>
-        routes.HowManyLitresGloballyController.onPageLoad(CheckMode)
+        routes.IndexController.onPageLoad
     }
   }
 
@@ -91,7 +91,7 @@ class Navigator @Inject()() {
       case Some(litres) if litres == HowManyLitresGlobally.None =>
         routes.ContractPackingController.onPageLoad(NormalMode)
       case _ =>
-        routes.HowManyLitresGloballyController.onPageLoad(NormalMode)
+        routes.IndexController.onPageLoad
     }
   }
 
