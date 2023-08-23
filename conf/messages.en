@@ -365,3 +365,6 @@ registrationConfirmation.help.l1 = do not receive your reference number
 registrationConfirmation.help.l2 = need to make a change to your application
 registrationConfirmation.detailsSummary = Details of your application
 
+applicationAlreadySubmitted.title = This business already has an application submitted
+applicationAlreadySubmitted.heading = This business already has an application submitted
+

@@ -102,7 +102,7 @@ trait LitresSpecHelper extends ViewSpecHelper {
 
   def testButton(document: Document): Unit = {
     "should contain the correct button" in {
-      document.getElementsByClass(Selectors.button).text() mustBe Messages("site.saveContinue")
+      document.getElementsByClass(Selectors.button).text() mustBe "Save and continue"
     }
   }
 
