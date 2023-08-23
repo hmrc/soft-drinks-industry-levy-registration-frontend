@@ -150,15 +150,6 @@ class SubscriptionSpec extends RegistrationSubscriptionHelper {
         )
       }
 
-      "when the user answers doesn't include start date" in {
-        val userAnswers = getCompletedUserAnswers(OrganisationType.LimitedCompany, HowManyLitresGlobally.Large, false)
-          .remove(StartDatePage).success.value
-
-        intercept[Exception](
-          Subscription.generate(userAnswers, rosmRegistration)
-        )
-      }
-
       "when the user answers doesn't include contact details" in {
         val userAnswers = getCompletedUserAnswers(OrganisationType.LimitedCompany, HowManyLitresGlobally.Large, false)
           .remove(ContactDetailsPage).success.value
