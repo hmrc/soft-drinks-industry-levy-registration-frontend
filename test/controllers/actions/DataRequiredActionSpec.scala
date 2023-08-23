@@ -18,6 +18,8 @@ package controllers.actions
 
 import base.SpecBase
 import connectors.{DoesNotExist, Pending, Registered, SoftDrinksIndustryLevyConnector}
+import errors.NoROSMRegistration
+import handlers.ErrorHandler
 import models.requests.{DataRequest, OptionalDataRequest}
 import models.{Identify, NormalMode}
 import org.mockito.ArgumentMatchers
@@ -33,7 +35,7 @@ import scala.concurrent.Future
 
 class DataRequiredActionSpec extends SpecBase with MockitoSugar {
 
-  class Harness(connector: SoftDrinksIndustryLevyConnector) extends DataRequiredActionImpl(connector, application.injector.instanceOf[GenericLogger]) {
+  class Harness(connector: SoftDrinksIndustryLevyConnector) extends DataRequiredActionImpl(connector, application.injector.instanceOf[GenericLogger], application.injector.instanceOf[ErrorHandler]) {
     def callRefine[A](request: OptionalDataRequest[A]): Future[Either[Result, DataRequest[A]]] = refine(request)
   }
   val connector = mock[SoftDrinksIndustryLevyConnector]
@@ -52,7 +54,7 @@ class DataRequiredActionSpec extends SpecBase with MockitoSugar {
         val internalId = "foo"
         val utr = "bar"
 
-        when(connector.checkPendingQueue(ArgumentMatchers.eq(utr))(ArgumentMatchers.any())) thenReturn Future.successful(Registered)
+        when(connector.checkPendingQueue(ArgumentMatchers.eq(utr))(ArgumentMatchers.any())) thenReturn createSuccessRegistrationResult(Registered)
         val action = new Harness(connector)
         val result = action.callRefine(OptionalDataRequest(request, internalId, authUtr = Some(utr), userAnswers = Some(emptyUserAnswers))).futureValue
 
@@ -62,7 +64,7 @@ class DataRequiredActionSpec extends SpecBase with MockitoSugar {
         val internalId = "foo"
         val utr = "bar"
 
-        when(connector.checkPendingQueue(ArgumentMatchers.eq(utr))(ArgumentMatchers.any())) thenReturn Future.successful(Pending)
+        when(connector.checkPendingQueue(ArgumentMatchers.eq(utr))(ArgumentMatchers.any())) thenReturn createSuccessRegistrationResult(Pending)
         val action = new Harness(connector)
         val result = action.callRefine(OptionalDataRequest(request, internalId, authUtr = Some(utr), userAnswers = Some(emptyUserAnswers))).futureValue
 
@@ -72,8 +74,9 @@ class DataRequiredActionSpec extends SpecBase with MockitoSugar {
         val internalId = "id"
         val utr = "bar"
 
-        when(connector.checkPendingQueue(ArgumentMatchers.eq(utr))(ArgumentMatchers.any())) thenReturn Future.successful(DoesNotExist)
-        when(connector.retreiveRosmSubscription(ArgumentMatchers.eq(utr), ArgumentMatchers.eq(internalId))(ArgumentMatchers.any())) thenReturn Future.successful(None)
+        when(connector.checkPendingQueue(ArgumentMatchers.eq(utr))(ArgumentMatchers.any())) thenReturn createSuccessRegistrationResult(DoesNotExist)
+
+        when(connector.retreiveRosmSubscription(ArgumentMatchers.eq(utr), ArgumentMatchers.eq(internalId))(ArgumentMatchers.any())) thenReturn createFailureRegistrationResult(NoROSMRegistration)
         val action = new Harness(connector)
         val result = action.callRefine(OptionalDataRequest(request, internalId, authUtr = Some(utr), userAnswers = Some(emptyUserAnswers))).futureValue
 
@@ -83,8 +86,8 @@ class DataRequiredActionSpec extends SpecBase with MockitoSugar {
         val internalId = "id"
         val utr = "bar"
 
-        when(connector.checkPendingQueue(ArgumentMatchers.eq(utr))(ArgumentMatchers.any())) thenReturn Future.successful(DoesNotExist)
-        when(connector.retreiveRosmSubscription(ArgumentMatchers.eq(utr), ArgumentMatchers.eq(internalId))(ArgumentMatchers.any())) thenReturn Future.successful(Some(rosmRegistration))
+        when(connector.checkPendingQueue(ArgumentMatchers.eq(utr))(ArgumentMatchers.any())) thenReturn createSuccessRegistrationResult(DoesNotExist)
+        when(connector.retreiveRosmSubscription(ArgumentMatchers.eq(utr), ArgumentMatchers.eq(internalId))(ArgumentMatchers.any())) thenReturn createSuccessRegistrationResult(rosmRegistration)
         val action = new Harness(connector)
         val result = action.callRefine(OptionalDataRequest(request, internalId, authUtr = Some(utr), userAnswers = Some(emptyUserAnswers))).futureValue
 
@@ -101,7 +104,7 @@ class DataRequiredActionSpec extends SpecBase with MockitoSugar {
       s"should redirect away when pending queue returns $Registered" in {
         val internalId = "foo"
 
-        when(connector.checkPendingQueue(ArgumentMatchers.eq(utr))(ArgumentMatchers.any())) thenReturn Future.successful(Registered)
+        when(connector.checkPendingQueue(ArgumentMatchers.eq(utr))(ArgumentMatchers.any())) thenReturn createSuccessRegistrationResult(Registered)
         val action = new Harness(connector)
         val result = action.callRefine(OptionalDataRequest(request, internalId, authUtr = None, userAnswers = Some(userAnswersWithEnterBusinessDetailsPage))).futureValue
 
@@ -110,7 +113,7 @@ class DataRequiredActionSpec extends SpecBase with MockitoSugar {
       s"should redirect away when pending queue returns $Pending" in {
         val internalId = "foo"
 
-        when(connector.checkPendingQueue(ArgumentMatchers.eq(utr))(ArgumentMatchers.any()))thenReturn Future.successful(Pending)
+        when(connector.checkPendingQueue(ArgumentMatchers.eq(utr))(ArgumentMatchers.any()))thenReturn createSuccessRegistrationResult(Pending)
         val action = new Harness(connector)
         val result = action.callRefine(OptionalDataRequest(request, internalId, authUtr = None, userAnswers = Some(userAnswersWithEnterBusinessDetailsPage))).futureValue
 
@@ -119,8 +122,8 @@ class DataRequiredActionSpec extends SpecBase with MockitoSugar {
       s"should call rosm when pending queue returns $DoesNotExist but redirect away when rosm returns None" in {
         val internalId = "foo"
 
-        when(connector.checkPendingQueue(ArgumentMatchers.eq(utr))(ArgumentMatchers.any())) thenReturn Future.successful(DoesNotExist)
-        when(connector.retreiveRosmSubscription(ArgumentMatchers.eq(utr), ArgumentMatchers.eq(internalId))(ArgumentMatchers.any())) thenReturn Future.successful(None)
+        when(connector.checkPendingQueue(ArgumentMatchers.eq(utr))(ArgumentMatchers.any())) thenReturn createSuccessRegistrationResult(DoesNotExist)
+        when(connector.retreiveRosmSubscription(ArgumentMatchers.eq(utr), ArgumentMatchers.eq(internalId))(ArgumentMatchers.any())) thenReturn createFailureRegistrationResult(NoROSMRegistration)
         val action = new Harness(connector)
         val result = action.callRefine(OptionalDataRequest(request, internalId, authUtr = None, userAnswers = Some(userAnswersWithEnterBusinessDetailsPage))).futureValue
 
@@ -128,8 +131,8 @@ class DataRequiredActionSpec extends SpecBase with MockitoSugar {
       }
       s"should call rosm when pending queue returns $DoesNotExist and return success with rosm subscription" in {
         val internalId = "foo"
-        when(connector.checkPendingQueue(ArgumentMatchers.eq(utr))(ArgumentMatchers.any()))  thenReturn Future.successful(DoesNotExist)
-        when(connector.retreiveRosmSubscription(ArgumentMatchers.eq(utr), ArgumentMatchers.eq(internalId))(ArgumentMatchers.any())) thenReturn Future.successful(Some(rosmRegistration))
+        when(connector.checkPendingQueue(ArgumentMatchers.eq(utr))(ArgumentMatchers.any()))  thenReturn createSuccessRegistrationResult(DoesNotExist)
+        when(connector.retreiveRosmSubscription(ArgumentMatchers.eq(utr), ArgumentMatchers.eq(internalId))(ArgumentMatchers.any())) thenReturn createSuccessRegistrationResult(rosmRegistration)
         val action = new Harness(connector)
         val result = action.callRefine(OptionalDataRequest(request, internalId, authUtr = None, userAnswers = Some(userAnswersWithEnterBusinessDetailsPage))).futureValue
 

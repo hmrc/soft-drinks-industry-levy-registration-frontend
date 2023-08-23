@@ -16,12 +16,14 @@
 
 package controllers.actions
 
-import connectors.{DoesNotExist, Pending, Registered, SoftDrinksIndustryLevyConnector}
+import connectors.SoftDrinksIndustryLevyConnector
 import controllers.routes
+import handlers.ErrorHandler
+import models.RegisterState.RegisterWithOtherUTR
 import models.requests.{DataRequest, OptionalDataRequest}
-import models.{NormalMode, UserAnswers}
+import models.{RegisterState, UserAnswers}
 import pages.EnterBusinessDetailsPage
-import play.api.mvc.Results.Redirect
+import play.api.mvc.Results.{InternalServerError, Redirect}
 import play.api.mvc.{ActionRefiner, Result}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
@@ -30,57 +32,42 @@ import utilities.GenericLogger
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class DataRequiredActionImpl @Inject()(sdilConnector: SoftDrinksIndustryLevyConnector, genericLogger: GenericLogger)
+class DataRequiredActionImpl @Inject()(sdilConnector: SoftDrinksIndustryLevyConnector,
+                                       genericLogger: GenericLogger,
+                                       errorHandler: ErrorHandler)
                                       (implicit val executionContext: ExecutionContext) extends DataRequiredAction  {
-
-  private def findRosm[A](utr: String, request: OptionalDataRequest[A], data: UserAnswers)(implicit hc: HeaderCarrier): Future[Either[Result, DataRequest[A]]] ={
-
-    sdilConnector.retreiveRosmSubscription(utr, request.internalId).map{
-      case Some(result) =>
-        Right(DataRequest(request, request.internalId, request.hasCTEnrolment, request.authUtr, data, result))
-      case None =>
-        genericLogger.logger.warn(s"User has no rosm data for UTR on auth or from Identify ${hc.requestId}")
-        Left(Redirect(routes.IndexController.onPageLoad))
-    }
-  }
-
-  def checkPendingSubscriptions(utr: String)(implicit hc: HeaderCarrier): Future[Either[Result, Unit]] = {
-    sdilConnector.checkPendingQueue(utr).map {
-      case Registered =>
-        genericLogger.logger.info(s"User already registered on pending queue ${hc.requestId}")
-        Left(Redirect(routes.IndexController.onPageLoad))
-      case Pending =>
-        genericLogger.logger.info(s"User already pending subscription on pending queue ${hc.requestId}")
-        Left(Redirect(routes.RegistrationPendingController.onPageLoad.url))
-      case DoesNotExist => Right((): Unit)
-    }
-  }
 
   override protected def refine[A](request: OptionalDataRequest[A]): Future[Either[Result, DataRequest[A]]] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
-    def checkPendingAndCallRosm(utr: String, data: UserAnswers): Future[Either[Result, DataRequest[A]]] = {
-      checkPendingSubscriptions(utr).flatMap {
-        case Left(result) => Future.successful(Left(result))
-        case Right(_) => findRosm(utr, request, data)
-      }
-    }
 
     request.userAnswers match {
-              case None =>
-                genericLogger.logger.info(s"User has no user answers ${hc.requestId}")
-                Future.successful(Left(Redirect(routes.JourneyRecoveryController.onPageLoad())))
-              case Some(data) =>
-                val manualUtr = data.get(EnterBusinessDetailsPage).map(answers => answers.utr)
-                (manualUtr, request.authUtr) match {
-                  case (None, Some(utr)) => checkPendingAndCallRosm(utr, data)
-                  case (Some(utr),  _) => checkPendingAndCallRosm(utr, data)
-                  case (None, None) =>
-                    genericLogger.logger.info(s"User has no utr in auth or from Identify ${hc.requestId}")
-                    Future.successful(Left(Redirect(routes.EnterBusinessDetailsController.onPageLoad(NormalMode))))
-      }
+      case Some(data) if RegisterState.canRegister(data.registerState)=>
+        getUtrFromUserAnswers(data, request) match {
+          case Some(utr) =>
+            sdilConnector.retreiveRosmSubscription(utr, request.internalId).value.map{
+              case Right(rosmWithUtr) => Right(DataRequest(request, request.internalId, request.hasCTEnrolment, request.authUtr, data, rosmWithUtr))
+              case Left(_) => Left(InternalServerError(errorHandler.internalServerErrorTemplate(request)))
+            }
+          case None =>
+            genericLogger.logger.error(s"User has no utr when required for register state ${data.registerState}")
+            Future.successful(Left(InternalServerError(errorHandler.internalServerErrorTemplate(request))))
+        }
+      case Some(data) =>
+        val call = ActionHelpers.getRouteForRegisterState(data.registerState)
+        Future.successful(Left(Redirect(call)))
+      case _ =>
+        genericLogger.logger.info(s"User has no user answers ${hc.requestId}")
+        Future.successful(Left(Redirect(routes.RegistrationController.start)))
+    }
+  }
+
+  private def getUtrFromUserAnswers[A](userAnswers: UserAnswers, request: OptionalDataRequest[A]): Option[String] = {
+    if (userAnswers.registerState == RegisterWithOtherUTR) {
+      userAnswers.get(EnterBusinessDetailsPage).map(_.utr)
+    } else {
+      request.authUtr
     }
   }
 }
 
 trait DataRequiredAction extends ActionRefiner[OptionalDataRequest, DataRequest]
-

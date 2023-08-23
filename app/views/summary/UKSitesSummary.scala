@@ -21,13 +21,9 @@ import models.{CheckMode, UserAnswers}
 import pages.{AskSecondaryWarehousesPage, PackAtBusinessAddressPage}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.{SummaryList, Value}
-import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{Content, Empty, HtmlContent}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
-
-import javax.swing.text.AbstractDocument.Content
-import scala.reflect.internal.util.NoSourceFile.content
 
 object UKSitesSummary {
 

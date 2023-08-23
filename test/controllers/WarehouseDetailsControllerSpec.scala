@@ -21,7 +21,7 @@ import helpers.LoggerHelper
 import utilities.GenericLogger
 import forms.WarehouseDetailsFormProvider
 import models.backend.UkAddress
-import models.{NormalMode, UserAnswers, Warehouse}
+import models.{NormalMode, RegisterState, UserAnswers, Warehouse}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -59,7 +59,7 @@ class WarehouseDetailsControllerSpec extends SpecBase with MockitoSugar with Log
     "2" -> Warehouse(Some("Super Cola Ltd"), UkAddress(List("33 Rhes Priordy", "East London","Line 3",""),"SA13 7CE"))
   )
 
-  val userAnswerTwoWarehouses : UserAnswers = UserAnswers(sdilNumber,Json.obj(), warehouseList = twoWarehouses)
+  val userAnswerTwoWarehouses : UserAnswers = UserAnswers(sdilNumber, RegisterState.RegisterWithAuthUTR,Json.obj(), warehouseList = twoWarehouses)
 
   "WarehouseDetails Controller" - {
 
@@ -85,7 +85,7 @@ class WarehouseDetailsControllerSpec extends SpecBase with MockitoSugar with Log
     "must populate the view correctly on a GET when the question has previously been answered" in {
       val address = UkAddress(List("29 Station Place", "The Railyard", "Cambridge"), "CB1 2FP")
       val warehouse = Map("78941132" -> Warehouse(Some("Warehouse One"), address))
-      val userAnswers = UserAnswers(identifier).set(WarehouseDetailsPage, true).success.value
+      val userAnswers = UserAnswers(identifier, RegisterState.RegisterWithAuthUTR).set(WarehouseDetailsPage, true).success.value
       val uaWithWarehouses = userAnswers.copy(warehouseList = warehouse)
       val warehouseSummary = Some(SummaryListViewModel(rows = WarehouseDetailsSummary.warehouseDetailsRow(warehouse)))
 

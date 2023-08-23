@@ -1,6 +1,6 @@
 package controllers
 
-import models.{CheckMode, LitresInBands, NormalMode, UserAnswers}
+import models.{CheckMode, LitresInBands, NormalMode, RegisterState, UserAnswers}
 import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
 import pages.{HowManyOperatePackagingSitesPage, OperatePackagingSitesPage}
@@ -310,7 +310,7 @@ class OperatePackagingSitesControllerISpec extends ControllerITTestHelper {
       .commonPrecondition
 
     val previouslyFilledAnswers =
-      UserAnswers("some-id", Json.obj(
+      UserAnswers("some-id", RegisterState.RegisterWithAuthUTR, Json.obj(
         OperatePackagingSitesPage.toString -> true,
         HowManyOperatePackagingSitesPage.toString -> Json.obj("lowBand" -> "123", "highBand" -> "123")))
 

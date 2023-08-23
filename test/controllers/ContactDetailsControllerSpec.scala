@@ -20,7 +20,7 @@ import base.SpecBase
 import errors.SessionDatabaseInsertError
 import forms.ContactDetailsFormProvider
 import helpers.LoggerHelper
-import models.{ContactDetails, NormalMode, UserAnswers}
+import models.{ContactDetails, NormalMode, RegisterState, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
@@ -47,7 +47,7 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar with Logge
   lazy val contactDetailsRoute: String = routes.ContactDetailsController.onPageLoad(NormalMode).url
 
   val userAnswers: UserAnswers = UserAnswers(
-    identifier,
+    identifier, RegisterState.RegisterWithAuthUTR,
     Json.obj(
       ContactDetailsPage.toString -> Json.obj(
         "fullName" -> "Jane Doe",

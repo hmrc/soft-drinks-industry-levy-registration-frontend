@@ -32,3 +32,9 @@ case class DataRequest[A] (request: Request[A],
                            authUtr: Option[String] = None,
                            userAnswers: UserAnswers,
                            rosmWithUtr: RosmWithUtr) extends WrappedRequest[A](request)
+
+case class DataRequestForEnterBusinessDetails[A] (request: Request[A],
+                           internalId: String,
+                           hasCTEnrolment: Boolean = false,
+                           authUtr: Option[String] = None,
+                           userAnswers: UserAnswers) extends WrappedRequest[A](request)

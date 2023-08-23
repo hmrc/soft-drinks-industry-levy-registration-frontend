@@ -31,7 +31,7 @@ class ModelEncryptionSpec extends SpecBase {
   "encryptUserAnswers" - {
     "should encrypt userAnswers" in {
       val alfId: String = "bar"
-      val userAnswers = UserAnswers("id",
+      val userAnswers = UserAnswers("id", RegisterState.RegisterWithAuthUTR,
         Json.obj("foo" -> "bar"),
         Some(UkAddress(List("Line 1", "Line 2", "Line 3", "Line 4"),"aa1 1aa", alfId = Some(alfId))),
         List(SmallProducer("foo", "bar", (1,1))),
@@ -42,21 +42,22 @@ class ModelEncryptionSpec extends SpecBase {
 
       val result = ModelEncryption.encryptUserAnswers(userAnswers)
       result._1 mustBe userAnswers.id
-      Json.parse(encryption.crypto.decrypt(result._2, userAnswers.id)).as[JsObject] mustBe userAnswers.data
-      Json.fromJson[Option[UkAddress]](Json.parse(encryption.crypto.decrypt(result._3, userAnswers.id)))(Reads.optionWithNull[UkAddress]).get mustBe userAnswers.address
-      Json.parse(encryption.crypto.decrypt(result._4, userAnswers.id)).as[List[SmallProducer]] mustBe userAnswers.smallProducerList
-      Json.parse(encryption.crypto.decrypt(result._5.head._2, userAnswers.id)).as[Site] mustBe userAnswers.packagingSiteList.head._2
-      result._5.head._1 mustBe userAnswers.packagingSiteList.head._1
+      result._2 mustBe userAnswers.registerState
+      Json.parse(encryption.crypto.decrypt(result._3, userAnswers.id)).as[JsObject] mustBe userAnswers.data
+      Json.fromJson[Option[UkAddress]](Json.parse(encryption.crypto.decrypt(result._4, userAnswers.id)))(Reads.optionWithNull[UkAddress]).get mustBe userAnswers.address
+      Json.parse(encryption.crypto.decrypt(result._5, userAnswers.id)).as[List[SmallProducer]] mustBe userAnswers.smallProducerList
+      Json.parse(encryption.crypto.decrypt(result._6.head._2, userAnswers.id)).as[Site] mustBe userAnswers.packagingSiteList.head._2
+      result._6.head._1 mustBe userAnswers.packagingSiteList.head._1
       Json.parse(encryption.crypto.decrypt(result._6.head._2, userAnswers.id)).as[Warehouse] mustBe userAnswers.warehouseList.head._2
-      result._6.head._1 mustBe userAnswers.warehouseList.head._1
-      result._7 mustBe userAnswers.submittedOn
-      result._8 mustBe userAnswers.lastUpdated
+      result._7.head._1 mustBe userAnswers.warehouseList.head._1
+      result._8 mustBe userAnswers.submittedOn
+      result._9 mustBe userAnswers.lastUpdated
     }
   }
   "decryptUserAnswers" - {
     "should decrypt userAnswers in tuple form" in {
       val alfId: String = "bar"
-      val userAnswers = UserAnswers("id",
+      val userAnswers = UserAnswers("id", RegisterState.RegisterWithAuthUTR,
         Json.obj("foo" -> "bar"),
         Some(UkAddress(List("Line 1", "Line 2", "Line 3", "Line 4"),"aa1 1aa", alfId = Some(alfId))),
         List(SmallProducer("foo", "bar", (1,1))),
@@ -66,7 +67,7 @@ class ModelEncryptionSpec extends SpecBase {
         Instant.ofEpochSecond(1))
 
      val result = ModelEncryption.decryptUserAnswers(
-        userAnswers.id,
+        userAnswers.id, RegisterState.RegisterWithAuthUTR,
         encryption.crypto.encrypt(userAnswers.data.toString(), userAnswers.id),
         encryption.crypto.encrypt(Json.toJson(userAnswers.address).toString(), userAnswers.id),
         encryption.crypto.encrypt(Json.toJson(userAnswers.smallProducerList).toString(), userAnswers.id),

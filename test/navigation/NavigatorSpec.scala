@@ -37,37 +37,37 @@ class NavigatorSpec extends SpecBase {
       "must go from a page that doesn't exist in the route map to Index" in {
 
         case object UnknownPage extends Page
-        navigator.nextPage(UnknownPage, NormalMode, UserAnswers("id")) mustBe routes.IndexController.onPageLoad
+        navigator.nextPage(UnknownPage, NormalMode, UserAnswers("id", RegisterState.RegisterWithAuthUTR)) mustBe routes.IndexController.onPageLoad
       }
 
       "when on organisation type page" - {
         "must navigate to cannot register partnership page and partnership is selected" in {
           val result = navigator.nextPage(OrganisationTypePage, NormalMode,
-            UserAnswers("id", Json.obj(OrganisationTypePage.toString -> Partnership.toString)))
+            UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj(OrganisationTypePage.toString -> Partnership.toString)))
           result mustBe routes.CannotRegisterPartnershipController.onPageLoad
         }
 
         "must navigate to how many litres globally page and limited company is selected" in {
           val result = navigator.nextPage(OrganisationTypePage, NormalMode,
-            UserAnswers("id", Json.obj(OrganisationTypePage.toString -> LimitedCompany.toString)))
+            UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj(OrganisationTypePage.toString -> LimitedCompany.toString)))
           result mustBe routes.HowManyLitresGloballyController.onPageLoad(NormalMode)
         }
 
         "must navigate to how many litres globally page and limited liability partnership is selected" in {
           val result = navigator.nextPage(OrganisationTypePage, NormalMode,
-            UserAnswers("id", Json.obj(OrganisationTypePage.toString -> LimitedLiabilityPartnership.toString)))
+            UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj(OrganisationTypePage.toString -> LimitedLiabilityPartnership.toString)))
           result mustBe routes.HowManyLitresGloballyController.onPageLoad(NormalMode)
         }
 
         "must navigate to how many litres globally page and unincorporated body is selected" in {
           val result = navigator.nextPage(OrganisationTypePage, NormalMode,
-            UserAnswers("id", Json.obj(OrganisationTypePage.toString -> UnincorporatedBody.toString)))
+            UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj(OrganisationTypePage.toString -> UnincorporatedBody.toString)))
           result mustBe routes.HowManyLitresGloballyController.onPageLoad(NormalMode)
         }
 
         "must navigate to how many litres globally page and sole trader is selected" in {
           val result = navigator.nextPage(OrganisationTypePage, NormalMode,
-            UserAnswers("id", Json.obj(OrganisationTypePage.toString -> SoleTrader.toString)))
+            UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj(OrganisationTypePage.toString -> SoleTrader.toString)))
           result mustBe routes.HowManyLitresGloballyController.onPageLoad(NormalMode)
         }
 
@@ -76,25 +76,25 @@ class NavigatorSpec extends SpecBase {
       "when on how many litres globally page" - {
         "must navigate to third party packagers page when less than 1 million litres is selected" in {
           val result = navigator.nextPage(HowManyLitresGloballyPage, NormalMode,
-            UserAnswers("id", Json.obj(HowManyLitresGloballyPage.toString -> Large.toString)))
+            UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj(HowManyLitresGloballyPage.toString -> Large.toString)))
           result mustBe routes.OperatePackagingSitesController.onPageLoad(NormalMode)
         }
 
         "must navigate to third party packagers page when less than less than 1 million litres is selected" in {
           val result = navigator.nextPage(HowManyLitresGloballyPage, NormalMode,
-            UserAnswers("id", Json.obj(HowManyLitresGloballyPage.toString -> Small.toString)))
+            UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj(HowManyLitresGloballyPage.toString -> Small.toString)))
           result mustBe routes.ThirdPartyPackagersController.onPageLoad(NormalMode)
         }
 
         "must navigate to third party packagers page when None is selected" in {
           val result = navigator.nextPage(HowManyLitresGloballyPage, NormalMode,
-            UserAnswers("id", Json.obj(HowManyLitresGloballyPage.toString -> HowManyLitresGlobally.None.toString)))
+            UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj(HowManyLitresGloballyPage.toString -> HowManyLitresGlobally.None.toString)))
           result mustBe routes.ContractPackingController.onPageLoad(NormalMode)
         }
 
         "must navigate to index controller page when no answer available in user answers" in {
           val result = navigator.nextPage(HowManyLitresGloballyPage, NormalMode,
-            UserAnswers("id", Json.obj()))
+            UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj()))
           result mustBe routes.IndexController.onPageLoad
         }
 
@@ -103,13 +103,13 @@ class NavigatorSpec extends SpecBase {
       "when on how many third party packagers page" - {
         "must navigate to operate packaging sites page when yes is selected" in {
           val result = navigator.nextPage(ThirdPartyPackagersPage, NormalMode,
-            UserAnswers("id", Json.obj(ThirdPartyPackagersPage.toString -> true)))
+            UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj(ThirdPartyPackagersPage.toString -> true)))
           result mustBe routes.OperatePackagingSitesController.onPageLoad(NormalMode)
         }
 
         "must navigate to operate packaging sites page when no is selected" in {
           val result = navigator.nextPage(ThirdPartyPackagersPage, NormalMode,
-            UserAnswers("id", Json.obj(ThirdPartyPackagersPage.toString -> false)))
+            UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj(ThirdPartyPackagersPage.toString -> false)))
           result mustBe routes.OperatePackagingSitesController.onPageLoad(NormalMode)
         }
       }
@@ -117,13 +117,13 @@ class NavigatorSpec extends SpecBase {
       "when on operate packaging sites page" - {
         "must navigate to how many litres will be packaged in next 12 months when yes is selected" in {
           val result = navigator.nextPage(OperatePackagingSitesPage, NormalMode,
-            UserAnswers("id", Json.obj(OperatePackagingSitesPage.toString -> true)))
+            UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj(OperatePackagingSitesPage.toString -> true)))
           result mustBe routes.HowManyOperatePackagingSitesController.onPageLoad(NormalMode)
         }
 
         "must navigate to third party or co packing when no is selected" in {
           val result = navigator.nextPage(OperatePackagingSitesPage, NormalMode,
-            UserAnswers("id", Json.obj(OperatePackagingSitesPage.toString -> false)))
+            UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj(OperatePackagingSitesPage.toString -> false)))
           result mustBe routes.ContractPackingController.onPageLoad(NormalMode)
         }
       }
@@ -131,13 +131,13 @@ class NavigatorSpec extends SpecBase {
       "when on Start Date page" - {
         "must navigate to pack at business address when yes is selected" in {
           val result = navigator.nextPage(StartDatePage, NormalMode,
-            UserAnswers("id", Json.obj(StartDatePage.toString -> LocalDate.of(2017, 9, 23))))
+            UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj(StartDatePage.toString -> LocalDate.of(2017, 9, 23))))
           result mustBe routes.PackAtBusinessAddressController.onPageLoad(NormalMode)
         }
 
         "must navigate to pack at business address when no is selected" in {
           val result = navigator.nextPage(StartDatePage, NormalMode,
-            UserAnswers("id", Json.obj(StartDatePage.toString -> LocalDate.of(2017, 9, 23))))
+            UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj(StartDatePage.toString -> LocalDate.of(2017, 9, 23))))
           result mustBe routes.PackAtBusinessAddressController.onPageLoad(NormalMode)
         }
       }
@@ -146,7 +146,7 @@ class NavigatorSpec extends SpecBase {
 
         "must navigate to third party of co-packing in case of valid litreage" in {
           val result = navigator.nextPage(HowManyOperatePackagingSitesPage, NormalMode,
-            UserAnswers("id", Json.obj(HowManyOperatePackagingSitesPage.toString -> Json.obj("lowBand"-> "123" , "highBand"-> "123"))))
+            UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj(HowManyOperatePackagingSitesPage.toString -> Json.obj("lowBand"-> "123" , "highBand"-> "123"))))
           result mustBe routes.ContractPackingController.onPageLoad(NormalMode)
         }
       }
@@ -154,13 +154,13 @@ class NavigatorSpec extends SpecBase {
       "when on contract packing page" - {
         "must navigate to how many litres contract packing in next 12 months when yes is selected" in {
           val result = navigator.nextPage(ContractPackingPage, NormalMode,
-            UserAnswers("id", Json.obj(ContractPackingPage.toString -> true)))
+            UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj(ContractPackingPage.toString -> true)))
           result mustBe routes.HowManyContractPackingController.onPageLoad(NormalMode)
         }
 
         "must navigate to imports when no is selected" in {
           val result = navigator.nextPage(ContractPackingPage, NormalMode,
-            UserAnswers("id", Json.obj(ContractPackingPage.toString -> false)))
+            UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj(ContractPackingPage.toString -> false)))
           result mustBe routes.ImportsController.onPageLoad(NormalMode)
         }
       }
@@ -168,7 +168,7 @@ class NavigatorSpec extends SpecBase {
       "when on contract packer in the next 12 months page" - {
         "must navigate to imports page in case of valid litreage" in {
           val result = navigator.nextPage(HowManyContractPackingPage, NormalMode,
-            UserAnswers("id", Json.obj(HowManyContractPackingPage.toString -> Json.obj("lowBand" -> "123", "highBand" -> "123"))))
+            UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj(HowManyContractPackingPage.toString -> Json.obj("lowBand" -> "123", "highBand" -> "123"))))
           result mustBe routes.ImportsController.onPageLoad(NormalMode)
         }
       }
@@ -180,19 +180,19 @@ class NavigatorSpec extends SpecBase {
       "must go from a page that doesn't exist in the edit route map to CheckYourAnswers" in {
 
         case object UnknownPage extends Page
-        navigator.nextPage(UnknownPage, CheckMode, UserAnswers("id")) mustBe routes.CheckYourAnswersController.onPageLoad
+        navigator.nextPage(UnknownPage, CheckMode, UserAnswers("id", RegisterState.RegisterWithAuthUTR)) mustBe routes.CheckYourAnswersController.onPageLoad
       }
 
       "when on organisation type page" - {
         "must navigate to cannot register partnership page in check mode" in {
           val result = navigator.nextPage(OrganisationTypePage, CheckMode,
-            UserAnswers("id", Json.obj(OrganisationTypePage.toString -> Partnership.toString)))
+            UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj(OrganisationTypePage.toString -> Partnership.toString)))
           result mustBe routes.CannotRegisterPartnershipController.onPageLoad
         }
 
         "must navigate to check your answers page in check mode" in {
           val result = navigator.nextPage(OrganisationTypePage, CheckMode,
-            UserAnswers("id", Json.obj(OrganisationTypePage.toString -> LimitedCompany.toString)))
+            UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj(OrganisationTypePage.toString -> LimitedCompany.toString)))
           result mustBe routes.CheckYourAnswersController.onPageLoad
         }
       }
@@ -200,25 +200,25 @@ class NavigatorSpec extends SpecBase {
       "when on how many litres globally page" - {
         "must navigate to third party packagers page when less than 1 million litres is selected in check mode" in {
           val result = navigator.nextPage(HowManyLitresGloballyPage, CheckMode,
-            UserAnswers("id", Json.obj(HowManyLitresGloballyPage.toString -> Large.toString)))
+            UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj(HowManyLitresGloballyPage.toString -> Large.toString)))
           result mustBe routes.OperatePackagingSitesController.onPageLoad(CheckMode)
         }
 
         "must navigate to third party packagers page when less than less than 1 million litres is selected in check mode" in {
           val result = navigator.nextPage(HowManyLitresGloballyPage, CheckMode,
-            UserAnswers("id", Json.obj(HowManyLitresGloballyPage.toString -> Small.toString)))
+            UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj(HowManyLitresGloballyPage.toString -> Small.toString)))
           result mustBe routes.ThirdPartyPackagersController.onPageLoad(CheckMode)
         }
 
         "must navigate to third party packagers page when None is selected in check mode" in {
           val result = navigator.nextPage(HowManyLitresGloballyPage, CheckMode,
-            UserAnswers("id", Json.obj(HowManyLitresGloballyPage.toString -> HowManyLitresGlobally.None.toString)))
+            UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj(HowManyLitresGloballyPage.toString -> HowManyLitresGlobally.None.toString)))
           result mustBe routes.ContractPackingController.onPageLoad(CheckMode)
         }
 
         "must navigate to index controller page when no answer available in user answers" in {
           val result = navigator.nextPage(HowManyLitresGloballyPage, CheckMode,
-            UserAnswers("id", Json.obj()))
+            UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj()))
           result mustBe routes.IndexController.onPageLoad
         }
       }
@@ -226,13 +226,13 @@ class NavigatorSpec extends SpecBase {
       "when on how many third party packagers page" - {
         "must navigate to operate packaging sites page when yes is selected" in {
           val result = navigator.nextPage(ThirdPartyPackagersPage, CheckMode,
-            UserAnswers("id", Json.obj(ThirdPartyPackagersPage.toString -> true)))
+            UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj(ThirdPartyPackagersPage.toString -> true)))
           result mustBe routes.CheckYourAnswersController.onPageLoad
         }
 
         "must navigate to operate packaging sites page when no is selected" in {
           val result = navigator.nextPage(ThirdPartyPackagersPage, CheckMode,
-            UserAnswers("id", Json.obj(ThirdPartyPackagersPage.toString -> false)))
+            UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj(ThirdPartyPackagersPage.toString -> false)))
           result mustBe routes.CheckYourAnswersController.onPageLoad
         }
       }
@@ -240,13 +240,13 @@ class NavigatorSpec extends SpecBase {
       "when on operate packaging sites page" - {
         "must navigate to how many litres will be packaged in next 12 months when yes is selected" in {
           val result = navigator.nextPage(OperatePackagingSitesPage, CheckMode,
-            UserAnswers("id", Json.obj(OperatePackagingSitesPage.toString -> true)))
+            UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj(OperatePackagingSitesPage.toString -> true)))
           result mustBe routes.HowManyOperatePackagingSitesController.onPageLoad(CheckMode)
         }
 
         "must navigate to check your answers when no is selected" in {
           val result = navigator.nextPage(OperatePackagingSitesPage, CheckMode,
-            UserAnswers("id", Json.obj(OperatePackagingSitesPage.toString -> false)))
+            UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj(OperatePackagingSitesPage.toString -> false)))
           result mustBe routes.CheckYourAnswersController.onPageLoad
         }
       }
@@ -254,7 +254,7 @@ class NavigatorSpec extends SpecBase {
       "when on operate how many own brands in the next 12 months page" - {
         "must navigate to check your answers controller in case of valid litreage" in {
           val result = navigator.nextPage(HowManyOperatePackagingSitesPage, CheckMode,
-            UserAnswers("id", Json.obj(HowManyOperatePackagingSitesPage.toString -> Json.obj("lowBand" -> "123", "highBand" -> "123"))))
+            UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj(HowManyOperatePackagingSitesPage.toString -> Json.obj("lowBand" -> "123", "highBand" -> "123"))))
           result mustBe routes.CheckYourAnswersController.onPageLoad
         }
       }
@@ -262,13 +262,13 @@ class NavigatorSpec extends SpecBase {
       "when on contract packing sites page" - {
         "must navigate to how many litres will be packaged in next 12 months when yes is selected" in {
           val result = navigator.nextPage(ContractPackingPage, CheckMode,
-            UserAnswers("id", Json.obj(ContractPackingPage.toString -> true)))
+            UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj(ContractPackingPage.toString -> true)))
           result mustBe routes.HowManyContractPackingController.onPageLoad(CheckMode)
         }
 
         "must navigate to check your answers when no is selected" in {
           val result = navigator.nextPage(ContractPackingPage, CheckMode,
-            UserAnswers("id", Json.obj(ContractPackingPage.toString -> false)))
+            UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj(ContractPackingPage.toString -> false)))
           result mustBe routes.CheckYourAnswersController.onPageLoad
         }
       }
@@ -276,7 +276,7 @@ class NavigatorSpec extends SpecBase {
       "when on contract packing how many litres in the next 12 months page" - {
         "must navigate to check your answers controller in case of valid litreage" in {
           val result = navigator.nextPage(HowManyContractPackingPage, CheckMode,
-            UserAnswers("id", Json.obj(HowManyContractPackingPage.toString -> Json.obj("lowBand" -> "123", "highBand" -> "123"))))
+            UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj(HowManyContractPackingPage.toString -> Json.obj("lowBand" -> "123", "highBand" -> "123"))))
           result mustBe routes.CheckYourAnswersController.onPageLoad
         }
       }

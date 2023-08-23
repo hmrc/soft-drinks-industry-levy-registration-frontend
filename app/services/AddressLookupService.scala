@@ -124,7 +124,7 @@ class AddressLookupService @Inject()(
           timeoutUrl = controllers.auth.routes.AuthController.signOut.url,
           timeoutKeepAliveUrl = Some(routes.KeepAliveController.keepAlive.url)
         )),
-        serviceHref = Some(routes.IndexController.onPageLoad.url),
+        serviceHref = Some(routes.RegistrationController.start.url),
         pageHeadingStyle = Some("govuk-heading-m")
       ),
       labels = returnJourneyLabels(state),

@@ -110,7 +110,7 @@ trait ITCoreTestData extends TryValues {
   val defaultCall = routes.IndexController.onPageLoad
 
   implicit val duration = 5.seconds
-  def emptyUserAnswers = UserAnswers(identifier, Json.obj())
+  def emptyUserAnswers = UserAnswers(identifier, RegisterState.RegisterWithAuthUTR, Json.obj())
 
   def packagingSite1 = Site(
     UkAddress(List("33 Rhes Priordy", "East London"), "E73 2RP"),

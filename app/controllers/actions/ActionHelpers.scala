@@ -16,10 +16,12 @@
 
 package controllers.actions
 
+import controllers.routes._
+import models.RegisterState._
+import models.{NormalMode, RegisterState}
 import uk.gov.hmrc.auth.core.AffinityGroup.Agent
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals._
-import uk.gov.hmrc.auth.core.{AffinityGroup, Assistant, CredentialRole, EnrolmentIdentifier, Enrolments}
-
+import uk.gov.hmrc.auth.core._
 trait ActionHelpers {
 
   val registrationRetrieval = allEnrolments and credentialRole and internalId and affinityGroup
@@ -50,5 +52,15 @@ trait ActionHelpers {
     val isNotAssistant = credentialRole.fold(true)(_ != Assistant)
     lazy val validAffinityGroup = affinityGroup.fold(false)(_ != Agent)
     isNotAssistant && validAffinityGroup
+  }
+}
+
+object ActionHelpers extends ActionHelpers {
+  def getRouteForRegisterState(registerState: RegisterState) = registerState match {
+    case RequiresBusinessDetails => EnterBusinessDetailsController.onPageLoad(NormalMode)
+    case AlreadyRegistered => AlreadyRegisteredController.onPageLoad
+    case RegisterApplicationAccepted => IndexController.onPageLoad
+    case RegistrationPending => RegistrationPendingController.onPageLoad
+    case _ => VerifyController.onPageLoad(NormalMode)
   }
 }

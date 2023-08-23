@@ -21,7 +21,7 @@ import errors.SessionDatabaseInsertError
 import forms.VerifyFormProvider
 import helpers.LoggerHelper
 import models.Verify.{No, YesNewAddress, YesRegister}
-import models.{NormalMode, UserAnswers, Verify}
+import models.{NormalMode, RegisterState, UserAnswers, Verify}
 import navigation.{FakeNavigator, Navigator}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
@@ -70,7 +70,7 @@ class VerifyControllerSpec extends SpecBase with MockitoSugar with LoggerHelper 
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(identifier).set(VerifyPage, Verify.values.head).success.value
+      val userAnswers = UserAnswers(identifier, RegisterState.RegisterWithAuthUTR).set(VerifyPage, Verify.values.head).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 

@@ -54,7 +54,7 @@ class AuthenticatedIdentifierAction @Inject()(
           val maybeUtr = getUtr(enrolments)
           val maybeSdil = getSdilEnrolment(enrolments)
           (maybeUtr, maybeSdil) match {
-            case (Some(utr), _) => handleUserWithUTR(internalId, utr, maybeSdil.isDefined, hasCTEnrolment(enrolments))
+            case (Some(utr), _) => handleUserWithUTR(internalId, utr, hasCTEnrolment(enrolments))
             case (None, Some(sdil)) => handleUserWithNoUTRAndSDILEnrolment(internalId, sdil, hasCTEnrolment(enrolments))
             case _ if hasValidRoleAndAffinityGroup(role, affinity) =>
               Future.successful(Right(IdentifierRequest(request, internalId, hasCTEnrolment(enrolments), None)))
@@ -69,21 +69,23 @@ class AuthenticatedIdentifierAction @Inject()(
     }
   }
 
-  private def handleUserWithUTR[A](internalId: String, utr: String, hasSdilEnrolment: Boolean, hasCTEnrolment: Boolean)
+  private def handleUserWithUTR[A](internalId: String, utr: String, hasCTEnrolment: Boolean)
                                   (implicit hc: HeaderCarrier, request: Request[A]): Future[Either[Result, IdentifierRequest[A]]] = {
-    sdilConnector.retrieveSubscription(utr, "utr", internalId).flatMap {
-      case Some(sub) if sub.deregDate.isEmpty =>
+    sdilConnector.retrieveSubscription(utr, "utr", internalId).value.flatMap {
+      case Right(Some(sub)) if sub.deregDate.isEmpty =>
         Future.successful(Left(Redirect(config.sdilFrontendBaseUrl)))
-      case _ =>
+      case Right(_) =>
         Future.successful(Right(IdentifierRequest(request, internalId, hasCTEnrolment, Some(utr))))
+      case Left(_) => Future.successful(Left(InternalServerError(errorHandler.internalServerErrorTemplate(request))))
     }
   }
 
   private def handleUserWithNoUTRAndSDILEnrolment[A](internalId: String, sdil: EnrolmentIdentifier, hasCTEnrolment: Boolean)
                                  (implicit hc: HeaderCarrier, request: Request[A]): Future[Either[Result, IdentifierRequest[A]]] = {
-      sdilConnector.retrieveSubscription(sdil.value, "sdil", internalId).map{
-        case Some(sub) if sub.deregDate.nonEmpty => Right(IdentifierRequest(request, internalId, hasCTEnrolment, None))
-        case _ => Left(Redirect(config.sdilFrontendBaseUrl))
+      sdilConnector.retrieveSubscription(sdil.value, "sdil", internalId).value.map{
+        case Right(Some(sub)) if sub.deregDate.nonEmpty => Right(IdentifierRequest(request, internalId, hasCTEnrolment, None))
+        case Right(_) => Left(Redirect(config.sdilFrontendBaseUrl))
+        case Left(_) => Left(InternalServerError(errorHandler.internalServerErrorTemplate(request)))
       }
   }
 }

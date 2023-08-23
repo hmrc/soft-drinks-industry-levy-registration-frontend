@@ -21,4 +21,5 @@ import play.api.mvc.{Request, WrappedRequest}
 case class IdentifierRequest[A] (request: Request[A],
                                  internalId: String,
                                  hasCTEnrolment: Boolean = false,
-                                 utr: Option[String] = None) extends WrappedRequest[A](request)
+                                 optUTR: Option[String] = None,
+                                 optSDILRef: Option[String] = None) extends WrappedRequest[A](request)

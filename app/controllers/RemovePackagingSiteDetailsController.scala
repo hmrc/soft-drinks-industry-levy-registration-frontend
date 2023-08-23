@@ -37,9 +37,7 @@ class RemovePackagingSiteDetailsController @Inject()(
                                        override val messagesApi: MessagesApi,
                                        val sessionService: SessionService,
                                        val navigator: Navigator,
-                                       identify: IdentifierAction,
-                                       getData: DataRetrievalAction,
-                                       requireData: DataRequiredAction,
+                                       controllerActions: ControllerActions,
                                        formProvider: RemovePackagingSiteDetailsFormProvider,
                                        val controllerComponents: MessagesControllerComponents,
                                        view: RemovePackagingSiteDetailsView,
@@ -55,7 +53,7 @@ class RemovePackagingSiteDetailsController @Inject()(
       .map(packagingSite => AddressFormattingHelper.addressFormatting(packagingSite.address, packagingSite.tradingName))
   }
 
-  def onPageLoad(ref: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(ref: String): Action[AnyContent] = controllerActions.withUserWhoCanRegister {
     implicit request =>
       getPackagingSiteAddressBaseOnRef(ref, request.userAnswers) match {
         case None =>
@@ -72,7 +70,7 @@ class RemovePackagingSiteDetailsController @Inject()(
       }
   }
 
-  def onSubmit(ref: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onSubmit(ref: String): Action[AnyContent] = controllerActions.withUserWhoCanRegister.async {
     implicit request =>
       def removePackagingDetailsFromUserAnswers(userSelection: Boolean, userAnswers: UserAnswers, refOfSite: String): UserAnswers = {
         if (userSelection) {

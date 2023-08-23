@@ -18,7 +18,7 @@ package base
 
 import models.Verify.YesRegister
 import models.backend.{Activity, Site, Subscription, UkAddress}
-import models.{Contact, ContactDetails, HowManyLitresGlobally, Litreage, LitresInBands, OrganisationType, UserAnswers, Warehouse}
+import models.{Contact, ContactDetails, HowManyLitresGlobally, Litreage, LitresInBands, OrganisationType, RegisterState, UserAnswers, Warehouse}
 import pages._
 import play.api.libs.json.Json
 
@@ -59,7 +59,7 @@ trait RegistrationSubscriptionHelper extends SpecBase {
     utr, orgName, "1", address, activityWithLitres, userAnswerDate, Seq(PackagingSite1), Seq(Site.fromWarehouse(warehouse)), contact
   )
 
-  val userAnswerTwoWarehouses: UserAnswers = UserAnswers(sdilNumber, Json.obj(), warehouseList = warehouses)
+  val userAnswerTwoWarehouses: UserAnswers = UserAnswers(sdilNumber, RegisterState.RegisterWithAuthUTR, Json.obj(), warehouseList = warehouses)
 
   def userAnswersWithPagesAcrossAllProducerTypes(orgType: OrganisationType,
                                      litresGlobally: HowManyLitresGlobally,

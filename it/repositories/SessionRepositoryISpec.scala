@@ -1,7 +1,7 @@
 package repositories
 
 import models.backend.{Site, UkAddress}
-import models.{SmallProducer, UserAnswers, Warehouse}
+import models.{RegisterState, SmallProducer, UserAnswers, Warehouse}
 import org.mongodb.scala.bson.BsonDocument
 import org.mongodb.scala.model.{IndexModel, IndexOptions, Indexes}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
@@ -49,7 +49,7 @@ class SessionRepositoryISpec
     "must set the last updated time on the supplied user answers to `now`, and save them" in {
       val alfId: String = "bar"
       val userAnswersBefore = UserAnswers(
-        "id", Json.obj("foo" -> "bar"),
+        "id", RegisterState.RegisterWithAuthUTR, Json.obj("foo" -> "bar"),
         Some(UkAddress(List("line 1", "line 2", "line 3", "line 4"), "aa1 1aa", alfId = Some(alfId))),
         lastUpdated = Instant.ofEpochSecond(1)
       )
@@ -73,7 +73,7 @@ class SessionRepositoryISpec
 
     "correctly encrypt the records data" in {
       val alfId: String = "bar"
-      val userAnswersBefore = UserAnswers("id",
+      val userAnswersBefore = UserAnswers("id", RegisterState.RegisterWithAuthUTR,
         Json.obj("foo" -> "bar"),
         Some(UkAddress(List("Line 1", "Line 2", "Line 3", "Line 4"),"aa1 1aa", alfId = Some(alfId))),
         List(SmallProducer("foo", "bar", (1,1))),
@@ -118,7 +118,7 @@ class SessionRepositoryISpec
 
       "must update the lastUpdated time and get the record" in {
         val alfId: String = "bar"
-        val userAnswersBefore = UserAnswers("id", Json.obj("foo" -> "bar"),
+        val userAnswersBefore = UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj("foo" -> "bar"),
           Some(UkAddress(List("Line 1", "Line 2", "Line 3", "Line 4"),"aa1 1aa", alfId = Some(alfId))),
           lastUpdated = Instant.ofEpochSecond(1)
         )
@@ -154,7 +154,7 @@ class SessionRepositoryISpec
 
     "must remove a record" in {
       val alfId: String = "bar"
-      val userAnswersBefore = UserAnswers("id", Json.obj("foo" -> "bar"),
+      val userAnswersBefore = UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj("foo" -> "bar"),
         Some(UkAddress(List("Line 1", "Line 2", "Line 3", "Line 4"),"aa1 1aa", alfId = Some(alfId))),
         lastUpdated = Instant.ofEpochSecond(1)
       )
@@ -179,7 +179,7 @@ class SessionRepositoryISpec
 
       "must update its lastUpdated to `now` and return true" in {
         val alfId: String = "bar"
-        val userAnswersBefore = UserAnswers("id", Json.obj("foo" -> "bar"),
+        val userAnswersBefore = UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj("foo" -> "bar"),
           Some(UkAddress(List("Line 1", "Line 2", "Line 3", "Line 4"),"aa1 1aa", alfId = Some(alfId))),
           lastUpdated = Instant.ofEpochSecond(1)
         )

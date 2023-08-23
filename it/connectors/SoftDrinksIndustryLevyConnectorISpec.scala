@@ -1,6 +1,7 @@
 package connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock.{get, status, stubFor, urlPathMatching}
+import errors.UnexpectedResponseFromSDIL
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.http.Status.{ACCEPTED, INTERNAL_SERVER_ERROR, NOT_FOUND, OK}
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
@@ -17,24 +18,24 @@ class SoftDrinksIndustryLevyConnectorISpec extends Specifications with TestConfi
       given.sdilBackend.checkPendingQueueRegistered("utr")
 
       val response = connector.checkPendingQueue("utr")
-      whenReady(response) { res =>
-        res shouldBe Registered
+      whenReady(response.value) { res =>
+        res shouldBe Right(Registered)
       }
     }
     s"should return $Pending when $ACCEPTED returned" in {
       given.sdilBackend.checkPendingQueuePending("utr")
 
       val response = connector.checkPendingQueue("utr")
-      whenReady(response) { res =>
-        res shouldBe Pending
+      whenReady(response.value) { res =>
+        res shouldBe Right(Pending)
       }
     }
     s"should return $DoesNotExist when $NOT_FOUND in" in {
       given.sdilBackend.checkPendingQueueDoesntExist("utr")
 
       val response = connector.checkPendingQueue("utr")
-      whenReady(response) { res =>
-        res shouldBe DoesNotExist
+      whenReady(response.value) { res =>
+        res shouldBe Right(DoesNotExist)
       }
     }
     s"should throw exception when other status returned" in {
@@ -43,7 +44,10 @@ class SoftDrinksIndustryLevyConnectorISpec extends Specifications with TestConfi
           urlPathMatching(s"/check-enrolment-status/utr"))
           .willReturn(status(INTERNAL_SERVER_ERROR))
       )
-        intercept[Exception](await(connector.checkPendingQueue("utr")))
+      val response = connector.checkPendingQueue("utr")
+      whenReady(response.value) { res =>
+        res shouldBe Left(UnexpectedResponseFromSDIL)
+      }
     }
   }
 }

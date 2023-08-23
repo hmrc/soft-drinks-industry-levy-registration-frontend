@@ -19,24 +19,28 @@ package controllers
 import com.google.inject.Inject
 import controllers.actions.IdentifierAction
 import handlers.ErrorHandler
-import models.{NormalMode, UserAnswers}
+import models.NormalMode
+import models.RegisterState._
+import orchestrators.RegistrationOrchestrator
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.SessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import scala.concurrent.ExecutionContext
 
 class RegistrationController @Inject()(identify: IdentifierAction,
-                                        sessionService: SessionService,
+                                       registrationOrchestrator: RegistrationOrchestrator,
                                         val controllerComponents: MessagesControllerComponents,
                                         errorHandler: ErrorHandler
                                           )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
   def start: Action[AnyContent] = identify.async {
     implicit request =>
-      val defaultUserAnswers = new UserAnswers(request.internalId)
-      sessionService.set(defaultUserAnswers).value.map{
+      registrationOrchestrator.handleRegistrationRequest.value.map{
+        case Right(RegistrationPending) => Redirect(routes.RegistrationPendingController.onPageLoad)
+        case Right(RequiresBusinessDetails) => Redirect(routes.EnterBusinessDetailsController.onPageLoad(NormalMode))
+        case Right(AlreadyRegistered) => Redirect(routes.AlreadyRegisteredController.onPageLoad)
+        case Right(RegisterApplicationAccepted) => Redirect(routes.IndexController.onPageLoad)
         case Right(_) => Redirect(routes.VerifyController.onPageLoad(NormalMode))
         case Left(_) => InternalServerError(errorHandler.internalServerErrorTemplate)
       }

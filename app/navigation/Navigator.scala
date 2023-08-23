@@ -39,10 +39,10 @@ class Navigator @Inject()() {
     case VerifyPage => _ => routes.OrganisationTypeController.onPageLoad(NormalMode)
     case RemovePackagingSiteDetailsPage => _ => routes.PackagingSiteDetailsController.onPageLoad(NormalMode)
     case EnterBusinessDetailsPage => _ => routes.VerifyController.onPageLoad(NormalMode)
-    case WarehouseDetailsPage => _ => routes.IndexController.onPageLoad
+    case WarehouseDetailsPage => _ => routes.ContactDetailsController.onPageLoad(NormalMode)
     case RemoveWarehouseDetailsPage => _ => routes.WarehouseDetailsController.onPageLoad(NormalMode)
     case ContactDetailsPage => _ => routes.CheckYourAnswersController.onPageLoad
-    case PackAtBusinessAddressPage => _ => routes.IndexController.onPageLoad
+    case PackAtBusinessAddressPage => _ => routes.PackagingSiteDetailsController.onPageLoad(NormalMode)
     case ContractPackingPage => userAnswers => navigationForContractPacking(userAnswers, NormalMode)
     case HowManyContractPackingPage => _ => routes.ImportsController.onPageLoad(NormalMode)
     case ImportsPage => userAnswers => navigationForImports(userAnswers, NormalMode)
@@ -50,11 +50,11 @@ class Navigator @Inject()() {
     case OperatePackagingSitesPage => userAnswers => navigationForOperatePackagingSites(userAnswers, NormalMode)
     case HowManyOperatePackagingSitesPage => _ => routes.ContractPackingController.onPageLoad(NormalMode)
     case ThirdPartyPackagersPage => _ => routes.OperatePackagingSitesController.onPageLoad(NormalMode)
-    case PackagingSiteDetailsPage => _ => routes.IndexController.onPageLoad
+    case PackagingSiteDetailsPage => _ => routes.AskSecondaryWarehousesController.onPageLoad(NormalMode)
     case StartDatePage => userAnswers => navigationForStartDate(userAnswers, NormalMode)
     case OrganisationTypePage => userAnswers => navigationForOrganisationType(userAnswers, NormalMode)
     case HowManyLitresGloballyPage => userAnswers => navigationForHowManyLitresGloballyNormalMode(userAnswers)
-    case _ => _ => routes.IndexController.onPageLoad
+    case _ => _ => routes.RegistrationController.start
   }
 
   private val checkRouteMap: Page => UserAnswers => Option[String] => Call = {
@@ -81,7 +81,7 @@ class Navigator @Inject()() {
       case (_, Some(HowManyLitresGlobally.None)) =>
         routes.ContractPackingController.onPageLoad(CheckMode)
       case (_, _) =>
-        routes.IndexController.onPageLoad
+        routes.RegistrationController.start
     }
   }
 
@@ -94,7 +94,7 @@ class Navigator @Inject()() {
       case Some(litres) if litres == HowManyLitresGlobally.None =>
         routes.ContractPackingController.onPageLoad(NormalMode)
       case _ =>
-        routes.IndexController.onPageLoad
+        routes.RegistrationController.start
     }
   }
 

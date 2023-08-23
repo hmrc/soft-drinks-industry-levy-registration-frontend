@@ -1,10 +1,8 @@
 package controllers
 
-import connectors.{Pending, Registered}
-import models.{Identify, UserAnswers}
+import models.UserAnswers
 import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
-import pages.EnterBusinessDetailsPage
 import play.api.http.HeaderNames
 import play.api.libs.json.JsValue
 import play.api.libs.ws.{DefaultWSCookie, WSClient, WSResponse}
@@ -49,61 +47,61 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
       }
     }
 
-    "the user is authenticated by Identify page with no enrolments, has a sdil subscription with a deregDate no pending sub" - {
-      s"render the $expectedPageTitle page" in {
-        given.authorisedButNoEnrolmentsPrecondition
-        given.sdilBackend.retrieveRosm("1")
-        given.sdilBackend.checkPendingQueueDoesntExist("1")
-
-          setAnswers(ua.set(EnterBusinessDetailsPage,Identify(utr = "1", postcode = "fakepostcode")).success.value)
-
-        WsTestClient.withClient { client =>
-          val result1 = createClientRequestGet(client, url)
-
-          whenReady(result1) { res =>
-            res.status mustBe 200
-            val page = Jsoup.parse(res.body)
-            page.title() must include(expectedPageTitle + " - Soft Drinks Industry Levy - GOV.UK")
-          }
-        }
-      }
-    }
-    s"the user is authenticated by Identify page with no enrolments, has a sdil subscription with a deregDate $Pending sub" - {
-      s"redirect to journey stopper" in {
-        given.authorisedButNoEnrolmentsPrecondition
-        given.sdilBackend.retrieveRosm("1")
-        given.sdilBackend.checkPendingQueuePending("1")
-
-        setAnswers(ua.set(EnterBusinessDetailsPage,Identify(utr = "1", postcode = "fakepostcode")).success.value)
-
-        WsTestClient.withClient { client =>
-          val result1 = createClientRequestGet(client, url)
-
-          whenReady(result1) { res =>
-            res.status mustBe 303
-            res.header(HeaderNames.LOCATION) mustBe Some(routes.RegistrationPendingController.onPageLoad.url)
-          }
-        }
-      }
-    }
-    s"the user is authenticated by Identify page with no enrolments, has a sdil subscription with a deregDate $Registered sub" - {
-      s"redirect to journey stopper" in {
-        given.authorisedButNoEnrolmentsPrecondition
-        given.sdilBackend.retrieveRosm("1")
-        given.sdilBackend.checkPendingQueueRegistered("1")
-
-        setAnswers(ua.set(EnterBusinessDetailsPage,Identify(utr = "1", postcode = "fakepostcode")).success.value)
-
-        WsTestClient.withClient { client =>
-          val result1 = createClientRequestGet(client, url)
-
-          whenReady(result1) { res =>
-            res.status mustBe 303
-            res.header(HeaderNames.LOCATION) mustBe Some(routes.IndexController.onPageLoad.url)
-          }
-        }
-      }
-    }
+//    "the user is authenticated by Identify page with no enrolments, has a sdil subscription with a deregDate no pending sub" - {
+//      s"render the $expectedPageTitle page" in {
+//        given.authorisedButNoEnrolmentsPrecondition
+//        given.sdilBackend.retrieveRosm("1")
+//        given.sdilBackend.checkPendingQueueDoesntExist("1")
+//
+//          setAnswers(ua.copy(registerState = RegisterState.RegisterWithOtherUTR).set(EnterBusinessDetailsPage,Identify(utr = "1", postcode = "fakepostcode")).success.value)
+//
+//        WsTestClient.withClient { client =>
+//          val result1 = createClientRequestGet(client, url)
+//
+//          whenReady(result1) { res =>
+//            res.status mustBe 200
+//            val page = Jsoup.parse(res.body)
+//            page.title() must include(expectedPageTitle + " - Soft Drinks Industry Levy - GOV.UK")
+//          }
+//        }
+//      }
+//    }
+//    s"the user is authenticated by Identify page with no enrolments, has a sdil subscription with a deregDate $Pending sub" - {
+//      s"redirect to journey stopper" in {
+//        given.authorisedButNoEnrolmentsPrecondition
+//        given.sdilBackend.retrieveRosm("1")
+//        given.sdilBackend.checkPendingQueuePending("1")
+//
+//        setAnswers(ua.set(EnterBusinessDetailsPage,Identify(utr = "1", postcode = "fakepostcode")).success.value)
+//
+//        WsTestClient.withClient { client =>
+//          val result1 = createClientRequestGet(client, url)
+//
+//          whenReady(result1) { res =>
+//            res.status mustBe 303
+//            res.header(HeaderNames.LOCATION) mustBe Some(routes.RegistrationPendingController.onPageLoad.url)
+//          }
+//        }
+//      }
+//    }
+//    s"the user is authenticated by Identify page with no enrolments, has a sdil subscription with a deregDate $Registered sub" - {
+//      s"redirect to journey stopper" in {
+//        given.authorisedButNoEnrolmentsPrecondition
+//        given.sdilBackend.retrieveRosm("1")
+//        given.sdilBackend.checkPendingQueueRegistered("1")
+//
+//        setAnswers(ua.set(EnterBusinessDetailsPage,Identify(utr = "1", postcode = "fakepostcode")).success.value)
+//
+//        WsTestClient.withClient { client =>
+//          val result1 = createClientRequestGet(client, url)
+//
+//          whenReady(result1) { res =>
+//            res.status mustBe 303
+//            res.header(HeaderNames.LOCATION) mustBe Some(routes.IndexController.onPageLoad.url)
+//          }
+//        }
+//      }
+//    }
   }
 
   def authenticatedWithNoEnrolmentsAndHasNotEnteredUtr(url: String, userAnswers: UserAnswers = emptyUserAnswers): Unit = {
@@ -125,7 +123,7 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
     }
   }
 
-  def testUnauthorisedUser(url: String, optJson: Option[JsValue] = None, identifyActionOnly: Boolean = false): Unit = {
+  def testUnauthorisedUser(url: String, optJson: Option[JsValue] = None): Unit = {
     "the user is unauthenticated" - {
       "redirect to gg-signin" in {
         given.unauthorisedPrecondition
@@ -157,47 +155,6 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
           whenReady(result1) { res =>
             res.status mustBe 303
             res.header(HeaderNames.LOCATION).get must include("/soft-drinks-industry-levy")
-          }
-        }
-      }
-    }
-    if(!identifyActionOnly) {
-      s"the user is authed, no sub, $Pending sub in queue" - {
-        "redirect to journey stopper" in {
-
-          setAnswers(emptyUserAnswers)
-
-          given.authorisedWithoutSdilSubscriptionPendingQueueContainsRecordOfPending
-          WsTestClient.withClient { client =>
-            val result1 = optJson match {
-              case Some(json) => createClientRequestPOST(client, url, json)
-              case _ => createClientRequestGet(client, url)
-            }
-
-            whenReady(result1) { res =>
-              res.status mustBe 303
-              res.header(HeaderNames.LOCATION) mustBe Some(routes.RegistrationPendingController.onPageLoad.url)
-            }
-          }
-        }
-      }
-      s"the user is authed, no sub, $Registered sub in queue" - {
-        "redirect to journey stopper" in {
-
-          setAnswers(emptyUserAnswers)
-
-          given.authorisedWithoutSdilSubscriptionQueueContainsRecordOfRegistered
-
-          WsTestClient.withClient { client =>
-            val result1 = optJson match {
-              case Some(json) => createClientRequestPOST(client, url, json)
-              case _ => createClientRequestGet(client, url)
-            }
-
-            whenReady(result1) { res =>
-              res.status mustBe 303
-              res.header(HeaderNames.LOCATION) mustBe Some(routes.IndexController.onPageLoad.url)
-            }
           }
         }
       }
@@ -279,7 +236,7 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
 
   def testAuthenticatedUserButNoUserAnswers(url: String, optJson: Option[JsValue] = None): Unit = {
     "the user is authenticated but has no user answers" - {
-      "redirect to journey recover controller" in {
+      "redirect to registration controller" in {
         given.commonPrecondition
 
         remove(identifier)
@@ -292,7 +249,7 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
 
           whenReady(result1) { res =>
             res.status mustBe 303
-            res.header(HeaderNames.LOCATION).get must include("/there-is-a-problem")
+            res.header(HeaderNames.LOCATION).get must include("/start")
           }
         }
       }

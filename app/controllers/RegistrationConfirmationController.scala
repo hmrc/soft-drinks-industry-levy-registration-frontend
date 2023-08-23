@@ -32,14 +32,12 @@ import java.time.{LocalDateTime, ZoneId}
 
 class RegistrationConfirmationController @Inject()(
                                        override val messagesApi: MessagesApi,
-                                       identify: IdentifierAction,
-                                       getData: DataRetrievalAction,
-                                       requireData: DataRequiredAction,
+                                       controllerActions: ControllerActions,
                                        val controllerComponents: MessagesControllerComponents,
                                        view: RegistrationConfirmationView
                                      )(implicit config: FrontendAppConfig) extends FrontendBaseController with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad: Action[AnyContent] = controllerActions.withUserWhoCanRegister {
     implicit request =>
       (request.userAnswers.submittedOn, request.userAnswers.get(ContactDetailsPage)) match {
         case (Some(dtInstant), Some(contactDetails)) =>

@@ -17,17 +17,18 @@
 package orchestrators
 
 import cats.data.EitherT
+import cats.implicits._
 import com.google.inject.{Inject, Singleton}
-import connectors.SoftDrinksIndustryLevyConnector
+import connectors.{DoesNotExist, Pending, Registered, SoftDrinksIndustryLevyConnector}
+import errors.{AuthenticationError, MissingRequiredUserAnswers, NoROSMRegistration, RegistrationErrors}
+import models.RegisterState.{AlreadyRegistered, RegisterApplicationAccepted, RegisterWithAuthUTR, RegistrationPending, RequiresBusinessDetails}
 import models.backend.Subscription
-import models.requests.DataRequest
+import models.requests.{DataRequest, IdentifierRequest}
+import models.{RegisterState, RosmWithUtr, UserAnswers}
 import play.api.mvc.AnyContent
 import service.RegistrationResult
 import services.SessionService
 import uk.gov.hmrc.http.HeaderCarrier
-import cats.implicits._
-import errors.{MissingRequiredUserAnswers, RegistrationErrors}
-import models.{RosmWithUtr, UserAnswers}
 import utilities.GenericLogger
 
 import java.time.Instant
@@ -38,6 +39,50 @@ import scala.util.{Failure, Success, Try}
 class RegistrationOrchestrator @Inject()(sdilConnector: SoftDrinksIndustryLevyConnector,
                                          sessionService: SessionService,
                                          genericLogger: GenericLogger) {
+
+  def handleRegistrationRequest(implicit request: IdentifierRequest[AnyContent],
+                                hc: HeaderCarrier,
+                                ec: ExecutionContext): RegistrationResult[RegisterState] = {
+    val internalId = request.internalId
+    val registerState = (request.optUTR, request.optSDILRef) match {
+      case (Some(utr), None) => determineRegisterStateForUserWithUTROnly(utr, internalId).value
+      case (Some(utr), Some(_)) => determineRegisterStateForUserWithUTRAndSdilRef(utr, internalId).value
+      case _ => Future(Right(RequiresBusinessDetails))
+    }
+
+    for {
+      regState <- EitherT(registerState)
+      _ <- sessionService.set(UserAnswers(internalId, regState))
+    } yield regState
+
+  }
+
+  private def determineRegisterStateForUserWithUTROnly(utr: String, internalId: String)
+                                                      (implicit hc: HeaderCarrier,
+                                                       ec: ExecutionContext): RegistrationResult[RegisterState] = EitherT {
+    val subStatus = for {
+      _ <- sdilConnector.retreiveRosmSubscription(utr, internalId)
+      subscriptionStatus <- sdilConnector.checkPendingQueue(utr)
+    } yield subscriptionStatus
+
+    subStatus.value.map{
+      case Right(Pending) => Right(RegistrationPending)
+      case Right(Registered) => Right(RegisterApplicationAccepted)
+      case Right(DoesNotExist) => Right(RegisterWithAuthUTR)
+      case Left(NoROSMRegistration) => Right(RequiresBusinessDetails)
+      case Left(error) => Left(error)
+    }
+  }
+
+  private def determineRegisterStateForUserWithUTRAndSdilRef(utr: String, internalId: String)
+                                                            (implicit hc: HeaderCarrier,
+                                                             ec: ExecutionContext): RegistrationResult[RegisterState] = EitherT {
+    sdilConnector.retreiveRosmSubscription(utr, internalId).value.map {
+      case Right(_) => Right(AlreadyRegistered)
+      case Left(NoROSMRegistration) => Left(AuthenticationError)
+      case Left(error) => Left(error)
+    }
+  }
 
   def createSubscriptionAndUpdateUserAnswers(implicit request: DataRequest[AnyContent], hc: HeaderCarrier, ec: ExecutionContext): RegistrationResult[Unit] = {
     val submittedDateTime = Instant.now
@@ -50,8 +95,7 @@ class RegistrationOrchestrator @Inject()(sdilConnector: SoftDrinksIndustryLevyCo
     } yield created
   }
 
-  private def createSubscriptionFromUserAnswers(userAnswers: UserAnswers, rosmWithUtr: RosmWithUtr)
-                                               (implicit ec: ExecutionContext): Either[RegistrationErrors, Subscription] = {
+  private def createSubscriptionFromUserAnswers(userAnswers: UserAnswers, rosmWithUtr: RosmWithUtr): Either[RegistrationErrors, Subscription] = {
    Try {
      Subscription.generate(userAnswers, rosmWithUtr)
    } match {

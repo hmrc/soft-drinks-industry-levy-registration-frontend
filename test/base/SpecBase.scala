@@ -22,7 +22,7 @@ import controllers.actions._
 import controllers.routes
 import errors.RegistrationErrors
 import models.backend.{Site, UkAddress}
-import models.{Contact, IndividualDetails, LitresInBands, OrganisationDetails, RetrievedActivity, RetrievedSubscription, RosmRegistration, RosmWithUtr, UserAnswers, Warehouse}
+import models.{Contact, IndividualDetails, LitresInBands, OrganisationDetails, RegisterState, RetrievedActivity, RetrievedSubscription, RosmRegistration, RosmWithUtr, UserAnswers, Warehouse}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
@@ -128,7 +128,7 @@ trait SpecBase
     Play.stop(application)
     super.afterEach()
   }
-  val emptyUserAnswers : UserAnswers = UserAnswers(identifier)
+  val emptyUserAnswers : UserAnswers = UserAnswers(identifier, RegisterState.RegisterWithAuthUTR)
 
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 
@@ -207,7 +207,7 @@ trait SpecBase
     deregDate = None
   )
 
-  val userDetailsWithSetMethodsReturningFailure: UserAnswers = new UserAnswers("sdilId") {
+  val userDetailsWithSetMethodsReturningFailure: UserAnswers = new UserAnswers("sdilId", RegisterState.RegisterWithAuthUTR) {
     override def set[A](page: Settable[A], value: A)(implicit writes: Writes[A]): Try[UserAnswers] = Failure[UserAnswers](new Exception(""))
 
     override def setList[A](producer: Settable[A], value: A)(implicit writes: Writes[A]): Try[UserAnswers] = Failure[UserAnswers](new Exception(""))

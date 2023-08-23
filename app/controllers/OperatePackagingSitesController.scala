@@ -18,28 +18,25 @@ package controllers
 
 import controllers.actions._
 import forms.OperatePackagingSitesFormProvider
-import javax.inject.Inject
+import handlers.ErrorHandler
 import models.Mode
 import navigation.Navigator
-import pages.{OperatePackagingSitesPage, HowManyOperatePackagingSitesPage}
+import pages.{HowManyOperatePackagingSitesPage, OperatePackagingSitesPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SessionService
-import views.html.OperatePackagingSitesView
-import handlers.ErrorHandler
 import utilities.GenericLogger
+import views.html.OperatePackagingSitesView
 
-
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class OperatePackagingSitesController @Inject()(
                                          override val messagesApi: MessagesApi,
                                          val sessionService: SessionService,
                                          val navigator: Navigator,
-                                         identify: IdentifierAction,
+                                         controllerActions: ControllerActions,
                                          val genericLogger: GenericLogger,
-                                         getData: DataRetrievalAction,
-                                         requireData: DataRequiredAction,
                                          formProvider: OperatePackagingSitesFormProvider,
                                          val controllerComponents: MessagesControllerComponents,
                                          view: OperatePackagingSitesView,
@@ -48,7 +45,7 @@ class OperatePackagingSitesController @Inject()(
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = controllerActions.withUserWhoCanRegister {
     implicit request =>
 
       val preparedForm = request.userAnswers.get(OperatePackagingSitesPage) match {
@@ -59,7 +56,7 @@ class OperatePackagingSitesController @Inject()(
       Ok(view(preparedForm, mode))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = controllerActions.withUserWhoCanRegister.async {
     implicit request =>
 
       form.bindFromRequest().fold(

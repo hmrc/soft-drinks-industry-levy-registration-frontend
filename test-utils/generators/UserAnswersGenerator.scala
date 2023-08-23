@@ -57,7 +57,7 @@ trait UserAnswersGenerator extends TryValues {
           case _   => Gen.mapOf(oneOf(generators))
         }
       } yield UserAnswers (
-        id = id,
+        id = id, RegisterState.RegisterWithAuthUTR,
         data = data.foldLeft(Json.obj()) {
           case (obj, (path, value)) =>
             obj.setObject(path.path, value).get

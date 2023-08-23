@@ -19,7 +19,7 @@ package controllers
 import base.SpecBase
 import forms.AskSecondaryWarehousesFormProvider
 import helpers.LoggerHelper
-import models.{NormalMode, UserAnswers}
+import models.{NormalMode, RegisterState, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
@@ -66,7 +66,7 @@ class AskSecondaryWarehousesControllerSpec extends SpecBase with MockitoSugar wi
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(identifier).set(AskSecondaryWarehousesPage, true).success.value
+      val userAnswers = UserAnswers(identifier, RegisterState.RegisterWithAuthUTR).set(AskSecondaryWarehousesPage, true).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers), rosmRegistration = rosmRegistration).build()
 

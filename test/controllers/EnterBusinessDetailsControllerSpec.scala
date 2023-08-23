@@ -19,8 +19,9 @@ package controllers
 import base.SpecBase
 import connectors.SoftDrinksIndustryLevyConnector
 import controllers.actions.DataRequiredActionImpl
-import errors.SessionDatabaseInsertError
+import errors.{NoROSMRegistration, SessionDatabaseInsertError}
 import forms.EnterBusinessDetailsFormProvider
+import handlers.ErrorHandler
 import helpers.LoggerHelper
 import models.requests.{DataRequest, OptionalDataRequest}
 import models.{Identify, NormalMode}
@@ -43,7 +44,7 @@ class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with
 
   def onwardRoute = Call("GET", "/foo")
 
-  class Harness(connector: SoftDrinksIndustryLevyConnector) extends DataRequiredActionImpl(connector, application.injector.instanceOf[GenericLogger]) {
+  class Harness(connector: SoftDrinksIndustryLevyConnector) extends DataRequiredActionImpl(connector, application.injector.instanceOf[GenericLogger], application.injector.instanceOf[ErrorHandler]) {
     def callRefine[A](request: OptionalDataRequest[A]): Future[Either[Result, DataRequest[A]]] = refine(request)
   }
 
@@ -77,7 +78,7 @@ class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with
     "must redirect to the next page when valid data is submitted" in {
 
       when(softDrinksIndustryLevyConnector.retreiveRosmSubscription(any(),any())(any()))
-        .thenReturn(Future.successful(Some(rosmRegistration)))
+        .thenReturn(createSuccessRegistrationResult(rosmRegistration))
       when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(true)
 
       val application =
@@ -103,7 +104,7 @@ class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with
 
     "must return a Bad Request and errors when utr or postcode is found from rosm data when submitted" in {
 
-      when(softDrinksIndustryLevyConnector.retreiveRosmSubscription(any(),any())(any())) thenReturn Future.successful(None)
+      when(softDrinksIndustryLevyConnector.retreiveRosmSubscription(any(),any())(any())) thenReturn createFailureRegistrationResult(NoROSMRegistration)
       when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(true)
 
       val application =
@@ -132,7 +133,7 @@ class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      when(softDrinksIndustryLevyConnector.retreiveRosmSubscription(any(),any())(any())) thenReturn Future.successful(Some(rosmRegistration))
+      when(softDrinksIndustryLevyConnector.retreiveRosmSubscription(any(),any())(any())) thenReturn createSuccessRegistrationResult(rosmRegistration)
       when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(true)
 
       val application =
@@ -163,7 +164,7 @@ class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with
     "should log an error message when internal server error is returned when user answers are not set in session repository" in {
 
       when(softDrinksIndustryLevyConnector.retreiveRosmSubscription(any(),any())(any()))
-        .thenReturn(Future.successful(Some(rosmRegistration)))
+        .thenReturn(createSuccessRegistrationResult(rosmRegistration))
       when(mockSessionService.set(any())) thenReturn createFailureRegistrationResult(SessionDatabaseInsertError)
 
       val application =
