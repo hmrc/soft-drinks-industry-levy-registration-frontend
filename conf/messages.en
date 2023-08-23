@@ -365,6 +365,8 @@ registrationConfirmation.help.l1 = do not receive your reference number
 registrationConfirmation.help.l2 = need to make a change to your application
 registrationConfirmation.detailsSummary = Details of your application
 
-applicationAlreadySubmitted.title = This business already has an application submitted
-applicationAlreadySubmitted.heading = This business already has an application submitted
-
+applicationAlreadySubmitted.heading.title = This business already has an application submitted
+applicationAlreadySubmitted.first.paragraph = An application to register for the Soft Drinks Industry Levy has been submitted for this business.
+applicationAlreadySubmitted.second.paragraph.part.one = If you want to submit your return or check the status of your application you need to
+applicationAlreadySubmitted.second.paragraph.part.two = used to submit the application.
+applicationAlreadySubmitted.gg.sign.in = sign in using the same Government Gateway account

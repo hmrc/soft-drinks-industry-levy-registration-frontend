@@ -19,6 +19,7 @@ package views
 import play.api.i18n.Messages
 import play.api.mvc.Request
 import play.api.test.FakeRequest
+import viewmodels.AddressFormattingHelper
 import views.html.ApplicationAlreadySubmittedView
 
 class ApplicationAlreadySubmittedViewSpec extends ViewSpecHelper {
@@ -27,18 +28,35 @@ class ApplicationAlreadySubmittedViewSpec extends ViewSpecHelper {
   implicit val request: Request[_] = FakeRequest()
 
   object Selectors {
-    val heading = "govuk-heading-m"
+    val heading = "govuk-heading-l"
   }
 
   "View" - {
-    val html = view()(request, messages(application))
+    val registration = rosmRegistration.rosmRegistration
+    val formattedAddress = AddressFormattingHelper.formatBusinessAddress(registration.address,Some(registration.organisationName))
+    val html = view(formattedAddress)(request, messages(application))
     val document = doc(html)
     "should contain the expected title" in {
-      document.title() must include(Messages("applicationAlreadySubmitted" + ".title"))
+      document.title() must include(Messages("applicationAlreadySubmitted.heading.title"))
     }
 
     "should have the expected heading" in {
-      document.getElementsByClass(Selectors.heading).text() mustEqual Messages("applicationAlreadySubmitted" + ".heading")
+      document.getElementsByClass(Selectors.heading).text() mustEqual Messages("applicationAlreadySubmitted.heading.title")
+    }
+
+    "should have the expected address" in {
+      document.getElementById("addressForUTR").text() mustBe "Super Lemonade Plc 105B Godfrey Marchant Grove Guildford GU14 8NL"
+    }
+
+    "should have the expected additional information paragraph" in {
+      document.getElementById("already-submitted-message").text() mustBe "An application to register for the Soft " +
+        "Drinks Industry Levy has been submitted for this business."
+    }
+
+    "should have a second paragraph with additional information including the account sign out link" in {
+      document.getElementById("account-redirect").text() mustBe ("If you want to submit your return or check the status of your " +
+        "application you need to sign in using the same Government Gateway account used to submit the application.")
+      document.getElementById("account-link").attr("href") mustBe s"${frontendAppConfig.loginUrl}?continue=${frontendAppConfig.sdilHomeUrl}"
     }
 
     testBackLink(document)

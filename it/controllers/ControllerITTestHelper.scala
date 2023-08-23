@@ -99,7 +99,7 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
 
           whenReady(result1) { res =>
             res.status mustBe 303
-            res.header(HeaderNames.LOCATION) mustBe Some(routes.IndexController.onPageLoad.url)
+            res.header(HeaderNames.LOCATION) mustBe Some(routes.ApplicationAlreadySubmittedController.onPageLoad.url)
           }
         }
       }
@@ -196,7 +196,7 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
 
             whenReady(result1) { res =>
               res.status mustBe 303
-              res.header(HeaderNames.LOCATION) mustBe Some(routes.IndexController.onPageLoad.url)
+              res.header(HeaderNames.LOCATION) mustBe Some(routes.ApplicationAlreadySubmittedController.onPageLoad.url)
             }
           }
         }

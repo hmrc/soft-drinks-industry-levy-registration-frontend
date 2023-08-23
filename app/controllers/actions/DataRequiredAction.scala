@@ -48,7 +48,7 @@ class DataRequiredActionImpl @Inject()(sdilConnector: SoftDrinksIndustryLevyConn
     sdilConnector.checkPendingQueue(utr).map {
       case Registered =>
         genericLogger.logger.info(s"User already registered on pending queue ${hc.requestId}")
-        Left(Redirect(routes.IndexController.onPageLoad))
+        Left(Redirect(routes.ApplicationAlreadySubmittedController.onPageLoad))
       case Pending =>
         genericLogger.logger.info(s"User already pending subscription on pending queue ${hc.requestId}")
         Left(Redirect(routes.RegistrationPendingController.onPageLoad.url))

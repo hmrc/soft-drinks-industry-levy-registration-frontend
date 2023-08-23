@@ -22,11 +22,11 @@ class ApplicationAlreadySubmittedControllerISpec extends ControllerITTestHelper 
         whenReady(result1) { res =>
           res.status mustBe 200
           val page = Jsoup.parse(res.body)
-          page.title must include(Messages("applicationAlreadySubmitted" + ".title"))
+          page.title must include(Messages("applicationAlreadySubmitted.heading.title"))
         }
       }
     }
-    testOtherSuccessUserTypes(baseUrl + normalRoutePath, Messages("applicationAlreadySubmitted" + ".title"
+    testOtherSuccessUserTypes(baseUrl + normalRoutePath, Messages("applicationAlreadySubmitted.heading.title"
     ) )
     testUnauthorisedUser(baseUrl + normalRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)

@@ -19,6 +19,7 @@ package controllers
 import base.SpecBase
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import viewmodels.AddressFormattingHelper
 import views.html.ApplicationAlreadySubmittedView
 
 class ApplicationAlreadySubmittedControllerSpec extends SpecBase {
@@ -36,8 +37,13 @@ class ApplicationAlreadySubmittedControllerSpec extends SpecBase {
 
         val view = application.injector.instanceOf[ApplicationAlreadySubmittedView]
 
+        val formattedAddress = AddressFormattingHelper.formatBusinessAddress(
+          rosmRegistration.rosmRegistration.address,
+          Some(rosmRegistration.rosmRegistration.organisationName)
+        )
+
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view()(request, messages(application)).toString
+        contentAsString(result) mustEqual view(formattedAddress)(request, messages(application)).toString
       }
     }
   }

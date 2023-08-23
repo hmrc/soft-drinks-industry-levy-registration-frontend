@@ -17,10 +17,12 @@
 package controllers
 
 import controllers.actions._
+
 import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import viewmodels.AddressFormattingHelper
 import views.html.ApplicationAlreadySubmittedView
 
 class ApplicationAlreadySubmittedController @Inject()(
@@ -34,6 +36,8 @@ class ApplicationAlreadySubmittedController @Inject()(
 
   def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData) {
     implicit request =>
-      Ok(view())
+      val rosmRegistration = request.rosmWithUtr.rosmRegistration
+      val formattedAddress = AddressFormattingHelper.formatBusinessAddress(rosmRegistration.address, Some(rosmRegistration.organisationName))
+      Ok(view(formattedAddress))
   }
 }

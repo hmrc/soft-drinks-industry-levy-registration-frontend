@@ -14,14 +14,31 @@
  * limitations under the License.
  *@
 
+@import config.FrontendAppConfig
+
 @this(
         layout: templates.Layout,
-        govukButton: GovukButton
+        govukButton: GovukButton,
+        appConfig: FrontendAppConfig,
+        govukInsetText: GovukInsetText
 )
 
-@()(implicit request: Request[_], messages: Messages)
+@(formattedAddress: HtmlContent)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = titleNoForm(messages("applicationAlreadySubmitted.title"))) {
+ @layout(pageTitle = titleNoForm(messages("applicationAlreadySubmitted.heading.title"))) {
 
-    <h1 class="govuk-heading-m">@messages("applicationAlreadySubmitted.heading")</h1>
+  <h1 class="govuk-heading-l">@messages("applicationAlreadySubmitted.heading.title")</h1>
+
+  @govukInsetText(InsetText(
+   id = Some("addressForUTR"),
+   content = formattedAddress,
+   classes = "govuk-!-margin-top-0"
+  ))
+
+  <p class="govuk-body" id="already-submitted-message">@messages("applicationAlreadySubmitted.first.paragraph")</p>
+  <p class="govuk-body" id="account-redirect">@messages("applicationAlreadySubmitted.second.paragraph.part.one")
+   <a id="account-link" href=@{appConfig.loginUrl}?continue=@{appConfig.sdilHomeUrl}>@messages("applicationAlreadySubmitted.gg.sign.in")</a>
+   @messages("applicationAlreadySubmitted.second.paragraph.part.two")
+  </p>
+
 }
