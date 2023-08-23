@@ -128,7 +128,6 @@ class Navigator @Inject()() {
         } else {
           contactDetailsOrDoNotRegister(userAnswers, mode)
         }
-      case _ =>  routes.CheckYourAnswersController.onPageLoad
     }
   }
 
