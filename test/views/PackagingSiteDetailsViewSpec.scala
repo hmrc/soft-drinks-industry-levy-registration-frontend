@@ -108,6 +108,12 @@ class PackagingSiteDetailsViewSpec extends ViewSpecHelper {
           h1.text() mustEqual expectedHeading
         }
 
+        "should include the expected body" in {
+          val p = document.getElementsByTag("p")
+          p.size() mustBe 1
+          p.text() mustEqual "You must always have at least one packaging site listed"
+        }
+
         "should include the expected summary list" - {
           val summaryListRows = document.getElementsByClass(Selectors.summaryListRow)
           s"that contains $numberOfPackagingSites rows" in {
@@ -116,11 +122,12 @@ class PackagingSiteDetailsViewSpec extends ViewSpecHelper {
 
           packagingSites.zipWithIndex.foreach { case ((id, site), index) =>
             s"that includes a summary row for ${site.address.lines.head}" in {
+              val siteMessage = Messages("packagingSiteDetails.remove.hidden")
               val summaryRow = summaryListRows.get(index)
-              summaryRow.getElementsByTag("dt").text() must  include((site.address.lines :+ site.address.postCode).mkString(", "))
+              summaryRow.getElementsByTag("dt").text() must include((site.address.lines :+ site.address.postCode).mkString(", "))
               val action = summaryRow.getElementsByClass(Selectors.link)
               if(numberOfPackagingSites > 1) {
-                action.text() mustBe "Remove packaging site"
+                action.text() must include("Remove packaging site")
                 action.attr("href") mustBe routes.RemovePackagingSiteDetailsController.onPageLoad(id).url
               } else {
                 action.size() mustEqual 0
@@ -128,11 +135,20 @@ class PackagingSiteDetailsViewSpec extends ViewSpecHelper {
             }
           }
         }
+
+        "should include the expected details section" in {
+          val expectedDetailsLinkInfo = if (numberOfPackagingSites == 1) {
+            Messages("packagingSiteDetails.detailsLink")
+          } else {
+            ""
+          }
+          val details = document.getElementsByClass("govuk-details__summary-text")
+          details.text() mustEqual expectedDetailsLinkInfo
+        }
       }
     }
 
     val document1PackagingSite = getDocument(packagingSiteListWith1)
-
 
     "should include the expected legend heading" in {
       val legend = document1PackagingSite.getElementsByClass(Selectors.legend)

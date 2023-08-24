@@ -1,6 +1,7 @@
 service.name = Soft Drinks Industry Levy
 
 site.back = Back
+site.edit = Edit
 site.remove = Remove
 site.change = Change
 site.no = No
@@ -127,10 +128,14 @@ packagingSiteDetails.title1Site = You added 1 UK packaging site
 packagingSiteDetails.titleMultipleSites = You added {0} UK packaging sites
 packagingSiteDetails.heading1Site = You added 1 UK packaging site
 packagingSiteDetails.headingMultipleSites = You added {0} UK packaging sites
+packagingSiteDetails.siteRequiredInfo = You must always have at least one packaging site listed
 packagingSiteDetails.heading2 = Do you want to add another UK packaging site?
 packagingSiteDetails.hidden = packaging site
 packagingSiteDetails.error.required = Select yes if you want to add another UK packaging site
-packagingSiteDetails.change.hidden = Packaging sites
+packagingSiteDetails.change.hidden = Packaging site
+packagingSiteDetails.remove.hidden = packaging site {0} at {1}
+packagingSiteDetails.detailsLink = I want to remove this UK packaging site
+packagingSiteDetails.detailsInfo = You must add another site first. Once you have added the other site you will be able to remove one. You must always have at least one packaging site listed.
 
 howManyLitresGlobally.title = How many litres of your own brands of liable drinks have been packaged globally in the past 12 months?
 howManyLitresGlobally.checkYourAnswersLabel = How many litres of your own brands of liable drinks have been packaged globally in the past 12 months?
