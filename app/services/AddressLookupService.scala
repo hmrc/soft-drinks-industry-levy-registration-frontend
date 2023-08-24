@@ -100,10 +100,10 @@ class AddressLookupService @Inject()(
         homeNavHref = None,
         signOutHref = Some(controllers.auth.routes.AuthController.signOut.url),
         accessibilityFooterUrl = None,
-        phaseFeedbackLink = Some(frontendAppConfig.feedbackUrl(requestHeader)),
+        phaseFeedbackLink = None,
         deskProServiceName = None,
         showPhaseBanner = Some(false),
-        alphaPhase = Some(frontendAppConfig.AddressLookupConfig.alphaPhase),
+        alphaPhase = None,
         includeHMRCBranding = Some(true),
         ukMode = Some(true),
         selectPageConfig = Some(SelectPageConfig(
