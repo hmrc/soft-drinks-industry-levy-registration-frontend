@@ -56,7 +56,7 @@ class DataRequiredActionSpec extends SpecBase with MockitoSugar {
         val action = new Harness(connector)
         val result = action.callRefine(OptionalDataRequest(request, internalId, authUtr = Some(utr), userAnswers = Some(emptyUserAnswers))).futureValue
 
-        result.left.toOption.get mustBe Redirect(controllers.routes.IndexController.onPageLoad)
+        result.left.toOption.get mustBe Redirect(controllers.routes.ApplicationAlreadySubmittedController.onPageLoad)
       }
       s"should redirect away when pending queue returns $Pending" in {
         val internalId = "foo"
@@ -105,7 +105,7 @@ class DataRequiredActionSpec extends SpecBase with MockitoSugar {
         val action = new Harness(connector)
         val result = action.callRefine(OptionalDataRequest(request, internalId, authUtr = None, userAnswers = Some(userAnswersWithEnterBusinessDetailsPage))).futureValue
 
-        result.left.toOption.get mustBe Redirect(controllers.routes.IndexController.onPageLoad)
+        result.left.toOption.get mustBe Redirect(controllers.routes.ApplicationAlreadySubmittedController.onPageLoad)
       }
       s"should redirect away when pending queue returns $Pending" in {
         val internalId = "foo"
