@@ -74,7 +74,6 @@ class FrontendAppConfig @Inject() (servicesConfig: ServicesConfig, configuration
       .getOrElse(throw new IllegalArgumentException(s"Configuration for address-lookup-frontend-init-config not found"))
       .underlying
 
-    val alphaPhase: Boolean = addressLookupInitConfig.getBoolean("alphaPhase")
     val version: Int = addressLookupInitConfig.getInt("version")
     val selectPageConfigProposalLimit: Int = addressLookupInitConfig.getInt("select-page-config.proposalListLimit")
 
