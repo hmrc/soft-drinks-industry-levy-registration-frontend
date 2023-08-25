@@ -1,7 +1,7 @@
 package controllers
 
+import models.CheckMode
 import models.HowManyLitresGlobally.Large
-import models.NormalMode
 import models.OrganisationType.LimitedCompany
 import models.Verify.YesRegister
 import org.jsoup.Jsoup
@@ -31,7 +31,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
 
           whenReady(result) { res =>
             res.status mustBe 303
-            res.header(HeaderNames.LOCATION) mustBe Some(routes.VerifyController.onPageLoad(NormalMode).url)
+            res.header(HeaderNames.LOCATION) mustBe Some(routes.VerifyController.onPageLoad(CheckMode).url)
           }
         }
       }
@@ -153,7 +153,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
 
         whenReady(result) { res =>
           res.status mustBe 303
-          res.header(HeaderNames.LOCATION) mustBe Some(routes.VerifyController.onPageLoad(NormalMode).url)
+          res.header(HeaderNames.LOCATION) mustBe Some(routes.VerifyController.onPageLoad(CheckMode).url)
         }
       }
     }

@@ -16,24 +16,24 @@
 
 package pages
 
-import models.{CheckMode, ContactDetails, NormalMode}
+import models.{CheckMode, LitresInBands, NormalMode}
 import pages.behaviours.PageBehaviours
 
-class ContactDetailsPageSpec extends PageBehaviours {
+class HowManyOperatePackagingSitesPageSpec extends PageBehaviours {
 
-  "ContactDetailsPage" - {
+  "HowManyOperatePackagingSitesPage" - {
 
-    beRetrievable[ContactDetails](ContactDetailsPage)
+    beRetrievable[LitresInBands](HowManyOperatePackagingSitesPage)
 
-    beSettable[ContactDetails](ContactDetailsPage)
+    beSettable[LitresInBands](HowManyOperatePackagingSitesPage)
 
-    beRemovable[ContactDetails](ContactDetailsPage)
+    beRemovable[LitresInBands](HowManyOperatePackagingSitesPage)
 
     s"url should be correct for $NormalMode" in {
-      ContactDetailsPage.url(NormalMode) mustBe controllers.routes.ContactDetailsController.onPageLoad(NormalMode).url
+      HowManyOperatePackagingSitesPage.url(NormalMode) mustBe controllers.routes.HowManyOperatePackagingSitesController.onPageLoad(NormalMode).url
     }
     s"url should be correct for $CheckMode" in {
-      ContactDetailsPage.url(CheckMode) mustBe controllers.routes.ContactDetailsController.onPageLoad(CheckMode).url
+      HowManyOperatePackagingSitesPage.url(CheckMode) mustBe controllers.routes.HowManyOperatePackagingSitesController.onPageLoad(CheckMode).url
     }
   }
 }

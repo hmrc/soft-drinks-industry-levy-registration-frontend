@@ -22,29 +22,29 @@ import models.OrganisationType.LimitedCompany
 import models.Verify.YesRegister
 import models.backend.UkAddress
 import models.requests.DataRequest
-import models.{ContactDetails, HowManyLitresGlobally, LitresInBands, NormalMode, OrganisationType, RosmRegistration, RosmWithUtr, Verify}
+import models.{CheckMode, ContactDetails, HowManyLitresGlobally, LitresInBands, OrganisationType, RosmRegistration, RosmWithUtr, UserAnswers, Verify}
 import pages._
 import play.api.libs.json.Reads
-import play.api.mvc.AnyContentAsEmpty
 import play.api.mvc.Results.Ok
+import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.Helpers.{contentAsString, redirectLocation}
 import play.api.test.{DefaultAwaitTimeout, FakeRequest}
 
 import java.time.LocalDate
-import scala.collection.immutable.List
 import scala.concurrent.Future
 
 class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
 
   val requiredUserAnswers: RequiredUserAnswers = application.injector.instanceOf[RequiredUserAnswers]
+  val exampleSuccessActionResult: String = "woohoo"
+  val exampleSuccessAction: Future[Result] = Future.successful(Ok(exampleSuccessActionResult))
 
+  def dataRequest(userAnswers: UserAnswers): DataRequest[AnyContentAsEmpty.type] = DataRequest(
+    FakeRequest(), "", hasCTEnrolment = false, None, userAnswers, RosmWithUtr("", RosmRegistration("", None, None, UkAddress(List.empty, "", None)))
+  )
   "requireData" - {
     "should return result passed in when not a page matched in function" in {
-      val dataRequest = DataRequest(
-        FakeRequest(),"", hasCTEnrolment = false, None, emptyUserAnswers, RosmWithUtr("", RosmRegistration("", None, None, UkAddress(List.empty,"", None)))
-      )
-      val action = Future.successful(Ok("woohoo"))
-      contentAsString(requiredUserAnswers.requireData(VerifyPage)(action)(dataRequest)) mustBe "woohoo"
+      contentAsString(requiredUserAnswers.requireData(VerifyPage)(exampleSuccessAction)(dataRequest(emptyUserAnswers))) mustBe exampleSuccessActionResult
     }
     s"should return result passed in when page is $CheckYourAnswersPage" - {
       s"when HowManyLitresGlobally is $Large and all answers are answered" in {
@@ -66,11 +66,7 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
             .set(WarehouseDetailsPage, true).success.value
             .set(ContactDetailsPage, ContactDetails("", "", "", "")).success.value
         }
-        val dataRequest = DataRequest(
-          FakeRequest(), "", hasCTEnrolment = false, None, userAnswers, RosmWithUtr("", RosmRegistration("", None, None, UkAddress(List.empty, "", None)))
-        )
-        val action = Future.successful(Ok("woohoo"))
-        contentAsString(requiredUserAnswers.requireData(CheckYourAnswersPage)(action)(dataRequest)) mustBe "woohoo"
+        contentAsString(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(dataRequest(userAnswers))) mustBe exampleSuccessActionResult
       }
     }
 
@@ -90,11 +86,7 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
               .set(WarehouseDetailsPage, true).success.value
               .set(ContactDetailsPage, ContactDetails("", "", "", "")).success.value
           }
-          val dataRequest = DataRequest(
-            FakeRequest(), "", hasCTEnrolment = false, None, userAnswers, RosmWithUtr("", RosmRegistration("", None, None, UkAddress(List.empty, "", None)))
-          )
-          val action = Future.successful(Ok("woohoo"))
-          contentAsString(requiredUserAnswers.requireData(CheckYourAnswersPage)(action)(dataRequest)) mustBe "woohoo"
+          contentAsString(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(dataRequest(userAnswers))) mustBe exampleSuccessActionResult
         }
 
         s"when $HowManyLitresGlobally is $Small contract packing is false and pack at business address is not answered" in {
@@ -114,11 +106,7 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
               .set(WarehouseDetailsPage, true).success.value
               .set(ContactDetailsPage, ContactDetails("", "", "", "")).success.value
           }
-          val dataRequest = DataRequest(
-            FakeRequest(), "", hasCTEnrolment = false, None, userAnswers, RosmWithUtr("", RosmRegistration("", None, None, UkAddress(List.empty, "", None)))
-          )
-          val action = Future.successful(Ok("woohoo"))
-          contentAsString(requiredUserAnswers.requireData(CheckYourAnswersPage)(action)(dataRequest)) mustBe "woohoo"
+          contentAsString(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(dataRequest(userAnswers))) mustBe exampleSuccessActionResult
         }
 
         s"when $HowManyLitresGlobally is $None and all answers are answered" in {
@@ -138,11 +126,7 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
               .set(WarehouseDetailsPage, true).success.value
               .set(ContactDetailsPage, ContactDetails("", "", "", "")).success.value
           }
-          val dataRequest = DataRequest(
-            FakeRequest(), "", hasCTEnrolment = false, None, userAnswers, RosmWithUtr("", RosmRegistration("", None, None, UkAddress(List.empty, "", None)))
-          )
-          val action = Future.successful(Ok("woohoo"))
-          contentAsString(requiredUserAnswers.requireData(CheckYourAnswersPage)(action)(dataRequest)) mustBe "woohoo"
+          contentAsString(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(dataRequest(userAnswers))) mustBe exampleSuccessActionResult
         }
 
         s"when $HowManyLitresGlobally is $None, contract packing is false and pack at business address is not answered" in {
@@ -159,11 +143,7 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
               .set(WarehouseDetailsPage, true).success.value
               .set(ContactDetailsPage, ContactDetails("", "", "", "")).success.value
           }
-          val dataRequest = DataRequest(
-            FakeRequest(), "", hasCTEnrolment = false, None, userAnswers, RosmWithUtr("", RosmRegistration("", None, None, UkAddress(List.empty, "", None)))
-          )
-          val action = Future.successful(Ok("woohoo"))
-          contentAsString(requiredUserAnswers.requireData(CheckYourAnswersPage)(action)(dataRequest)) mustBe "woohoo"
+          contentAsString(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(dataRequest(userAnswers))) mustBe exampleSuccessActionResult
         }
 
         s"when all $LitresInBands are not required" in {
@@ -183,11 +163,7 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
               .set(WarehouseDetailsPage, true).success.value
               .set(ContactDetailsPage, ContactDetails("", "", "", "")).success.value
           }
-          val dataRequest = DataRequest(
-            FakeRequest(), "", hasCTEnrolment = false, None, userAnswers, RosmWithUtr("", RosmRegistration("", None, None, UkAddress(List.empty, "", None)))
-          )
-          val action = Future.successful(Ok("woohoo"))
-          contentAsString(requiredUserAnswers.requireData(CheckYourAnswersPage)(action)(dataRequest)) mustBe "woohoo"
+          contentAsString(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(dataRequest(userAnswers))) mustBe exampleSuccessActionResult
         }
         "when warehouses are not required" in {
           val userAnswers = {
@@ -208,11 +184,7 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
               .set(AskSecondaryWarehousesPage, false).success.value
               .set(ContactDetailsPage, ContactDetails("", "", "", "")).success.value
           }
-          val dataRequest = DataRequest(
-            FakeRequest(), "", hasCTEnrolment = false, None, userAnswers, RosmWithUtr("", RosmRegistration("", None, None, UkAddress(List.empty, "", None)))
-          )
-          val action = Future.successful(Ok("woohoo"))
-          contentAsString(requiredUserAnswers.requireData(CheckYourAnswersPage)(action)(dataRequest)) mustBe "woohoo"
+          contentAsString(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(dataRequest(userAnswers))) mustBe exampleSuccessActionResult
         }
 
         s"when HowManyLitresGlobally is $Small, $ThirdPartyPackagersPage is true, $ContractPackingPage is false, $OperatePackagingSitesPage " +
@@ -228,11 +200,7 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
               .set(ImportsPage, false).success.value
               .set(ContactDetailsPage, ContactDetails("aaa", "aaa", "123", "a@a.com")).success.value
           }
-          val dataRequest = DataRequest(
-            FakeRequest(), "", hasCTEnrolment = false, None, userAnswers, RosmWithUtr("", RosmRegistration("", None, None, UkAddress(List.empty, "", None)))
-          )
-          val action = Future.successful(Ok("woohoo"))
-          contentAsString(requiredUserAnswers.requireData(CheckYourAnswersPage)(action)(dataRequest)) mustBe "woohoo"
+          contentAsString(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(dataRequest(userAnswers))) mustBe exampleSuccessActionResult
         }
 
         s"when HowManyLitresGlobally is $Small, $ThirdPartyPackagersPage is true, $OperatePackagingSitesPage is true, $ContractPackingPage " +
@@ -249,24 +217,16 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
               .set(ImportsPage, false).success.value
               .set(ContactDetailsPage, ContactDetails("", "", "", "")).success.value
           }
-          val dataRequest = DataRequest(
-            FakeRequest(), "", hasCTEnrolment = false, None, userAnswers, RosmWithUtr("", RosmRegistration("", None, None, UkAddress(List.empty, "", None)))
-          )
-          val action = Future.successful(Ok("woohoo"))
-          contentAsString(requiredUserAnswers.requireData(CheckYourAnswersPage)(action)(dataRequest)) mustBe "woohoo"
+          contentAsString(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(dataRequest(userAnswers))) mustBe exampleSuccessActionResult
         }
       }
 
     s"should redirect to verify controller when missing answers for $CheckYourAnswersPage" - {
       "with no answers" in {
-        val dataRequest = DataRequest(
-          FakeRequest(), "", hasCTEnrolment = false, None, emptyUserAnswers, RosmWithUtr("", RosmRegistration("", None, None, UkAddress(List.empty, "", None)))
-        )
-        val action = Future.successful(Ok("woohoo"))
-        val res = redirectLocation(requiredUserAnswers.requireData(CheckYourAnswersPage)(action)(dataRequest))
-        res.get mustBe controllers.routes.VerifyController.onPageLoad(NormalMode).url
+        val res = redirectLocation(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(dataRequest(emptyUserAnswers)))
+        res.get mustBe controllers.routes.VerifyController.onPageLoad(CheckMode).url
       }
-      "with missing selection of pages" in {
+      "with missing selection of pages and verify is not answered" in {
         val userAnswers = {
           emptyUserAnswers
             .set(OrganisationTypePage, LimitedCompany).success.value
@@ -282,13 +242,11 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
             .set(AskSecondaryWarehousesPage, false).success.value
             .set(ContactDetailsPage, ContactDetails("", "", "", "")).success.value
         }
-        val dataRequest = DataRequest(
-          FakeRequest(), "", hasCTEnrolment = false, None, userAnswers, RosmWithUtr("", RosmRegistration("", None, None, UkAddress(List.empty, "", None)))
-        )
-        val action = Future.successful(Ok("woohoo"))
-        val res = redirectLocation(requiredUserAnswers.requireData(CheckYourAnswersPage)(action)(dataRequest))
-        res.get mustBe controllers.routes.VerifyController.onPageLoad(NormalMode).url
+        val res = redirectLocation(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(dataRequest(userAnswers)))
+        res.get mustBe controllers.routes.VerifyController.onPageLoad(CheckMode).url
       }
+    }
+    s"should redirect to the appropriate missing page when missing answers for $CheckYourAnswersPage" - {
 
       s"when HowManyLitresGlobally is $Large and contractPacking is false, OperatePackagingSites is true and pack at business address is not answered" in {
         val userAnswers = {
@@ -306,12 +264,8 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
             .set(WarehouseDetailsPage, true).success.value
             .set(ContactDetailsPage, ContactDetails("", "", "", "")).success.value
         }
-        val dataRequest = DataRequest(
-          FakeRequest(), "", hasCTEnrolment = false, None, userAnswers, RosmWithUtr("", RosmRegistration("", None, None, UkAddress(List.empty, "", None)))
-        )
-        val action = Future.successful(Ok("woohoo"))
-        val res = redirectLocation(requiredUserAnswers.requireData(CheckYourAnswersPage)(action)(dataRequest))
-        res.get mustBe controllers.routes.VerifyController.onPageLoad(NormalMode).url
+        val res = redirectLocation(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(dataRequest(userAnswers)))
+        res.get mustBe controllers.routes.PackAtBusinessAddressController.onPageLoad(CheckMode).url
       }
 
       s"when HowManyLitresGlobally is $Large and contractPacking is true, OperatePackagingSites is false and pack at business address is not answered" in {
@@ -330,12 +284,8 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
             .set(WarehouseDetailsPage, true).success.value
             .set(ContactDetailsPage, ContactDetails("", "", "", "")).success.value
         }
-        val dataRequest = DataRequest(
-          FakeRequest(), "", hasCTEnrolment = false, None, userAnswers, RosmWithUtr("", RosmRegistration("", None, None, UkAddress(List.empty, "", None)))
-        )
-        val action = Future.successful(Ok("woohoo"))
-        val res = redirectLocation(requiredUserAnswers.requireData(CheckYourAnswersPage)(action)(dataRequest))
-        res.get mustBe controllers.routes.VerifyController.onPageLoad(NormalMode).url
+        val res = redirectLocation(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(dataRequest(userAnswers)))
+        res.get mustBe controllers.routes.PackAtBusinessAddressController.onPageLoad(CheckMode).url
       }
 
       s"when HowManyLitresGlobally is $Small, $OperatePackagingSitesPage is true, $ContractPackingPage is true, and " +
@@ -357,12 +307,8 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
             .set(WarehouseDetailsPage, true).success.value
             .set(ContactDetailsPage, ContactDetails("", "", "", "")).success.value
         }
-        val dataRequest = DataRequest(
-          FakeRequest(), "", hasCTEnrolment = false, None, userAnswers, RosmWithUtr("", RosmRegistration("", None, None, UkAddress(List.empty, "", None)))
-        )
-        val action = Future.successful(Ok("woohoo"))
-        val res = redirectLocation(requiredUserAnswers.requireData(CheckYourAnswersPage)(action)(dataRequest))
-        res.get mustBe controllers.routes.VerifyController.onPageLoad(NormalMode).url
+        val res = redirectLocation(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(dataRequest(userAnswers)))
+        res.get mustBe controllers.routes.PackAtBusinessAddressController.onPageLoad(CheckMode).url
       }
 
       s"when HowManyLitresGlobally is $None and contractPacking is true and pack at business address is not answered" in {
@@ -380,12 +326,188 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
             .set(WarehouseDetailsPage, true).success.value
             .set(ContactDetailsPage, ContactDetails("", "", "", "")).success.value
         }
-        val dataRequest = DataRequest(
-          FakeRequest(), "", hasCTEnrolment = false, None, userAnswers, RosmWithUtr("", RosmRegistration("", None, None, UkAddress(List.empty, "", None)))
-        )
-        val action = Future.successful(Ok("woohoo"))
-        val res = redirectLocation(requiredUserAnswers.requireData(CheckYourAnswersPage)(action)(dataRequest))
-        res.get mustBe controllers.routes.VerifyController.onPageLoad(NormalMode).url
+        val res = redirectLocation(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(dataRequest(userAnswers)))
+        res.get mustBe controllers.routes.PackAtBusinessAddressController.onPageLoad(CheckMode).url
+      }
+      List[QuestionPage[_]](VerifyPage, OrganisationTypePage,
+        HowManyLitresGloballyPage, ContractPackingPage,
+        HowManyContractPackingPage,
+        OperatePackagingSitesPage, HowManyOperatePackagingSitesPage,
+        ImportsPage, HowManyImportsPage,
+        PackAtBusinessAddressPage, PackagingSiteDetailsPage,
+        StartDatePage, AskSecondaryWarehousesPage,
+        WarehouseDetailsPage, ContactDetailsPage).foreach { eachPage =>
+        s"when $eachPage is filtered out from a full list of user answers set to true, the user is taken to that page that is required for ${HowManyLitresGlobally.Large}" in {
+          val userAnswers = {
+            emptyUserAnswers
+              .set(VerifyPage, YesRegister).success.value
+              .set(OrganisationTypePage, LimitedCompany).success.value
+              .set(HowManyLitresGloballyPage, HowManyLitresGlobally.Large).success.value
+              .set(ContractPackingPage, true).success.value
+              .set(ThirdPartyPackagersPage, true).success.value
+              .set(OperatePackagingSitesPage, true).success.value
+              .set(HowManyOperatePackagingSitesPage, LitresInBands(1, 1)).success.value
+              .set(HowManyContractPackingPage, LitresInBands(1, 1)).success.value
+              .set(ImportsPage, true).success.value
+              .set(HowManyImportsPage, LitresInBands(1, 1)).success.value
+              .set(PackAtBusinessAddressPage, true).success.value
+              .set(PackagingSiteDetailsPage, false).success.value
+              .set(StartDatePage, LocalDate.now()).success.value
+              .set(AskSecondaryWarehousesPage, true).success.value
+              .set(WarehouseDetailsPage, true).success.value
+              .set(ContactDetailsPage, ContactDetails("", "", "", "")).success.value
+          }.remove(eachPage).success.value
+          val res = redirectLocation(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(dataRequest(userAnswers)))
+          res.get mustBe eachPage.url(CheckMode)
+        }
+      }
+      List[QuestionPage[_]](VerifyPage, OrganisationTypePage,
+        HowManyLitresGloballyPage,
+        OperatePackagingSitesPage,
+        ImportsPage,
+        StartDatePage, AskSecondaryWarehousesPage,
+        ContactDetailsPage).foreach { eachPage =>
+        s"when $eachPage is filtered out from a full list of user answers set to false, the user is taken to that page that is required for ${HowManyLitresGlobally.Large}" in {
+          val userAnswers = {
+            emptyUserAnswers
+              .set(VerifyPage, YesRegister).success.value
+              .set(OrganisationTypePage, LimitedCompany).success.value
+              .set(HowManyLitresGloballyPage, HowManyLitresGlobally.Large).success.value
+              .set(ContractPackingPage, false).success.value
+              .set(ThirdPartyPackagersPage, false).success.value
+              .set(OperatePackagingSitesPage, false).success.value
+              .set(ImportsPage, false).success.value
+              .set(PackAtBusinessAddressPage, false).success.value
+              .set(PackagingSiteDetailsPage, false).success.value
+              .set(StartDatePage, LocalDate.now()).success.value
+              .set(AskSecondaryWarehousesPage, false).success.value
+              .set(ContactDetailsPage, ContactDetails("", "", "", "")).success.value
+          }.remove(eachPage).success.value
+          val res = redirectLocation(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(dataRequest(userAnswers)))
+          res.get mustBe eachPage.url(CheckMode)
+        }
+      }
+        List[QuestionPage[_]](VerifyPage, OrganisationTypePage,
+          HowManyLitresGloballyPage, ContractPackingPage,
+          HowManyContractPackingPage, ThirdPartyPackagersPage,
+          OperatePackagingSitesPage, HowManyOperatePackagingSitesPage,
+          ImportsPage, HowManyImportsPage,
+          PackAtBusinessAddressPage, PackagingSiteDetailsPage,
+          StartDatePage, AskSecondaryWarehousesPage,
+          WarehouseDetailsPage, ContactDetailsPage).foreach { eachPage =>
+          s"when $eachPage is filtered out from a full list of user answers of true, the user is taken to that page that is required for ${HowManyLitresGlobally.Small}" in {
+            val userAnswers = {
+              emptyUserAnswers
+                .set(VerifyPage, YesRegister).success.value
+                .set(OrganisationTypePage, LimitedCompany).success.value
+                .set(HowManyLitresGloballyPage, HowManyLitresGlobally.Small).success.value
+                .set(ContractPackingPage, true).success.value
+                .set(ThirdPartyPackagersPage, true).success.value
+                .set(OperatePackagingSitesPage, true).success.value
+                .set(HowManyOperatePackagingSitesPage, LitresInBands(1, 1)).success.value
+                .set(HowManyContractPackingPage, LitresInBands(1, 1)).success.value
+                .set(ImportsPage, true).success.value
+                .set(HowManyImportsPage, LitresInBands(1, 1)).success.value
+                .set(PackAtBusinessAddressPage, true).success.value
+                .set(PackagingSiteDetailsPage, false).success.value
+                .set(StartDatePage, LocalDate.now()).success.value
+                .set(AskSecondaryWarehousesPage, true).success.value
+                .set(WarehouseDetailsPage, true).success.value
+                .set(ContactDetailsPage, ContactDetails("", "", "", "")).success.value
+            }.remove(eachPage).success.value
+            val res = redirectLocation(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(dataRequest(userAnswers)))
+            res.get mustBe eachPage.url(CheckMode)
+          }
+   }
+      List[QuestionPage[_]](VerifyPage, OrganisationTypePage,
+        HowManyLitresGloballyPage, ContractPackingPage,
+         ThirdPartyPackagersPage,
+        OperatePackagingSitesPage,
+        ImportsPage, HowManyImportsPage,
+        PackagingSiteDetailsPage, StartDatePage,
+        AskSecondaryWarehousesPage, ContactDetailsPage).foreach { eachPage =>
+        s"when $eachPage is filtered out from a full list of user answers of false, the user is taken to that page that is required for ${HowManyLitresGlobally.Small}" in {
+          val userAnswers = {
+            emptyUserAnswers
+              .set(VerifyPage, YesRegister).success.value
+              .set(OrganisationTypePage, LimitedCompany).success.value
+              .set(HowManyLitresGloballyPage, HowManyLitresGlobally.Small).success.value
+              .set(ContractPackingPage, false).success.value
+              .set(ThirdPartyPackagersPage, false).success.value
+              .set(OperatePackagingSitesPage, false).success.value
+              .set(HowManyOperatePackagingSitesPage, LitresInBands(1, 1)).success.value
+              .set(HowManyContractPackingPage, LitresInBands(1, 1)).success.value
+              .set(ImportsPage, true).success.value
+              .set(HowManyImportsPage, LitresInBands(1, 1)).success.value
+              .set(PackAtBusinessAddressPage, false).success.value
+              .set(PackagingSiteDetailsPage, false).success.value
+              .set(StartDatePage, LocalDate.now()).success.value
+              .set(AskSecondaryWarehousesPage, false).success.value
+              .set(WarehouseDetailsPage, false).success.value
+              .set(ContactDetailsPage, ContactDetails("", "", "", "")).success.value
+          }.remove(eachPage).success.value
+          val res = redirectLocation(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(dataRequest(userAnswers)))
+          res.get mustBe eachPage.url(CheckMode)
+        }
+      }
+      List[QuestionPage[_]](VerifyPage, OrganisationTypePage,
+        HowManyLitresGloballyPage, ContractPackingPage,
+        HowManyContractPackingPage,
+        ImportsPage, HowManyImportsPage,
+        StartDatePage, AskSecondaryWarehousesPage,
+        WarehouseDetailsPage, ContactDetailsPage).foreach { eachPage =>
+        s"when $eachPage is filtered out from a full list of user answers of true, the user is taken to that page that is required for ${HowManyLitresGlobally.None}" in {
+          val userAnswers = {
+            emptyUserAnswers
+              .set(VerifyPage, YesRegister).success.value
+              .set(OrganisationTypePage, LimitedCompany).success.value
+              .set(HowManyLitresGloballyPage, HowManyLitresGlobally.None).success.value
+              .set(ContractPackingPage, true).success.value
+              .set(ThirdPartyPackagersPage, true).success.value
+              .set(OperatePackagingSitesPage, true).success.value
+              .set(HowManyOperatePackagingSitesPage, LitresInBands(1, 1)).success.value
+              .set(HowManyContractPackingPage, LitresInBands(1, 1)).success.value
+              .set(ImportsPage, true).success.value
+              .set(HowManyImportsPage, LitresInBands(1, 1)).success.value
+              .set(PackAtBusinessAddressPage, true).success.value
+              .set(PackagingSiteDetailsPage, false).success.value
+              .set(StartDatePage, LocalDate.now()).success.value
+              .set(AskSecondaryWarehousesPage, true).success.value
+              .set(WarehouseDetailsPage, true).success.value
+              .set(ContactDetailsPage, ContactDetails("", "", "", "")).success.value
+          }.remove(eachPage).success.value
+          val res = redirectLocation(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(dataRequest(userAnswers)))
+          res.get mustBe eachPage.url(CheckMode)
+        }
+      }
+      List[QuestionPage[_]](VerifyPage, OrganisationTypePage,
+        HowManyLitresGloballyPage, ContractPackingPage,
+        ImportsPage, HowManyImportsPage,
+        StartDatePage, AskSecondaryWarehousesPage,
+        ContactDetailsPage).foreach { eachPage =>
+        s"when $eachPage is filtered out from a full list of user answers of false, the user is taken to that page that is required for ${HowManyLitresGlobally.None}" in {
+          val userAnswers = {
+            emptyUserAnswers
+              .set(VerifyPage, YesRegister).success.value
+              .set(OrganisationTypePage, LimitedCompany).success.value
+              .set(HowManyLitresGloballyPage, HowManyLitresGlobally.None).success.value
+              .set(ContractPackingPage, false).success.value
+              .set(ThirdPartyPackagersPage, false).success.value
+              .set(OperatePackagingSitesPage, false).success.value
+              .set(HowManyOperatePackagingSitesPage, LitresInBands(1, 1)).success.value
+              .set(HowManyContractPackingPage, LitresInBands(1, 1)).success.value
+              .set(ImportsPage, true).success.value
+              .set(HowManyImportsPage, LitresInBands(1, 1)).success.value
+              .set(PackAtBusinessAddressPage, false).success.value
+              .set(PackagingSiteDetailsPage, false).success.value
+              .set(StartDatePage, LocalDate.now()).success.value
+              .set(AskSecondaryWarehousesPage, false).success.value
+              .set(WarehouseDetailsPage, false).success.value
+              .set(ContactDetailsPage, ContactDetails("", "", "", "")).success.value
+          }.remove(eachPage).success.value
+          val res = redirectLocation(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(dataRequest(userAnswers)))
+          res.get mustBe eachPage.url(CheckMode)
+        }
       }
     }
   }
@@ -423,9 +545,7 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
           .set(PackagingSiteDetailsPage, true).success.value
           .set(AskSecondaryWarehousesPage, false).success.value
       }
-      implicit val dataRequest: DataRequest[AnyContentAsEmpty.type] = DataRequest(
-        FakeRequest(),"", hasCTEnrolment = false, None, userAnswers, RosmWithUtr("", RosmRegistration("", None, None, UkAddress(List.empty,"", None)))
-      )
+      implicit val request: DataRequest[AnyContentAsEmpty.type] = dataRequest(userAnswers)
       val res = requiredUserAnswers.returnMissingAnswers(requiredUserAnswers.journey)
       res mustBe List(RequiredPage(ContactDetailsPage, List(
         PreviousPage(AskSecondaryWarehousesPage, List(true, false))
@@ -449,9 +569,8 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
           .set(WarehouseDetailsPage, true).success.value
           .set(ContactDetailsPage, ContactDetails("", "", "", "")).success.value
       }
-      implicit val dataRequest: DataRequest[AnyContentAsEmpty.type] = DataRequest(
-        FakeRequest(), "", hasCTEnrolment = false, None, userAnswers, RosmWithUtr("", RosmRegistration("", None, None, UkAddress(List.empty, "", None)))
-      )
+      implicit val request: DataRequest[AnyContentAsEmpty.type] = dataRequest(userAnswers)
+
       val res = requiredUserAnswers.returnMissingAnswers(requiredUserAnswers.journey)
       res mustBe List(RequiredPage(PackAtBusinessAddressPage, List(
         PreviousPage(HowManyLitresGloballyPage, List(HowManyLitresGlobally.enumerable.withName("large").get))(implicitly[Reads[HowManyLitresGlobally]]),
@@ -477,9 +596,7 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
           .set(WarehouseDetailsPage, true).success.value
           .set(ContactDetailsPage, ContactDetails("", "", "", "")).success.value
       }
-      implicit val dataRequest: DataRequest[AnyContentAsEmpty.type] = DataRequest(
-        FakeRequest(), "", hasCTEnrolment = false, None, userAnswers, RosmWithUtr("", RosmRegistration("", None, None, UkAddress(List.empty, "", None)))
-      )
+      implicit val request: DataRequest[AnyContentAsEmpty.type] = dataRequest(userAnswers)
       val res = requiredUserAnswers.returnMissingAnswers(requiredUserAnswers.journey)
       res mustBe List(RequiredPage(PackAtBusinessAddressPage, List(
         PreviousPage(HowManyLitresGloballyPage, List(HowManyLitresGlobally.enumerable.withName("large").get))(implicitly[Reads[HowManyLitresGlobally]]),
@@ -506,9 +623,7 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
           .set(WarehouseDetailsPage, true).success.value
           .set(ContactDetailsPage, ContactDetails("", "", "", "")).success.value
       }
-      implicit val dataRequest: DataRequest[AnyContentAsEmpty.type] = DataRequest(
-        FakeRequest(), "", hasCTEnrolment = false, None, userAnswers, RosmWithUtr("", RosmRegistration("", None, None, UkAddress(List.empty, "", None)))
-      )
+      implicit val request: DataRequest[AnyContentAsEmpty.type] = dataRequest(userAnswers)
       val res = requiredUserAnswers.returnMissingAnswers(requiredUserAnswers.journey)
       res mustBe List(RequiredPage(PackAtBusinessAddressPage, List(
         PreviousPage(HowManyLitresGloballyPage, List(HowManyLitresGlobally.enumerable.withName("small").get,
@@ -531,9 +646,7 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
           .set(WarehouseDetailsPage, true).success.value
           .set(ContactDetailsPage, ContactDetails("", "", "", "")).success.value
       }
-      implicit val dataRequest: DataRequest[AnyContentAsEmpty.type] = DataRequest(
-        FakeRequest(), "", hasCTEnrolment = false, None, userAnswers, RosmWithUtr("", RosmRegistration("", None, None, UkAddress(List.empty, "", None)))
-      )
+      implicit val request: DataRequest[AnyContentAsEmpty.type] = dataRequest(userAnswers)
       val res = requiredUserAnswers.returnMissingAnswers(requiredUserAnswers.journey)
       res mustBe List(RequiredPage(PackAtBusinessAddressPage, List(
         PreviousPage(HowManyLitresGloballyPage, List(HowManyLitresGlobally.enumerable.withName("small").get,
@@ -556,9 +669,7 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
           .set(HowManyImportsPage, LitresInBands(1, 1)).success.value
           .set(ContactDetailsPage, ContactDetails("", "", "", "")).success.value
       }
-      implicit val dataRequest: DataRequest[AnyContentAsEmpty.type] = DataRequest(
-        FakeRequest(), "", hasCTEnrolment = false, None, userAnswers, RosmWithUtr("", RosmRegistration("", None, None, UkAddress(List.empty, "", None)))
-      )
+      implicit val request: DataRequest[AnyContentAsEmpty.type] = dataRequest(userAnswers)
       val res = requiredUserAnswers.returnMissingAnswers(requiredUserAnswers.journey)
       res mustBe List(
         RequiredPage(StartDatePage, List(
@@ -579,9 +690,7 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
           .set(ContractPackingPage, false).success.value
           .set(ImportsPage, false).success.value
       }
-      implicit val dataRequest: DataRequest[AnyContentAsEmpty.type] = DataRequest(
-        FakeRequest(), "", hasCTEnrolment = false, None, userAnswers, RosmWithUtr("", RosmRegistration("", None, None, UkAddress(List.empty, "", None)))
-      )
+      implicit val request: DataRequest[AnyContentAsEmpty.type] = dataRequest(userAnswers)
       val res = requiredUserAnswers.returnMissingAnswers(requiredUserAnswers.journey)
       res mustBe List(
         RequiredPage(ContactDetailsPage, List(
@@ -601,9 +710,7 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
           )
         )(implicitly[Reads[ContactDetails]]))
       }
-      implicit val dataRequest: DataRequest[AnyContentAsEmpty.type] = DataRequest(
-        FakeRequest(),"", hasCTEnrolment = false, None, emptyUserAnswers, RosmWithUtr("", RosmRegistration("", None, None, UkAddress(List.empty,"", None)))
-      )
+      implicit val request: DataRequest[AnyContentAsEmpty.type] = dataRequest(emptyUserAnswers)
       val res = requiredUserAnswers.returnMissingAnswers(requiredPages)
       res mustBe List.empty
     }
@@ -621,9 +728,7 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
           .set(HowManyImportsPage, LitresInBands(1,1)).success.value
           .set(PackAtBusinessAddressPage, true).success.value
       }
-      implicit val dataRequest: DataRequest[AnyContentAsEmpty.type] = DataRequest(
-        FakeRequest(),"", hasCTEnrolment = false, None, userAnswers, RosmWithUtr("", RosmRegistration("", None, None, UkAddress(List.empty,"", None)))
-      )
+      implicit val request: DataRequest[AnyContentAsEmpty.type] = dataRequest(userAnswers)
       val res = requiredUserAnswers.returnMissingAnswers(requiredPages)
       res mustBe requiredPages
     }
@@ -642,9 +747,7 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
           .set(PackAtBusinessAddressPage, true).success.value
       }
 
-      implicit val dataRequest: DataRequest[AnyContentAsEmpty.type] = DataRequest(
-        FakeRequest(),"", hasCTEnrolment = false, None, userAnswers, RosmWithUtr("", RosmRegistration("", None, None, UkAddress(List.empty,"", None)))
-      )
+      implicit val request: DataRequest[AnyContentAsEmpty.type] = dataRequest(userAnswers)
       val res = requiredUserAnswers.returnMissingAnswers(requiredPages)
       res mustBe List.empty
     }
@@ -663,9 +766,7 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
           .set(PackAtBusinessAddressPage, true).success.value
           .set(ContactDetailsPage, ContactDetails("", "", "", "")).success.value
       }
-      implicit val dataRequest: DataRequest[AnyContentAsEmpty.type] = DataRequest(
-        FakeRequest(),"", hasCTEnrolment = false, None, userAnswers, RosmWithUtr("", RosmRegistration("", None, None, UkAddress(List.empty,"", None)))
-      )
+      implicit val request: DataRequest[AnyContentAsEmpty.type] = dataRequest(userAnswers)
       val res = requiredUserAnswers.returnMissingAnswers(requiredPages)
       res mustBe List.empty
     }
@@ -675,8 +776,7 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
       implicit val dataRequest: DataRequest[AnyContentAsEmpty.type] = DataRequest(
         FakeRequest(),"", hasCTEnrolment = false, None, emptyUserAnswers, RosmWithUtr("", RosmRegistration("", None, None, UkAddress(List.empty,"", None)))
       )
-      val action = Future.successful(Ok("woohoo"))
-      redirectLocation(requiredUserAnswers.checkYourAnswersRequiredData(action)).get mustBe controllers.routes.VerifyController.onPageLoad(NormalMode).url
+      redirectLocation(requiredUserAnswers.checkYourAnswersRequiredData(exampleSuccessAction)).get mustBe controllers.routes.VerifyController.onPageLoad(CheckMode).url
     }
     "should redirect to action when all answers answered" in {
       val userAnswers = {
@@ -697,11 +797,8 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
           .set(AskSecondaryWarehousesPage, false).success.value
           .set(ContactDetailsPage, ContactDetails("", "", "", "")).success.value
       }
-      implicit val dataRequest: DataRequest[AnyContentAsEmpty.type] = DataRequest(
-        FakeRequest(),"", hasCTEnrolment = false, None, userAnswers, RosmWithUtr("", RosmRegistration("", None, None, UkAddress(List.empty,"", None)))
-      )
-      val action = Future.successful(Ok("woohoo"))
-      contentAsString(requiredUserAnswers.checkYourAnswersRequiredData(action)) mustBe "woohoo"
+      implicit val request: DataRequest[AnyContentAsEmpty.type] = dataRequest(userAnswers)
+      contentAsString(requiredUserAnswers.checkYourAnswersRequiredData(exampleSuccessAction)) mustBe exampleSuccessActionResult
     }
   }
 }

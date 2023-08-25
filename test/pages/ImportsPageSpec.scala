@@ -16,6 +16,7 @@
 
 package pages
 
+import models.{CheckMode, NormalMode}
 import pages.behaviours.PageBehaviours
 
 class ImportsPageSpec extends PageBehaviours {
@@ -27,5 +28,12 @@ class ImportsPageSpec extends PageBehaviours {
     beSettable[Boolean](ImportsPage)
 
     beRemovable[Boolean](ImportsPage)
+
+    s"url should be correct for $NormalMode" in {
+      ImportsPage.url(NormalMode) mustBe controllers.routes.ImportsController.onPageLoad(NormalMode).url
+    }
+    s"url should be correct for $CheckMode" in {
+      ImportsPage.url(CheckMode) mustBe controllers.routes.ImportsController.onPageLoad(CheckMode).url
+    }
   }
 }

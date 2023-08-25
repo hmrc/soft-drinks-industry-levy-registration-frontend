@@ -16,7 +16,7 @@
 
 package pages
 
-import models.OrganisationType
+import models.{Mode, OrganisationType}
 import play.api.libs.json.JsPath
 
 case object OrganisationTypePage extends QuestionPage[OrganisationType] {
@@ -24,4 +24,6 @@ case object OrganisationTypePage extends QuestionPage[OrganisationType] {
   override def path: JsPath = JsPath \ toString
 
   override def toString: String = "organisationType"
+
+  override val url: Mode => String = mode => controllers.routes.OrganisationTypeController.onPageLoad(mode).url
 }

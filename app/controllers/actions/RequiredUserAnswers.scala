@@ -18,7 +18,7 @@ package controllers.actions
 
 import models.HowManyLitresGlobally._
 import models.requests.DataRequest
-import models.{ContactDetails, HowManyLitresGlobally, LitresInBands, NormalMode, OrganisationType, Verify}
+import models.{CheckMode, ContactDetails, HowManyLitresGlobally, LitresInBands, OrganisationType, Verify}
 import pages._
 import play.api.libs.json.Reads
 import play.api.mvc.Result
@@ -42,8 +42,8 @@ class RequiredUserAnswers @Inject()(genericLogger: GenericLogger)(implicit val e
   private[controllers] def checkYourAnswersRequiredData(action: => Future[Result])(implicit request: DataRequest[_]): Future[Result] = {
     val userAnswersMissing: List[RequiredPage[_,_,_]] = returnMissingAnswers(journey)
     if (userAnswersMissing.nonEmpty) {
-      genericLogger.logger.warn(s"${request.userAnswers.id} has hit CYA and is missing $userAnswersMissing")
-      Future.successful(Redirect(controllers.routes.VerifyController.onPageLoad(NormalMode)))
+      genericLogger.logger.warn(s"${request.userAnswers.id} has hit CYA and is missing $userAnswersMissing, user will be redirected to ${userAnswersMissing.head.pageRequired}")
+      Future.successful(Redirect(userAnswersMissing.head.pageRequired.asInstanceOf[Page].url(CheckMode)))
     } else {
       action
     }
@@ -52,21 +52,21 @@ class RequiredUserAnswers @Inject()(genericLogger: GenericLogger)(implicit val e
   private[controllers] def returnMissingAnswers[A: ClassTag, B: ClassTag](list: List[RequiredPage[_, _, _]])
                                                                          (implicit request: DataRequest[_]): List[RequiredPage[_, _, _]] = {
     list.filterNot { listItem =>
-      val currentPage: Option[A] = request.userAnswers.get(listItem.pageRequired.asInstanceOf[QuestionPage[A]])(listItem.reads.asInstanceOf[Reads[A]])
-      (currentPage.isDefined, listItem.basedOnPreviousPages.nonEmpty) match {
+      val currentPageFromUserAnswers: Option[A] = request.userAnswers.get(listItem.pageRequired.asInstanceOf[QuestionPage[A]])(listItem.reads.asInstanceOf[Reads[A]])
+      (currentPageFromUserAnswers.isDefined, listItem.basedOnPreviousPages.nonEmpty) match {
         case (false, true) =>
-          val userAnswersMatched: List[Boolean] = listItem.basedOnPreviousPages.map { previousListItem =>
-            val previousPage: PreviousPage[QuestionPage[B], B] = previousListItem.asInstanceOf[PreviousPage[QuestionPage[B], B]]
-            val previousPageAnswer: Option[B] = request.userAnswers.get(previousPage.page)(previousPage.reads)
-            previousPage.previousPageAnswerRequired match {
-              case Nil => !previousPageAnswer.isDefined
-              case _ => !previousPageAnswer.exists(i => previousPage.previousPageAnswerRequired.contains(i))
+          val previousUserAnswersMatchedToResultInCurrentPageRequired: List[Boolean] = listItem.basedOnPreviousPages.map { previousListItem =>
+            val previousPageRequired: PreviousPage[QuestionPage[B], B] = previousListItem.asInstanceOf[PreviousPage[QuestionPage[B], B]]
+            val previousPageAnswer: Option[B] = request.userAnswers.get(previousPageRequired.page)(previousPageRequired.reads)
+            previousPageRequired.previousPageAnswerRequired match {
+              case Nil => previousPageAnswer.isEmpty
+              case _ => !previousPageAnswer.exists(i => previousPageRequired.previousPageAnswerRequired.contains(i))
             }
           }
-          if (userAnswersMatched.contains(true) && userAnswersMatched.contains(false)) {
+          if (previousUserAnswersMatchedToResultInCurrentPageRequired.contains(true) && previousUserAnswersMatchedToResultInCurrentPageRequired.contains(false)) {
             true
           } else {
-            !userAnswersMatched.contains(false)
+            !previousUserAnswersMatchedToResultInCurrentPageRequired.contains(false)
           }
         case (false, _) => false
         case _ => true
@@ -75,10 +75,10 @@ class RequiredUserAnswers @Inject()(genericLogger: GenericLogger)(implicit val e
   }
 
   private[controllers] def journey(implicit request: DataRequest[_]): List[RequiredPage[_,_,_]] = {
-    val previousPageSmallAndNonProducer = PreviousPage(HowManyLitresGloballyPage, List(HowManyLitresGlobally.enumerable.withName("small").get,
+    val previousPageSmallOrNonProducer = PreviousPage(HowManyLitresGloballyPage, List(HowManyLitresGlobally.enumerable.withName("small").get,
       HowManyLitresGlobally.enumerable.withName("xnot").get))(implicitly[Reads[HowManyLitresGlobally]])
-    val largeGlobal = HowManyLitresGlobally.enumerable.withName("large").get
-    val smallGlobal = HowManyLitresGlobally.enumerable.withName("small").get
+    val largeProducer = HowManyLitresGlobally.enumerable.withName("large").get
+    val smallproducer = HowManyLitresGlobally.enumerable.withName("small").get
     val implicitBands = implicitly[Reads[LitresInBands]]
     val implicitGlobally = implicitly[Reads[HowManyLitresGlobally]]
     val implicitBoolean = implicitly[Reads[Boolean]]
@@ -87,28 +87,28 @@ class RequiredUserAnswers @Inject()(genericLogger: GenericLogger)(implicit val e
       RequiredPage(VerifyPage, List.empty)(implicitly[Reads[Verify]]),
       RequiredPage(OrganisationTypePage, List.empty)(implicitly[Reads[OrganisationType]]),
       RequiredPage(HowManyLitresGloballyPage, List.empty)(implicitGlobally),
-      RequiredPage(ThirdPartyPackagersPage, List(PreviousPage(HowManyLitresGloballyPage, List(smallGlobal))(implicitGlobally)))(implicitBoolean),
-      RequiredPage(OperatePackagingSitesPage, List(PreviousPage(HowManyLitresGloballyPage, List(smallGlobal, largeGlobal))(implicitGlobally)))(implicitBoolean),
+      RequiredPage(ThirdPartyPackagersPage, List(PreviousPage(HowManyLitresGloballyPage, List(smallproducer))(implicitGlobally)))(implicitBoolean),
+      RequiredPage(OperatePackagingSitesPage, List(PreviousPage(HowManyLitresGloballyPage, List(smallproducer, largeProducer))(implicitGlobally)))(implicitBoolean),
       RequiredPage(HowManyOperatePackagingSitesPage, List(PreviousPage(OperatePackagingSitesPage, List(true))(implicitBoolean)))(implicitBands),
       RequiredPage(ContractPackingPage, List.empty)(implicitBoolean),
       RequiredPage(HowManyContractPackingPage, List(PreviousPage(ContractPackingPage, List(true))(implicitBoolean)))(implicitBands),
       RequiredPage(ImportsPage, List.empty)(implicitBoolean),
       RequiredPage(HowManyImportsPage, List(PreviousPage(ImportsPage, List(true))(implicitBoolean)))(implicitBands),
-      RequiredPage(StartDatePage, List(PreviousPage(HowManyLitresGloballyPage, List(largeGlobal))(implicitGlobally)))(implicitDate),
-      RequiredPage(StartDatePage, List(previousPageSmallAndNonProducer, PreviousPage(ContractPackingPage, List(true))(implicitBoolean)))(implicitDate),
-      RequiredPage(StartDatePage, List(previousPageSmallAndNonProducer, PreviousPage(ImportsPage, List(true))(implicitBoolean)))(implicitDate),
-      RequiredPage(PackAtBusinessAddressPage, List(previousPageSmallAndNonProducer, PreviousPage(ContractPackingPage, List(true))
+      RequiredPage(StartDatePage, List(PreviousPage(HowManyLitresGloballyPage, List(largeProducer))(implicitGlobally)))(implicitDate),
+      RequiredPage(StartDatePage, List(previousPageSmallOrNonProducer, PreviousPage(ContractPackingPage, List(true))(implicitBoolean)))(implicitDate),
+      RequiredPage(StartDatePage, List(previousPageSmallOrNonProducer, PreviousPage(ImportsPage, List(true))(implicitBoolean)))(implicitDate),
+      RequiredPage(PackAtBusinessAddressPage, List(previousPageSmallOrNonProducer, PreviousPage(ContractPackingPage, List(true))
         (implicitBoolean)))(implicitBoolean),
-      RequiredPage(PackAtBusinessAddressPage, List(PreviousPage(HowManyLitresGloballyPage, List(largeGlobal))(implicitGlobally),
+      RequiredPage(PackAtBusinessAddressPage, List(PreviousPage(HowManyLitresGloballyPage, List(largeProducer))(implicitGlobally),
         PreviousPage(OperatePackagingSitesPage, List(false))(implicitBoolean), PreviousPage(ContractPackingPage, List(true))
         (implicitBoolean)))(implicitBoolean),
-      RequiredPage(PackAtBusinessAddressPage, List(PreviousPage(HowManyLitresGloballyPage, List(largeGlobal))(implicitGlobally),
+      RequiredPage(PackAtBusinessAddressPage, List(PreviousPage(HowManyLitresGloballyPage, List(largeProducer))(implicitGlobally),
         PreviousPage(OperatePackagingSitesPage, List(true))(implicitBoolean), PreviousPage(ContractPackingPage, List(true, false))
         (implicitBoolean)))(implicitBoolean),
       RequiredPage(PackagingSiteDetailsPage, List(PreviousPage(PackAtBusinessAddressPage, List(true, false))(implicitBoolean)))(implicitBoolean),
       RequiredPage(AskSecondaryWarehousesPage, List(PreviousPage(StartDatePage, List.empty)(implicitDate)))(implicitBoolean),
       RequiredPage(WarehouseDetailsPage, List(PreviousPage(AskSecondaryWarehousesPage, List(true))(implicitBoolean)))(implicitBoolean),
-      RequiredPage(ContactDetailsPage, List(PreviousPage(HowManyLitresGloballyPage, List(smallGlobal))(implicitGlobally),
+      RequiredPage(ContactDetailsPage, List(PreviousPage(HowManyLitresGloballyPage, List(smallproducer))(implicitGlobally),
         PreviousPage(ThirdPartyPackagersPage, List(true))(implicitBoolean), PreviousPage(OperatePackagingSitesPage, List(true, false))(implicitBoolean),
         PreviousPage(ContractPackingPage, List(false))(implicitBoolean), PreviousPage(ImportsPage, List(false))(implicitBoolean)))
           (implicitly[Reads[ContactDetails]]),
@@ -118,4 +118,4 @@ class RequiredUserAnswers @Inject()(genericLogger: GenericLogger)(implicit val e
 }
 
 case class RequiredPage[+A >: QuestionPage[C], +B >: PreviousPage[_, _], C](pageRequired: A, basedOnPreviousPages: List[B])(val reads: Reads[C])
-case class PreviousPage[+B >: QuestionPage[C],C](page: B, previousPageAnswerRequired: List[C])(val reads: Reads[C])
+case class PreviousPage[+B >: QuestionPage[C], C](page: B, previousPageAnswerRequired: List[C])(val reads: Reads[C])

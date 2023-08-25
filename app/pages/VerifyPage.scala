@@ -16,7 +16,7 @@
 
 package pages
 
-import models.Verify
+import models.{Mode, Verify}
 import play.api.libs.json.JsPath
 
 case object VerifyPage extends QuestionPage[Verify] {
@@ -24,4 +24,6 @@ case object VerifyPage extends QuestionPage[Verify] {
   override def path: JsPath = JsPath \ toString
 
   override def toString: String = "verify"
+
+  override val url: Mode => String = mode => controllers.routes.VerifyController.onPageLoad(mode).url
 }
