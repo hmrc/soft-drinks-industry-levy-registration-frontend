@@ -17,12 +17,14 @@
 @import java.time.LocalDateTime
 @import config.FrontendAppConfig
 @import views.summary._
+@import views.html.helpers._
 
 @this(
         layout: templates.Layout,
         govukPanel : GovukPanel,
         govukDetails: GovukDetails,
-        govukSummaryList: GovukSummaryList
+        govukSummaryList: GovukSummaryList,
+        printLinkWithJs: printLinkWithJs
 )
 
 @(seqSummaryList: Seq[(String, SummaryList)], sentDateTime: LocalDateTime, companyName: String, email: String)(implicit request: Request[_], messages: Messages, config: FrontendAppConfig)
@@ -41,9 +43,7 @@
     content = HtmlContent(messages("registrationConfirmation.panel.message", companyName))
     ))
 
-    <p class="govuk-body-m" id="printPage" xmlns="http://www.w3.org/1999/html">
-        <a href="javascript:window.print()" class="govuk-link">@messages("site.print")</a>
-    </p>
+    @printLinkWithJs(messages("site.print"))
 
     <p class="govuk-body" id="applicationSentAt">@RegistrationSummary.applicationSentDetailsMessage(sentDateTime)</p>
     <p class="govuk-body" id="applicationSentEmailed">@messages("registrationConfirmation.applicationSent.emailSent", email)</p>

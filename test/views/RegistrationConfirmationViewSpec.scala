@@ -71,10 +71,9 @@ class RegistrationConfirmationViewSpec extends ViewSpecHelper {
 
     "should include a link to print page" in {
       val printPageElements = document.getElementById("printPage")
-      printPageElements.className() mustBe Selectors.bodyM
       val link = printPageElements.getElementsByClass(Selectors.link)
       link.text() mustEqual Messages("site.print")
-      link.attr("href") mustEqual "javascript:window.print()"
+      link.attr("href") mustEqual "#print-dialogue"
     }
 
     "that has a body" - {
