@@ -35,8 +35,6 @@
         @govukSummaryList(summaryList)
         }
 
-        @printLinkWithJs(messages("site.print"))
-
         @formHelper(action = submitCall, Symbol("autoComplete") -> "off") {
             @govukButton(ButtonViewModel(messages("checkYourAnswers.submit")))
         }
