@@ -46,8 +46,8 @@ object PackagingSiteDetailsSummary {
           actions = if (packagingSiteList.size > 1) {
             Some(Actions("", Seq(
               ActionItemViewModel("site.remove", routes.RemovePackagingSiteDetailsController.onPageLoad(site._1).url)
-                .withVisuallyHiddenText(messages("packagingSiteDetails.hidden"))
-            )))
+                .withVisuallyHiddenText(messages("packagingSiteDetails.remove.hidden", site._2.tradingName.getOrElse(""), site._2.address.lines.head)))
+            ))
           } else {
             None
           }
