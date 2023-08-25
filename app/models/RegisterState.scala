@@ -16,13 +16,15 @@
 
 package models
 
+import pages.EnterBusinessDetailsPage
+
 sealed trait RegisterState
 
 object RegisterState extends Enumerable.Implicits {
 
-  object RequiresBusinessDetails extends WithName("RequiresBusinessAddress") with RegisterState
+  object RequiresBusinessDetails extends WithName("RequiresBusinessDetails") with RegisterState
   object AlreadyRegistered extends WithName("AlreadyRegistered") with RegisterState
-  object RegisterApplicationAccepted extends WithName("AlreadyRegistered") with RegisterState
+  object RegisterApplicationAccepted extends WithName("RegisterApplicationAccepted") with RegisterState
   object RegistrationPending extends WithName("RegistrationPending") with RegisterState
   object RegisterWithAuthUTR extends WithName("RegisterWithAuthUTR") with RegisterState
   object RegisterWithOtherUTR extends WithName("RegisterWithOtherUTR") with RegisterState
@@ -33,6 +35,11 @@ object RegisterState extends Enumerable.Implicits {
   )
 
   def canRegister(state: RegisterState): Boolean = List(RegisterWithAuthUTR, RegisterWithOtherUTR).contains(state)
+
+  def canAccessEnterBusinessDetails(userAnswers: UserAnswers): Boolean = {
+    (userAnswers.registerState.toString == RequiresBusinessDetails.toString) || userAnswers.get(EnterBusinessDetailsPage).nonEmpty
+  }
+
 
   implicit val enumerable: Enumerable[RegisterState] =
     Enumerable(values.map(v => v.toString -> v): _*)

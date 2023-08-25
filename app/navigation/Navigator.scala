@@ -19,6 +19,7 @@ package navigation
 import controllers.routes
 import models.HowManyLitresGlobally.{Large, Small}
 import models.OrganisationType.Partnership
+import models.RegisterState.{RegisterApplicationAccepted, RegisterWithOtherUTR, RegistrationPending}
 import models._
 import pages._
 import play.api.mvc.Call
@@ -38,7 +39,7 @@ class Navigator @Inject()() {
   private val normalRoutes: Page => UserAnswers => Call = {
     case VerifyPage => _ => routes.OrganisationTypeController.onPageLoad(NormalMode)
     case RemovePackagingSiteDetailsPage => _ => routes.PackagingSiteDetailsController.onPageLoad(NormalMode)
-    case EnterBusinessDetailsPage => _ => routes.VerifyController.onPageLoad(NormalMode)
+    case EnterBusinessDetailsPage => userAnswers => navigationForEnterBusinessDetails(userAnswers)
     case WarehouseDetailsPage => _ => routes.ContactDetailsController.onPageLoad(NormalMode)
     case RemoveWarehouseDetailsPage => _ => routes.WarehouseDetailsController.onPageLoad(NormalMode)
     case ContactDetailsPage => _ => routes.CheckYourAnswersController.onPageLoad
@@ -58,7 +59,6 @@ class Navigator @Inject()() {
   }
 
   private val checkRouteMap: Page => UserAnswers => Option[String] => Call = {
-    case EnterBusinessDetailsPage => _ =>_ => routes.VerifyController.onPageLoad(NormalMode)
     case RemoveWarehouseDetailsPage => _ => _ => routes.WarehouseDetailsController.onPageLoad(CheckMode)
     case StartDatePage => userAnswers => _ => navigationForStartDate(userAnswers, CheckMode)
     case ContractPackingPage => userAnswers => _ => navigationForContractPacking(userAnswers, CheckMode)
@@ -142,6 +142,15 @@ class Navigator @Inject()() {
       routes.PackAtBusinessAddressController.onPageLoad(mode)
     } else {
       routes.CheckYourAnswersController.onPageLoad
+    }
+  }
+
+  private def navigationForEnterBusinessDetails(userAnswers: UserAnswers): Call = {
+    userAnswers.registerState match {
+      case RegisterWithOtherUTR => routes.VerifyController.onPageLoad(NormalMode)
+      case RegistrationPending => routes.RegistrationPendingController.onPageLoad
+      case RegisterApplicationAccepted => routes.IndexController.onPageLoad
+      case _ => routes.RegistrationController.start
     }
   }
 

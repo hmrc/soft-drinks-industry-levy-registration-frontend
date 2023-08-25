@@ -57,7 +57,7 @@ trait ActionHelpers {
 
 object ActionHelpers extends ActionHelpers {
   def getRouteForRegisterState(registerState: RegisterState) = registerState match {
-    case RequiresBusinessDetails => EnterBusinessDetailsController.onPageLoad(NormalMode)
+    case RequiresBusinessDetails => EnterBusinessDetailsController.onPageLoad
     case AlreadyRegistered => AlreadyRegisteredController.onPageLoad
     case RegisterApplicationAccepted => IndexController.onPageLoad
     case RegistrationPending => RegistrationPendingController.onPageLoad

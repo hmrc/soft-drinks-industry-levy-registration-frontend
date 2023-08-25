@@ -23,14 +23,15 @@ trait PreconditionHelpers {
     builder
       .user.isAuthorisedAndEnrolled
       .sdilBackend.retrieveSubscriptionNone("utr", "0000001611")
+      .sdilBackend.retrieveRosm("0000001611")
       .sdilBackend.checkPendingQueuePending("0000001611")
   }
 
-  def authorisedWithoutSdilSubscriptionQueueContainsRecordOfRegistered = {
+  def authorisedWithBothSDILandUTRInEnrolmentsAndHasROSM = {
     builder
-      .user.isAuthorisedAndEnrolled
-      .sdilBackend.retrieveSubscriptionNone("utr", "0000001611")
-      .sdilBackend.checkPendingQueueRegistered("0000001611")
+      .user.isAuthorisedAndEnrolledBoth
+      .sdilBackend.retrieveSubscription("utr", "0000001611")
+      .sdilBackend.retrieveRosm("0000001611")
   }
 
   def authorisedButNoEnrolmentsPrecondition = {

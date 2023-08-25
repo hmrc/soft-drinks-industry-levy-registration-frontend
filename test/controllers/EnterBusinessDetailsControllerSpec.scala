@@ -19,13 +19,14 @@ package controllers
 import base.SpecBase
 import connectors.SoftDrinksIndustryLevyConnector
 import controllers.actions.DataRequiredActionImpl
-import errors.{NoROSMRegistration, SessionDatabaseInsertError}
+import errors.{EnteredBusinessDetailsDoNotMatch, NoROSMRegistration, SessionDatabaseInsertError}
 import forms.EnterBusinessDetailsFormProvider
 import handlers.ErrorHandler
 import helpers.LoggerHelper
 import models.requests.{DataRequest, OptionalDataRequest}
-import models.{Identify, NormalMode}
+import models.{Identify, NormalMode, RegisterState}
 import navigation.{FakeNavigator, Navigator}
+import orchestrators.RegistrationOrchestrator
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
@@ -49,19 +50,21 @@ class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with
   }
 
   val mockHttp = mock[HttpClient]
-  val softDrinksIndustryLevyConnector = mock[SoftDrinksIndustryLevyConnector]
+  val mockOrchestrator = mock[RegistrationOrchestrator]
   val mockSessionService = mock[SessionService]
 
   val formProvider = new EnterBusinessDetailsFormProvider()
   val form = formProvider()
 
-  lazy val enterBusinessDetailsRoute = routes.EnterBusinessDetailsController.onPageLoad(NormalMode).url
+  lazy val enterBusinessDetailsRoute = routes.EnterBusinessDetailsController.onPageLoad.url
+  val emptyUserAnswersForEnterBusinessDetails = emptyUserAnswers.copy(registerState = RegisterState.RequiresBusinessDetails)
+
 
   "EnterBusinessDetails Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswersForEnterBusinessDetails)).build()
 
       running(application) {
         val request = FakeRequest(GET, enterBusinessDetailsRoute)
@@ -71,22 +74,22 @@ class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with
         val view = application.injector.instanceOf[EnterBusinessDetailsView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application), frontendAppConfig).toString
+        contentAsString(result) mustEqual view(form)(request, messages(application), frontendAppConfig).toString
       }
     }
 
     "must redirect to the next page when valid data is submitted" in {
 
-      when(softDrinksIndustryLevyConnector.retreiveRosmSubscription(any(),any())(any()))
-        .thenReturn(createSuccessRegistrationResult(rosmRegistration))
+      when(mockOrchestrator.checkEnteredBusinessDetailsAreValidAndUpdateUserAnswers(any(),any(), any())(any(), any()))
+        .thenReturn(createSuccessRegistrationResult(emptyUserAnswersForEnterBusinessDetails))
       when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(true)
 
       val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        applicationBuilder(userAnswers = Some(emptyUserAnswersForEnterBusinessDetails))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionService].toInstance(mockSessionService),
-            bind[SoftDrinksIndustryLevyConnector].toInstance(softDrinksIndustryLevyConnector)
+            bind[RegistrationOrchestrator].toInstance(mockOrchestrator)
           )
           .build()
 
@@ -104,15 +107,16 @@ class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with
 
     "must return a Bad Request and errors when utr or postcode is found from rosm data when submitted" in {
 
-      when(softDrinksIndustryLevyConnector.retreiveRosmSubscription(any(),any())(any())) thenReturn createFailureRegistrationResult(NoROSMRegistration)
+      when(mockOrchestrator.checkEnteredBusinessDetailsAreValidAndUpdateUserAnswers(any(), any(), any())(any(), any()))
+        .thenReturn(createFailureRegistrationResult(EnteredBusinessDetailsDoNotMatch))
       when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(true)
 
       val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        applicationBuilder(userAnswers = Some(emptyUserAnswersForEnterBusinessDetails))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionService].toInstance(mockSessionService),
-            bind[SoftDrinksIndustryLevyConnector].toInstance(softDrinksIndustryLevyConnector)
+            bind[RegistrationOrchestrator].toInstance(mockOrchestrator)
           )
           .build()
 
@@ -127,21 +131,22 @@ class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with
 
         status(result) mustEqual BAD_REQUEST
         contentAsString(result) mustEqual  view(form.fill(Identify(utr = "0000000436", postcode = "GU14 8NL"))
-          .withError("utr", "enterBusinessDetails.no-record.utr"), NormalMode)(request, messages(application), frontendAppConfig).toString
+          .withError("utr", "enterBusinessDetails.no-record.utr"))(request, messages(application), frontendAppConfig).toString
       }
     }
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      when(softDrinksIndustryLevyConnector.retreiveRosmSubscription(any(),any())(any())) thenReturn createSuccessRegistrationResult(rosmRegistration)
+      when(mockOrchestrator.checkEnteredBusinessDetailsAreValidAndUpdateUserAnswers(any(), any(), any())(any(), any()))
+        .thenReturn(createFailureRegistrationResult(NoROSMRegistration))
       when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(true)
 
       val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        applicationBuilder(userAnswers = Some(emptyUserAnswersForEnterBusinessDetails))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionService].toInstance(mockSessionService),
-            bind[SoftDrinksIndustryLevyConnector].toInstance(softDrinksIndustryLevyConnector)
+            bind[RegistrationOrchestrator].toInstance(mockOrchestrator)
           )
           .build()
 
@@ -157,22 +162,22 @@ class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application), frontendAppConfig).toString
+        contentAsString(result) mustEqual view(boundForm)(request, messages(application), frontendAppConfig).toString
       }
     }
 
     "should log an error message when internal server error is returned when user answers are not set in session repository" in {
 
-      when(softDrinksIndustryLevyConnector.retreiveRosmSubscription(any(),any())(any()))
-        .thenReturn(createSuccessRegistrationResult(rosmRegistration))
+      when(mockOrchestrator.checkEnteredBusinessDetailsAreValidAndUpdateUserAnswers(any(), any(), any())(any(), any()))
+        .thenReturn(createSuccessRegistrationResult(emptyUserAnswersForEnterBusinessDetails))
       when(mockSessionService.set(any())) thenReturn createFailureRegistrationResult(SessionDatabaseInsertError)
 
       val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        applicationBuilder(userAnswers = Some(emptyUserAnswersForEnterBusinessDetails))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionService].toInstance(mockSessionService),
-            bind[SoftDrinksIndustryLevyConnector].toInstance(softDrinksIndustryLevyConnector)
+            bind[RegistrationOrchestrator].toInstance(mockOrchestrator)
           )
           .build()
 

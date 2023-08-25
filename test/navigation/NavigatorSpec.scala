@@ -37,7 +37,7 @@ class NavigatorSpec extends SpecBase {
       "must go from a page that doesn't exist in the route map to Index" in {
 
         case object UnknownPage extends Page
-        navigator.nextPage(UnknownPage, NormalMode, UserAnswers("id", RegisterState.RegisterWithAuthUTR)) mustBe routes.IndexController.onPageLoad
+        navigator.nextPage(UnknownPage, NormalMode, UserAnswers("id", RegisterState.RegisterWithAuthUTR)) mustBe routes.RegistrationController.start
       }
 
       "when on organisation type page" - {
@@ -92,10 +92,10 @@ class NavigatorSpec extends SpecBase {
           result mustBe routes.ContractPackingController.onPageLoad(NormalMode)
         }
 
-        "must navigate to index controller page when no answer available in user answers" in {
+        "must navigate to start page when no answer available in user answers" in {
           val result = navigator.nextPage(HowManyLitresGloballyPage, NormalMode,
             UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj()))
-          result mustBe routes.IndexController.onPageLoad
+          result mustBe routes.RegistrationController.start
         }
 
       }
@@ -216,10 +216,10 @@ class NavigatorSpec extends SpecBase {
           result mustBe routes.ContractPackingController.onPageLoad(CheckMode)
         }
 
-        "must navigate to index controller page when no answer available in user answers" in {
+        "must navigate to the start when no answer available in user answers" in {
           val result = navigator.nextPage(HowManyLitresGloballyPage, CheckMode,
             UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj()))
-          result mustBe routes.IndexController.onPageLoad
+          result mustBe routes.RegistrationController.start
         }
       }
 

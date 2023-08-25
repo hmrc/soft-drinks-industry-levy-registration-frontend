@@ -1,7 +1,7 @@
 package controllers
 
 import models.backend.UkAddress
-import models.{Identify, IndividualDetails, OrganisationDetails, RosmRegistration}
+import models.{Identify, IndividualDetails, OrganisationDetails, RegisterState, RosmRegistration}
 import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
 import pages.EnterBusinessDetailsPage
@@ -15,9 +15,9 @@ class RegistrationPendingControllerISpec extends ControllerITTestHelper {
   "GET " + normalRoutePath - {
     s"should return OK and render the RegistrationPending page when $EnterBusinessDetailsPage UTR IS NOT Populated" in {
       given
-        .commonPrecondition
+        .authorisedWithoutSdilSubscriptionPendingQueueContainsRecordOfPending
 
-      setAnswers(emptyUserAnswers)
+      setAnswers(emptyUserAnswers.copy(registerState = RegisterState.RegistrationPending))
 
       WsTestClient.withClient { client =>
         val result1 = createClientRequestGet(client, baseUrl + normalRoutePath)
@@ -46,7 +46,7 @@ class RegistrationPendingControllerISpec extends ControllerITTestHelper {
         .sdilBackend.checkPendingQueueDoesntExist(utr)
         .sdilBackend.retrieveRosm(utr, rosmReg)
 
-      setAnswers(emptyUserAnswers.set(EnterBusinessDetailsPage, Identify(utr, "posty")).success.value)
+      setAnswers(emptyUserAnswers.copy(registerState = RegisterState.RegistrationPending).set(EnterBusinessDetailsPage, Identify(utr, "posty")).success.value)
 
       WsTestClient.withClient { client =>
         val result1 = createClientRequestGet(client, baseUrl + normalRoutePath)
@@ -61,8 +61,7 @@ class RegistrationPendingControllerISpec extends ControllerITTestHelper {
         }
       }
     }
-    testOtherSuccessUserTypes(baseUrl + normalRoutePath, Messages("registrationPending" + ".title"
-    ) )
+    testOtherSuccessUserTypes(baseUrl + normalRoutePath, Messages("registrationPending" + ".title"), ua = emptyUserAnswers.copy(registerState = RegisterState.RegistrationPending))
     testUnauthorisedUser(baseUrl + normalRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)
   }

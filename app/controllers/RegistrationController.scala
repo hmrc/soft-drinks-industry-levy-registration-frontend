@@ -38,7 +38,7 @@ class RegistrationController @Inject()(identify: IdentifierAction,
     implicit request =>
       registrationOrchestrator.handleRegistrationRequest.value.map{
         case Right(RegistrationPending) => Redirect(routes.RegistrationPendingController.onPageLoad)
-        case Right(RequiresBusinessDetails) => Redirect(routes.EnterBusinessDetailsController.onPageLoad(NormalMode))
+        case Right(RequiresBusinessDetails) => Redirect(routes.EnterBusinessDetailsController.onPageLoad)
         case Right(AlreadyRegistered) => Redirect(routes.AlreadyRegisteredController.onPageLoad)
         case Right(RegisterApplicationAccepted) => Redirect(routes.IndexController.onPageLoad)
         case Right(_) => Redirect(routes.VerifyController.onPageLoad(NormalMode))

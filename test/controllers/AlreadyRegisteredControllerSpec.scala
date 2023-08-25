@@ -17,6 +17,12 @@
 package controllers
 
 import base.SpecBase
+import connectors.SoftDrinksIndustryLevyConnector
+import models.RegisterState
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
+import org.mockito.MockitoSugar.mock
+import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import viewmodels.AddressFormattingHelper
@@ -25,12 +31,20 @@ import views.html.AlreadyRegisteredView
 class AlreadyRegisteredControllerSpec extends SpecBase {
 
   "AlreadyRegistered Controller" - {
+    val emptyUserAnswersForAlreadyReg = emptyUserAnswers.copy(registerState = RegisterState.AlreadyRegistered)
+
 
     "must return OK and the correct view for a GET" in {
+      val mockSdilConnector = mock[SoftDrinksIndustryLevyConnector]
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswersForAlreadyReg), utr = Some(utr))
+        .overrides(
+          bind[SoftDrinksIndustryLevyConnector].toInstance(mockSdilConnector)
+        ).build()
 
       running(application) {
+        when(mockSdilConnector.retreiveRosmSubscription(any(), any())(any())).thenReturn(createSuccessRegistrationResult(rosmRegistration))
+
         val request = FakeRequest(GET, routes.AlreadyRegisteredController.onPageLoad.url)
 
         val result = route(application, request).value

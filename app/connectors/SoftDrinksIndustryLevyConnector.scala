@@ -64,18 +64,22 @@ class SoftDrinksIndustryLevyConnector @Inject()(
   private def getSubscriptionUrl(identifierValue: String, identifierType: String): String = s"$sdilUrl/subscription/$identifierType/$identifierValue"
 
   def checkPendingQueue(utr: String)(implicit hc: HeaderCarrier): RegistrationResult[SubscriptionStatus] = EitherT {
-    def onError(status: Int): RegistrationErrors = {
-      genericLogger.logger.warn(s"Returned unexpected status $status for ${hc.requestId} when attempting to check pending queue")
-      UnexpectedResponseFromSDIL
+    def onError(status: Int): Either[RegistrationErrors, SubscriptionStatus] = {
+      if(status == NOT_FOUND) {
+        Right(DoesNotExist)
+      } else {
+        genericLogger.logger.warn(s"Returned unexpected status $status for ${hc.requestId} when attempting to check pending queue")
+        Left(UnexpectedResponseFromSDIL)
+      }
     }
 
     http.GET[HttpResponse](s"$sdilUrl/check-enrolment-status/$utr").map(_.status match {
       case OK => Right(Registered)
       case ACCEPTED => Right(Pending)
-      case status => Left(onError(status))
+      case status => onError(status)
     }) recover {
       case _: NotFoundException => Right(DoesNotExist)
-      case e: HttpException => Left(onError(e.responseCode))
+      case e: HttpException => onError(e.responseCode)
     }
   }
 
@@ -101,8 +105,14 @@ class SoftDrinksIndustryLevyConnector @Inject()(
   def createSubscription(subscription: Subscription, safeId: String)
                         (implicit hc: HeaderCarrier): RegistrationResult[Unit] = EitherT {
     val url = s"$sdilUrl/subscription/utr/${subscription.utr}/$safeId"
-    http.POST[Subscription, HttpResponse](url, subscription).map{ _ =>
-      Right((): Unit)
+    http.POST[Subscription, HttpResponse](url, subscription).map{ resp => resp.status match {
+      case OK => Right((): Unit)
+      case CONFLICT =>
+        genericLogger.logger.warn(s"[SoftDrinksIndustryLevyConnector][createSubscription] - CONFLICT returned for ${subscription.utr}")
+        Right((): Unit)
+      case status => genericLogger.logger.error(s"[SoftDrinksIndustryLevyConnector][createSubscription] - unexpected response $status for ${subscription.utr}")
+        Left(UnexpectedResponseFromSDIL)
+      }
     }.recover{
       case _ =>
         genericLogger.logger.error(s"[SoftDrinksIndustryLevyConnector][createSubscription] - unexpected response for ${subscription.utr}")

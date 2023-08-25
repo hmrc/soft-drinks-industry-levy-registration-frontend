@@ -65,10 +65,11 @@ class ControllerActions @Inject()(identify: IdentifierAction,
       override protected def refine[A](request: OptionalDataRequest[A]): Future[Either[Result, DataRequestForEnterBusinessDetails[A]]] = {
         implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
         request.userAnswers match {
-          case Some(userAnswers) if userAnswers.registerState == RequiresBusinessDetails =>
+          case Some(userAnswers) if canAccessEnterBusinessDetails(userAnswers) =>
             Future.successful(Right(DataRequestForEnterBusinessDetails(request = request.request, internalId = request.internalId,
               hasCTEnrolment = request.hasCTEnrolment, authUtr = request.authUtr, userAnswers = userAnswers)))
-          case Some(userAnswers) => val call = ActionHelpers.getRouteForRegisterState(userAnswers.registerState)
+          case Some(userAnswers) =>
+            val call = ActionHelpers.getRouteForRegisterState(userAnswers.registerState)
             Future.successful(Left(Redirect(call)))
           case _ =>
             genericLogger.logger.info(s"User has no user answers ${hc.requestId}")
@@ -85,17 +86,20 @@ class ControllerActions @Inject()(identify: IdentifierAction,
       override protected def refine[A](request: OptionalDataRequest[A]): Future[Either[Result, DataRequest[A]]] = {
         implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
         request.userAnswers match {
-          case Some(userAnswers) if userAnswers.registerState == registerState =>
-            getUtrFromUserAnswers(userAnswers, request) match {
-              case Some(utr) => sdilConnector.retreiveRosmSubscription(utr, request.internalId).value.map {
-                case Right(rosmWithUtr) => Right(DataRequest(request, request.internalId, request.hasCTEnrolment, request.authUtr, userAnswers, rosmWithUtr))
+          case Some(userAnswers) if userAnswers.registerState.toString == registerState.toString =>
+            getUtr(userAnswers, request) match {
+              case Some(utr) =>
+                sdilConnector.retreiveRosmSubscription(utr, request.internalId).value.map {
+                case Right(rosmWithUtr) =>
+                  Right(DataRequest(request, request.internalId, request.hasCTEnrolment, request.authUtr, userAnswers, rosmWithUtr))
                 case Left(_) => Left(InternalServerError(errorHandler.internalServerErrorTemplate(request)))
               }
               case None =>
                 genericLogger.logger.error(s"User has no utr when required for register state ${userAnswers.registerState}")
                 Future.successful(Left(InternalServerError(errorHandler.internalServerErrorTemplate(request))))
             }
-          case Some(userAnswers) => val call = ActionHelpers.getRouteForRegisterState(userAnswers.registerState)
+          case Some(userAnswers) =>
+            val call = ActionHelpers.getRouteForRegisterState(userAnswers.registerState)
             Future.successful(Left(Redirect(call)))
           case _ =>
             genericLogger.logger.info(s"User has no user answers ${hc.requestId}")
@@ -107,7 +111,7 @@ class ControllerActions @Inject()(identify: IdentifierAction,
     }
   }
 
-  private def getUtrFromUserAnswers[A](userAnswers: UserAnswers, request: OptionalDataRequest[A]): Option[String] = {
+  private def getUtr[A](userAnswers: UserAnswers, request: OptionalDataRequest[A]): Option[String] = {
       userAnswers.get(EnterBusinessDetailsPage).map(_.utr).orElse(request.authUtr)
   }
 

@@ -17,11 +17,12 @@
 package controllers.actions
 
 import base.SpecBase
-import connectors.{DoesNotExist, Pending, Registered, SoftDrinksIndustryLevyConnector}
+import connectors.SoftDrinksIndustryLevyConnector
+import controllers.routes
 import errors.NoROSMRegistration
 import handlers.ErrorHandler
 import models.requests.{DataRequest, OptionalDataRequest}
-import models.{Identify, NormalMode}
+import models.{Identify, RegisterState}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
@@ -40,6 +41,7 @@ class DataRequiredActionSpec extends SpecBase with MockitoSugar {
   }
   val connector = mock[SoftDrinksIndustryLevyConnector]
   val request = FakeRequest()
+  val postcode = "GU14 8NL"
 
   "Data Required Action" - {
 
@@ -47,107 +49,94 @@ class DataRequiredActionSpec extends SpecBase with MockitoSugar {
 
       val action = new Harness(connector)
       val result = action.callRefine(OptionalDataRequest(request, "internalId", userAnswers = None)).futureValue
-      result.left.toOption.get mustBe Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+      result.left.toOption.get mustBe Redirect(controllers.routes.RegistrationController.start)
     }
-    "when there are user answers but user has not answered Identify Page, and has a utr in auth" - {
-      s"should redirect away when pending queue returns $Registered" in {
-        val internalId = "foo"
-        val utr = "bar"
 
-        when(connector.checkPendingQueue(ArgumentMatchers.eq(utr))(ArgumentMatchers.any())) thenReturn createSuccessRegistrationResult(Registered)
-        val action = new Harness(connector)
-        val result = action.callRefine(OptionalDataRequest(request, internalId, authUtr = Some(utr), userAnswers = Some(emptyUserAnswers))).futureValue
+    RegisterState.values.foreach{ registerState =>
+      s"when the user answers are present and has a register state of $registerState" - {
+        if(RegisterState.canRegister(registerState)) {
+          "when the user entered a utr" - {
+            if(registerState == RegisterState.RegisterWithOtherUTR) {
+              val userAnswers = emptyUserAnswers.copy(registerState = registerState)
+                .set(EnterBusinessDetailsPage, Identify(utr, postcode)).success.value
+              "should return success" - {
+                "when the utr has rosmData" in {
+                  when(connector.retreiveRosmSubscription(ArgumentMatchers.eq(utr), ArgumentMatchers.eq(identifier))(ArgumentMatchers.any()))
+                    .thenReturn(createSuccessRegistrationResult(rosmRegistration))
+                  val action = new Harness(connector)
+                  val result = action.callRefine(OptionalDataRequest(request, identifier, authUtr = None, userAnswers = Some(userAnswers))).futureValue
 
-        result.left.toOption.get mustBe Redirect(controllers.routes.IndexController.onPageLoad)
+                  val rightResult = result.toOption.get
+                  rightResult.rosmWithUtr mustBe rosmRegistration
+                  rightResult.userAnswers mustBe userAnswers
+                  rightResult.authUtr mustBe None
+                }
+              }
+              "should render the error page" - {
+                "when the utr does not contain rosmData" in {
+                  when(connector.retreiveRosmSubscription(ArgumentMatchers.eq(utr), ArgumentMatchers.eq(identifier))(ArgumentMatchers.any()))
+                    .thenReturn(createFailureRegistrationResult(NoROSMRegistration))
+                  val action = new Harness(connector)
+                  val result = action.callRefine(OptionalDataRequest(request, identifier, authUtr = None, userAnswers = Some(userAnswers))).futureValue
+                  result.left.toOption.get.header.status mustBe 500
+                }
+                "when the useranswers does not contain the utr" in {
+                  val userAnswerNoUtr = emptyUserAnswers.copy(registerState = registerState)
+                  val action = new Harness(connector)
+                  val result = action.callRefine(OptionalDataRequest(request, identifier, authUtr = None, userAnswers = Some(userAnswerNoUtr))).futureValue
+                  result.left.toOption.get.header.status mustBe 500
+                }
+              }
+            } else {
+              val userAnswers = emptyUserAnswers.copy(registerState = registerState)
+              "when the user has a utr in auth" - {
+                "should return success" - {
+                  "when the utr has rosmData" in {
+                    when(connector.retreiveRosmSubscription(ArgumentMatchers.eq(utr), ArgumentMatchers.eq(identifier))(ArgumentMatchers.any()))
+                      .thenReturn(createSuccessRegistrationResult(rosmRegistration))
+                    val action = new Harness(connector)
+                    val result = action.callRefine(OptionalDataRequest(request, identifier, authUtr = Some(utr), userAnswers = Some(userAnswers))).futureValue
+
+                    val rightResult = result.toOption.get
+                    rightResult.rosmWithUtr mustBe rosmRegistration
+                    rightResult.userAnswers mustBe userAnswers
+                    rightResult.authUtr mustBe Some(utr)
+                  }
+                }
+              }
+
+              "should render the error page" - {
+                "when the utr from auth does not contain rosmData" in {
+                  when(connector.retreiveRosmSubscription(ArgumentMatchers.eq(utr), ArgumentMatchers.eq(identifier))(ArgumentMatchers.any()))
+                    .thenReturn(createFailureRegistrationResult(NoROSMRegistration))
+                  val action = new Harness(connector)
+                  val result = action.callRefine(OptionalDataRequest(request, identifier, authUtr = Some(utr), userAnswers = Some(userAnswers))).futureValue
+                  result.left.toOption.get.header.status mustBe 500
+                }
+                "when there is no auth utr" in {
+                  val action = new Harness(connector)
+                  val result = action.callRefine(OptionalDataRequest(request, identifier, authUtr = None, userAnswers = Some(userAnswers))).futureValue
+                  result.left.toOption.get.header.status mustBe 500
+                }
+              }
+            }
+          }
+        } else {
+          "should redirect away" in {
+            val expectedRedirectLocation = registerState match {
+              case RegisterState.RequiresBusinessDetails => routes.EnterBusinessDetailsController.onPageLoad
+              case RegisterState.AlreadyRegistered => routes.AlreadyRegisteredController.onPageLoad
+              case RegisterState.RegisterApplicationAccepted => routes.IndexController.onPageLoad
+              case _ => routes.RegistrationPendingController.onPageLoad
+            }
+            val userAnswers = emptyUserAnswers.copy(registerState = registerState)
+            val action = new Harness(connector)
+            val result = action.callRefine(OptionalDataRequest(request, identifier, authUtr = Some(utr), userAnswers = Some(userAnswers))).futureValue
+
+            result.left.toOption.get mustBe Redirect(expectedRedirectLocation)
+          }
+        }
       }
-      s"should redirect away when pending queue returns $Pending" in {
-        val internalId = "foo"
-        val utr = "bar"
-
-        when(connector.checkPendingQueue(ArgumentMatchers.eq(utr))(ArgumentMatchers.any())) thenReturn createSuccessRegistrationResult(Pending)
-        val action = new Harness(connector)
-        val result = action.callRefine(OptionalDataRequest(request, internalId, authUtr = Some(utr), userAnswers = Some(emptyUserAnswers))).futureValue
-
-        result.left.toOption.get mustBe Redirect(controllers.routes.RegistrationPendingController.onPageLoad)
-      }
-      s"should call rosm when pending queue returns $DoesNotExist but redirect away when rosm returns None" in {
-        val internalId = "id"
-        val utr = "bar"
-
-        when(connector.checkPendingQueue(ArgumentMatchers.eq(utr))(ArgumentMatchers.any())) thenReturn createSuccessRegistrationResult(DoesNotExist)
-
-        when(connector.retreiveRosmSubscription(ArgumentMatchers.eq(utr), ArgumentMatchers.eq(internalId))(ArgumentMatchers.any())) thenReturn createFailureRegistrationResult(NoROSMRegistration)
-        val action = new Harness(connector)
-        val result = action.callRefine(OptionalDataRequest(request, internalId, authUtr = Some(utr), userAnswers = Some(emptyUserAnswers))).futureValue
-
-        result.left.toOption.get mustBe Redirect(controllers.routes.IndexController.onPageLoad)
-      }
-      s"should call rosm when pending queue returns $DoesNotExist and return success with rosm subscription" in {
-        val internalId = "id"
-        val utr = "bar"
-
-        when(connector.checkPendingQueue(ArgumentMatchers.eq(utr))(ArgumentMatchers.any())) thenReturn createSuccessRegistrationResult(DoesNotExist)
-        when(connector.retreiveRosmSubscription(ArgumentMatchers.eq(utr), ArgumentMatchers.eq(internalId))(ArgumentMatchers.any())) thenReturn createSuccessRegistrationResult(rosmRegistration)
-        val action = new Harness(connector)
-        val result = action.callRefine(OptionalDataRequest(request, internalId, authUtr = Some(utr), userAnswers = Some(emptyUserAnswers))).futureValue
-
-        val rightResult = result.toOption.get
-        rightResult.rosmWithUtr mustBe rosmRegistration
-        rightResult.userAnswers mustBe emptyUserAnswers
-        rightResult.authUtr mustBe Some(utr)
-      }
-    }
-    s"when there are user answers but user has answered the $EnterBusinessDetailsPage and nothing exists in auth for utr" - {
-      val utr = "foobar"
-      val userAnswersWithEnterBusinessDetailsPage = emptyUserAnswers.set(EnterBusinessDetailsPage, Identify(utr, "foo")).success.value
-
-      s"should redirect away when pending queue returns $Registered" in {
-        val internalId = "foo"
-
-        when(connector.checkPendingQueue(ArgumentMatchers.eq(utr))(ArgumentMatchers.any())) thenReturn createSuccessRegistrationResult(Registered)
-        val action = new Harness(connector)
-        val result = action.callRefine(OptionalDataRequest(request, internalId, authUtr = None, userAnswers = Some(userAnswersWithEnterBusinessDetailsPage))).futureValue
-
-        result.left.toOption.get mustBe Redirect(controllers.routes.IndexController.onPageLoad)
-      }
-      s"should redirect away when pending queue returns $Pending" in {
-        val internalId = "foo"
-
-        when(connector.checkPendingQueue(ArgumentMatchers.eq(utr))(ArgumentMatchers.any()))thenReturn createSuccessRegistrationResult(Pending)
-        val action = new Harness(connector)
-        val result = action.callRefine(OptionalDataRequest(request, internalId, authUtr = None, userAnswers = Some(userAnswersWithEnterBusinessDetailsPage))).futureValue
-
-        result.left.toOption.get mustBe Redirect(controllers.routes.RegistrationPendingController.onPageLoad)
-      }
-      s"should call rosm when pending queue returns $DoesNotExist but redirect away when rosm returns None" in {
-        val internalId = "foo"
-
-        when(connector.checkPendingQueue(ArgumentMatchers.eq(utr))(ArgumentMatchers.any())) thenReturn createSuccessRegistrationResult(DoesNotExist)
-        when(connector.retreiveRosmSubscription(ArgumentMatchers.eq(utr), ArgumentMatchers.eq(internalId))(ArgumentMatchers.any())) thenReturn createFailureRegistrationResult(NoROSMRegistration)
-        val action = new Harness(connector)
-        val result = action.callRefine(OptionalDataRequest(request, internalId, authUtr = None, userAnswers = Some(userAnswersWithEnterBusinessDetailsPage))).futureValue
-
-        result.left.toOption.get mustBe Redirect(controllers.routes.IndexController.onPageLoad)
-      }
-      s"should call rosm when pending queue returns $DoesNotExist and return success with rosm subscription" in {
-        val internalId = "foo"
-        when(connector.checkPendingQueue(ArgumentMatchers.eq(utr))(ArgumentMatchers.any()))  thenReturn createSuccessRegistrationResult(DoesNotExist)
-        when(connector.retreiveRosmSubscription(ArgumentMatchers.eq(utr), ArgumentMatchers.eq(internalId))(ArgumentMatchers.any())) thenReturn createSuccessRegistrationResult(rosmRegistration)
-        val action = new Harness(connector)
-        val result = action.callRefine(OptionalDataRequest(request, internalId, authUtr = None, userAnswers = Some(userAnswersWithEnterBusinessDetailsPage))).futureValue
-
-        val rightResult = result.toOption.get
-        rightResult.rosmWithUtr mustBe rosmRegistration
-        rightResult.userAnswers mustBe userAnswersWithEnterBusinessDetailsPage
-        rightResult.authUtr mustBe None
-      }
-    }
-    s"when user has user answers but no utr and has NOT answered the $EnterBusinessDetailsPage, redirect away" in {
-      val internalId = "foo"
-      val action = new Harness(connector)
-      val result = action.callRefine(OptionalDataRequest(request, internalId, authUtr = None, userAnswers = Some(emptyUserAnswers))).futureValue
-
-      result.left.toOption.get mustBe Redirect(controllers.routes.EnterBusinessDetailsController.onPageLoad(NormalMode))
     }
   }
 }

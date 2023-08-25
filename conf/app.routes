@@ -125,8 +125,7 @@ GET        /application-already-sent                        controllers.Registra
 
 GET        /application-already-registered                        controllers.AlreadyRegisteredController.onPageLoad
 
-GET        /enter-business-details                        controllers.EnterBusinessDetailsController.onPageLoad(mode: Mode = NormalMode)
-POST       /enter-business-details                        controllers.EnterBusinessDetailsController.onSubmit(mode: Mode = NormalMode)
-GET        /change-enter-business-details                  controllers.EnterBusinessDetailsController.onPageLoad(mode: Mode = CheckMode)
-POST       /change-enter-business-details                  controllers.EnterBusinessDetailsController.onSubmit(mode: Mode = CheckMode)
+GET        /enter-business-details                        controllers.EnterBusinessDetailsController.onPageLoad
+POST       /enter-business-details                        controllers.EnterBusinessDetailsController.onSubmit
+
 GET        /registration-confirmation                        controllers.RegistrationConfirmationController.onPageLoad
