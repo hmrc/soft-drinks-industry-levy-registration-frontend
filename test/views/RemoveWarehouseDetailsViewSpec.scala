@@ -158,7 +158,7 @@ class RemoveWarehouseDetailsViewSpec extends ViewSpecHelper {
     }
 
     "contain the correct button" - {
-      document.getElementsByClass(Selectors.button).text() mustBe Messages("site.continue")
+      document.getElementsByClass(Selectors.button).text() mustBe "Save and continue"
     }
     "have the expected address message" in {
       document.getElementById("warehouseToRemove").text mustBe html.body

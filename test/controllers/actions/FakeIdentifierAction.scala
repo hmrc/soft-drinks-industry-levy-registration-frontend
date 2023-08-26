@@ -24,7 +24,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class FakeIdentifierAction(bodyParsers: BodyParser[AnyContent], hasCTEnrolment: Boolean = false, utr: Option[String] = None, optSdilEnrolment: Option[String] = None, isRegistered: Boolean = false) extends IdentifierAction  {
 
   override protected def refine[A](request: Request[A]): Future[Either[Result, IdentifierRequest[A]]] =
-    Future.successful(Right(IdentifierRequest(request, "id", hasCTEnrolment, utr, optSdilEnrolment, isRegistered)))
+    Future.successful(Right(IdentifierRequest(request, "id", hasCTEnrolment, utr, isRegistered)))
 
   override def parser: BodyParser[AnyContent] =
     bodyParsers

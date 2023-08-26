@@ -17,14 +17,11 @@
 package controllers
 
 import config.FrontendAppConfig
-import connectors.SoftDrinksIndustryLevyConnector
 import controllers.actions._
 import errors.{EnteredBusinessDetailsDoNotMatch, NoROSMRegistration}
 import forms.EnterBusinessDetailsFormProvider
 import handlers.ErrorHandler
-import models.RegisterState.{RegisterApplicationAccepted, RegisterWithOtherUTR}
-import models.backend.UkAddress
-import models.{Identify, Mode, NormalMode, RegisterState, UserAnswers}
+import models.{Identify, NormalMode, RegisterState, UserAnswers}
 import navigation.Navigator
 import orchestrators.RegistrationOrchestrator
 import pages.EnterBusinessDetailsPage
@@ -67,15 +64,27 @@ class EnterBusinessDetailsController @Inject()(
         formWithErrors =>
           Future.successful(BadRequest(view(formWithErrors))),
         identify => {
-          registrationOrchestrator.checkEnteredBusinessDetailsAreValidAndUpdateUserAnswers(identify, request.internalId, request.userAnswers).value flatMap {
-            case Right(updatedUserAnswers) =>
-              val updatedUserAnswersWithPageData = updatedUserAnswers.set(EnterBusinessDetailsPage, identify)
-              updateDatabaseAndRedirect(updatedUserAnswersWithPageData, EnterBusinessDetailsPage, NormalMode)
+          if(sameBusinessDetailsEntered(identify, request.userAnswers)) {
+            Redirect(navigator.nextPage(EnterBusinessDetailsPage, NormalMode, request.userAnswers))
+          }
+          registrationOrchestrator.checkEnteredBusinessDetailsAreValidAndUpdateUserAnswers(identify, request.internalId).value flatMap {
+            case Right(state) =>
+              val updatedUserAnswersWithPageDataAndState = UserAnswers(request.userAnswers.id, registerState = state)
+                .set(EnterBusinessDetailsPage, identify)
+              updateDatabaseAndRedirect(updatedUserAnswersWithPageDataAndState, EnterBusinessDetailsPage, NormalMode)
             case Left(error) if List(NoROSMRegistration, EnteredBusinessDetailsDoNotMatch).contains(error) =>
               Future.successful(BadRequest(view(form.fill(identify).withError("utr", "enterBusinessDetails.no-record.utr"))))
             case Left(_) => Future.successful(InternalServerError(errorHandler.internalServerErrorTemplate))
           }
         }
       )
+  }
+
+  private def sameBusinessDetailsEntered(identify: Identify, userAnswers: UserAnswers): Boolean = {
+    userAnswers.get(EnterBusinessDetailsPage).fold(false) { businessDetails =>
+      val postcodesMatch = identify.postcode.replaceAll(" ", "")
+        .equalsIgnoreCase(businessDetails.postcode.replaceAll(" ", ""))
+      businessDetails.utr == identify.utr && postcodesMatch
+    }
   }
 }

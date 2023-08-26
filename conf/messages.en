@@ -187,8 +187,8 @@ operatePackagingSites.title = Do you operate any packaging sites in the UK to pa
 operatePackagingSites.heading = Do you operate any packaging sites in the UK to package liable drinks for the brands you own?
 operatePackagingSites.error.required = Select yes if you operate any packaging sites in the UK to package liable drinks for brands you own
 
-howManyOperatePackagingSites.title = How many litres of our own brands will you package in the next 12 months?
-howManyOperatePackagingSites.heading = How many litres of our own brands will you package in the next 12 months?
+howManyOperatePackagingSites.title = How many litres of your own brands will you package in the next 12 months?
+howManyOperatePackagingSites.heading = How many litres of your own brands will you package in the next 12 months?
 howManyOperatePackagingSites.subtext = If you do not have the exact volumes you can enter an estimate.
 
 imports.title = Do you bring liable drinks into the UK from anywhere outside of the UK?
@@ -364,3 +364,9 @@ registrationConfirmation.help.p1 = Call the Soft Drinks Industry Helpline on {0}
 registrationConfirmation.help.l1 = do not receive your reference number
 registrationConfirmation.help.l2 = need to make a change to your application
 registrationConfirmation.detailsSummary = Details of your application
+
+applicationAlreadySubmitted.heading.title = This business already has an application submitted
+applicationAlreadySubmitted.first.paragraph = An application to register for the Soft Drinks Industry Levy has been submitted for this business.
+applicationAlreadySubmitted.second.paragraph.part.one = If you want to submit your return or check the status of your application you need to
+applicationAlreadySubmitted.second.paragraph.part.two = used to submit the application.
+applicationAlreadySubmitted.gg.sign.in = sign in using the same Government Gateway account

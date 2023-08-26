@@ -30,7 +30,6 @@ import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.SessionService
 import viewmodels.govuk.SummaryListFluency
 
 class RegistrationControllerSpec extends SpecBase with SummaryListFluency with MockitoSugar{
@@ -51,7 +50,7 @@ class RegistrationControllerSpec extends SpecBase with SummaryListFluency with M
       case AlreadyRegistered => routes.AlreadyRegisteredController.onPageLoad.url
       case RegistrationPending => routes.RegistrationPendingController.onPageLoad.url
       case RequiresBusinessDetails => routes.EnterBusinessDetailsController.onPageLoad.url
-      case RegisterApplicationAccepted => routes.IndexController.onPageLoad.url
+      case RegisterApplicationAccepted => routes.ApplicationAlreadySubmittedController.onPageLoad.url
       case _ => routes.VerifyController.onPageLoad(NormalMode).url
     }
   }

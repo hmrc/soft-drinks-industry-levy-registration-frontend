@@ -112,7 +112,7 @@ class WarehouseDetailsControllerSpec extends SpecBase with MockitoSugar with Log
 
       when(mockAddressLookupService.initJourneyAndReturnOnRampUrl(
         ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any(), ArgumentMatchers.any())(
-        ArgumentMatchers.any(), ArgumentMatchers.any(),ArgumentMatchers.any(), ArgumentMatchers.any()))
+        ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(onwardUrlForALF))
 
       val application =
@@ -136,7 +136,7 @@ class WarehouseDetailsControllerSpec extends SpecBase with MockitoSugar with Log
 
         verify(mockAddressLookupService, times(1)).initJourneyAndReturnOnRampUrl(
           ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any(), ArgumentMatchers.any())(
-          ArgumentMatchers.any(), ArgumentMatchers.any(),ArgumentMatchers.any(), ArgumentMatchers.any())
+          ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
       }
     }
     "must redirect to the next page when valid data is submitted (false)" in {
@@ -165,7 +165,7 @@ class WarehouseDetailsControllerSpec extends SpecBase with MockitoSugar with Log
 
         verify(mockAddressLookupService, times(0)).initJourneyAndReturnOnRampUrl(
           ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(
-          ArgumentMatchers.any(), ArgumentMatchers.any(),ArgumentMatchers.any(), ArgumentMatchers.any())
+          ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
       }
     }
 
@@ -206,7 +206,7 @@ class WarehouseDetailsControllerSpec extends SpecBase with MockitoSugar with Log
 
       when(mockAddressLookupService.initJourneyAndReturnOnRampUrl(
         ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any(), ArgumentMatchers.any())(
-        ArgumentMatchers.any(), ArgumentMatchers.any(),ArgumentMatchers.any(), ArgumentMatchers.any()))
+        ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.failed(new Exception("uh oh spaghetio")))
 
       val application =
@@ -228,7 +228,7 @@ class WarehouseDetailsControllerSpec extends SpecBase with MockitoSugar with Log
 
         verify(mockAddressLookupService, times(1)).initJourneyAndReturnOnRampUrl(
           ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any(), ArgumentMatchers.any())(
-          ArgumentMatchers.any(), ArgumentMatchers.any(),ArgumentMatchers.any(), ArgumentMatchers.any())
+          ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
       }
     }
 

@@ -1,9 +1,9 @@
 package connectors
 
-import com.github.tomakehurst.wiremock.client.WireMock.{get, status, stubFor, urlPathMatching}
+import com.github.tomakehurst.wiremock.client.WireMock.{get, serverError, stubFor, urlPathMatching}
 import errors.UnexpectedResponseFromSDIL
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
-import play.api.http.Status.{ACCEPTED, INTERNAL_SERVER_ERROR, NOT_FOUND, OK}
+import play.api.http.Status.{ACCEPTED, NOT_FOUND, OK}
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 import testSupport.{ITCoreTestData, Specifications, TestConfiguration}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -42,7 +42,7 @@ class SoftDrinksIndustryLevyConnectorISpec extends Specifications with TestConfi
       stubFor(
         get(
           urlPathMatching(s"/check-enrolment-status/utr"))
-          .willReturn(status(INTERNAL_SERVER_ERROR))
+          .willReturn(serverError())
       )
       val response = connector.checkPendingQueue("utr")
       whenReady(response.value) { res =>

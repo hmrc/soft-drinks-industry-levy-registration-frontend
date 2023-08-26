@@ -26,7 +26,7 @@ import models.core.ErrorModel
 import models.{CheckMode, NormalMode, Warehouse}
 import org.mockito.ArgumentMatchers
 import org.mockito.MockitoSugar.{mock, when}
-import play.api.test.{DefaultAwaitTimeout, FakeRequest, FutureAwaits}
+import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 
 import scala.concurrent.Future
 
@@ -343,10 +343,10 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
               homeNavHref = None,
               signOutHref = Some(controllers.auth.routes.AuthController.signOut.url),
               accessibilityFooterUrl = None,
-              phaseFeedbackLink = Some(s"http://localhost:9250/contact/beta-feedback?service=soft-drinks-industry-levy-registration&backUrl=http%3A%2F%2Flocalhost%3A8706bar"),
+              phaseFeedbackLink = None,
               deskProServiceName = None,
               showPhaseBanner = Some(false),
-              alphaPhase = Some(frontendAppConfig.AddressLookupConfig.alphaPhase),
+              alphaPhase = None,
               includeHMRCBranding = Some(true),
               ukMode = Some(true),
               selectPageConfig = Some(SelectPageConfig(
@@ -367,7 +367,7 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
                 timeoutUrl = controllers.auth.routes.AuthController.signOut.url,
                 timeoutKeepAliveUrl = Some(routes.KeepAliveController.keepAlive.url)
               )),
-              serviceHref = Some(routes.RegistrationController.start.url),
+              serviceHref = Some(frontendAppConfig.accountFrontendHomeUrl),
               pageHeadingStyle = Some("govuk-heading-m")
             ),
             labels = Some(
@@ -403,7 +403,7 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
 
           when(mockALFConnector.initJourney(ArgumentMatchers.eq(expectedJourneyConfigToBePassedToConnector))(ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(Right("foo")))
-          whenReady(service.initJourneyAndReturnOnRampUrl(PackingDetails, sdilId, mode)(implicitly, implicitly, implicitly, FakeRequest("foo", "bar"))) {
+          whenReady(service.initJourneyAndReturnOnRampUrl(PackingDetails, sdilId, mode)(implicitly, implicitly, implicitly)) {
             res => res mustBe "foo"
           }
         }
@@ -416,10 +416,9 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
               homeNavHref = None,
               signOutHref = Some(controllers.auth.routes.AuthController.signOut.url),
               accessibilityFooterUrl = None,
-              phaseFeedbackLink = Some(s"http://localhost:9250/contact/beta-feedback?service=soft-drinks-industry-levy-registration&backUrl=http%3A%2F%2Flocalhost%3A8706bar"),
-              deskProServiceName = None,
+              phaseFeedbackLink = None,deskProServiceName = None,
               showPhaseBanner = Some(false),
-              alphaPhase = Some(frontendAppConfig.AddressLookupConfig.alphaPhase),
+              alphaPhase = None,
               includeHMRCBranding = Some(true),
               ukMode = Some(true),
               selectPageConfig = Some(SelectPageConfig(
@@ -440,7 +439,7 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
                 timeoutUrl = controllers.auth.routes.AuthController.signOut.url,
                 timeoutKeepAliveUrl = Some(routes.KeepAliveController.keepAlive.url)
               )),
-              serviceHref = Some(routes.RegistrationController.start.url),
+              serviceHref = Some(frontendAppConfig.accountFrontendHomeUrl),
               pageHeadingStyle = Some("govuk-heading-m")
             ),
             labels = Some(
@@ -476,7 +475,7 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
 
           when(mockALFConnector.initJourney(ArgumentMatchers.eq(expectedJourneyConfigToBePassedToConnector))(ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(Right("foo")))
-          whenReady(service.initJourneyAndReturnOnRampUrl(WarehouseDetails, sdilId, mode)(implicitly, implicitly, implicitly, FakeRequest("foo", "bar"))) {
+          whenReady(service.initJourneyAndReturnOnRampUrl(WarehouseDetails, sdilId, mode)(implicitly, implicitly, implicitly)) {
             res => res mustBe "foo"
           }
         }
@@ -490,10 +489,10 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
               homeNavHref = None,
               signOutHref = Some(controllers.auth.routes.AuthController.signOut.url),
               accessibilityFooterUrl = None,
-              phaseFeedbackLink = Some(s"http://localhost:9250/contact/beta-feedback?service=soft-drinks-industry-levy-registration&backUrl=http%3A%2F%2Flocalhost%3A8706bar"),
+              phaseFeedbackLink = None,
               deskProServiceName = None,
               showPhaseBanner = Some(false),
-              alphaPhase = Some(frontendAppConfig.AddressLookupConfig.alphaPhase),
+              alphaPhase = None,
               includeHMRCBranding = Some(true),
               ukMode = Some(true),
               selectPageConfig = Some(SelectPageConfig(
@@ -514,7 +513,7 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
                 timeoutUrl = controllers.auth.routes.AuthController.signOut.url,
                 timeoutKeepAliveUrl = Some(routes.KeepAliveController.keepAlive.url)
               )),
-              serviceHref = Some(routes.RegistrationController.start.url),
+              serviceHref = Some(frontendAppConfig.accountFrontendHomeUrl),
               pageHeadingStyle = Some("govuk-heading-m")
             ),
             labels = Some(
@@ -550,7 +549,7 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
 
           when(mockALFConnector.initJourney(ArgumentMatchers.eq(expectedJourneyConfigToBePassedToConnector))(ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(Right("foo")))
-          whenReady(service.initJourneyAndReturnOnRampUrl(BusinessAddress, sdilId, mode)(implicitly, implicitly, implicitly, FakeRequest("foo", "bar"))) {
+          whenReady(service.initJourneyAndReturnOnRampUrl(BusinessAddress, sdilId, mode)(implicitly, implicitly, implicitly)) {
             res => res mustBe "foo"
           }
         }
@@ -558,16 +557,15 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
         "should return Exception if connector returns left" in {
           when(mockALFConnector.initJourney(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(Left(ErrorModel(1, "foo"))))
-          val res = intercept[Exception](await(service.initJourneyAndReturnOnRampUrl(PackingDetails, mode = mode)(implicitly, implicitly, implicitly, FakeRequest("foo", "bar"))))
+          val res = intercept[Exception](await(service.initJourneyAndReturnOnRampUrl(PackingDetails, mode = mode)(implicitly, implicitly, implicitly)))
           res.getMessage mustBe "Failed to init ALF foo with status 1 for None"
         }
       }
 
       "createJourneyConfig" - {
         s"should return a journey config for $WarehouseDetails" in {
-          val request = FakeRequest("foo", "bar")
           val exampleSdilIdWeGenerate: String = "wizz"
-          val res = service.createJourneyConfig(WarehouseDetails, exampleSdilIdWeGenerate, mode)(request, implicitly)
+          val res = service.createJourneyConfig(WarehouseDetails, exampleSdilIdWeGenerate, mode)(implicitly)
           val expected = JourneyConfig(
             version = 2,
             options = JourneyOptions(
@@ -575,10 +573,10 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
               homeNavHref = None,
               signOutHref = Some(controllers.auth.routes.AuthController.signOut.url),
               accessibilityFooterUrl = None,
-              phaseFeedbackLink = Some(s"http://localhost:9250/contact/beta-feedback?service=soft-drinks-industry-levy-registration&backUrl=http%3A%2F%2Flocalhost%3A8706${request.uri}"),
+              phaseFeedbackLink = None,
               deskProServiceName = None,
               showPhaseBanner = Some(false),
-              alphaPhase = Some(frontendAppConfig.AddressLookupConfig.alphaPhase),
+              alphaPhase = None,
               includeHMRCBranding = Some(true),
               ukMode = Some(true),
               selectPageConfig = Some(SelectPageConfig(
@@ -599,7 +597,7 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
                 timeoutUrl = controllers.auth.routes.AuthController.signOut.url,
                 timeoutKeepAliveUrl = Some(routes.KeepAliveController.keepAlive.url)
               )),
-              serviceHref = Some(routes.RegistrationController.start.url),
+              serviceHref = Some(frontendAppConfig.accountFrontendHomeUrl),
               pageHeadingStyle = Some("govuk-heading-m")
             ),
             labels = Some(
@@ -637,9 +635,8 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
         }
 
         s"should return a journey config for $PackingDetails" in {
-          val request = FakeRequest("foo", "bar")
           val exampleSdilIdWeGenerate: String = "wizz"
-          val res = service.createJourneyConfig(PackingDetails, exampleSdilIdWeGenerate, mode)(request, implicitly)
+          val res = service.createJourneyConfig(PackingDetails, exampleSdilIdWeGenerate, mode)(implicitly)
           val expected = JourneyConfig(
             version = 2,
             options = JourneyOptions(
@@ -647,10 +644,10 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
               homeNavHref = None,
               signOutHref = Some(controllers.auth.routes.AuthController.signOut.url),
               accessibilityFooterUrl = None,
-              phaseFeedbackLink = Some(s"http://localhost:9250/contact/beta-feedback?service=soft-drinks-industry-levy-registration&backUrl=http%3A%2F%2Flocalhost%3A8706${request.uri}"),
+              phaseFeedbackLink = None,
               deskProServiceName = None,
               showPhaseBanner = Some(false),
-              alphaPhase = Some(frontendAppConfig.AddressLookupConfig.alphaPhase),
+              alphaPhase = None,
               includeHMRCBranding = Some(true),
               ukMode = Some(true),
               selectPageConfig = Some(SelectPageConfig(
@@ -671,7 +668,7 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
                 timeoutUrl = controllers.auth.routes.AuthController.signOut.url,
                 timeoutKeepAliveUrl = Some(routes.KeepAliveController.keepAlive.url)
               )),
-              serviceHref = Some(routes.RegistrationController.start.url),
+              serviceHref = Some(frontendAppConfig.accountFrontendHomeUrl),
               pageHeadingStyle = Some("govuk-heading-m")
             ),
             labels = Some(

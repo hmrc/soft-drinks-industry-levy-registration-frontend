@@ -1,14 +1,14 @@
 package testSupport
 
 import controllers.routes
-import models.HowManyLitresGlobally.Large
+import models.HowManyLitresGlobally.{Large, Small}
 import models.OrganisationType.LimitedCompany
 import models.Verify.YesRegister
 import models._
 import models.backend.{Site, UkAddress}
 import org.scalatest.TryValues
 import pages._
-import play.api.libs.json.Json
+import play.api.libs.json.{JsObject, Json}
 
 import java.time.LocalDate
 import scala.concurrent.duration.DurationInt
@@ -92,22 +92,22 @@ trait ITCoreTestData extends TryValues {
   var day = 10
   val date = LocalDate.of(year, month, day)
 
-  val validDateJson = Json.obj(
+  val validDateJson: JsObject = Json.obj(
     "startDate.day" -> day.toString,
     "startDate.month" -> month.toString,
     "startDate.year" -> year.toString
   )
 
-  val dateMap = Map("day" -> day, "month" -> month, "year" -> year)
+  val dateMap: Map[String, Int] = Map("day" -> day, "month" -> month, "year" -> year)
 
-  val ukAddress = UkAddress(List("foo", "bar"),"wizz", None)
+  val ukAddress: UkAddress = UkAddress(List("foo", "bar"),"wizz", None)
 
   def sdilNumber = "XKSDIL000000022"
   val producerName = Some("Super Cola Ltd")
 
   def identifier = "some-id"
 
-  val defaultCall = routes.IndexController.onPageLoad
+  val defaultCall = routes.RegistrationController.start
 
   implicit val duration = 5.seconds
   def emptyUserAnswers = UserAnswers(identifier, RegisterState.RegisterWithAuthUTR, Json.obj())
@@ -168,4 +168,111 @@ trait ITCoreTestData extends TryValues {
       .set(WarehouseDetailsPage, true).success.value
       .set(ContactDetailsPage, contactDetails).success.value
   }
+
+  val largeProducerImportsTrueUserAnswers: UserAnswers = {
+    emptyUserAnswers
+      .set(VerifyPage, YesRegister).success.value
+      .set(OrganisationTypePage, LimitedCompany).success.value
+      .set(HowManyLitresGloballyPage, Large).success.value
+      .set(OperatePackagingSitesPage, false).success.value
+      .set(ContractPackingPage, true).success.value
+      .set(HowManyContractPackingPage, LitresInBands(1,1)).success.value
+      .set(ImportsPage, true).success.value
+  }
+
+  val largeProducerNoPackagingRouteUserAnswers: UserAnswers = {
+    emptyUserAnswers
+      .set(VerifyPage, YesRegister).success.value
+      .set(OrganisationTypePage, LimitedCompany).success.value
+      .set(HowManyLitresGloballyPage, Large).success.value
+      .set(OperatePackagingSitesPage, false).success.value
+      .set(ContractPackingPage, false).success.value
+      .set(ImportsPage, false).success.value
+      .set(StartDatePage, LocalDate.now()).success.value
+  }
+
+  val smallProducerUserAnswers: UserAnswers = {
+    emptyUserAnswers
+      .set(VerifyPage, YesRegister).success.value
+      .set(OrganisationTypePage, LimitedCompany).success.value
+      .set(HowManyLitresGloballyPage, Small).success.value
+      .set(ThirdPartyPackagersPage, true).success.value
+      .set(OperatePackagingSitesPage, false).success.value
+      .set(ContractPackingPage, true).success.value
+      .set(HowManyContractPackingPage, LitresInBands(1, 1)).success.value
+      .set(ImportsPage, false).success.value
+      .set(StartDatePage, LocalDate.now()).success.value
+      .set(PackAtBusinessAddressPage, true).success.value
+      .set(PackagingSiteDetailsPage, true).success.value
+      .set(AskSecondaryWarehousesPage, true).success.value
+      .set(WarehouseDetailsPage, true).success.value
+      .set(ContactDetailsPage, contactDetails).success.value
+  }
+
+  val smallProducerNoPackagingRouteUserAnswers: UserAnswers = {
+    emptyUserAnswers
+      .set(VerifyPage, YesRegister).success.value
+      .set(OrganisationTypePage, LimitedCompany).success.value
+      .set(HowManyLitresGloballyPage, Small).success.value
+      .set(ThirdPartyPackagersPage, true).success.value
+      .set(OperatePackagingSitesPage, false).success.value
+      .set(ContractPackingPage, false).success.value
+      .set(ImportsPage, true).success.value
+      .set(HowManyImportsPage, LitresInBands(1, 1)).success.value
+      .set(StartDatePage, LocalDate.now()).success.value
+      .set(AskSecondaryWarehousesPage, true).success.value
+      .set(WarehouseDetailsPage, true).success.value
+      .set(ContactDetailsPage, contactDetails).success.value
+  }
+
+  val smallProducerDoNotRegisterUserAnswers: UserAnswers = {
+    emptyUserAnswers
+      .set(VerifyPage, YesRegister).success.value
+      .set(OrganisationTypePage, LimitedCompany).success.value
+      .set(HowManyLitresGloballyPage, Small).success.value
+      .set(ThirdPartyPackagersPage, false).success.value
+      .set(OperatePackagingSitesPage, false).success.value
+      .set(ContractPackingPage, false).success.value
+      .set(ImportsPage, false).success.value
+  }
+
+  val nonProducerUserAnswers: UserAnswers = {
+    emptyUserAnswers
+      .set(VerifyPage, YesRegister).success.value
+      .set(OrganisationTypePage, LimitedCompany).success.value
+      .set(HowManyLitresGloballyPage, HowManyLitresGlobally.None).success.value
+      .set(ContractPackingPage, true).success.value
+      .set(HowManyContractPackingPage, LitresInBands(1, 1)).success.value
+      .set(ImportsPage, false).success.value
+      .set(StartDatePage, LocalDate.now()).success.value
+      .set(PackAtBusinessAddressPage, true).success.value
+      .set(PackagingSiteDetailsPage, true).success.value
+      .set(AskSecondaryWarehousesPage, true).success.value
+      .set(WarehouseDetailsPage, true).success.value
+      .set(ContactDetailsPage, contactDetails).success.value
+  }
+
+  val nonProducerNoPackagingRouteUserAnswers: UserAnswers = {
+    emptyUserAnswers
+      .set(VerifyPage, YesRegister).success.value
+      .set(OrganisationTypePage, LimitedCompany).success.value
+      .set(HowManyLitresGloballyPage, HowManyLitresGlobally.None).success.value
+      .set(ContractPackingPage, false).success.value
+      .set(ImportsPage, true).success.value
+      .set(HowManyImportsPage, LitresInBands(1, 1)).success.value
+      .set(StartDatePage, LocalDate.now()).success.value
+      .set(AskSecondaryWarehousesPage, true).success.value
+      .set(WarehouseDetailsPage, true).success.value
+      .set(ContactDetailsPage, contactDetails).success.value
+  }
+
+  val nonProducerDeregisterUserAnswers: UserAnswers = {
+    emptyUserAnswers
+      .set(VerifyPage, YesRegister).success.value
+      .set(OrganisationTypePage, LimitedCompany).success.value
+      .set(HowManyLitresGloballyPage, HowManyLitresGlobally.None).success.value
+      .set(ContractPackingPage, false).success.value
+      .set(ImportsPage, false).success.value
+  }
+
 }

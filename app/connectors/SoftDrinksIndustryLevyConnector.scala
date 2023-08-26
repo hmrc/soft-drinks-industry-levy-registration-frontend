@@ -18,18 +18,18 @@ package connectors
 
 import cats.data.EitherT
 import config.FrontendAppConfig
-import errors.{NoROSMRegistration, RegistrationErrors, UnexpectedResponseFromSDIL}
+import errors.{NoROSMRegistration, UnexpectedResponseFromSDIL}
 import models._
 import models.backend.Subscription
 import play.api.http.Status._
 import repositories.{SDILSessionCache, SDILSessionKeys}
 import service.RegistrationResult
+import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http._
 import utilities.GenericLogger
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-import uk.gov.hmrc.http.HttpReads.Implicits._
 
 class SoftDrinksIndustryLevyConnector @Inject()(
                                                  val http: HttpClient,
@@ -64,23 +64,13 @@ class SoftDrinksIndustryLevyConnector @Inject()(
   private def getSubscriptionUrl(identifierValue: String, identifierType: String): String = s"$sdilUrl/subscription/$identifierType/$identifierValue"
 
   def checkPendingQueue(utr: String)(implicit hc: HeaderCarrier): RegistrationResult[SubscriptionStatus] = EitherT {
-    def onError(status: Int): Either[RegistrationErrors, SubscriptionStatus] = {
-      if(status == NOT_FOUND) {
-        Right(DoesNotExist)
-      } else {
-        genericLogger.logger.warn(s"Returned unexpected status $status for ${hc.requestId} when attempting to check pending queue")
-        Left(UnexpectedResponseFromSDIL)
-      }
-    }
-
     http.GET[HttpResponse](s"$sdilUrl/check-enrolment-status/$utr").map(_.status match {
       case OK => Right(Registered)
       case ACCEPTED => Right(Pending)
-      case status => onError(status)
-    }) recover {
-      case _: NotFoundException => Right(DoesNotExist)
-      case e: HttpException => onError(e.responseCode)
-    }
+      case NOT_FOUND => Right(DoesNotExist)
+      case status => genericLogger.logger.warn(s"Returned unexpected status $status for ${hc.requestId} when attempting to check pending queue")
+        Left(UnexpectedResponseFromSDIL)
+    })
   }
 
   def retrieveSubscription(identifierValue: String, identifierType: String, internalId: String)

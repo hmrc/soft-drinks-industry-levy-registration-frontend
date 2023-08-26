@@ -91,7 +91,7 @@ class AskSecondaryWarehousesControllerSpec extends SpecBase with MockitoSugar wi
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
       when(mockAddressLookupService.initJourneyAndReturnOnRampUrl(
         ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any(), ArgumentMatchers.any())(
-        ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(onwardUrlForALF))
 
       val application =
@@ -115,7 +115,7 @@ class AskSecondaryWarehousesControllerSpec extends SpecBase with MockitoSugar wi
 
         verify(mockAddressLookupService, times(1)).initJourneyAndReturnOnRampUrl(
           ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any(), ArgumentMatchers.any())(
-          ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+          ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
       }
     }
     "must redirect to contact details when valid data is submitted (false), verifying ALF is not called" in {
@@ -127,7 +127,7 @@ class AskSecondaryWarehousesControllerSpec extends SpecBase with MockitoSugar wi
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
       when(mockAddressLookupService.initJourneyAndReturnOnRampUrl(
         ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any(), ArgumentMatchers.any())(
-        ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(onwardUrlForALF))
 
       val application =
@@ -152,7 +152,7 @@ class AskSecondaryWarehousesControllerSpec extends SpecBase with MockitoSugar wi
 
         verify(mockAddressLookupService, times(0)).initJourneyAndReturnOnRampUrl(
           ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any(), ArgumentMatchers.any())(
-          ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+          ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
       }
     }
     "must return error if ALF on ramp call returns error" in {
@@ -161,7 +161,7 @@ class AskSecondaryWarehousesControllerSpec extends SpecBase with MockitoSugar wi
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
       when(mockAddressLookupService.initJourneyAndReturnOnRampUrl(
         ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any(), ArgumentMatchers.any())(
-        ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.failed(new Exception("uh oh spaghetio")))
 
       val application =
@@ -183,7 +183,7 @@ class AskSecondaryWarehousesControllerSpec extends SpecBase with MockitoSugar wi
 
         verify(mockAddressLookupService, times(1)).initJourneyAndReturnOnRampUrl(
           ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any(), ArgumentMatchers.any())(
-          ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+          ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
       }
     }
 

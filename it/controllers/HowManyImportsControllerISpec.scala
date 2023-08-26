@@ -2,12 +2,11 @@ package controllers
 
 import models.{CheckMode, LitresInBands, NormalMode}
 import org.jsoup.Jsoup
+import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import pages.HowManyImportsPage
 import play.api.http.HeaderNames
-import play.api.i18n.Messages
 import play.api.libs.json.Json
 import play.api.test.WsTestClient
-import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
 
 
 class HowManyImportsControllerISpec extends LitresISpecHelper {
@@ -21,7 +20,7 @@ class HowManyImportsControllerISpec extends LitresISpecHelper {
     val (path, redirectLocation) = if(mode == NormalMode) {
       (normalRoutePath, routes.StartDateController.onPageLoad(NormalMode).url)
     } else {
-      (checkRoutePath, routes.CheckYourAnswersController.onPageLoad.url)
+      (checkRoutePath, routes.StartDateController.onPageLoad(CheckMode).url)
     }
 
     "GET " + path - {
@@ -30,7 +29,7 @@ class HowManyImportsControllerISpec extends LitresISpecHelper {
           given
             .commonPrecondition
 
-          setAnswers(emptyUserAnswers)
+          setAnswers(largeProducerImportsTrueUserAnswers)
 
           WsTestClient.withClient { client =>
             val result1 = createClientRequestGet(client, baseUrl + path)
@@ -38,7 +37,7 @@ class HowManyImportsControllerISpec extends LitresISpecHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include(Messages("howManyImports" + ".title"))
+              page.title mustBe "How many litres will you bring into the UK in the next 12 months? - Soft Drinks Industry Levy - GOV.UK"
               testLitresInBandsNoPrepopulatedData(page)
             }
           }
@@ -58,13 +57,13 @@ class HowManyImportsControllerISpec extends LitresISpecHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include(Messages("howManyImports" + ".title"))
+              page.title mustBe "How many litres will you bring into the UK in the next 12 months? - Soft Drinks Industry Levy - GOV.UK"
               testLitresInBandsWithPrepopulatedData(page)
             }
           }
         }
       }
-      testOtherSuccessUserTypes(baseUrl + path, Messages("howManyImports" + ".title"))
+      testOtherSuccessUserTypes(baseUrl + path, "How many litres will you bring into the UK in the next 12 months?")
       testUnauthorisedUser(baseUrl + path)
       testAuthenticatedUserButNoUserAnswers(baseUrl + path)
     }
@@ -76,7 +75,7 @@ class HowManyImportsControllerISpec extends LitresISpecHelper {
             given
               .commonPrecondition
 
-            setAnswers(emptyUserAnswers)
+            setAnswers(largeProducerImportsTrueUserAnswers)
             WsTestClient.withClient { client =>
               val result = createClientRequestPOST(
                 client, baseUrl + path, Json.toJson(litresInBands)
@@ -96,7 +95,7 @@ class HowManyImportsControllerISpec extends LitresISpecHelper {
             given
               .commonPrecondition
 
-            setAnswers(userAnswers)
+            setAnswers(smallProducerNoPackagingRouteUserAnswers)
             WsTestClient.withClient { client =>
               val result = createClientRequestPOST(
                 client, baseUrl + path, Json.toJson(litresInBandsDiff)
@@ -115,7 +114,7 @@ class HowManyImportsControllerISpec extends LitresISpecHelper {
       }
 
       "should return 400 with required error" - {
-        val errorTitle = "Error: " + Messages("howManyImports.title")
+        val errorTitle = "Error: How many litres will you bring into the UK in the next 12 months? - Soft Drinks Industry Levy - GOV.UK"
 
         "when no questions are answered" in {
           given
@@ -211,5 +210,6 @@ class HowManyImportsControllerISpec extends LitresISpecHelper {
       testUnauthorisedUser(baseUrl + path, Some(Json.toJson(litresInBandsDiff)))
       testAuthenticatedUserButNoUserAnswers(baseUrl + path, Some(Json.toJson(litresInBandsDiff)))
     }
+
   }
 }

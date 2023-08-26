@@ -74,11 +74,11 @@ class AuthenticatedIdentifierAction @Inject()(
                                   (implicit hc: HeaderCarrier, request: Request[A]): Future[Either[Result, IdentifierRequest[A]]] = {
     sdilConnector.retrieveSubscription(utr, "utr", internalId).value.flatMap {
       case Right(Some(sub)) if sub.deregDate.isEmpty && optSdilEnrolment.isDefined =>
-        Future.successful(Right(IdentifierRequest(request, internalId, hasCTEnrolment, Some(utr), optSdilEnrolment.map(_.value), true)))
+        Future.successful(Right(IdentifierRequest(request, internalId, hasCTEnrolment, Some(utr), true)))
       case Right(Some(sub)) if sub.deregDate.isEmpty =>
         Future.successful(Left(Redirect(config.sdilFrontendBaseUrl)))
       case Right(_) =>
-        Future.successful(Right(IdentifierRequest(request, internalId, hasCTEnrolment, Some(utr), optSdilEnrolment.map(_.value), false)))
+        Future.successful(Right(IdentifierRequest(request, internalId, hasCTEnrolment, Some(utr))))
       case Left(_) => Future.successful(Left(InternalServerError(errorHandler.internalServerErrorTemplate(request))))
     }
   }
@@ -86,7 +86,7 @@ class AuthenticatedIdentifierAction @Inject()(
   private def handleUserWithNoUTRAndSDILEnrolment[A](internalId: String, sdil: EnrolmentIdentifier, hasCTEnrolment: Boolean)
                                  (implicit hc: HeaderCarrier, request: Request[A]): Future[Either[Result, IdentifierRequest[A]]] = {
       sdilConnector.retrieveSubscription(sdil.value, "sdil", internalId).value.map{
-        case Right(Some(sub)) if sub.deregDate.nonEmpty => Right(IdentifierRequest(request, internalId, hasCTEnrolment, None, Some(sdil.value), false))
+        case Right(Some(sub)) if sub.deregDate.nonEmpty => Right(IdentifierRequest(request, internalId, hasCTEnrolment, None))
         case Right(_) => Left(Redirect(config.sdilFrontendBaseUrl))
         case Left(_) => Left(InternalServerError(errorHandler.internalServerErrorTemplate(request)))
       }

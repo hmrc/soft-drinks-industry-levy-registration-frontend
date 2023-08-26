@@ -32,6 +32,9 @@ object NoROSMRegistration extends RegistrationErrors
 
 object EnteredBusinessDetailsDoNotMatch extends RegistrationErrors
 
+object EnteredBusinessDetailsNotChanged extends RegistrationErrors
+
+
 object AuthenticationError extends RegistrationErrors
 
 

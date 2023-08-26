@@ -26,7 +26,6 @@ import models.backend.{Site, UkAddress}
 import models.{Mode, UserAnswers, Warehouse}
 import play.api.Logger
 import play.api.i18n.Messages
-import play.api.mvc.RequestHeader
 import uk.gov.hmrc.http.HeaderCarrier
 import utilities.AddressHelper
 
@@ -84,7 +83,7 @@ class AddressLookupService @Inject()(
   }
 
   def initJourneyAndReturnOnRampUrl(state: AddressLookupState, sdilId: String = generateId, mode: Mode)
-                                   (implicit hc: HeaderCarrier, ec: ExecutionContext, messages: Messages, requestHeader: RequestHeader): Future[String] = {
+                                   (implicit hc: HeaderCarrier, ec: ExecutionContext, messages: Messages): Future[String] = {
     val journeyConfig: JourneyConfig = createJourneyConfig(state, sdilId, mode)
     initJourney(journeyConfig).map {
       case Right(onRampUrl) => onRampUrl
@@ -92,7 +91,7 @@ class AddressLookupService @Inject()(
     }
   }
 
-  def createJourneyConfig(state: AddressLookupState, sdilId: String, mode: Mode)(implicit requestHeader: RequestHeader, messages: Messages): JourneyConfig = {
+  def createJourneyConfig(state: AddressLookupState, sdilId: String, mode: Mode)(implicit messages: Messages): JourneyConfig = {
     JourneyConfig(
       version = frontendAppConfig.AddressLookupConfig.version,
       options = JourneyOptions(
@@ -100,10 +99,10 @@ class AddressLookupService @Inject()(
         homeNavHref = None,
         signOutHref = Some(controllers.auth.routes.AuthController.signOut.url),
         accessibilityFooterUrl = None,
-        phaseFeedbackLink = Some(frontendAppConfig.feedbackUrl(requestHeader)),
+        phaseFeedbackLink = None,
         deskProServiceName = None,
         showPhaseBanner = Some(false),
-        alphaPhase = Some(frontendAppConfig.AddressLookupConfig.alphaPhase),
+        alphaPhase = None,
         includeHMRCBranding = Some(true),
         ukMode = Some(true),
         selectPageConfig = Some(SelectPageConfig(
@@ -124,7 +123,7 @@ class AddressLookupService @Inject()(
           timeoutUrl = controllers.auth.routes.AuthController.signOut.url,
           timeoutKeepAliveUrl = Some(routes.KeepAliveController.keepAlive.url)
         )),
-        serviceHref = Some(routes.RegistrationController.start.url),
+        serviceHref = Some(frontendAppConfig.accountFrontendHomeUrl),
         pageHeadingStyle = Some("govuk-heading-m")
       ),
       labels = returnJourneyLabels(state),

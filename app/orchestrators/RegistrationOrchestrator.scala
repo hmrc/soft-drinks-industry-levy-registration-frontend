@@ -19,13 +19,12 @@ package orchestrators
 import cats.data.EitherT
 import cats.implicits._
 import com.google.inject.{Inject, Singleton}
-import connectors.{DoesNotExist, Pending, Registered, SoftDrinksIndustryLevyConnector, SubscriptionStatus}
+import connectors._
 import errors._
 import models.RegisterState._
 import models.backend.{Subscription, UkAddress}
 import models.requests.{DataRequest, IdentifierRequest}
 import models.{Identify, RegisterState, RosmWithUtr, UserAnswers}
-import pages.EnterBusinessDetailsPage
 import play.api.mvc.AnyContent
 import service.RegistrationResult
 import services.SessionService
@@ -57,24 +56,15 @@ class RegistrationOrchestrator @Inject()(sdilConnector: SoftDrinksIndustryLevyCo
     } yield regState
 
   }
-
-  def checkEnteredBusinessDetailsAreValidAndUpdateUserAnswers(identify: Identify, internalId: String, userAnswers: UserAnswers)(implicit hc: HeaderCarrier,
-                                                              ec: ExecutionContext): RegistrationResult[UserAnswers] = {
-
-    def updatedUserAnswers(state: RegisterState): UserAnswers = {
-      val userAnswersChanged: Boolean = !userAnswers.get(EnterBusinessDetailsPage).contains(identify)
-      userAnswersChanged match {
-        case true => new UserAnswers(userAnswers.id, registerState = state)
-        case false => userAnswers.copy(registerState = state)
-      }
-    }
+  def checkEnteredBusinessDetailsAreValidAndUpdateUserAnswers(identify: Identify, internalId: String)
+                                                             (implicit hc: HeaderCarrier,
+                                                              ec: ExecutionContext): RegistrationResult[RegisterState] = {
 
     for {
       rosmData <- sdilConnector.retreiveRosmSubscription(identify.utr, internalId)
       _ <- postcodesMatch(rosmData.rosmRegistration.address, identify)
       subscriptionStatus <- sdilConnector.checkPendingQueue(identify.utr)
-      status <- EitherT.right[RegistrationErrors](Future(getRegistrationStateFromSubscriptionStatus(subscriptionStatus, true)))
-    } yield updatedUserAnswers(status)
+    } yield getRegistrationStateFromSubscriptionStatus(subscriptionStatus, true)
 
   }
 
@@ -126,7 +116,7 @@ class RegistrationOrchestrator @Inject()(sdilConnector: SoftDrinksIndustryLevyCo
    }
   }
 
-  def postcodesMatch(rosmAddress: UkAddress, identify: Identify)(implicit ec: ExecutionContext): RegistrationResult[Boolean] = EitherT {
+  private def postcodesMatch(rosmAddress: UkAddress, identify: Identify): RegistrationResult[Boolean] = EitherT {
     val rosmPostCode = removeWhitespace(rosmAddress.postCode)
     val enteredPostcode = removeWhitespace(identify.postcode)
     if (rosmPostCode.equalsIgnoreCase(enteredPostcode)) {

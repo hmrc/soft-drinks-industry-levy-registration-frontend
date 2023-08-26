@@ -126,7 +126,7 @@ class DataRequiredActionSpec extends SpecBase with MockitoSugar {
             val expectedRedirectLocation = registerState match {
               case RegisterState.RequiresBusinessDetails => routes.EnterBusinessDetailsController.onPageLoad
               case RegisterState.AlreadyRegistered => routes.AlreadyRegisteredController.onPageLoad
-              case RegisterState.RegisterApplicationAccepted => routes.IndexController.onPageLoad
+              case RegisterState.RegisterApplicationAccepted => routes.ApplicationAlreadySubmittedController.onPageLoad
               case _ => routes.RegistrationPendingController.onPageLoad
             }
             val userAnswers = emptyUserAnswers.copy(registerState = registerState)

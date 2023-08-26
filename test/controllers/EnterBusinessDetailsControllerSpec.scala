@@ -24,12 +24,13 @@ import forms.EnterBusinessDetailsFormProvider
 import handlers.ErrorHandler
 import helpers.LoggerHelper
 import models.requests.{DataRequest, OptionalDataRequest}
-import models.{Identify, NormalMode, RegisterState}
+import models.{Identify, RegisterState}
 import navigation.{FakeNavigator, Navigator}
 import orchestrators.RegistrationOrchestrator
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
+import pages.EnterBusinessDetailsPage
 import play.api.inject.bind
 import play.api.mvc.{Call, Result}
 import play.api.test.FakeRequest
@@ -80,8 +81,8 @@ class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with
 
     "must redirect to the next page when valid data is submitted" in {
 
-      when(mockOrchestrator.checkEnteredBusinessDetailsAreValidAndUpdateUserAnswers(any(),any(), any())(any(), any()))
-        .thenReturn(createSuccessRegistrationResult(emptyUserAnswersForEnterBusinessDetails))
+      when(mockOrchestrator.checkEnteredBusinessDetailsAreValidAndUpdateUserAnswers(any(), any())(any(), any()))
+        .thenReturn(createSuccessRegistrationResult(RegisterState.RegisterWithOtherUTR))
       when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(true)
 
       val application =
@@ -105,9 +106,34 @@ class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with
       }
     }
 
+
+    "must redirect to the next page with no updates when answers are the same as previously entered" in {
+
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswersForEnterBusinessDetails
+        .set(EnterBusinessDetailsPage, Identify("0000000437", "GU14 8NL")).success.value))
+          .overrides(
+            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[SessionService].toInstance(mockSessionService),
+            bind[RegistrationOrchestrator].toInstance(mockOrchestrator)
+          )
+          .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, enterBusinessDetailsRoute)
+            .withFormUrlEncodedBody(("utr", "0000000437"), ("postcode", "GU14 8NL"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual onwardRoute.url
+      }
+    }
+
     "must return a Bad Request and errors when utr or postcode is found from rosm data when submitted" in {
 
-      when(mockOrchestrator.checkEnteredBusinessDetailsAreValidAndUpdateUserAnswers(any(), any(), any())(any(), any()))
+      when(mockOrchestrator.checkEnteredBusinessDetailsAreValidAndUpdateUserAnswers(any(), any())(any(), any()))
         .thenReturn(createFailureRegistrationResult(EnteredBusinessDetailsDoNotMatch))
       when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(true)
 
@@ -137,7 +163,7 @@ class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      when(mockOrchestrator.checkEnteredBusinessDetailsAreValidAndUpdateUserAnswers(any(), any(), any())(any(), any()))
+      when(mockOrchestrator.checkEnteredBusinessDetailsAreValidAndUpdateUserAnswers(any(), any())(any(), any()))
         .thenReturn(createFailureRegistrationResult(NoROSMRegistration))
       when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(true)
 
@@ -168,8 +194,8 @@ class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with
 
     "should log an error message when internal server error is returned when user answers are not set in session repository" in {
 
-      when(mockOrchestrator.checkEnteredBusinessDetailsAreValidAndUpdateUserAnswers(any(), any(), any())(any(), any()))
-        .thenReturn(createSuccessRegistrationResult(emptyUserAnswersForEnterBusinessDetails))
+      when(mockOrchestrator.checkEnteredBusinessDetailsAreValidAndUpdateUserAnswers(any(), any())(any(), any()))
+        .thenReturn(createSuccessRegistrationResult(RegisterState.RegisterWithOtherUTR))
       when(mockSessionService.set(any())) thenReturn createFailureRegistrationResult(SessionDatabaseInsertError)
 
       val application =

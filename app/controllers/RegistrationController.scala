@@ -40,7 +40,7 @@ class RegistrationController @Inject()(identify: IdentifierAction,
         case Right(RegistrationPending) => Redirect(routes.RegistrationPendingController.onPageLoad)
         case Right(RequiresBusinessDetails) => Redirect(routes.EnterBusinessDetailsController.onPageLoad)
         case Right(AlreadyRegistered) => Redirect(routes.AlreadyRegisteredController.onPageLoad)
-        case Right(RegisterApplicationAccepted) => Redirect(routes.IndexController.onPageLoad)
+        case Right(RegisterApplicationAccepted) => Redirect(routes.ApplicationAlreadySubmittedController.onPageLoad)
         case Right(_) => Redirect(routes.VerifyController.onPageLoad(NormalMode))
         case Left(_) => InternalServerError(errorHandler.internalServerErrorTemplate)
       }

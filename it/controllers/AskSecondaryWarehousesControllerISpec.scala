@@ -189,10 +189,10 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
           homeNavHref = None,
           signOutHref = Some(controllers.auth.routes.AuthController.signOut.url),
           accessibilityFooterUrl = None,
-          phaseFeedbackLink = Some(s"http://localhost:9250/contact/beta-feedback?service=soft-drinks-industry-levy-registration&backUrl=http%3A%2F%2Flocalhost%3A8706%2Fsoft-drinks-industry-levy-registration%2Fask-secondary-warehouses"),
+          phaseFeedbackLink = None,
           deskProServiceName = None,
           showPhaseBanner = Some(false),
-          alphaPhase = Some(false),
+          alphaPhase = None,
           includeHMRCBranding = Some(true),
           ukMode = Some(true),
           selectPageConfig = Some(SelectPageConfig(
@@ -213,7 +213,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
             timeoutUrl = controllers.auth.routes.AuthController.signOut.url,
             timeoutKeepAliveUrl = Some(routes.KeepAliveController.keepAlive.url)
           )),
-          serviceHref = Some(routes.RegistrationController.start.url),
+          serviceHref = Some(frontendAppConfig.accountFrontendHomeUrl),
           pageHeadingStyle = Some("govuk-heading-m")
         ),
         labels = Some(
@@ -401,10 +401,10 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
           homeNavHref = None,
           signOutHref = Some(controllers.auth.routes.AuthController.signOut.url),
           accessibilityFooterUrl = None,
-          phaseFeedbackLink = Some(s"http://localhost:9250/contact/beta-feedback?service=soft-drinks-industry-levy-registration&backUrl=http%3A%2F%2Flocalhost%3A8706%2Fsoft-drinks-industry-levy-registration%2Fchange-ask-secondary-warehouses"),
+          phaseFeedbackLink = None,
           deskProServiceName = None,
           showPhaseBanner = Some(false),
-          alphaPhase = Some(false),
+          alphaPhase = None,
           includeHMRCBranding = Some(true),
           ukMode = Some(true),
           selectPageConfig = Some(SelectPageConfig(
@@ -425,7 +425,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
             timeoutUrl = controllers.auth.routes.AuthController.signOut.url,
             timeoutKeepAliveUrl = Some(routes.KeepAliveController.keepAlive.url)
           )),
-          serviceHref = Some(routes.RegistrationController.start.url),
+          serviceHref = Some(frontendAppConfig.accountFrontendHomeUrl),
           pageHeadingStyle = Some("govuk-heading-m")
         ),
         labels = Some(

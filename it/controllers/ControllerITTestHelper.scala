@@ -53,7 +53,7 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
 //        given.sdilBackend.retrieveRosm("1")
 //        given.sdilBackend.checkPendingQueueDoesntExist("1")
 //
-//          setAnswers(ua.copy(registerState = RegisterState.RegisterWithOtherUTR).set(EnterBusinessDetailsPage,Identify(utr = "1", postcode = "fakepostcode")).success.value)
+//          setAnswers(ua.set(EnterBusinessDetailsPage,Identify(utr = "1", postcode = "fakepostcode")).success.value)
 //
 //        WsTestClient.withClient { client =>
 //          val result1 = createClientRequestGet(client, url)
@@ -97,30 +97,11 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
 //
 //          whenReady(result1) { res =>
 //            res.status mustBe 303
-//            res.header(HeaderNames.LOCATION) mustBe Some(routes.IndexController.onPageLoad.url)
+//            res.header(HeaderNames.LOCATION) mustBe Some(routes.ApplicationAlreadySubmittedController.onPageLoad.url)
 //          }
 //        }
 //      }
 //    }
-  }
-
-  def authenticatedWithNoEnrolmentsAndHasNotEnteredUtr(url: String, userAnswers: UserAnswers = emptyUserAnswers): Unit = {
-    "the user is authenticated with no enrolments and has not entered utr from identify page" - {
-      s"redirect the user to identify page" in {
-        given.authorisedButNoEnrolmentsPrecondition
-
-        setAnswers(userAnswers)
-
-        WsTestClient.withClient { client =>
-          val result1 = createClientRequestGet(client, url)
-
-          whenReady(result1) { res =>
-            res.status mustBe 303
-            res.header(HeaderNames.LOCATION) mustBe Some(routes.IndexController.onPageLoad.url)
-          }
-        }
-      }
-    }
   }
 
   def testUnauthorisedUser(url: String, optJson: Option[JsValue] = None): Unit = {

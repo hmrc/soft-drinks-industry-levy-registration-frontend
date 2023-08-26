@@ -46,6 +46,7 @@ class FrontendAppConfig @Inject() (servicesConfig: ServicesConfig, configuration
   val loginUrl: String         = s"$basGatewayBaseUrl/bas-gateway/sign-in"
   val loginContinueUrl: String = s"$sdilFrontendBaseUrl/soft-drinks-industry-levy"
   val signOutUrl: String       = s"$basGatewayBaseUrl/bas-gateway/sign-out-without-state"
+  val sdilHomeUrl: String      = servicesConfig.getString("sdilHomeUrl")
 
   val sdilAccountFrontendBaseUrl: String = servicesConfig.baseUrl("soft-drinks-industry-levy-account-frontend")
   val accountFrontendHomeUrl: String = s"$sdilAccountFrontendBaseUrl/soft-drinks-industry-levy-account-frontend/home"
@@ -74,7 +75,6 @@ class FrontendAppConfig @Inject() (servicesConfig: ServicesConfig, configuration
       .getOrElse(throw new IllegalArgumentException(s"Configuration for address-lookup-frontend-init-config not found"))
       .underlying
 
-    val alphaPhase: Boolean = addressLookupInitConfig.getBoolean("alphaPhase")
     val version: Int = addressLookupInitConfig.getInt("version")
     val selectPageConfigProposalLimit: Int = addressLookupInitConfig.getInt("select-page-config.proposalListLimit")
 
