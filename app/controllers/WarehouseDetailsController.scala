@@ -53,7 +53,7 @@ class WarehouseDetailsController @Inject()(
   def onPageLoad(mode: Mode): Action[AnyContent] = controllerActions.withUserWhoCanRegister {
     implicit request =>
 
-      warehouseDetailsChecker.checkWarehouseDetails(request.userAnswers) {
+      warehouseDetailsChecker.checkWarehouseDetails(request.userAnswers, mode) {
         val preparedForm = request.userAnswers.get(WarehouseDetailsPage) match {
           case None => form
           case Some(value) => form.fill(value)

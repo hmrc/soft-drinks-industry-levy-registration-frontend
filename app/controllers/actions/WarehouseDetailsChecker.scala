@@ -17,7 +17,7 @@
 package controllers.actions
 
 import controllers.routes
-import models.{NormalMode, UserAnswers}
+import models.{Mode, NormalMode, UserAnswers}
 import org.bson.json.JsonObject
 import pages.{AskSecondaryWarehousesPage, WarehouseDetailsPage}
 import play.api.mvc.Result
@@ -32,7 +32,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class WarehouseDetailsChecker @Inject()(genericLogger: GenericLogger, val sessionService: SessionService)
                                        (implicit val executionContext: ExecutionContext) extends ActionHelpers {
 
-  def checkWarehouseDetails(userAnswers: UserAnswers)(action: => Result): Result = {
+  def checkWarehouseDetails(userAnswers: UserAnswers, mode: Mode)(action: => Result): Result = {
     userAnswers match {
       case answers if answers.warehouseList.nonEmpty =>
         action
@@ -40,7 +40,7 @@ class WarehouseDetailsChecker @Inject()(genericLogger: GenericLogger, val sessio
         val updatedAnswers = userAnswers.remove(AskSecondaryWarehousesPage).get
         sessionService.set(updatedAnswers)
         genericLogger.logger.warn("Failed to load the requested page due to no warehouse being present")
-        Redirect(routes.AskSecondaryWarehousesController.onPageLoad(NormalMode))
+        Redirect(routes.AskSecondaryWarehousesController.onPageLoad(mode))
     }
   }
 }

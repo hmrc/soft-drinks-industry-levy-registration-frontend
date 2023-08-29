@@ -1,6 +1,6 @@
 package controllers
 
-import models.NormalMode
+import models.{CheckMode, NormalMode}
 import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
 import pages.{AskSecondaryWarehousesPage, WarehouseDetailsPage}
@@ -66,7 +66,7 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
 
   s"GET " + checkRoutePath - {
     "when the userAnswers contains no data" - {
-      "should return OK and render the WarehouseDetails page with no data populated" in {
+      "should return OK and render the Ask Secondary Warehouse page with no data populated" in {
         given
           .commonPrecondition
 
@@ -77,7 +77,7 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
 
           whenReady(result1) { res =>
             res.status mustBe 303
-            res.header(HeaderNames.LOCATION) mustBe Some(routes.AskSecondaryWarehousesController.onPageLoad(NormalMode).url)
+            res.header(HeaderNames.LOCATION) mustBe Some(routes.AskSecondaryWarehousesController.onPageLoad(CheckMode).url)
           }
         }
       }
@@ -126,9 +126,10 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
 
     WsTestClient.withClient { client =>
       val result = createClientRequestGet(client, baseUrl + checkRoutePath)
+
       whenReady(result) { res =>
         res.status mustBe 303
-        res.header(HeaderNames.LOCATION) mustBe Some(routes.AskSecondaryWarehousesController.onPageLoad(NormalMode).url)
+        res.header(HeaderNames.LOCATION) mustBe Some(routes.AskSecondaryWarehousesController.onPageLoad(CheckMode).url)
         val dataStoredForPage = getAnswers(identifier).fold[Option[Boolean]](None)(_.get(AskSecondaryWarehousesPage))
         dataStoredForPage.nonEmpty mustBe false
       }
