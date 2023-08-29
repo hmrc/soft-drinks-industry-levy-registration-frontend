@@ -16,7 +16,10 @@
 
 package pages
 
+import models.Mode
+
 case object CheckYourAnswersPage extends Page {
 
   override def toString: String = "checkYourAnswers"
+  override val url: Mode => String = _ => controllers.routes.CheckYourAnswersController.onPageLoad.url
 }

@@ -16,8 +16,9 @@
 
 package pages
 
-import java.time.LocalDate
+import models.Mode
 
+import java.time.LocalDate
 import play.api.libs.json.JsPath
 
 case object StartDatePage extends QuestionPage[LocalDate] {
@@ -25,4 +26,6 @@ case object StartDatePage extends QuestionPage[LocalDate] {
   override def path: JsPath = JsPath \ toString
 
   override def toString: String = "startDate"
+
+  override val url: Mode => String = mode => controllers.routes.StartDateController.onPageLoad(mode).url
 }

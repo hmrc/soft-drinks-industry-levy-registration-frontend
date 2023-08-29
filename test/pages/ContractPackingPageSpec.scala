@@ -16,6 +16,7 @@
 
 package pages
 
+import models.{CheckMode, NormalMode}
 import pages.behaviours.PageBehaviours
 
 class ContractPackingPageSpec extends PageBehaviours {
@@ -27,5 +28,12 @@ class ContractPackingPageSpec extends PageBehaviours {
     beSettable[Boolean](ContractPackingPage)
 
     beRemovable[Boolean](ContractPackingPage)
+
+    s"url should be correct for $NormalMode" in {
+      ContractPackingPage.url(NormalMode) mustBe controllers.routes.ContractPackingController.onPageLoad(NormalMode).url
+    }
+    s"url should be correct for $CheckMode" in {
+      ContractPackingPage.url(CheckMode) mustBe controllers.routes.ContractPackingController.onPageLoad(CheckMode).url
+    }
   }
 }

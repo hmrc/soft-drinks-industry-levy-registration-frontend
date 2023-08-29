@@ -16,8 +16,9 @@
 
 package pages
 
-import java.time.LocalDate
+import models.{CheckMode, NormalMode}
 
+import java.time.LocalDate
 import org.scalacheck.Arbitrary
 import pages.behaviours.PageBehaviours
 
@@ -34,5 +35,12 @@ class StartDatePageSpec extends PageBehaviours {
     beSettable[LocalDate](StartDatePage)
 
     beRemovable[LocalDate](StartDatePage)
+
+    s"url should be correct for $NormalMode" in {
+      StartDatePage.url(NormalMode) mustBe controllers.routes.StartDateController.onPageLoad(NormalMode).url
+    }
+    s"url should be correct for $CheckMode" in {
+      StartDatePage.url(CheckMode) mustBe controllers.routes.StartDateController.onPageLoad(CheckMode).url
+    }
   }
 }

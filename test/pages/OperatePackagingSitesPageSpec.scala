@@ -16,6 +16,7 @@
 
 package pages
 
+import models.{CheckMode, NormalMode}
 import pages.behaviours.PageBehaviours
 
 class OperatePackagingSitesPageSpec extends PageBehaviours {
@@ -27,5 +28,12 @@ class OperatePackagingSitesPageSpec extends PageBehaviours {
     beSettable[Boolean](OperatePackagingSitesPage)
 
     beRemovable[Boolean](OperatePackagingSitesPage)
+
+    s"url should be correct for $NormalMode" in {
+      OperatePackagingSitesPage.url(NormalMode) mustBe controllers.routes.OperatePackagingSitesController.onPageLoad(NormalMode).url
+    }
+    s"url should be correct for $CheckMode" in {
+      OperatePackagingSitesPage.url(CheckMode) mustBe controllers.routes.OperatePackagingSitesController.onPageLoad(CheckMode).url
+    }
   }
 }
