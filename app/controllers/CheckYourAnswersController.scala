@@ -50,7 +50,6 @@ class CheckYourAnswersController @Inject()(
             Future.successful(Ok(view(summaryList, routes.CheckYourAnswersController.onSubmit)))
           case Left(_) => Future.successful(Redirect(routes.RegistrationController.start))
         }
-
       }
   }
 
