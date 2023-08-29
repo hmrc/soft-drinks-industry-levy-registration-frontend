@@ -25,7 +25,6 @@ import play.api.mvc.{AnyContent, Request, Result}
 import services.SessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utilities.GenericLogger
-import cats.implicits._
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success, Try}
@@ -55,7 +54,7 @@ trait ControllerHelper extends FrontendBaseController with I18nSupport {
   }
 
   def updateDatabaseWithoutRedirect(updatedAnswers: UserAnswers, page: Page)
-                                   (implicit ec: ExecutionContext, request: Request[AnyContent]): Future[Status] = {
+                                   (implicit ec: ExecutionContext): Future[Status] = {
     sessionService.set(updatedAnswers).value.map {
       case Right(_) => Ok
       case Left(_) =>

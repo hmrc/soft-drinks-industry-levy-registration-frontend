@@ -27,8 +27,8 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{AddressLookupService, PackingDetails, SessionService}
 import utilities.GenericLogger
-import views.html.PackAtBusinessAddressView
 import viewmodels.AddressFormattingHelper
+import views.html.PackAtBusinessAddressView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -37,9 +37,7 @@ class PackAtBusinessAddressController @Inject()(
                                        override val messagesApi: MessagesApi,
                                        val sessionService: SessionService,
                                        val navigator: Navigator,
-                                       identify: IdentifierAction,
-                                       getData: DataRetrievalAction,
-                                       requireData: DataRequiredAction,
+                                       controllerActions: ControllerActions,
                                        formProvider: PackAtBusinessAddressFormProvider,
                                        addressLookupService: AddressLookupService,
                                        val controllerComponents: MessagesControllerComponents,
@@ -53,7 +51,7 @@ class PackAtBusinessAddressController @Inject()(
   private val formattedAddress = (rosmRegistration: RosmRegistration) =>
     AddressFormattingHelper.formatBusinessAddress(rosmRegistration.address, Some(rosmRegistration.organisationName))
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = controllerActions.withUserWhoCanRegister {
     implicit request =>
 
       val preparedForm = request.userAnswers.get(PackAtBusinessAddressPage) match {
@@ -64,7 +62,7 @@ class PackAtBusinessAddressController @Inject()(
       Ok(view(preparedForm, formattedAddress(request.rosmWithUtr.rosmRegistration), mode))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = controllerActions.withUserWhoCanRegister.async {
     implicit request =>
 
       val rosmReg = request.rosmWithUtr.rosmRegistration

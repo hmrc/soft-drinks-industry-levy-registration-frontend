@@ -17,7 +17,7 @@
 package controllers
 
 import com.google.inject.Inject
-import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction, RequiredUserAnswers}
+import controllers.actions.{ControllerActions, RequiredUserAnswers}
 import errors.MissingRequiredUserAnswers
 import handlers.ErrorHandler
 import models.NormalMode
@@ -33,9 +33,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class CheckYourAnswersController @Inject()(
                                             override val messagesApi: MessagesApi,
-                                            identify: IdentifierAction,
-                                            getData: DataRetrievalAction,
-                                            requireData: DataRequiredAction,
+                                            controllerActions: ControllerActions,
                                             requiredUserAnswers: RequiredUserAnswers,
                                             registrationOrchestrator: RegistrationOrchestrator,
                                             val controllerComponents: MessagesControllerComponents,
@@ -43,7 +41,7 @@ class CheckYourAnswersController @Inject()(
                                             errorHandler: ErrorHandler
                                           )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onPageLoad: Action[AnyContent] = controllerActions.withUserWhoCanRegister.async {
     implicit request =>
       requiredUserAnswers.requireData(CheckYourAnswersPage) {
         registrationOrchestrator.getSubscriptionAndHowManyLitresGlobally(request.userAnswers, request.rosmWithUtr) match {
@@ -56,7 +54,7 @@ class CheckYourAnswersController @Inject()(
       }
   }
 
-  def onSubmit: Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onSubmit: Action[AnyContent] = controllerActions.withUserWhoCanRegister.async {
     implicit request =>
       requiredUserAnswers.requireData(CheckYourAnswersPage) {
         registrationOrchestrator.createSubscriptionAndUpdateUserAnswers.value.map{

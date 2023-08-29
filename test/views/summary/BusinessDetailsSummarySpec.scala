@@ -27,8 +27,8 @@ class BusinessDetailsSummarySpec extends RegistrationSubscriptionHelper {
 
   val ROSM_ADDRESS: UkAddress = UkAddress(List("33 Rhes Priordy", "East London"), "E73 2RP")
   val CHANGED_ADDRESS = UkAddress(List("117 Jerusalem Court", "St Albans"), "AL10 3UJ")
-  val UTR = "1234567890"
-  val ORG_NAME = "wizzbang"
+  val UTR = "1234567891"
+  val ORG_NAME = "Super Lemonade Plc"
   val ROSM_REGISTRATION: RosmRegistration = RosmRegistration("safeId", Some(OrganisationDetails(ORG_NAME)), None, ROSM_ADDRESS)
   val ROSM_WITH_UTR: RosmWithUtr = RosmWithUtr(UTR, ROSM_REGISTRATION)
 

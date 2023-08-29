@@ -73,6 +73,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
     testOtherSuccessUserTypes(baseUrl + normalRoutePath, Messages("askSecondaryWarehouses" + ".title"))
     testUnauthorisedUser(baseUrl + normalRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)
+    testWhoIsUnableToRegisterWithGivenUtr(baseUrl + normalRoutePath)
   }
 
   s"GET " + checkRoutePath - {
@@ -131,6 +132,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
     testOtherSuccessUserTypes(baseUrl + checkRoutePath, Messages("askSecondaryWarehouses" + ".title"))
     testUnauthorisedUser(baseUrl + checkRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath)
+    testWhoIsUnableToRegisterWithGivenUtr(baseUrl + checkRoutePath)
 
   }
 
@@ -334,6 +336,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
     }
     testUnauthorisedUser(baseUrl + normalRoutePath, Some(Json.obj("value" -> "true")))
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath, Some(Json.obj("value" -> "true")))
+    testWhoIsUnableToRegisterWithGivenUtr(baseUrl + normalRoutePath, Some(Json.obj("value" -> "true")))
 
   }
 
@@ -515,5 +518,6 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
     }
     testUnauthorisedUser(baseUrl + checkRoutePath, Some(Json.obj("value" -> "true")))
     testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath, Some(Json.obj("value" -> "true")))
+    testWhoIsUnableToRegisterWithGivenUtr(baseUrl + checkRoutePath, Some(Json.obj("value" -> "true")))
   }
 }

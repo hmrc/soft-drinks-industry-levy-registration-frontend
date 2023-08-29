@@ -20,7 +20,7 @@ import base.SpecBase
 import errors.SessionDatabaseInsertError
 import forms.ContractPackingFormProvider
 import helpers.LoggerHelper
-import models.{NormalMode, UserAnswers}
+import models.{NormalMode, RegisterState, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
@@ -64,7 +64,7 @@ class ContractPackingControllerSpec extends SpecBase with MockitoSugar with Logg
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(identifier).set(ContractPackingPage, true).success.value
+      val userAnswers = UserAnswers(identifier, RegisterState.RegisterWithAuthUTR).set(ContractPackingPage, true).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers), rosmRegistration = rosmRegistration).build()
 

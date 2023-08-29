@@ -21,7 +21,7 @@ import config.FrontendAppConfig
 import errors.SessionDatabaseInsertError
 import forms.StartDateFormProvider
 import helpers.LoggerHelper
-import models.{NormalMode, UserAnswers}
+import models.{NormalMode, RegisterState, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
@@ -82,7 +82,7 @@ class StartDateControllerSpec extends SpecBase with MockitoSugar with LoggerHelp
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(identifier).set(StartDatePage, validAnswer).success.value
+      val userAnswers = UserAnswers(identifier, RegisterState.RegisterWithAuthUTR).set(StartDatePage, validAnswer).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers), rosmRegistration = rosmRegistration).build()
 

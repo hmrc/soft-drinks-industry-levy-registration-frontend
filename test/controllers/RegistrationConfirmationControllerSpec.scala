@@ -22,17 +22,23 @@ import models.HowManyLitresGlobally.Large
 import models.OrganisationType.LimitedCompany
 import models.Verify.YesRegister
 import models._
+import models.backend.Subscription
+import org.mockito.Mockito.when
+import org.mockito.MockitoSugar.mock
 import pages._
+import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
-import viewmodels.summary.{BusinessDetailsSummary, ContactDetailsSummary}
+import repositories.{SDILSessionCache, SDILSessionKeys}
 import views.html.RegistrationConfirmationView
-import views.summary.{ContractPackingSummary, ImportsSummary, OperatePackagingSitesSummary, StartDateSummary, UKSitesSummary}
+import views.summary.RegistrationSummary
 
 import java.time.{LocalDate, LocalDateTime, ZoneOffset}
+import scala.concurrent.Future
 
 class RegistrationConfirmationControllerSpec extends SpecBase {
+
+  val mockSdilSessionCache = mock[SDILSessionCache]
 
   "RegistrationConfirmation Controller" - {
 
@@ -60,9 +66,15 @@ class RegistrationConfirmationControllerSpec extends SpecBase {
           .set(WarehouseDetailsPage, true).success.value
           .set(ContactDetailsPage, ContactDetails("foo", "bar", "wizz", "bang")).success.value
       }
-      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+      val subscription = Subscription.generate(userAnswers, rosmRegistration)
+      val application = applicationBuilder(userAnswers = Some(userAnswers))
+        .overrides(
+          bind[SDILSessionCache].toInstance(mockSdilSessionCache)
+        ).build()
 
       running(application) {
+        when(mockSdilSessionCache.fetchEntry[CreatedSubscriptionAndAmountProducedGlobally](userAnswers.id, SDILSessionKeys.CREATED_SUBSCRIPTION_AND_AMOUNT_PRODUCED_GLOBALLY))
+          .thenReturn(Future.successful(Some(CreatedSubscriptionAndAmountProducedGlobally(subscription, Large))))
         val request = FakeRequest(GET, routes.RegistrationConfirmationController.onPageLoad.url)
 
         val result = route(application, request).value
@@ -70,27 +82,10 @@ class RegistrationConfirmationControllerSpec extends SpecBase {
         val view = application.injector.instanceOf[RegistrationConfirmationView]
         val config = application.injector.instanceOf[FrontendAppConfig]
 
-        val businessDetails: (String, SummaryList) = BusinessDetailsSummary.headingAndSummary(userAnswers, rosmRegistration, false).get
+        val headingAndSummaryItems = RegistrationSummary.summaryList(CreatedSubscriptionAndAmountProducedGlobally(subscription, Large), false)
 
-        val operatePackagingSites: (String, SummaryList) = {
-          "operatePackagingSites.checkYourAnswersLabel" -> OperatePackagingSitesSummary.summaryList(userAnswers = userAnswers, isCheckAnswers = false)
-        }
-        val contractPacking: (String, SummaryList) = {
-          "contractPacking.checkYourAnswersLabel" -> ContractPackingSummary.summaryList(userAnswers = userAnswers, isCheckAnswers = false)
-        }
-        val imports: (String, SummaryList) = {
-          "imports.checkYourAnswersLabel" -> ImportsSummary.summaryList(userAnswers = userAnswers, isCheckAnswers = false)
-        }
-        val startDate: (String, SummaryList) = {
-          "startDate.checkYourAnswersLabel" -> StartDateSummary.summaryList(userAnswers = userAnswers, isCheckAnswers = false)
-        }
-        val contactDetails: (String, SummaryList) = ContactDetailsSummary.headingAndSummary(userAnswers = userAnswers, isCheckAnswers = false).get
-
-        val ukSites: (String, SummaryList) = {
-          UKSitesSummary.summaryList(userAnswers = userAnswers, isCheckAnswers = false).get
-        }
-
-        val headingAndSummaryItems = Seq(businessDetails, operatePackagingSites, contractPacking, imports, startDate, contactDetails, ukSites)
+        println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
+        println(headingAndSummaryItems)
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(headingAndSummaryItems, submittedDateTime, rosmRegistration.rosmRegistration.organisationName, "bang")(request, messages(application), config).toString
@@ -107,7 +102,7 @@ class RegistrationConfirmationControllerSpec extends SpecBase {
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result) mustEqual Some(routes.VerifyController.onPageLoad(NormalMode).url)
+        redirectLocation(result) mustEqual Some(routes.RegistrationController.start.url)
       }
     }
   }

@@ -29,6 +29,7 @@ import scala.util.{Failure, Success, Try}
 
 case class UserAnswers(
                         id: String,
+                        registerState: RegisterState,
                         data: JsObject = Json.obj(),
                         address: Option[UkAddress] = None,
                         packagingSiteList: Map[String, Site] = Map.empty,
@@ -107,6 +108,7 @@ object UserAnswers {
       def reads()(implicit encryption: Encryption): Reads[UserAnswers] = {
         (
           (__ \ "_id").read[String] and
+            (__ \ "registerState").read[RegisterState] and
             (__ \ "data").read[EncryptedValue] and
             (__ \ "address").read[EncryptedValue] and
             (__ \ "packagingSiteList").read[Map[String, EncryptedValue]] and
@@ -118,17 +120,18 @@ object UserAnswers {
 
       def writes(implicit encryption: Encryption): OWrites[UserAnswers] = new OWrites[UserAnswers] {
         override def writes(userAnswers: UserAnswers): JsObject = {
-          val encryptedValue: (String, EncryptedValue, EncryptedValue, Map[String, EncryptedValue], Map[String, EncryptedValue], Option[Instant], Instant) = {
+          val encryptedValue: (String, RegisterState, EncryptedValue, EncryptedValue, Map[String, EncryptedValue], Map[String, EncryptedValue], Option[Instant], Instant) = {
             ModelEncryption.encryptUserAnswers(userAnswers)
           }
           Json.obj(
             "id" -> encryptedValue._1,
-            "data" -> encryptedValue._2,
-            "address" -> encryptedValue._3,
-            "packagingSiteList" -> encryptedValue._4,
-            "warehouseList" -> encryptedValue._5,
-            "submittedOn" -> encryptedValue._6,
-            "lastUpdated" -> encryptedValue._7
+            "registerState" -> encryptedValue._2,
+            "data" -> encryptedValue._3,
+            "address" -> encryptedValue._4,
+            "packagingSiteList" -> encryptedValue._5,
+            "warehouseList" -> encryptedValue._6,
+            "submittedOn" -> encryptedValue._7,
+            "lastUpdated" -> encryptedValue._8
           )
         }
       }

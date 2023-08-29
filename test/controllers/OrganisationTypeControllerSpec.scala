@@ -20,7 +20,7 @@ import base.SpecBase
 import errors.SessionDatabaseInsertError
 import forms.OrganisationTypeFormProvider
 import helpers.LoggerHelper
-import models.{NormalMode, OrganisationType, UserAnswers}
+import models.{NormalMode, OrganisationType, RegisterState, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
@@ -80,7 +80,7 @@ class OrganisationTypeControllerSpec extends SpecBase with MockitoSugar with Log
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(sdilNumber).set(OrganisationTypePage, OrganisationType.values.head).success.value
+      val userAnswers = UserAnswers(sdilNumber, RegisterState.RegisterWithAuthUTR).set(OrganisationTypePage, OrganisationType.values.head).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers), rosmRegistration = rosmRegistration).build()
 

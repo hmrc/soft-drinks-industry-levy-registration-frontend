@@ -32,15 +32,13 @@ import scala.concurrent.ExecutionContext
 
 class RegistrationConfirmationController @Inject()(
                                        override val messagesApi: MessagesApi,
-                                       identify: IdentifierAction,
-                                       getData: DataRetrievalAction,
-                                       requireData: DataRequiredAction,
+                                       controllerActions: ControllerActions,
                                        sdilSessionCache: SDILSessionCache,
                                        val controllerComponents: MessagesControllerComponents,
                                        view: RegistrationConfirmationView
                                      )(implicit config: FrontendAppConfig, ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onPageLoad: Action[AnyContent] = controllerActions.withUserWhoCanRegister.async {
     implicit request => {
       sdilSessionCache.fetchEntry[CreatedSubscriptionAndAmountProducedGlobally](
         request.internalId, SDILSessionKeys.CREATED_SUBSCRIPTION_AND_AMOUNT_PRODUCED_GLOBALLY).map{

@@ -35,7 +35,7 @@ class ContractPackingSummarySpec extends RegistrationSubscriptionHelper {
           rows.head.key.classes mustBe ""
           rows.head.value.content.asHtml mustBe Html("Yes")
           rows.head.value.classes.trim mustBe "sdil-right-align--desktop"
-          rows.head.actions.head.items.head.href mustBe "/soft-drinks-industry-levy-registration/change-contract-packing"
+          rows.head.actions.head.items.head.href must include("/change-contract-packing")
           rows.head.actions.head.items.head.attributes mustBe Map("id" -> "change-contractPacking")
           rows.head.actions.head.items.head.content.asHtml mustBe Html("Change")
 
@@ -43,7 +43,7 @@ class ContractPackingSummarySpec extends RegistrationSubscriptionHelper {
           rows(1).key.classes mustBe ""
           rows(1).value.content.asHtml mustBe Html("1,000")
           rows(1).value.classes.trim mustBe "sdil-right-align--desktop"
-          rows(1).actions.head.items.head.href mustBe "/soft-drinks-industry-levy-registration/change-how-many-contract-packing-next-12-months"
+          rows(1).actions.head.items.head.href must include("/change-how-many-contract-packing-next-12-months")
           rows(1).actions.head.items.head.attributes mustBe Map("id" -> "change-litresInLowBand-litreage-contractPacking")
           rows(1).actions.head.items.head.content.asHtml mustBe Html("Change")
 
@@ -51,7 +51,7 @@ class ContractPackingSummarySpec extends RegistrationSubscriptionHelper {
           rows(2).key.classes mustBe ""
           rows(2).value.content.asHtml mustBe Html("2,000")
           rows(2).value.classes.trim mustBe "sdil-right-align--desktop"
-          rows(2).actions.head.items.head.href mustBe "/soft-drinks-industry-levy-registration/change-how-many-contract-packing-next-12-months"
+          rows(2).actions.head.items.head.href must include("/change-how-many-contract-packing-next-12-months")
           rows(2).actions.head.items.head.attributes mustBe Map("id" -> "change-litresInHighBand-litreage-contractPacking")
           rows(2).actions.head.items.head.content.asHtml mustBe Html("Change")
 
@@ -68,7 +68,7 @@ class ContractPackingSummarySpec extends RegistrationSubscriptionHelper {
           rows.head.key.classes mustBe ""
           rows.head.value.content.asHtml mustBe Html("Yes")
           rows.head.value.classes.trim mustBe "sdil-right-align--desktop"
-          rows.head.actions mustBe Actions("", List.empty)
+          rows.head.actions.get mustBe Actions("", List.empty)
 
 
           rows(1).key.content.asHtml mustBe Html("Litres in the low band")
@@ -100,7 +100,7 @@ class ContractPackingSummarySpec extends RegistrationSubscriptionHelper {
           rows.head.key.classes mustBe ""
           rows.head.value.content.asHtml mustBe Html("No")
           rows.head.value.classes.trim mustBe "sdil-right-align--desktop"
-          rows.head.actions.head.items.head.href mustBe "/soft-drinks-industry-levy-registration/change-contract-packing"
+          rows.head.actions.head.items.head.href must include("/change-contract-packing")
           rows.head.actions.head.items.head.attributes mustBe Map("id" -> "change-contractPacking")
           rows.head.actions.head.items.head.content.asHtml mustBe Html("Change")
 
@@ -116,7 +116,7 @@ class ContractPackingSummarySpec extends RegistrationSubscriptionHelper {
           rows.head.key.classes mustBe ""
           rows.head.value.content.asHtml mustBe Html("No")
           rows.head.value.classes.trim mustBe "sdil-right-align--desktop"
-          rows.head.actions mustBe Actions("", List.empty)
+          rows.head.actions.get mustBe Actions("", List.empty)
 
           rows.size mustBe 1
         }

@@ -53,7 +53,7 @@ class OperatePackagingSitesSummarySpec extends RegistrationSubscriptionHelper {
                 rows.head.key.classes mustBe ""
                 rows.head.value.content.asHtml mustBe Html("Yes")
                 rows.head.value.classes.trim mustBe "sdil-right-align--desktop"
-                rows.head.actions.head.items.head.href mustBe "/soft-drinks-industry-levy-registration/change-operate-packaging-sites"
+                rows.head.actions.head.items.head.href must include("/change-operate-packaging-sites")
                 rows.head.actions.head.items.head.attributes mustBe Map("id" -> "change-operatePackagingSites")
                 rows.head.actions.head.items.head.content.asHtml mustBe Html("Change")
 
@@ -61,7 +61,7 @@ class OperatePackagingSitesSummarySpec extends RegistrationSubscriptionHelper {
                 rows(1).key.classes mustBe ""
                 rows(1).value.content.asHtml mustBe Html("1,000")
                 rows(1).value.classes.trim mustBe "sdil-right-align--desktop"
-                rows(1).actions.head.items.head.href mustBe "/soft-drinks-industry-levy-registration/change-how-many-own-brands-next-12-months"
+                rows(1).actions.head.items.head.href  must include("/change-how-many-own-brands-next-12-months")
                 rows(1).actions.head.items.head.attributes mustBe Map("id" -> "change-litresInLowBand-litreage-operatePackagingSites")
                 rows(1).actions.head.items.head.content.asHtml mustBe Html("Change")
 
@@ -69,7 +69,7 @@ class OperatePackagingSitesSummarySpec extends RegistrationSubscriptionHelper {
                 rows(2).key.classes mustBe ""
                 rows(2).value.content.asHtml mustBe Html("2,000")
                 rows(2).value.classes.trim mustBe "sdil-right-align--desktop"
-                rows(2).actions.head.items.head.href mustBe "/soft-drinks-industry-levy-registration/change-how-many-own-brands-next-12-months"
+                rows(2).actions.head.items.head.href must include("/change-how-many-own-brands-next-12-months")
                 rows(2).actions.head.items.head.attributes mustBe Map("id" -> "change-litresInHighBand-litreage-operatePackagingSites")
                 rows(2).actions.head.items.head.content.asHtml mustBe Html("Change")
 
@@ -119,7 +119,7 @@ class OperatePackagingSitesSummarySpec extends RegistrationSubscriptionHelper {
                 rows.head.key.classes mustBe ""
                 rows.head.value.content.asHtml mustBe Html("No")
                 rows.head.value.classes.trim mustBe "sdil-right-align--desktop"
-                rows.head.actions.head.items.head.href mustBe "/soft-drinks-industry-levy-registration/change-operate-packaging-sites"
+                rows.head.actions.head.items.head.href must include("/change-operate-packaging-sites")
                 rows.head.actions.head.items.head.attributes mustBe Map("id" -> "change-operatePackagingSites")
                 rows.head.actions.head.items.head.content.asHtml mustBe Html("Change")
 

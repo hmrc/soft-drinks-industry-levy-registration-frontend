@@ -17,15 +17,14 @@
 package controllers
 
 import config.FrontendAppConfig
-import connectors.SoftDrinksIndustryLevyConnector
 import controllers.actions._
+import errors.{EnteredBusinessDetailsDoNotMatch, NoROSMRegistration}
 import forms.EnterBusinessDetailsFormProvider
 import handlers.ErrorHandler
-import models.backend.UkAddress
-import models.{Identify, Mode, NormalMode, UserAnswers}
+import models.{Identify, NormalMode, UserAnswers}
 import navigation.Navigator
+import orchestrators.RegistrationOrchestrator
 import pages.EnterBusinessDetailsPage
-import play.api.data.Form
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SessionService
@@ -39,10 +38,9 @@ class EnterBusinessDetailsController @Inject()(
                                        override val messagesApi: MessagesApi,
                                        val sessionService: SessionService,
                                        val navigator: Navigator,
-                                       identify: IdentifierAction,
-                                       getData: DataRetrievalAction,
+                                       controllerActions: ControllerActions,
                                        formProvider: EnterBusinessDetailsFormProvider,
-                                       softDrinksIndustryLevyConnector: SoftDrinksIndustryLevyConnector,
+                                       registrationOrchestrator: RegistrationOrchestrator,
                                        val controllerComponents: MessagesControllerComponents,
                                        view: EnterBusinessDetailsView,
                                        val errorHandler: ErrorHandler,
@@ -51,42 +49,43 @@ class EnterBusinessDetailsController @Inject()(
 
   private val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData).async {
+  def onPageLoad: Action[AnyContent] = controllerActions.withRequiresBusinessDetailsAction.async {
     implicit request =>
-      val preparedForm = request.userAnswers.fold[Form[Identify]](form) { ua =>
-        ua.get(EnterBusinessDetailsPage) match {
-          case Some(value) => form.fill(value)
-          case _ => form
-        }
+      val preparedForm = request.userAnswers.get(EnterBusinessDetailsPage) match {
+        case Some(value) => form.fill(value)
+        case _ => form
       }
-      Future.successful(Ok(view(preparedForm, mode)))
+      Future.successful(Ok(view(preparedForm)))
   }
 
-  private def postcodesMatch(rosmAddress: UkAddress, identify: Identify) =
-    rosmAddress.postCode.replaceAll(" ", "").equalsIgnoreCase(identify.postcode.replaceAll(" ", ""))
-
-  private def wipeUserDetailsIfDifferentIdentifer(identify: Identify, userAnswers: UserAnswers): UserAnswers = {
-    val userAnswersChanged: Boolean = !userAnswers.get(EnterBusinessDetailsPage).contains(identify)
-    userAnswersChanged match {
-      case true => new UserAnswers(userAnswers.id)
-      case false => userAnswers
-    }
-  }
-
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData).async {
+  def onSubmit: Action[AnyContent] = controllerActions.withRequiresBusinessDetailsAction.async {
     implicit request =>
-      val answers = request.userAnswers.getOrElse(UserAnswers(id = request.internalId))
       form.bindFromRequest().fold(
         formWithErrors =>
-          Future.successful(BadRequest(view(formWithErrors, mode))),
+          Future.successful(BadRequest(view(formWithErrors))),
         identify => {
-          softDrinksIndustryLevyConnector.retreiveRosmSubscription(identify.utr, request.internalId) flatMap {
-            case Some(rosmReg) if postcodesMatch(rosmReg.rosmRegistration.address, identify) =>
-              val updatedAnswers = wipeUserDetailsIfDifferentIdentifer(identify, answers).set(EnterBusinessDetailsPage, identify)
-              updateDatabaseAndRedirect(updatedAnswers, EnterBusinessDetailsPage, mode)
-            case _ => Future.successful(BadRequest(view(form.fill(identify).withError("utr", "enterBusinessDetails.no-record.utr"), NormalMode)))
+          if (sameBusinessDetailsEntered(identify, request.userAnswers)) {
+            Future.successful(Redirect(navigator.nextPage(EnterBusinessDetailsPage, NormalMode, request.userAnswers)))
+          } else {
+            registrationOrchestrator.checkEnteredBusinessDetailsAreValidAndUpdateUserAnswers(identify, request.internalId).value flatMap {
+              case Right(state) =>
+                val updatedUserAnswersWithPageDataAndState = UserAnswers(request.userAnswers.id, registerState = state)
+                  .set(EnterBusinessDetailsPage, identify)
+                updateDatabaseAndRedirect(updatedUserAnswersWithPageDataAndState, EnterBusinessDetailsPage, NormalMode)
+              case Left(error) if List(NoROSMRegistration, EnteredBusinessDetailsDoNotMatch).contains(error) =>
+                Future.successful(BadRequest(view(form.fill(identify).withError("utr", "enterBusinessDetails.no-record.utr"))))
+              case Left(_) => Future.successful(InternalServerError(errorHandler.internalServerErrorTemplate))
+            }
           }
         }
       )
+  }
+
+  private def sameBusinessDetailsEntered(identify: Identify, userAnswers: UserAnswers): Boolean = {
+    userAnswers.get(EnterBusinessDetailsPage).fold(false) { businessDetails =>
+      val postcodesMatch = identify.postcode.replaceAll(" ", "")
+        .equalsIgnoreCase(businessDetails.postcode.replaceAll(" ", ""))
+      (businessDetails.utr == identify.utr) && postcodesMatch
+    }
   }
 }

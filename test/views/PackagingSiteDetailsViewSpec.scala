@@ -122,7 +122,6 @@ class PackagingSiteDetailsViewSpec extends ViewSpecHelper {
 
           packagingSites.zipWithIndex.foreach { case ((id, site), index) =>
             s"that includes a summary row for ${site.address.lines.head}" in {
-              val siteMessage = Messages("packagingSiteDetails.remove.hidden")
               val summaryRow = summaryListRows.get(index)
               summaryRow.getElementsByTag("dt").text() must include((site.address.lines :+ site.address.postCode).mkString(", "))
               val action = summaryRow.getElementsByClass(Selectors.link)

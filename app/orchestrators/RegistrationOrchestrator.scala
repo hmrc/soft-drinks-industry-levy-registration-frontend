@@ -19,11 +19,12 @@ package orchestrators
 import cats.data.EitherT
 import cats.implicits._
 import com.google.inject.{Inject, Singleton}
-import connectors.SoftDrinksIndustryLevyConnector
-import errors.{MissingRequiredUserAnswers, RegistrationErrors}
-import models.backend.Subscription
-import models.requests.DataRequest
-import models.{CreatedSubscriptionAndAmountProducedGlobally, RosmWithUtr, UserAnswers}
+import connectors._
+import errors._
+import models.RegisterState._
+import models._
+import models.backend.{Subscription, UkAddress}
+import models.requests.{DataRequest, IdentifierRequest}
 import pages.HowManyLitresGloballyPage
 import play.api.mvc.AnyContent
 import repositories.{SDILSessionCache, SDILSessionKeys}
@@ -41,6 +42,59 @@ class RegistrationOrchestrator @Inject()(sdilConnector: SoftDrinksIndustryLevyCo
                                          sessionService: SessionService,
                                          sdilSessionCache: SDILSessionCache,
                                          genericLogger: GenericLogger) {
+
+  def handleRegistrationRequest(implicit request: IdentifierRequest[AnyContent],
+                                hc: HeaderCarrier,
+                                ec: ExecutionContext): RegistrationResult[RegisterState] = {
+    val internalId = request.internalId
+    val registerState = request.optUTR match {
+      case Some(utr) if request.isRegistered => determineRegisterStateForRegisteredUsers(utr, internalId).value
+      case Some(utr) => determineRegisterStateForNoneRegisteredUsers(utr, internalId).value
+      case _ => Future(Right(RequiresBusinessDetails))
+    }
+
+    for {
+      regState <- EitherT(registerState)
+      _ <- sessionService.set(UserAnswers(internalId, regState))
+    } yield regState
+
+  }
+  def checkEnteredBusinessDetailsAreValidAndUpdateUserAnswers(identify: Identify, internalId: String)
+                                                             (implicit hc: HeaderCarrier,
+                                                              ec: ExecutionContext): RegistrationResult[RegisterState] = {
+
+    for {
+      rosmData <- sdilConnector.retreiveRosmSubscription(identify.utr, internalId)
+      _ <- postcodesMatch(rosmData.rosmRegistration.address, identify)
+      subscriptionStatus <- sdilConnector.checkPendingQueue(identify.utr)
+    } yield getRegistrationStateFromSubscriptionStatus(subscriptionStatus, true)
+
+  }
+
+  private def determineRegisterStateForNoneRegisteredUsers(utr: String, internalId: String)
+                                                      (implicit hc: HeaderCarrier,
+                                                       ec: ExecutionContext): RegistrationResult[RegisterState] = EitherT {
+    val subStatus = for {
+      _ <- sdilConnector.retreiveRosmSubscription(utr, internalId)
+      subscriptionStatus <- sdilConnector.checkPendingQueue(utr)
+    } yield getRegistrationStateFromSubscriptionStatus(subscriptionStatus)
+
+    subStatus.value.map{
+      case Right(status) => Right(status)
+      case Left(NoROSMRegistration) => Right(RequiresBusinessDetails)
+      case Left(error) => Left(error)
+    }
+  }
+
+  private def determineRegisterStateForRegisteredUsers(utr: String, internalId: String)
+                                                            (implicit hc: HeaderCarrier,
+                                                             ec: ExecutionContext): RegistrationResult[RegisterState] = EitherT {
+    sdilConnector.retreiveRosmSubscription(utr, internalId).value.map {
+      case Right(_) => Right(AlreadyRegistered)
+      case Left(NoROSMRegistration) => Left(AuthenticationError)
+      case Left(error) => Left(error)
+    }
+  }
 
   def createSubscriptionAndUpdateUserAnswers(implicit request: DataRequest[AnyContent], hc: HeaderCarrier, ec: ExecutionContext): RegistrationResult[Unit] = {
     val submittedDateTime = Instant.now
@@ -71,4 +125,25 @@ class RegistrationOrchestrator @Inject()(sdilConnector: SoftDrinksIndustryLevyCo
           }
       }
   }
+
+  private def postcodesMatch(rosmAddress: UkAddress, identify: Identify): RegistrationResult[Boolean] = EitherT {
+    val rosmPostCode = removeWhitespace(rosmAddress.postCode)
+    val enteredPostcode = removeWhitespace(identify.postcode)
+    if (rosmPostCode.equalsIgnoreCase(enteredPostcode)) {
+      Future.successful(Right(true))
+    } else {
+      Future.successful(Left(EnteredBusinessDetailsDoNotMatch))
+    }
+  }
+
+  def getRegistrationStateFromSubscriptionStatus(subStatus: SubscriptionStatus, utrEntered: Boolean = false): RegisterState = {
+    subStatus match {
+      case Pending => RegistrationPending
+      case Registered => RegisterApplicationAccepted
+      case DoesNotExist if utrEntered => RegisterWithOtherUTR
+      case _ => RegisterWithAuthUTR
+    }
+  }
+
+  private def removeWhitespace(value: String): String = value.replaceAll(" ", "")
 }

@@ -27,14 +27,12 @@ import javax.inject.Inject
 
 class AlreadyRegisteredController @Inject()(
                                        override val messagesApi: MessagesApi,
-                                       identify: IdentifierAction,
-                                       getData: DataRetrievalAction,
-                                       requireData: DataRequiredAction,
+                                       controllerActions: ControllerActions,
                                        val controllerComponents: MessagesControllerComponents,
                                        view: AlreadyRegisteredView
                                      ) extends FrontendBaseController with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad: Action[AnyContent] = controllerActions.withAlreadyRegisteredAction {
     implicit request =>
 
       val rosmRegistration = request.rosmWithUtr.rosmRegistration

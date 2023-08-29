@@ -1,6 +1,6 @@
 package controllers
 
-import models.{CheckMode, LitresInBands, NormalMode, UserAnswers}
+import models.{CheckMode, LitresInBands, NormalMode, RegisterState, UserAnswers}
 import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
 import pages.{ContractPackingPage, HowManyContractPackingPage}
@@ -68,6 +68,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
     }
     testOtherSuccessUserTypes(baseUrl + normalRoutePath, Messages("contractPacking" + ".title"))
     testUnauthorisedUser(baseUrl + normalRoutePath)
+    testWhoIsUnableToRegisterWithGivenUtr(baseUrl + normalRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)
   }
 
@@ -126,6 +127,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
 
     testOtherSuccessUserTypes(baseUrl + checkRoutePath, Messages("contractPacking" + ".title"))
     testUnauthorisedUser(baseUrl + checkRoutePath)
+    testWhoIsUnableToRegisterWithGivenUtr(baseUrl + checkRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath)
   }
 
@@ -214,6 +216,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
       }
     }
     testUnauthorisedUser(baseUrl + normalRoutePath, Some(Json.obj("value" -> "true")))
+    testWhoIsUnableToRegisterWithGivenUtr(baseUrl + normalRoutePath, Some(Json.obj("value" -> "true")))
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath, Some(Json.obj("value" -> "true")))
   }
 
@@ -302,6 +305,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
       }
     }
     testUnauthorisedUser(baseUrl + checkRoutePath, Some(Json.obj("value" -> "true")))
+    testWhoIsUnableToRegisterWithGivenUtr(baseUrl + checkRoutePath, Some(Json.obj("value" -> "true")))
     testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath, Some(Json.obj("value" -> "true")))
   }
 
@@ -310,7 +314,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
       .commonPrecondition
 
     val previouslyFilledAnswers =
-      UserAnswers("some-id", Json.obj(
+      UserAnswers("some-id", RegisterState.RegisterWithAuthUTR, Json.obj(
         ContractPackingPage.toString -> true,
         HowManyContractPackingPage.toString -> Json.obj("lowBand" -> "123", "highBand" -> "123")))
 

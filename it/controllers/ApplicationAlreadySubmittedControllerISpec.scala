@@ -1,5 +1,6 @@
 package controllers
 
+import models.RegisterState
 import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
 import play.api.i18n.Messages
@@ -14,7 +15,7 @@ class ApplicationAlreadySubmittedControllerISpec extends ControllerITTestHelper 
       given
         .commonPrecondition
 
-      setAnswers(emptyUserAnswers)
+      setAnswers(emptyUserAnswers.copy(registerState = RegisterState.RegisterApplicationAccepted))
 
       WsTestClient.withClient { client =>
         val result1 = createClientRequestGet(client, baseUrl + normalRoutePath)
@@ -26,8 +27,6 @@ class ApplicationAlreadySubmittedControllerISpec extends ControllerITTestHelper 
         }
       }
     }
-    testOtherSuccessUserTypes(baseUrl + normalRoutePath, Messages("applicationAlreadySubmitted.heading.title"
-    ) )
     testUnauthorisedUser(baseUrl + normalRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)
   }

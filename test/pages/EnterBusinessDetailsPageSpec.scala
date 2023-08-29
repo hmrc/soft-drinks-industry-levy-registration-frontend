@@ -31,10 +31,10 @@ class EnterBusinessDetailsPageSpec extends PageBehaviours {
     beRemovable[Identify](EnterBusinessDetailsPage)
 
     s"url should be correct for $NormalMode" in {
-      EnterBusinessDetailsPage.url(NormalMode) mustBe controllers.routes.EnterBusinessDetailsController.onPageLoad(NormalMode).url
+      EnterBusinessDetailsPage.url(NormalMode) mustBe controllers.routes.EnterBusinessDetailsController.onPageLoad.url
     }
     s"url should be correct for $CheckMode" in {
-      EnterBusinessDetailsPage.url(CheckMode) mustBe controllers.routes.EnterBusinessDetailsController.onPageLoad(CheckMode).url
+      EnterBusinessDetailsPage.url(CheckMode) mustBe controllers.routes.EnterBusinessDetailsController.onPageLoad.url
     }
   }
 }

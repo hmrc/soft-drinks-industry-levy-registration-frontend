@@ -20,7 +20,7 @@ import base.SpecBase
 import errors.SessionDatabaseInsertError
 import forms.PackAtBusinessAddressFormProvider
 import helpers.LoggerHelper
-import models.{NormalMode, UserAnswers}
+import models.{NormalMode, RegisterState, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
@@ -69,7 +69,7 @@ class PackAtBusinessAddressControllerSpec extends SpecBase with MockitoSugar wit
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(identifier).set(PackAtBusinessAddressPage, true).success.value
+      val userAnswers = UserAnswers(identifier, RegisterState.RegisterWithAuthUTR).set(PackAtBusinessAddressPage, true).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers), rosmRegistration = rosmRegistration).build()
 
@@ -119,7 +119,7 @@ class PackAtBusinessAddressControllerSpec extends SpecBase with MockitoSugar wit
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
       when(mockAddressLookupService.initJourneyAndReturnOnRampUrl(
         ArgumentMatchers.eq(PackingDetails), ArgumentMatchers.any(), ArgumentMatchers.any())(
-        ArgumentMatchers.any(), ArgumentMatchers.any(),ArgumentMatchers.any(), ArgumentMatchers.any()))
+        ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(onwardUrlForALF))
 
       val application =
@@ -143,7 +143,7 @@ class PackAtBusinessAddressControllerSpec extends SpecBase with MockitoSugar wit
 
         verify(mockAddressLookupService, times(1)).initJourneyAndReturnOnRampUrl(
           ArgumentMatchers.eq(PackingDetails), ArgumentMatchers.any(), ArgumentMatchers.any())(
-          ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+          ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
       }
     }
 

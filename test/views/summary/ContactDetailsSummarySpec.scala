@@ -37,7 +37,7 @@ class ContactDetailsSummarySpec extends RegistrationSubscriptionHelper {
 
   "headingAndSummary" - {
     "should return the heading and summary list" - {
-      val subscription = generateSubscription(allFieldsPopulated = false).copy(contact = contact)
+      val subscription = generateSubscription(allFieldsPopulated = false).copy(contact = userContact)
 
       "that contains change links" - {
         "when called for check your answers" in {

@@ -72,6 +72,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
     testOtherSuccessUserTypes(baseUrl + normalRoutePath, Messages("startDate" + ".title"
     ) )
     testUnauthorisedUser(baseUrl + normalRoutePath)
+    testWhoIsUnableToRegisterWithGivenUtr(baseUrl + normalRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)
   }
 
@@ -132,6 +133,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
     testOtherSuccessUserTypes(baseUrl + checkRoutePath, Messages("startDate" + ".title"
     ) )
     testUnauthorisedUser(baseUrl + normalRoutePath)
+    testWhoIsUnableToRegisterWithGivenUtr(baseUrl + normalRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)
   }
 
@@ -302,6 +304,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
       }
     }
     testUnauthorisedUser(baseUrl + normalRoutePath, Some(Json.obj("value" -> "true")))
+    testWhoIsUnableToRegisterWithGivenUtr(baseUrl + normalRoutePath, Some(Json.obj("value" -> "true")))
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath, Some(Json.obj("value" -> "true")))
   }
 

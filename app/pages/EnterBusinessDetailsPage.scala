@@ -25,5 +25,5 @@ case object EnterBusinessDetailsPage extends QuestionPage[Identify] {
 
   override def toString: String = "enterBusinessDetails"
 
-  override val url: Mode => String = mode => controllers.routes.EnterBusinessDetailsController.onPageLoad(mode).url
+  override val url: Mode => String = mode => controllers.routes.EnterBusinessDetailsController.onPageLoad.url
 }

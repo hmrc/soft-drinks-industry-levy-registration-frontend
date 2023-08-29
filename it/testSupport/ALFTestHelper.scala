@@ -23,7 +23,6 @@ object ALFTestHelper {
         requestMadeToAlf.getBodyAsString.contains(bodyExpected.options.continueUrl.substring(0, bodyExpected.options.continueUrl.indexOf("/")))
       } else { true }
     }
-
     jsonBodyRequestWithNewContinueUrl == jsonBodyExpectedWithNewContinueUrl && continueUrlSentMatches
   }
 }
