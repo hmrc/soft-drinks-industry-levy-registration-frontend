@@ -133,7 +133,7 @@ packagingSiteDetails.heading2 = Do you want to add another UK packaging site?
 packagingSiteDetails.hidden = packaging site
 packagingSiteDetails.error.required = Select yes if you want to add another UK packaging site
 packagingSiteDetails.change.hidden = Packaging site
-packagingSiteDetails.remove.hidden = {0} at {1}
+packagingSiteDetails.remove.hidden = packaging site {0} at {1}
 packagingSiteDetails.detailsLink = I want to remove this UK packaging site
 packagingSiteDetails.detailsInfo = You must add another site first. Once you have added the other site you will be able to remove one. You must always have at least one packaging site listed.
 
@@ -274,7 +274,7 @@ packAtBusinessAddress.change.hidden = the UK packaging site that you operate to 
 warehouseDetails.title.heading = You added {0} UK warehouse{1}
 warehouseDetails.add.another = Do you want to register another UK warehouse?
 warehouseDetails.error.required = Select yes if you want to register another UK warehouse
-warehouseDetails.remove.hidden = {0} at {1}
+warehouseDetails.remove.hidden = warehouse {0} at {1}
 warehouseDetails.change.hidden = Change warehouses
 warehouseDetails.subtext = You don''t have any registered warehouses.
 

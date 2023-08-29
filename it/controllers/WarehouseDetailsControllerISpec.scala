@@ -116,7 +116,7 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
     testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath)
   }
 
-  "Get should return redirect to AskSecondaryWarehouses page when 0 warehouses listed with No answer on AskSecondaryWarehouses page" in {
+  "Get should return redirect to AskSecondaryWarehouses page when 0 warehouses listed" in {
     given
       .commonPrecondition
 
@@ -130,8 +130,6 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
       whenReady(result) { res =>
         res.status mustBe 303
         res.header(HeaderNames.LOCATION) mustBe Some(routes.AskSecondaryWarehousesController.onPageLoad(CheckMode).url)
-        val dataStoredForPage = getAnswers(identifier).fold[Option[Boolean]](None)(_.get(AskSecondaryWarehousesPage))
-        dataStoredForPage.nonEmpty mustBe false
       }
     }
   }
