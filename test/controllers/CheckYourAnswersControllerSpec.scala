@@ -22,7 +22,7 @@ import errors.{MissingRequiredUserAnswers, UnexpectedResponseFromSDIL}
 import models.HowManyLitresGlobally.Large
 import models.OrganisationType.LimitedCompany
 import models.Verify.YesRegister
-import models.{ContactDetails, LitresInBands, NormalMode}
+import models.{CheckMode, ContactDetails, LitresInBands, NormalMode}
 import orchestrators.RegistrationOrchestrator
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
@@ -55,10 +55,10 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
 
         val result = route(application, request).value
 
-        redirectLocation(result).get mustEqual VerifyController.onPageLoad(NormalMode).url
+        redirectLocation(result).get mustEqual VerifyController.onPageLoad(CheckMode).url
       }
     }
-    "must redirect to verify controller for a GET with user answers full apart from 1 missing answer" in {
+    "must redirect to missing page for a GET with user answers full apart from 1 missing answer" in {
       val userAnswerDate: LocalDate = LocalDate.of(2023, 6, 1)
       val userAnswers = {
         emptyUserAnswers
@@ -84,7 +84,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
 
         val result = route(application, request).value
 
-        redirectLocation(result).get mustEqual VerifyController.onPageLoad(NormalMode).url
+        redirectLocation(result).get mustEqual ContactDetailsPage.url(CheckMode)
       }
     }
     "must return OK and the correct view for a GET with full user answers with litres pages yes" in {
@@ -238,10 +238,10 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual VerifyController.onPageLoad(NormalMode).url
+        redirectLocation(result).value mustEqual VerifyController.onPageLoad(CheckMode).url
       }
     }
-      "must Redirect to verify controller when full user answers 1 missing on POST" in {
+      "must Redirect to missing page when full user answers 1 missing on POST" in {
         val userAnswerDate: LocalDate = LocalDate.of(2023, 6, 1)
         val userAnswers = {
           emptyUserAnswers
@@ -270,7 +270,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual VerifyController.onPageLoad(NormalMode).url
+          redirectLocation(result).value mustEqual ContactDetailsPage.url(CheckMode)
         }
       }
     "must redirect to Journey Recovery for a POST if no existing data is found" in {

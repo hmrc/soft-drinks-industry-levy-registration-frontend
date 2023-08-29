@@ -155,7 +155,7 @@ trait RegSummaryISpecHelper extends ControllerITTestHelper {
     val printPageElements = document.getElementById("printPage")
     val link = printPageElements.getElementsByClass("govuk-link")
     link.text() mustEqual "Print this page"
-    link.attr("href") mustEqual "javascript:window.print()"
+    link.attr("href") mustEqual "#print-dialogue"
 
     val applicationSentAt = document.getElementById("applicationSentAt")
     applicationSentAt.text() mustBe "Your application to register for the Soft Drinks Industry Levy was sent on 10 July 2023 at 2:30pm."

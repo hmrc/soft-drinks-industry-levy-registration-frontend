@@ -16,9 +16,14 @@
 
 package pages
 
+
+import models.Mode
+
 import scala.language.implicitConversions
 
-trait Page
+trait Page {
+  val url: Mode => String = mode => controllers.routes.VerifyController.onPageLoad(mode).url
+}
 
 object Page {
 

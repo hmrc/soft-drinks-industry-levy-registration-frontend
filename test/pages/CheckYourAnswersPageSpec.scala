@@ -16,14 +16,16 @@
 
 package pages
 
-import models.Mode
-import play.api.libs.json.JsPath
+import models.{CheckMode, NormalMode}
+import pages.behaviours.PageBehaviours
 
-case object ThirdPartyPackagersPage extends QuestionPage[Boolean] {
-
-  override def path: JsPath = JsPath \ toString
-
-  override def toString: String = "thirdPartyPackagers"
-
-  override val url: Mode => String = mode => controllers.routes.ThirdPartyPackagersController.onPageLoad(mode).url
+class CheckYourAnswersPageSpec extends PageBehaviours {
+  "CheckYourAnswersPage" - {
+    s"url should be correct for $NormalMode" in {
+      CheckYourAnswersPage.url(NormalMode) mustBe controllers.routes.CheckYourAnswersController.onPageLoad.url
+    }
+    s"url should be correct for $CheckMode" in {
+      CheckYourAnswersPage.url(CheckMode) mustBe controllers.routes.CheckYourAnswersController.onPageLoad.url
+    }
+  }
 }

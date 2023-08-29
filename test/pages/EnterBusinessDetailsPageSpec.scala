@@ -16,7 +16,7 @@
 
 package pages
 
-import models.Identify
+import models.{CheckMode, Identify, NormalMode}
 import pages.behaviours.PageBehaviours
 
 
@@ -29,5 +29,12 @@ class EnterBusinessDetailsPageSpec extends PageBehaviours {
     beSettable[Identify](EnterBusinessDetailsPage)
 
     beRemovable[Identify](EnterBusinessDetailsPage)
+
+    s"url should be correct for $NormalMode" in {
+      EnterBusinessDetailsPage.url(NormalMode) mustBe controllers.routes.EnterBusinessDetailsController.onPageLoad(NormalMode).url
+    }
+    s"url should be correct for $CheckMode" in {
+      EnterBusinessDetailsPage.url(CheckMode) mustBe controllers.routes.EnterBusinessDetailsController.onPageLoad(CheckMode).url
+    }
   }
 }
