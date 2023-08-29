@@ -17,8 +17,8 @@
 package viewmodels.summary
 
 import controllers.routes
-import models.{CheckMode, HowManyLitresGlobally, RosmWithUtr, UserAnswers}
-import pages.HowManyLitresGloballyPage
+import models.backend.Subscription
+import models.{CheckMode, HowManyLitresGlobally}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.{ActionItem, SummaryList, Text}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Content
@@ -29,43 +29,38 @@ import viewmodels.implicits._
 
 object BusinessDetailsSummary  {
 
-  def headingAndSummary(userAnswers: UserAnswers, rosmWithUtr: RosmWithUtr, isCheckAnswers: Boolean = true)
-                       (implicit messages: Messages): Option[(String, SummaryList)] = {
-    userAnswers.get(HowManyLitresGloballyPage).map { numberOfLitres =>
-      val heading = messages("checkYourAnswers.businessDetails.subHeader")
-      val address = userAnswers.address.getOrElse(rosmWithUtr.rosmRegistration.address)
-      val formattedAddress = AddressFormattingHelper.formatBusinessAddress(address, None)
-      val rows = if(isCheckAnswers) {
-        rowsWithActions(rosmWithUtr, formattedAddress, numberOfLitres)
-      } else {
-        rowsWithNoActions(rosmWithUtr, formattedAddress, numberOfLitres)
-      }
-      val summaryList = SummaryListViewModel(
-        rows
-      )
-      heading -> summaryList
+  def headingAndSummary(howManyLitresGlobally: HowManyLitresGlobally, subscription: Subscription, isCheckAnswers: Boolean = true)
+                       (implicit messages: Messages): (String, SummaryList) = {
+    val heading = messages("checkYourAnswers.businessDetails.subHeader")
+    val formattedAddress = AddressFormattingHelper.formatBusinessAddress(subscription.address, None)
+    val rows = if(isCheckAnswers) {
+      rowsWithActions(subscription, formattedAddress, howManyLitresGlobally)
+    } else {
+      rowsWithNoActions(subscription, formattedAddress, howManyLitresGlobally)
     }
+    val summaryList = SummaryListViewModel(
+      rows
+    )
+    heading -> summaryList
   }
 
-  private def rowsWithActions(rosmWithUtr: RosmWithUtr, formattedAddress: Content, numberOfLitres: HowManyLitresGlobally)
+  private def rowsWithActions(subscription: Subscription, formattedAddress: Content, numberOfLitres: HowManyLitresGlobally)
                   (implicit messages: Messages): Seq[SummaryListRow] = {
     val businessAddressAction = getAction("businessAddress", routes.VerifyController.onPageLoad(CheckMode).url)
     val litresGloballyAction = getAction("howManyLitresGlobally", routes.HowManyLitresGloballyController.onPageLoad(CheckMode).url)
-    val rosmRegistration = rosmWithUtr.rosmRegistration
     Seq(
-      createSummaryListItem("utr", Text(rosmWithUtr.utr)),
-      createSummaryListItem("name", Text(rosmRegistration.organisationName)),
+      createSummaryListItem("utr", Text(subscription.utr)),
+      createSummaryListItem("name", Text(subscription.orgName)),
       createSummaryListItem("address", formattedAddress, businessAddressAction),
       createSummaryListItem("litresGlobally", Text(messages(s"howManyLitresGlobally.${numberOfLitres.toString}")), litresGloballyAction)
     )
   }
 
-  private def rowsWithNoActions(rosmWithUtr: RosmWithUtr, formattedAddress: Content, numberOfLitres: HowManyLitresGlobally)
+  private def rowsWithNoActions(subscription: Subscription, formattedAddress: Content, numberOfLitres: HowManyLitresGlobally)
                              (implicit messages: Messages): Seq[SummaryListRow] = {
-    val rosmRegistration = rosmWithUtr.rosmRegistration
     Seq(
-      createSummaryListItem("utr", Text(rosmWithUtr.utr)),
-      createSummaryListItem("name", Text(rosmRegistration.organisationName)),
+      createSummaryListItem("utr", Text(subscription.utr)),
+      createSummaryListItem("name", Text(subscription.orgName)),
       createSummaryListItem("address", formattedAddress),
       createSummaryListItem("litresGlobally", Text(messages(s"howManyLitresGlobally.${numberOfLitres.toString}")))
     )

@@ -17,25 +17,29 @@
 package orchestrators
 
 import base.RegistrationSubscriptionHelper
-import connectors.{DoesNotExist, Pending, Registered, SoftDrinksIndustryLevyConnector}
-import errors.{AuthenticationError, EnteredBusinessDetailsDoNotMatch, MissingRequiredUserAnswers, NoROSMRegistration, SessionDatabaseInsertError, UnexpectedResponseFromSDIL}
-import models.RegisterState.{AlreadyRegistered, RegisterApplicationAccepted, RegisterWithAuthUTR, RegisterWithOtherUTR, RegistrationPending, RequiresBusinessDetails}
+import connectors._
+import errors._
+import models.RegisterState._
 import models._
 import models.requests.{DataRequest, IdentifierRequest}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{ContactDetailsPage, OrganisationTypePage}
+import pages.{ContactDetailsPage, HowManyLitresGloballyPage, OrganisationTypePage}
 import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
+import repositories.{CacheMap, SDILSessionCache}
 import services.SessionService
+
+import scala.concurrent.Future
 
 class RegistrationOrchestratorSpec extends RegistrationSubscriptionHelper with MockitoSugar {
 
   val mockSDILConnector = mock[SoftDrinksIndustryLevyConnector]
   val mockSessionService = mock[SessionService]
+  val mockSdilSessionCache = mock[SDILSessionCache]
 
-  val orchestrator = new RegistrationOrchestrator(mockSDILConnector, mockSessionService, logger)
+  val orchestrator = new RegistrationOrchestrator(mockSDILConnector, mockSessionService, mockSdilSessionCache, logger)
 
   val identifyRequestWithAuthUtrAndRegistered: IdentifierRequest[AnyContent] =
     IdentifierRequest(FakeRequest(), identifier, true, Some(utr), true)
@@ -46,7 +50,7 @@ class RegistrationOrchestratorSpec extends RegistrationSubscriptionHelper with M
   val identifyRequestWithNoAuthAndNotRegistered: IdentifierRequest[AnyContent] =
     identifyRequestWithAuthUtrAndRegistered.copy(optUTR = None, hasCTEnrolment = false, isRegistered = false)
 
-  def expectedRegStateForSubscriptionStatus(isEnteredUtr: Boolean) = {
+  def expectedRegStateForSubscriptionStatus(isEnteredUtr: Boolean): Map[SubscriptionStatus, RegisterState] = {
     val registerWithUTR = if (isEnteredUtr) {
       RegisterWithOtherUTR
     } else {
@@ -259,9 +263,10 @@ class RegistrationOrchestratorSpec extends RegistrationSubscriptionHelper with M
               "that has all litres pages populated, warehouses and packagaing site" in {
                 val userAnswers = getCompletedUserAnswers(orgType, litresGlobally, true)
                 val dataRequest: DataRequest[AnyContent] = DataRequest(FakeRequest(), identifier, true, Some(utr), userAnswers, rosmRegistration)
-                val expectedSubscription = getExpectedSubscription(orgType, litresGlobally, true)
+                val expectedSubscription = generateSubscription(orgType, litresGlobally, true)
                 when(mockSDILConnector.createSubscription(expectedSubscription, "safeid")(hc)).thenReturn(createSuccessRegistrationResult((): Unit))
                 when(mockSessionService.set(any())).thenReturn(createSuccessRegistrationResult(true))
+                when(mockSdilSessionCache.save[CreatedSubscriptionAndAmountProducedGlobally](any(), any(), any())(any())).thenReturn(Future.successful(CacheMap("id", Map.empty)))
 
                 val res = orchestrator.createSubscriptionAndUpdateUserAnswers(dataRequest, hc, ec)
 
@@ -272,10 +277,11 @@ class RegistrationOrchestratorSpec extends RegistrationSubscriptionHelper with M
               "that has no litres pages populated" in {
                 val userAnswers = getCompletedUserAnswers(orgType, litresGlobally, false)
                 val dataRequest: DataRequest[AnyContent] = DataRequest(FakeRequest(), identifier, true, Some(utr), userAnswers, rosmRegistration)
-                val expectedSubscription = getExpectedSubscription(orgType, litresGlobally, false)
+                val expectedSubscription = generateSubscription(orgType, litresGlobally, false)
 
                 when(mockSDILConnector.createSubscription(expectedSubscription, "safeid")(hc)).thenReturn(createSuccessRegistrationResult((): Unit))
                 when(mockSessionService.set(any())).thenReturn(createSuccessRegistrationResult(true))
+                when(mockSdilSessionCache.save[CreatedSubscriptionAndAmountProducedGlobally](any(), any(), any())(any())).thenReturn(Future.successful(CacheMap("id", Map.empty)))
                 val res = orchestrator.createSubscriptionAndUpdateUserAnswers(dataRequest, hc, ec)
 
                 whenReady(res.value) { result =>
@@ -292,7 +298,7 @@ class RegistrationOrchestratorSpec extends RegistrationSubscriptionHelper with M
               "that has all litres pages populated, warehouses and packagaing site" in {
                 val userAnswers = getCompletedUserAnswers(orgType, litresGlobally, true)
                 val dataRequest: DataRequest[AnyContent] = DataRequest(FakeRequest(), identifier, true, Some(utr), userAnswers, rosmRegistration)
-                val expectedSubscription = getExpectedSubscription(orgType, litresGlobally, true)
+                val expectedSubscription = generateSubscription(orgType, litresGlobally, true)
                 when(mockSDILConnector.createSubscription(expectedSubscription, "safeid")(hc)).thenReturn(createSuccessRegistrationResult((): Unit))
                 when(mockSessionService.set(any())).thenReturn(createFailureRegistrationResult(SessionDatabaseInsertError))
 
@@ -305,7 +311,7 @@ class RegistrationOrchestratorSpec extends RegistrationSubscriptionHelper with M
               "that has no litres pages populated" in {
                 val userAnswers = getCompletedUserAnswers(orgType, litresGlobally, false)
                 val dataRequest: DataRequest[AnyContent] = DataRequest(FakeRequest(), identifier, true, Some(utr), userAnswers, rosmRegistration)
-                val expectedSubscription = getExpectedSubscription(orgType, litresGlobally, false)
+                val expectedSubscription = generateSubscription(orgType, litresGlobally, false)
 
                 when(mockSDILConnector.createSubscription(expectedSubscription, "safeid")(hc)).thenReturn(createSuccessRegistrationResult((): Unit))
                 when(mockSessionService.set(any())).thenReturn(createFailureRegistrationResult(SessionDatabaseInsertError))
@@ -322,6 +328,16 @@ class RegistrationOrchestratorSpec extends RegistrationSubscriptionHelper with M
     }
 
     "should return MissingRequiredUserAnswers error" - {
+      "when the user answers doesn't include how many litres globally " in {
+        val userAnswers = getCompletedUserAnswers(OrganisationType.LimitedCompany, HowManyLitresGlobally.Large, false)
+          .remove(HowManyLitresGloballyPage).success.value
+        val dataRequest: DataRequest[AnyContent] = DataRequest(FakeRequest(), identifier, true, Some(utr), userAnswers, rosmRegistration)
+        val res = orchestrator.createSubscriptionAndUpdateUserAnswers(dataRequest, hc, ec)
+
+        whenReady(res.value) { result =>
+          result mustBe Left(MissingRequiredUserAnswers)
+        }
+      }
       "when the user answers doesn't include organisation type" in {
         val userAnswers = getCompletedUserAnswers(OrganisationType.LimitedCompany, HowManyLitresGlobally.Large, false)
           .remove(OrganisationTypePage).success.value

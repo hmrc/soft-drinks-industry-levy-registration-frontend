@@ -19,8 +19,8 @@ package controllers
 import models.HowManyLitresGlobally.{Large, Small}
 import models.OrganisationType.LimitedCompany
 import models.Verify.YesRegister
-import models.backend.UkAddress
-import models.{CheckMode, ContactDetails, LitresInBands, Verify}
+import models.backend.{Activity, Subscription, UkAddress}
+import models.{CheckMode, ContactDetails, HowManyLitresGlobally, IndividualDetails, Litreage, LitresInBands, OrganisationDetails, RosmRegistration, RosmWithUtr, Verify}
 import org.jsoup.nodes.{Document, Element}
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import pages._
@@ -41,6 +41,12 @@ trait RegSummaryISpecHelper extends ControllerITTestHelper {
   }
 
   val rosmAddress = UkAddress(List("105B Godfrey Marchant Grove", "Guildford"), "GU14 8NL")
+  val rosmRegistration = RosmRegistration(
+    safeId = "safeid",
+    organisation = Some(OrganisationDetails(organisationName = "Super Lemonade Plc")),
+    individual = Some(IndividualDetails(firstName = "Ava", lastName = "Adams")),
+    address = rosmAddress
+  )
   val newAddress = UkAddress(List("10 Linden Close", "Langly"), "LA16 3KL")
 
   val dateFormatter = DateTimeFormatter.ofPattern("dd MMMM yyyy")
@@ -52,6 +58,59 @@ trait RegSummaryISpecHelper extends ControllerITTestHelper {
   val contractPackingLitres = LitresInBands(3000, 4000)
   val importsLitres = LitresInBands(5000, 6000)
   val startDate = LocalDate.of(2022, 6, 1)
+
+  def userAnswerWithLitresForAllPagesIncludingOnesNotRequired(producerType: HowManyLitresGlobally) = emptyUserAnswers
+    .copy(packagingSiteList = packagingSiteListWith3, warehouseList = warehouseListWith1)
+    .set(VerifyPage, Verify.No).success.value
+    .set(ThirdPartyPackagersPage, true).success.value
+    .set(OrganisationTypePage, LimitedCompany).success.value
+    .set(HowManyLitresGloballyPage, producerType).success.value
+    .set(OperatePackagingSitesPage, true).success.value
+    .set(HowManyOperatePackagingSitesPage, operatePackagingSiteLitres).success.value
+    .set(ContractPackingPage, true).success.value
+    .set(HowManyContractPackingPage, contractPackingLitres).success.value
+    .set(ImportsPage, true).success.value
+    .set(HowManyImportsPage, importsLitres).success.value
+    .set(StartDatePage, startDate).success.value
+    .set(PackAtBusinessAddressPage, true).success.value
+    .set(PackagingSiteDetailsPage, true).success.value
+    .set(AskSecondaryWarehousesPage, true).success.value
+    .set(WarehouseDetailsPage, true).success.value
+    .set(ContactDetailsPage, contactDetails).success.value
+
+  def getCreatedSubscription(howManyLitresGlobally: HowManyLitresGlobally, noAnswered: Boolean) = {
+    val userAnswers = if (noAnswered) {
+      userAnswerWithAllNoAndNoPagesToFilterOut(howManyLitresGlobally)
+    } else {
+      userAnswerWithLitresForAllPagesIncludingOnesNotRequired(howManyLitresGlobally)
+    }
+    Subscription.generate(userAnswers, RosmWithUtr("0000001611", rosmRegistration))
+  }
+
+  def userAnswerWithAllNoAndNoPagesToFilterOut(producerType: HowManyLitresGlobally) = {
+    val uaThatAllPagesHave = emptyUserAnswers
+      .copy(address = Some(newAddress), packagingSiteList = Map.empty, warehouseList = Map.empty)
+      .set(VerifyPage, YesRegister).success.value
+      .set(OrganisationTypePage, LimitedCompany).success.value
+      .set(HowManyLitresGloballyPage, producerType).success.value
+      .set(ContractPackingPage, false).success.value
+      .set(ImportsPage, false).success.value
+      .set(PackAtBusinessAddressPage, true).success.value
+      .set(PackagingSiteDetailsPage, true).success.value
+      .set(ContactDetailsPage, contactDetails).success.value
+      .set(AskSecondaryWarehousesPage, false).success.value
+
+    producerType match {
+      case Large => uaThatAllPagesHave
+        .set(OperatePackagingSitesPage, false).success.value
+        .set(StartDatePage, startDate).success.value
+      case Small => uaThatAllPagesHave
+        .set(ThirdPartyPackagersPage, true).success.value
+        .set(OperatePackagingSitesPage, false).success.value
+      case _ => uaThatAllPagesHave
+        .set(StartDatePage, startDate).success.value
+    }
+  }
 
   val userAnswersWithLitres = emptyUserAnswers
     .copy(packagingSiteList = packagingSiteListWith3, warehouseList = warehouseListWith1)
@@ -119,8 +178,13 @@ trait RegSummaryISpecHelper extends ControllerITTestHelper {
   def validateBusinessDetailsSummaryList(summaryList: Element,
                                          utr: String,
                                          address: UkAddress,
-                                         numberOfLitresGloballyValue: String,
+                                         numberOfLitresGlobally: HowManyLitresGlobally,
                                          isCheckAnswers: Boolean = true) = {
+    val numberOfLitresGloballyValue = numberOfLitresGlobally match {
+      case Large => "1 million litres or more"
+      case Small => "Less than 1 million litres"
+      case _ => "None"
+    }
     val summaryRows = summaryList.getElementsByClass("govuk-summary-list__row")
     summaryRows.size mustBe 4
 
@@ -151,6 +215,19 @@ trait RegSummaryISpecHelper extends ControllerITTestHelper {
       globalLitresAction.getElementById("change-howManyLitresGlobally").attr("href") mustBe "/soft-drinks-industry-levy-registration/change-how-many-litres-globally"
     } else {
       globalLitresRow.getElementsByClass("govuk-summary-list__actions").size() mustBe 0
+    }
+  }
+
+  def validateThirdPartyPackersSummaryList(thirdPartyPackerElem: Element, isCheckYourAnswers: Boolean) = {
+    val rows = thirdPartyPackerElem.getElementsByClass("govuk-summary-list__row")
+    val yesNoRow = rows.get(0)
+    yesNoRow.getElementsByClass("govuk-summary-list__value").first().text() mustBe "Yes"
+    if (isCheckYourAnswers) {
+      yesNoRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByTag("a").first().text() mustBe "Change if you use any third parties in the UK to package liable drinks on your behalf?"
+      yesNoRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByClass("govuk-visually-hidden").first().text() mustBe "if you use any third parties in the UK to package liable drinks on your behalf?"
+      yesNoRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByTag("a").first().attr("href") mustBe routes.ThirdPartyPackagersController.onPageLoad(CheckMode).url
+    } else {
+      yesNoRow.getElementsByClass("govuk-summary-list__actions").size() mustBe 0
     }
   }
 

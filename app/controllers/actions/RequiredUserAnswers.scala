@@ -31,7 +31,6 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
 
 class RequiredUserAnswers @Inject()(genericLogger: GenericLogger)(implicit val executionContext: ExecutionContext) extends ActionHelpers {
-
   def requireData(page: Page)(action: => Future[Result])(implicit request: DataRequest[_]): Future[Result] = {
     page match {
       case CheckYourAnswersPage => checkYourAnswersRequiredData(action)

@@ -44,8 +44,13 @@ class CheckYourAnswersController @Inject()(
   def onPageLoad: Action[AnyContent] = controllerActions.withUserWhoCanRegister.async {
     implicit request =>
       requiredUserAnswers.requireData(CheckYourAnswersPage) {
-        val summaryList = RegistrationSummary.summaryList(request.userAnswers, request.rosmWithUtr)
-        Future.successful(Ok(view(summaryList, routes.CheckYourAnswersController.onSubmit)))
+        registrationOrchestrator.getSubscriptionAndHowManyLitresGlobally(request.userAnswers, request.rosmWithUtr) match {
+          case Right(createdSubscriptionAndAmountProducedGlobally) =>
+            val summaryList = RegistrationSummary.summaryList(createdSubscriptionAndAmountProducedGlobally)
+            Future.successful(Ok(view(summaryList, routes.CheckYourAnswersController.onSubmit)))
+          case Left(_) => Future.successful(Redirect(routes.RegistrationController.start))
+        }
+
       }
   }
 

@@ -18,7 +18,12 @@ package models
 
 import play.api.libs.json.{Json, OFormat}
 
-case class Litreage(lower: Long, upper: Long)
+case class Litreage(lower: Long, upper: Long) {
+
+  def isEmpty = total == 0
+  def nonEmpty = total != 0
+  def total = (lower + upper)
+}
 
 object Litreage {
   implicit val format: OFormat[Litreage] = Json.format[Litreage]

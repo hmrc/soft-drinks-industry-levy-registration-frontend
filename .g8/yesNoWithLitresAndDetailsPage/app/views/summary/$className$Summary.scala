@@ -19,9 +19,9 @@ package views.summary
 import controllers.routes
 import models.{CheckMode, LitresInBands}
 import pages.{HowMany$className$Page, $className$Page, QuestionPage}
-import views.summary.{ReturnDetailsSummaryListWithLitres, SummaryListRowLitresHelper}
+import views.summary.{RegisterDetailsSummaryListWithLitres, SummaryListRowLitresHelper}
 
-object $className$Summary extends ReturnDetailsSummaryListWithLitres  {
+object $className$Summary extends RegisterDetailsSummaryListWithLitres  {
 
   override val page: QuestionPage[Boolean] = $className$Page
   override val optLitresPage: Option[QuestionPage[LitresInBands]] = Some(HowMany$className$Page)

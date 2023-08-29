@@ -22,7 +22,8 @@ import errors.{MissingRequiredUserAnswers, UnexpectedResponseFromSDIL}
 import models.HowManyLitresGlobally.Large
 import models.OrganisationType.LimitedCompany
 import models.Verify.YesRegister
-import models.{CheckMode, ContactDetails, LitresInBands, NormalMode}
+import models.backend.Subscription
+import models.{CheckMode, ContactDetails, CreatedSubscriptionAndAmountProducedGlobally, LitresInBands, NormalMode}
 import orchestrators.RegistrationOrchestrator
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
@@ -32,9 +33,7 @@ import pages._
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import viewmodels.govuk.SummaryListFluency
-import viewmodels.summary.{BusinessDetailsSummary, ContactDetailsSummary}
 import views.html.CheckYourAnswersView
 import views.summary._
 
@@ -109,38 +108,26 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
           .set(WarehouseDetailsPage, true).success.value
           .set(ContactDetailsPage, ContactDetails("foo", "bar", "wizz", "bang")).success.value
       }
+      val subscription = Subscription.generate(userAnswers, rosmRegistration)
 
-      val application = applicationBuilder(userAnswers = Some(userAnswers), utr = Some("0000000022"), rosmRegistration = rosmRegistration).build()
+      val application = applicationBuilder(userAnswers = Some(userAnswers), utr = Some("0000000022"), rosmRegistration = rosmRegistration)
+        .overrides(bind[RegistrationOrchestrator].to(mockRegistrationOrchestrator)).build()
+
 
       running(application) {
+        when(mockRegistrationOrchestrator.getSubscriptionAndHowManyLitresGlobally(any(), any())).thenReturn(Right(
+          CreatedSubscriptionAndAmountProducedGlobally(subscription, Large)
+        ))
         val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad.url)
 
         val result = route(application, request).value
 
         val view = application.injector.instanceOf[CheckYourAnswersView]
 
-        val businessDetails: (String, SummaryList) = BusinessDetailsSummary.headingAndSummary(userAnswers, rosmRegistration, true).get
-
-        val operatePackagingSites: (String, SummaryList) = {
-          "operatePackagingSites.checkYourAnswersLabel" -> OperatePackagingSitesSummary.summaryList(userAnswers = userAnswers, isCheckAnswers = true)
-        }
-        val contractPacking: (String, SummaryList) = {
-          "contractPacking.checkYourAnswersLabel" -> ContractPackingSummary.summaryList(userAnswers = userAnswers, isCheckAnswers = true)
-        }
-        val imports: (String, SummaryList) = {
-          "imports.checkYourAnswersLabel" -> ImportsSummary.summaryList(userAnswers = userAnswers, isCheckAnswers = true)
-        }
-        val startDate: (String, SummaryList) = {
-          "startDate.checkYourAnswersLabel" -> StartDateSummary.summaryList(userAnswers = userAnswers, isCheckAnswers = true)
-        }
-        val contactDetails: (String, SummaryList) = ContactDetailsSummary.headingAndSummary(userAnswers = userAnswers, isCheckAnswers = true).get
-
-        val ukSites: (String, SummaryList) = {
-           UKSitesSummary.summaryList(userAnswers = userAnswers, isCheckAnswers = true).get
-        }
+        val headingAndSummaryItems = RegistrationSummary.summaryList(CreatedSubscriptionAndAmountProducedGlobally(subscription, Large))
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(Seq(businessDetails, operatePackagingSites, contractPacking, imports, startDate, contactDetails, ukSites),
+        contentAsString(result) mustEqual view(headingAndSummaryItems,
           routes.CheckYourAnswersController.onSubmit)(request, messages(application)).toString
       }
     }

@@ -1,9 +1,9 @@
 package controllers
 
 import connectors.{DoesNotExist, Pending, Registered}
-import models.RegisterState.{RegisterApplicationAccepted, RegisterWithAuthUTR, RegisterWithOtherUTR, RegistrationPending}
+import models.RegisterState.{RegisterApplicationAccepted, RegisterWithOtherUTR, RegistrationPending}
 import models.backend.{Site, UkAddress}
-import models.{Identify, NormalMode, RegisterState, SmallProducer, Warehouse}
+import models.{Identify, NormalMode, RegisterState, Warehouse}
 import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
 import pages.EnterBusinessDetailsPage
@@ -103,7 +103,6 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
                     .copy(
                       registerState = RegisterState.RequiresBusinessDetails,
                       address = Some(UkAddress(List.empty, "")),
-                      smallProducerList = List(SmallProducer("", "", (0, 0))),
                       packagingSiteList = Map("" -> Site(UkAddress(List.empty, ""), None, None, None)),
                       warehouseList = Map("" -> Warehouse(None, UkAddress(List.empty, ""))),
                       submittedOn = None
@@ -128,7 +127,6 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
                     updatedAnswers.get.warehouseList mustBe Map.empty
                     updatedAnswers.get.packagingSiteList mustBe Map.empty
                     updatedAnswers.get.submittedOn mustBe None
-                    updatedAnswers.get.smallProducerList mustBe List.empty
                     updatedAnswers.get.data mustBe Json.obj("enterBusinessDetails" -> Json.obj("utr" -> "0000000437", "postcode" -> "GU14 8NL"))
                   }
                 }
@@ -147,7 +145,6 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
             .copy(
               registerState = RegisterState.RegisterWithOtherUTR,
               address = Some(UkAddress(List.empty, "")),
-              smallProducerList = List(SmallProducer("", "", (0, 0))),
               packagingSiteList = Map("" -> Site(UkAddress(List.empty, ""), None, None, None)),
               warehouseList = Map("" -> Warehouse(None, UkAddress(List.empty, ""))),
               submittedOn = None
@@ -170,7 +167,6 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
             updatedAnswers.get.warehouseList mustBe userAnswersWithIdenticalData.warehouseList
             updatedAnswers.get.packagingSiteList mustBe userAnswersWithIdenticalData.packagingSiteList
             updatedAnswers.get.submittedOn mustBe userAnswersWithIdenticalData.submittedOn
-            updatedAnswers.get.smallProducerList mustBe userAnswersWithIdenticalData.smallProducerList
             updatedAnswers.get.data mustBe userAnswersWithIdenticalData.data
           }
         }

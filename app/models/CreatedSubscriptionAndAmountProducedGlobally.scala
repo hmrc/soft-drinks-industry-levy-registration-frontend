@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-package repositories
+package models
 
-object SDILSessionKeys {
+import models.backend.Subscription
+import play.api.libs.json.{Format, Json}
 
-  val SUBSCRIPTION = "SUBSCRIPTION"
-  val ROSM_REGISTRATION = "ROSM_REGISTRATION"
+case class CreatedSubscriptionAndAmountProducedGlobally(
+                                                       subscription: Subscription,
+                                                       howManyLitresGlobally: HowManyLitresGlobally
+                                                       )
 
-  val CREATED_SUBSCRIPTION_AND_AMOUNT_PRODUCED_GLOBALLY = "CREATED_SUBSCRIPTION_AND_AMOUNT_PRODUCED_GLOBALLY"
-
+object CreatedSubscriptionAndAmountProducedGlobally {
+  implicit val format: Format[CreatedSubscriptionAndAmountProducedGlobally] = Json.format[CreatedSubscriptionAndAmountProducedGlobally]
 }

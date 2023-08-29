@@ -22,10 +22,12 @@ import com.google.inject.{Inject, Singleton}
 import connectors._
 import errors._
 import models.RegisterState._
+import models._
 import models.backend.{Subscription, UkAddress}
 import models.requests.{DataRequest, IdentifierRequest}
-import models.{Identify, RegisterState, RosmWithUtr, UserAnswers}
+import pages.HowManyLitresGloballyPage
 import play.api.mvc.AnyContent
+import repositories.{SDILSessionCache, SDILSessionKeys}
 import service.RegistrationResult
 import services.SessionService
 import uk.gov.hmrc.http.HeaderCarrier
@@ -38,6 +40,7 @@ import scala.util.{Failure, Success, Try}
 @Singleton
 class RegistrationOrchestrator @Inject()(sdilConnector: SoftDrinksIndustryLevyConnector,
                                          sessionService: SessionService,
+                                         sdilSessionCache: SDILSessionCache,
                                          genericLogger: GenericLogger) {
 
   def handleRegistrationRequest(implicit request: IdentifierRequest[AnyContent],
@@ -96,24 +99,31 @@ class RegistrationOrchestrator @Inject()(sdilConnector: SoftDrinksIndustryLevyCo
   def createSubscriptionAndUpdateUserAnswers(implicit request: DataRequest[AnyContent], hc: HeaderCarrier, ec: ExecutionContext): RegistrationResult[Unit] = {
     val submittedDateTime = Instant.now
     val updatedUserAnswers = request.userAnswers.copy(submittedOn = Some(submittedDateTime))
+    val internalId = request.internalId
 
     for {
-      subscription <- EitherT(Future(createSubscriptionFromUserAnswers(updatedUserAnswers, request.rosmWithUtr)))
-      created <- sdilConnector.createSubscription(subscription, request.rosmWithUtr.rosmRegistration.safeId)
+      createdSubscriptionAndAmountProducedGlobally <- EitherT(Future(getSubscriptionAndHowManyLitresGlobally(updatedUserAnswers, request.rosmWithUtr)))
+      created <- sdilConnector.createSubscription(createdSubscriptionAndAmountProducedGlobally.subscription, request.rosmWithUtr.rosmRegistration.safeId)
       _ <- sessionService.set(updatedUserAnswers)
+      _ <- EitherT.right(sdilSessionCache.save[CreatedSubscriptionAndAmountProducedGlobally](internalId, SDILSessionKeys.CREATED_SUBSCRIPTION_AND_AMOUNT_PRODUCED_GLOBALLY, createdSubscriptionAndAmountProducedGlobally))
     } yield created
   }
 
-  private def createSubscriptionFromUserAnswers(userAnswers: UserAnswers, rosmWithUtr: RosmWithUtr): Either[RegistrationErrors, Subscription] = {
-   Try {
-     Subscription.generate(userAnswers, rosmWithUtr)
-   } match {
-     case Success(sub) =>
-       Right(sub)
-     case Failure(ex) =>
-       genericLogger.logger.error(s"unable to create subscription as ${ex.getMessage}")
-     Left(MissingRequiredUserAnswers)
-   }
+  def getSubscriptionAndHowManyLitresGlobally(userAnswers: UserAnswers,
+                                              rosmWithUtr: RosmWithUtr): Either[RegistrationErrors, CreatedSubscriptionAndAmountProducedGlobally] = {
+    userAnswers.get(HowManyLitresGloballyPage)
+      .fold[Either[RegistrationErrors, CreatedSubscriptionAndAmountProducedGlobally]](
+        Left(MissingRequiredUserAnswers)) {
+        howManyProducedGlobally =>
+          Try {
+            Subscription.generate(userAnswers, rosmWithUtr)
+          } match {
+            case Success(sub) => Right(CreatedSubscriptionAndAmountProducedGlobally(sub, howManyProducedGlobally))
+            case Failure(ex) =>
+              genericLogger.logger.error(s"unable to create subscription as ${ex.getMessage}")
+              Left(MissingRequiredUserAnswers)
+          }
+      }
   }
 
   private def postcodesMatch(rosmAddress: UkAddress, identify: Identify): RegistrationResult[Boolean] = EitherT {

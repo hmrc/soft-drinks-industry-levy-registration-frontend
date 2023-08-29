@@ -41,8 +41,8 @@ trait RegistrationSubscriptionHelper extends SpecBase {
   )
   val orgName = "test company"
 
-  val litresInBands = LitresInBands(100, 200)
-  val litreage = Litreage(100, 200)
+  val litresInBands = LitresInBands(1000, 2000)
+  val litreage = Litreage(1000, 2000)
 
   val contactDetails = ContactDetails("foo", "bar", "wizz", "bang")
   val contact = Contact(Some("foo"), Some("bar"), "wizz", "bang")
@@ -147,18 +147,18 @@ trait RegistrationSubscriptionHelper extends SpecBase {
     )
   }
 
-  def getExpectedSubscription(orgType: OrganisationType,
-                           litresGlobally: HowManyLitresGlobally,
-                           litresPopulated: Boolean): Subscription = {
+  def generateSubscription(orgType: OrganisationType = OrganisationType.LimitedCompany,
+                           litresGlobally: HowManyLitresGlobally = HowManyLitresGlobally.Large,
+                           allFieldsPopulated: Boolean): Subscription = {
     Subscription(
       utr,
       rosmRegistration.rosmRegistration.organisationName,
       orgType.enumNum,
       address,
-      if(litresPopulated) {activityWithLitres(litresGlobally)} else {activityWithNoLitres(litresGlobally)},
+      if(allFieldsPopulated) {activityWithLitres(litresGlobally)} else {activityWithNoLitres(litresGlobally)},
       userAnswerDate,
-      if(litresPopulated) {Seq(PackagingSite1)} else {Seq.empty},
-      if(litresPopulated) {Seq(Site.fromWarehouse(warehouse))} else {Seq.empty},
+      if(allFieldsPopulated) {Seq(PackagingSite1)} else {Seq.empty},
+      if(allFieldsPopulated) {Seq(Site.fromWarehouse(warehouse))} else {Seq.empty},
       contact
     )
 

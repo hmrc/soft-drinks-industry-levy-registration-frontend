@@ -16,41 +16,27 @@
 
 package views.summary
 
-import base.SpecBase
-import models.Warehouse
-import models.backend.{Site, UkAddress}
-import pages.{AskSecondaryWarehousesPage, PackAtBusinessAddressPage}
-import uk.gov.hmrc.govukfrontend.views.Aliases.{ActionItem, Actions, Empty, Key, SummaryList, SummaryListRow, Text, Value}
+import base.RegistrationSubscriptionHelper
+import models.backend.Site
+import uk.gov.hmrc.govukfrontend.views.Aliases._
 
-class UKSitesSummarySpec extends SpecBase {
+class UKSitesSummarySpec extends RegistrationSubscriptionHelper {
 
-  val packagingSite1 = Site(
-    UkAddress(List("33 Rhes Priordy", "East London"), "E73 2RP"),
-    None,
-    Some("Wild Lemonade Group"),
-    None)
+  val defaultSubscriptionNoSites = generateSubscription(allFieldsPopulated = false)
 
-  lazy val packagingSiteListWith1 = Map(("78941132", packagingSite1))
-
-  override val warehouse1 = Warehouse(
-    Some("Warehouse One"),
-    UkAddress(List("29 Station Place", "The Railyard", "Cambridge"), "CB1 2FP"))
-
-  override lazy val warehouseListWith1 = Map(("78941132", warehouse1))
 
   "summaryList" - {
 
     "should return an None when no packaging site or warehouse list is passed in" in {
-      val packagingSiteSummaryRowList = UKSitesSummary.summaryList(emptyUserAnswers,true)
+      val subscription = defaultSubscriptionNoSites
+      val packagingSiteSummaryRowList = UKSitesSummary.summaryList(subscription,true)
       packagingSiteSummaryRowList mustBe None
     }
 
     "should return a Some summary for packing site when one packaging site and no warehouse is passed in" in {
-      val packagingSiteSummaryRowList = UKSitesSummary.summaryList(emptyUserAnswers
-        .copy(packagingSiteList = packagingSiteListWith1)
-        .set(PackAtBusinessAddressPage, true).success.value
-        .set(AskSecondaryWarehousesPage, false).success.value
-        ,true)
+      val subscription = defaultSubscriptionNoSites.copy(productionSites = packagingSiteListWith1.values.toSeq)
+
+      val packagingSiteSummaryRowList = UKSitesSummary.summaryList(subscription,true)
 
       packagingSiteSummaryRowList mustBe
         Some((
@@ -62,11 +48,9 @@ class UKSitesSummarySpec extends SpecBase {
     }
 
     "should return summary for warehouses when one warehouse and no packing site is passed in" in {
-      val warehouseSummaryRowList = UKSitesSummary.summaryList(emptyUserAnswers
-        .copy(warehouseList = warehouseListWith1)
-        .set(PackAtBusinessAddressPage, false).success.value
-        .set(AskSecondaryWarehousesPage, true).success.value
-        ,true)
+      val subscription = defaultSubscriptionNoSites.copy(warehouseSites = warehouseListWith1.values.map(Site.fromWarehouse(_)).toSeq)
+
+      val warehouseSummaryRowList = UKSitesSummary.summaryList(subscription,true)
 
       warehouseSummaryRowList mustBe
         Some(("checkYourAnswers.sites", SummaryList(List(SummaryListRow(Key(Text("You have 1 warehouse"), ""),
@@ -78,12 +62,11 @@ class UKSitesSummarySpec extends SpecBase {
 
 
     "should return summary for warehouses and packing sites when one warehouse and one packing site is passed in" in {
-      val warehouseSummaryRowList = UKSitesSummary.summaryList(emptyUserAnswers
-        .copy(warehouseList = warehouseListWith1)
-        .copy(packagingSiteList = packagingSiteListWith1)
-        .set(PackAtBusinessAddressPage, true).success.value
-        .set(AskSecondaryWarehousesPage, true).success.value
-        ,true)
+      val subscription = defaultSubscriptionNoSites.copy(
+        productionSites = packagingSiteListWith1.values.toSeq,
+        warehouseSites = warehouseListWith1.values.map(Site.fromWarehouse(_)).toSeq)
+
+      val warehouseSummaryRowList = UKSitesSummary.summaryList(subscription, true)
 
       warehouseSummaryRowList mustBe
         Some(("checkYourAnswers.sites", SummaryList(List(SummaryListRow(Key(Text("You have 1 packaging site"), ""),
