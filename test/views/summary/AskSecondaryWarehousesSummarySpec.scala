@@ -64,13 +64,13 @@ class AskSecondaryWarehousesSummarySpec extends SpecBase {
   "row2" - {
 
   "should return an empty list of summaryListRows when no packaging site list is passed in" in {
-  val WarehouseDetailsSummaryRowList = WarehouseDetailsSummary.warehouseDetailsRow(Map.empty)
+  val WarehouseDetailsSummaryRowList = WarehouseDetailsSummary.warehouseDetailsRow(Map.empty, NormalMode)
 
     WarehouseDetailsSummaryRowList mustBe List()
 }
 
   "must return a remove action if only 1 packaging site is passed in" in {
-  val warehouseSummaryRowList = WarehouseDetailsSummary.warehouseDetailsRow(warehouseListWith1)
+  val warehouseSummaryRowList = WarehouseDetailsSummary.warehouseDetailsRow(warehouseListWith1, NormalMode)
 
     warehouseSummaryRowList.mkString must include("Remove")
 }
@@ -81,7 +81,7 @@ class AskSecondaryWarehousesSummarySpec extends SpecBase {
   val site2 = Warehouse(
   None,
   UkAddress(List("foo", "bar"), "wizz"))
-  val warehouseSummaryRowList = WarehouseDetailsSummary.warehouseDetailsRow(Map("ref1" -> site1, "ref2" -> site2))
+  val warehouseSummaryRowList = WarehouseDetailsSummary.warehouseDetailsRow(Map("ref1" -> site1, "ref2" -> site2), NormalMode)
     warehouseSummaryRowList.head.key.content.asHtml.toString() mustBe "foo2, bar2, wizz2"
     warehouseSummaryRowList.head.actions.toList.head.items.last.content.asHtml.toString() mustBe "Remove"
     warehouseSummaryRowList.head.actions.toList.head.items.last.href mustBe routes.RemoveWarehouseDetailsController.onPageLoad(NormalMode, "ref1").url
@@ -95,21 +95,21 @@ class AskSecondaryWarehousesSummarySpec extends SpecBase {
   "address formatting within Row2" - {
 
   "should place a break after a trading name if a trading name is used" in {
-  val warehouseSummaryRowList = WarehouseDetailsSummary.warehouseDetailsRow(Map(("90831480921", addressWith3AddressLines)))
+  val warehouseSummaryRowList = WarehouseDetailsSummary.warehouseDetailsRow(Map(("90831480921", addressWith3AddressLines)), NormalMode)
   val expectedAddressContent = HtmlContent("The house, The Road, ugzhkxcajkcjfrqsgkjruzlmsxytwhg vdg, NW88 8II")
 
     warehouseSummaryRowList.head.key.content mustBe expectedAddressContent
 }
 
   "should not place a break before the post code if the address line and post code length is 44 characters" in {
-  val warehouseSummaryRowList = WarehouseDetailsSummary.warehouseDetailsRow(Map(("1208934391", address44Characters)))
+  val warehouseSummaryRowList = WarehouseDetailsSummary.warehouseDetailsRow(Map(("1208934391", address44Characters)), NormalMode)
   val expectedAddressContent = HtmlContent("29 Station Rd, The Railyard, Cambridge, CB1 2FP")
 
     warehouseSummaryRowList.head.key.content mustBe expectedAddressContent
 }
 
   "should place a break before the post code if the address line and post code length is between 45 and 49 characters" in {
-  val warehouseSummaryRowList = WarehouseDetailsSummary.warehouseDetailsRow(WarehouseListWith3)
+  val warehouseSummaryRowList = WarehouseDetailsSummary.warehouseDetailsRow(WarehouseListWith3, NormalMode)
   val expectedAddressContent45 = HtmlContent("29 Station Pl., The Railyard, Cambridge, <br>CB1 2FP")
   val expectedAddressContent47 = HtmlContent("29 Station Place, The Railyard, Cambridge, <br>CB1 2FP")
   val expectedAddressContent49 = HtmlContent("29 Station PlaceDr, The Railyard, Cambridge, <br>CB1 2FP")
@@ -120,13 +120,13 @@ class AskSecondaryWarehousesSummarySpec extends SpecBase {
 }
 
   "should not place a break before the post code if the address line and post code length is 50 characters" in {
-  val warehouseSummaryRowList = WarehouseDetailsSummary.warehouseDetailsRow(Map(("3489028394r", address50Characters)))
+  val warehouseSummaryRowList = WarehouseDetailsSummary.warehouseDetailsRow(Map(("3489028394r", address50Characters)), NormalMode)
   val expectedAddressContent = HtmlContent("29 Station Place Dr, The Railyard, Cambridge, CB1 2FP")
 
     warehouseSummaryRowList.head.key.content mustBe expectedAddressContent
 }
   "should autowrap and place a break before the post code if the address line and post code length is between 98 & 103 characters" in {
-  val warehouseSummaryRowList = WarehouseDetailsSummary.warehouseDetailsRow(Map(("45641351", WarehouseEvenLongerAddressNoTradeName)))
+  val warehouseSummaryRowList = WarehouseDetailsSummary.warehouseDetailsRow(Map(("45641351", WarehouseEvenLongerAddressNoTradeName)), NormalMode)
   val expectedAddressContent = HtmlContent("29 Station Rd, This address will auto wrap but not in postcode, it is 4 lines 103 char, Cambridge, <br>CB1 2FP")
 
     warehouseSummaryRowList.head.key.content mustBe expectedAddressContent
@@ -134,7 +134,7 @@ class AskSecondaryWarehousesSummarySpec extends SpecBase {
 
   "should place a break after a trading name AND autowrap and place a break before the post code if the address line " +
   "and post code length is between 98 & 103 characters" in {
-  val warehouseSummaryRowList = WarehouseDetailsSummary.warehouseDetailsRow(Map(("56458678", WarehouseEvenLongerAddressWithTradeName)))
+  val warehouseSummaryRowList = WarehouseDetailsSummary.warehouseDetailsRow(Map(("56458678", WarehouseEvenLongerAddressWithTradeName)), NormalMode)
   val expectedAddressContent = HtmlContent("29 Station Rd, This address will auto wrap but not " +
   "in postcode, it is 4 lines 103 char, Cambridge, <br>CB1 2FP")
 

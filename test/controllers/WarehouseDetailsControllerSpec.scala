@@ -87,7 +87,7 @@ class WarehouseDetailsControllerSpec extends SpecBase with MockitoSugar with Log
       val warehouse = Map("78941132" -> Warehouse(Some("Warehouse One"), address))
       val userAnswers = UserAnswers(identifier, RegisterState.RegisterWithAuthUTR).set(WarehouseDetailsPage, true).success.value
       val uaWithWarehouses = userAnswers.copy(warehouseList = warehouse)
-      val warehouseSummary = Some(SummaryListViewModel(rows = WarehouseDetailsSummary.warehouseDetailsRow(warehouse)))
+      val warehouseSummary = Some(SummaryListViewModel(rows = WarehouseDetailsSummary.warehouseDetailsRow(warehouse, NormalMode)))
 
       val application = applicationBuilder(userAnswers = Some(uaWithWarehouses)).build()
 
@@ -247,12 +247,12 @@ class WarehouseDetailsControllerSpec extends SpecBase with MockitoSugar with Log
 
         val result = route(application, request).value
 
-        val WarhouseMap: Map[String,Warehouse] =
+        val warehouseMap: Map[String,Warehouse] =
           Map("1"-> Warehouse(Some("ABC Ltd"), UkAddress(List("33 Rhes Priordy", "East London","Line 3","Line 4"),"WR53 7CX")),
             "2" -> Warehouse(Some("Super Cola Ltd"), UkAddress(List("33 Rhes Priordy", "East London","Line 3",""),"SA13 7CE")))
 
         val warehouseSummaryList: List[SummaryListRow] =
-          WarehouseDetailsSummary.warehouseDetailsRow(WarhouseMap)(messages(application))
+          WarehouseDetailsSummary.warehouseDetailsRow(warehouseMap, NormalMode)(messages(application))
 
         val summaryList: SummaryList = SummaryListViewModel(
           rows = warehouseSummaryList

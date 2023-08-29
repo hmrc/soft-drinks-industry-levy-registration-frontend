@@ -18,6 +18,7 @@ package views
 
 import controllers.routes
 import forms.RemovePackagingSiteDetailsFormProvider
+import models.NormalMode
 import play.api.i18n.Messages
 import play.api.mvc.Request
 import play.api.test.FakeRequest
@@ -47,7 +48,7 @@ class RemovePackagingSiteDetailsViewSpec extends ViewSpecHelper {
   "View" - {
     val ref = "foo"
     val address = Html("bar")
-    val html = view(form, ref, address)(request, messages(application))
+    val html = view(form, NormalMode, ref, address)(request, messages(application))
     val document = doc(html)
     "should contain the expected title" in {
       document.title() must include(Messages("removePackagingSiteDetails" + ".title"))
@@ -98,7 +99,7 @@ class RemovePackagingSiteDetailsViewSpec extends ViewSpecHelper {
     }
 
     "when the form is preoccupied with yes and has no errors" - {
-      val html1 = view(form.fill(true), ref, address)(request, messages(application))
+      val html1 = view(form.fill(true), NormalMode, ref, address)(request, messages(application))
       val document1 = doc(html1)
       "should have radio buttons" - {
         val radioButtons = document1.getElementsByClass(Selectors.radios)
@@ -133,7 +134,7 @@ class RemovePackagingSiteDetailsViewSpec extends ViewSpecHelper {
     }
 
     "when the form is preoccupied with no and has no errors" - {
-      val html1 = view(form.fill(false), ref, address)(request, messages(application))
+      val html1 = view(form.fill(false), NormalMode, ref, address)(request, messages(application))
       val document1 = doc(html1)
       "should have radio buttons" - {
         val radioButtons = document1.getElementsByClass(Selectors.radios)
@@ -172,24 +173,24 @@ class RemovePackagingSiteDetailsViewSpec extends ViewSpecHelper {
     }
 
     "contains a form with the correct action" - {
-        val htmlYesSelected = view(form.fill(true), ref, address)(request, messages(application))
+        val htmlYesSelected = view(form.fill(true), NormalMode, ref, address)(request, messages(application))
         val documentYesSelected = doc(htmlYesSelected)
 
-        val htmlNoSelected = view(form.fill(false), ref, address)(request, messages(application))
+        val htmlNoSelected = view(form.fill(false), NormalMode, ref, address)(request, messages(application))
         val documentNoSelected = doc(htmlNoSelected)
         "and yes is selected" in {
           documentYesSelected.select(Selectors.form)
-            .attr("action") mustEqual routes.RemovePackagingSiteDetailsController.onSubmit(ref).url
+            .attr("action") mustEqual routes.RemovePackagingSiteDetailsController.onSubmit(NormalMode, ref).url
         }
 
         "and no is selected" in {
           documentNoSelected.select(Selectors.form)
-            .attr("action") mustEqual routes.RemovePackagingSiteDetailsController.onSubmit(ref).url
+            .attr("action") mustEqual routes.RemovePackagingSiteDetailsController.onSubmit(NormalMode, ref).url
         }
     }
 
     "when there are form errors" - {
-      val htmlWithErrors = view(form.bind(Map("value" -> "")), ref, address)(request, messages(application))
+      val htmlWithErrors = view(form.bind(Map("value" -> "")), NormalMode, ref, address)(request, messages(application))
       val documentWithErrors = doc(htmlWithErrors)
 
       "should have a title containing error" in {

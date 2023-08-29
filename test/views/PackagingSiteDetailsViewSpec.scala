@@ -125,9 +125,9 @@ class PackagingSiteDetailsViewSpec extends ViewSpecHelper {
               val summaryRow = summaryListRows.get(index)
               summaryRow.getElementsByTag("dt").text() must include((site.address.lines :+ site.address.postCode).mkString(", "))
               val action = summaryRow.getElementsByClass(Selectors.link)
-              if(numberOfPackagingSites > 1) {
+              if (numberOfPackagingSites > 1) {
                 action.text() must include("Remove")
-                action.attr("href") mustBe routes.RemovePackagingSiteDetailsController.onPageLoad(id).url
+                action.attr("href") mustBe routes.RemovePackagingSiteDetailsController.onPageLoad(NormalMode, id).url
               } else {
                 action.size() mustEqual 0
               }

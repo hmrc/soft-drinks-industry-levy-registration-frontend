@@ -50,7 +50,7 @@ class RemovePackagingSiteDetailsControllerSpec extends SpecBase with MockitoSuga
     def commonAssertionsForPageLoad(addressToBeDisplayed: Html, page: String, ref: String): Assertion = {
       val doc: Document = Jsoup.parse(page)
       doc.getElementById("packagingSiteDetails").text() mustBe addressToBeDisplayed.toString()
-      doc.getElementsByTag("form").attr("action") mustBe routes.RemovePackagingSiteDetailsController.onSubmit(ref).url
+      doc.getElementsByTag("form").attr("action") mustBe routes.RemovePackagingSiteDetailsController.onSubmit(NormalMode, ref).url
     }
 
     Map(
@@ -89,7 +89,7 @@ class RemovePackagingSiteDetailsControllerSpec extends SpecBase with MockitoSuga
         val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
         running(application) {
-          val request = FakeRequest(GET, routes.RemovePackagingSiteDetailsController.onPageLoad(ref).url)
+          val request = FakeRequest(GET, routes.RemovePackagingSiteDetailsController.onPageLoad(NormalMode, ref).url)
 
           val result = route(application, request).value
 
@@ -98,7 +98,7 @@ class RemovePackagingSiteDetailsControllerSpec extends SpecBase with MockitoSuga
           status(result) mustEqual OK
           val contentOfResult: String = contentAsString(result)
 
-          contentOfResult mustEqual view(form, ref, htmlExpectedInView)(request, messages(application)).toString
+          contentOfResult mustEqual view(form, NormalMode, ref, htmlExpectedInView)(request, messages(application)).toString
           commonAssertionsForPageLoad(htmlExpectedAfterRender, contentOfResult, ref)
         }
       }
@@ -106,7 +106,7 @@ class RemovePackagingSiteDetailsControllerSpec extends SpecBase with MockitoSuga
     "must redirect to site details page when loaded but no site ref exists in list on load" in {
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
       running(application) {
-        val request = FakeRequest(GET, routes.RemovePackagingSiteDetailsController.onPageLoad("foo").url)
+        val request = FakeRequest(GET, routes.RemovePackagingSiteDetailsController.onPageLoad(NormalMode, "foo").url)
 
         val result = route(application, request).value
         status(result) mustEqual SEE_OTHER
@@ -125,7 +125,7 @@ class RemovePackagingSiteDetailsControllerSpec extends SpecBase with MockitoSuga
 
       running(application) {
         val request =
-          FakeRequest(POST, routes.RemovePackagingSiteDetailsController.onSubmit(ref).url)
+          FakeRequest(POST, routes.RemovePackagingSiteDetailsController.onSubmit(NormalMode, ref).url)
             .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
@@ -155,7 +155,7 @@ class RemovePackagingSiteDetailsControllerSpec extends SpecBase with MockitoSuga
 
       running(application) {
         val request =
-          FakeRequest(POST, routes.RemovePackagingSiteDetailsController.onSubmit(ref).url)
+          FakeRequest(POST, routes.RemovePackagingSiteDetailsController.onSubmit(NormalMode, ref).url)
             .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
@@ -178,7 +178,7 @@ class RemovePackagingSiteDetailsControllerSpec extends SpecBase with MockitoSuga
 
       running(application) {
         val request =
-          FakeRequest(POST, routes.RemovePackagingSiteDetailsController.onSubmit(ref).url)
+          FakeRequest(POST, routes.RemovePackagingSiteDetailsController.onSubmit(NormalMode, ref).url)
         .withFormUrlEncodedBody(("value", ""))
 
         val boundForm = form.bind(Map("value" -> ""))
@@ -189,7 +189,7 @@ class RemovePackagingSiteDetailsControllerSpec extends SpecBase with MockitoSuga
 
         status(result) mustEqual BAD_REQUEST
         val contentOfResult: String = contentAsString(result)
-        contentOfResult mustEqual view(boundForm,ref,htmlExpectedInView)(request, messages(application)).toString
+        contentOfResult mustEqual view(boundForm, NormalMode, ref, htmlExpectedInView)(request, messages(application)).toString
         commonAssertionsForPageLoad(htmlExpectedAfterRender, contentOfResult, ref)
       }
     }
@@ -199,7 +199,7 @@ class RemovePackagingSiteDetailsControllerSpec extends SpecBase with MockitoSuga
       val application = applicationBuilder(userAnswers = None).build()
 
       running(application) {
-        val request = FakeRequest(GET, routes.RemovePackagingSiteDetailsController.onSubmit("foo").url)
+        val request = FakeRequest(GET, routes.RemovePackagingSiteDetailsController.onSubmit(NormalMode, "foo").url)
 
         val result = route(application, request).value
 
@@ -214,7 +214,7 @@ class RemovePackagingSiteDetailsControllerSpec extends SpecBase with MockitoSuga
 
       running(application) {
         val request =
-          FakeRequest(POST, routes.RemovePackagingSiteDetailsController.onSubmit("foo").url)
+          FakeRequest(POST, routes.RemovePackagingSiteDetailsController.onSubmit(NormalMode, "foo").url)
         .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
@@ -246,7 +246,7 @@ class RemovePackagingSiteDetailsControllerSpec extends SpecBase with MockitoSuga
       running(application) {
         withCaptureOfLoggingFrom(application.injector.instanceOf[GenericLogger].logger) { events =>
           val request =
-            FakeRequest(POST, routes.RemovePackagingSiteDetailsController.onSubmit(ref).url)
+            FakeRequest(POST, routes.RemovePackagingSiteDetailsController.onSubmit(NormalMode, ref).url)
           .withFormUrlEncodedBody(("value", "true"))
 
           await(route(application, request).value)
