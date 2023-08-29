@@ -84,9 +84,6 @@ class RegistrationConfirmationControllerSpec extends SpecBase {
 
         val headingAndSummaryItems = RegistrationSummary.summaryList(CreatedSubscriptionAndAmountProducedGlobally(subscription, Large), false)
 
-        println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
-        println(headingAndSummaryItems)
-
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(headingAndSummaryItems, submittedDateTime, rosmRegistration.rosmRegistration.organisationName, "bang")(request, messages(application), config).toString
       }

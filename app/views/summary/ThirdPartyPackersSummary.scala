@@ -23,7 +23,7 @@ import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import viewmodels.govuk.summarylist._
 
-object ThirdPartyPackersSummary extends ReturnDetailsSummaryRowHelper  {
+object ThirdPartyPackersSummary extends RegisterDetailsSummaryRowHelper  {
 
   //LDS ignore
   override val key: String = "thirdPartyPackagers"

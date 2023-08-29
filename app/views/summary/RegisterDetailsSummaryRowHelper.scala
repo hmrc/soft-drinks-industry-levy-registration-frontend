@@ -22,7 +22,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
 
-trait ReturnDetailsSummaryRowHelper {
+trait RegisterDetailsSummaryRowHelper {
 
   //LDS ignore
   val key: String

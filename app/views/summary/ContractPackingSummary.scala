@@ -22,7 +22,7 @@ import models.backend.Subscription
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 
-object ContractPackingSummary extends ReturnDetailsSummaryListWithLitres  {
+object ContractPackingSummary extends RegisterDetailsSummaryListWithLitres  {
 
   override val summaryLitres: SummaryListRowLitresHelper = HowManyContractPackingSummary
   //LDS ignore

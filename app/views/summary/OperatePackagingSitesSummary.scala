@@ -22,7 +22,7 @@ import models.{CheckMode, HowManyLitresGlobally}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 
-object OperatePackagingSitesSummary extends ReturnDetailsSummaryListWithLitres  {
+object OperatePackagingSitesSummary extends RegisterDetailsSummaryListWithLitres  {
 
   override val summaryLitres: SummaryListRowLitresHelper = HowManyOperatePackagingSitesSummary
   //LDS ignore

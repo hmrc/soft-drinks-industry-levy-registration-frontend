@@ -22,7 +22,7 @@ import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 
-trait ReturnDetailsSummaryListWithLitres extends ReturnDetailsSummaryRowHelper {
+trait RegisterDetailsSummaryListWithLitres extends RegisterDetailsSummaryRowHelper {
 
   val summaryLitres: SummaryListRowLitresHelper
   //LDS ignore
@@ -48,18 +48,5 @@ trait ReturnDetailsSummaryListWithLitres extends ReturnDetailsSummaryRowHelper {
                               (implicit messages: Messages): Seq[SummaryListRow] = {
     summaryLitres.rows(literage, isCheckAnswers)
   }
-
-//  private def getLitresForSmallProducer(userAnswers: UserAnswers, isCheckAnswers: Boolean)
-//                                       (implicit messages: Messages): Seq[SummaryListRow] = {
-//    val smallProducerList = userAnswers.smallProducerList
-//    if(userAnswers.get(page).getOrElse(false) && smallProducerList.nonEmpty) {
-//      val lowBandLitres = smallProducerList.map(_.litreage._1).sum
-//      val highBandLitres = smallProducerList.map(_.litreage._2).sum
-//      val litresInBands = LitresInBands(lowBandLitres, highBandLitres)
-//      summaryLitres.rows(litresInBands, isCheckAnswers)
-//    } else {
-//      Seq.empty
-//    }
-//  }
 
 }
