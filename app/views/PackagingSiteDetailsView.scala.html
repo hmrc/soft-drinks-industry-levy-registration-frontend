@@ -24,7 +24,8 @@
     govukErrorSummary: GovukErrorSummary,
     govukSummaryList: GovukSummaryList,
     govukRadios: GovukRadios,
-    govukButton: GovukButton
+    govukButton: GovukButton,
+    govukDetails: GovukDetails
 )
 
 @(form: Form[_], mode: Mode, siteList: Map[String, Site])(implicit request: Request[_], messages: Messages)
@@ -39,7 +40,17 @@
 
         <h1 class="govuk-heading-l">@messages(getHeaderForPackagingSiteDetails(siteList.size))</h1>
 
+        <p class="govuk-body">@messages("packagingSiteDetails.siteRequiredInfo")</p>
+
         @govukSummaryList(PackagingSiteDetailsSummary.summaryList(siteList))
+
+        @if(siteList.size == 1) {
+            @govukDetails(Details(
+                summary = Text(messages("packagingSiteDetails.detailsLink")),
+                content = Text(messages("packagingSiteDetails.detailsInfo")
+                ))
+            )
+        }
 
         @govukRadios(
             RadiosViewModel.yesNo(
