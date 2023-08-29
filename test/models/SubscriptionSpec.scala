@@ -123,13 +123,13 @@ class SubscriptionSpec extends RegistrationSubscriptionHelper {
             s"for a ${orgType.toString} that is a ${litresGlobally.toString} producer" - {
               "that has all litres pages populated, warehouses and packagaing site" in {
                 val userAnswers = getCompletedUserAnswers(orgType, litresGlobally, true)
-                val expectedSubscription = getExpectedSubscription(orgType, litresGlobally, true)
+                val expectedSubscription = generateSubscription(orgType, litresGlobally, true)
 
                 Subscription.generate(userAnswers, rosmRegistration) mustBe expectedSubscription
               }
               "that has no litres pages populated" in {
                 val userAnswers = getCompletedUserAnswers(orgType, litresGlobally, false)
-                val expectedSubscription = getExpectedSubscription(orgType, litresGlobally, false)
+                val expectedSubscription = generateSubscription(orgType, litresGlobally, false)
 
                 Subscription.generate(userAnswers, rosmRegistration) mustBe expectedSubscription
 

@@ -16,8 +16,7 @@
 
 package views.summary
 
-import models.{LitresInBands, UserAnswers}
-import pages.QuestionPage
+import models.Litreage
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
@@ -25,46 +24,42 @@ import viewmodels.govuk.summarylist._
 
 trait ReturnDetailsSummaryListWithLitres extends ReturnDetailsSummaryRowHelper {
 
-  val page: QuestionPage[Boolean]
-  val optLitresPage: Option[QuestionPage[LitresInBands]]
   val summaryLitres: SummaryListRowLitresHelper
   //LDS ignore
   val key: String
   val action: String
   val actionId: String
   val hiddenText: String
-  val isSmallProducerLitres: Boolean = false
 
-  def summaryList(userAnswers: UserAnswers, isCheckAnswers: Boolean)(implicit messages: Messages): SummaryList = {
-    val litresDetails: Seq[SummaryListRow] = optLitresPage match {
-      case Some(litresPage) => getLitresDetails(userAnswers, isCheckAnswers, litresPage)
-      case None if isSmallProducerLitres => getLitresForSmallProducer(userAnswers, isCheckAnswers)
-      case None => Seq.empty
-    }
+  def getHeadingAndSummary(literage: Option[Litreage], isCheckAnswers: Boolean = true)(implicit messages: Messages): (String, SummaryList) = {
+    val list = summaryList(literage, isCheckAnswers)
+    s"$key.checkYourAnswersLabel" -> list
+  }
+
+  def summaryList(optLiterage: Option[Litreage], isCheckAnswers: Boolean)(implicit messages: Messages): SummaryList = {
+    val litresDetails: Seq[SummaryListRow] = optLiterage.fold(Seq.empty[SummaryListRow])(getLitresDetails(_, isCheckAnswers))
+
     SummaryListViewModel(rows =
-      row(userAnswers, isCheckAnswers) ++ litresDetails
+      row(optLiterage, isCheckAnswers) ++ litresDetails
     )
   }
 
-  private def getLitresDetails(userAnswers: UserAnswers, isCheckAnswers: Boolean, litresPage: QuestionPage[LitresInBands])
+  private def getLitresDetails(literage: Litreage, isCheckAnswers: Boolean)
                               (implicit messages: Messages): Seq[SummaryListRow] = {
-    (userAnswers.get(page), userAnswers.get(litresPage)) match {
-      case (Some(true), Some(litresInBands)) => summaryLitres.rows(litresInBands, isCheckAnswers)
-      case _ => Seq.empty
-    }
+    summaryLitres.rows(literage, isCheckAnswers)
   }
 
-  private def getLitresForSmallProducer(userAnswers: UserAnswers, isCheckAnswers: Boolean)
-                                       (implicit messages: Messages): Seq[SummaryListRow] = {
-    val smallProducerList = userAnswers.smallProducerList
-    if(userAnswers.get(page).getOrElse(false) && smallProducerList.nonEmpty) {
-      val lowBandLitres = smallProducerList.map(_.litreage._1).sum
-      val highBandLitres = smallProducerList.map(_.litreage._2).sum
-      val litresInBands = LitresInBands(lowBandLitres, highBandLitres)
-      summaryLitres.rows(litresInBands, isCheckAnswers)
-    } else {
-      Seq.empty
-    }
-  }
+//  private def getLitresForSmallProducer(userAnswers: UserAnswers, isCheckAnswers: Boolean)
+//                                       (implicit messages: Messages): Seq[SummaryListRow] = {
+//    val smallProducerList = userAnswers.smallProducerList
+//    if(userAnswers.get(page).getOrElse(false) && smallProducerList.nonEmpty) {
+//      val lowBandLitres = smallProducerList.map(_.litreage._1).sum
+//      val highBandLitres = smallProducerList.map(_.litreage._2).sum
+//      val litresInBands = LitresInBands(lowBandLitres, highBandLitres)
+//      summaryLitres.rows(litresInBands, isCheckAnswers)
+//    } else {
+//      Seq.empty
+//    }
+//  }
 
 }

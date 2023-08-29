@@ -16,7 +16,7 @@
 
 package views.summary
 
-import models.{RosmWithUtr, UserAnswers}
+import models.CreatedSubscriptionAndAmountProducedGlobally
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import viewmodels.summary.{BusinessDetailsSummary, ContactDetailsSummary}
@@ -25,23 +25,28 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 object RegistrationSummary {
-
-  def summaryList(userAnswers: UserAnswers, rosmWithUtr: RosmWithUtr, isCheckYourAnswers: Boolean = true)
+  def summaryList(createdSubscriptionAndAmountProducedGlobally: CreatedSubscriptionAndAmountProducedGlobally, isCheckYourAnswers: Boolean = true)
                  (implicit messages: Messages): Seq[(String, SummaryList)] = {
-    val businessDetails: Option[(String, SummaryList)] = BusinessDetailsSummary.headingAndSummary(userAnswers, rosmWithUtr, isCheckYourAnswers)
-    val operatePackagingSites: Option[(String, SummaryList)] = OperatePackagingSitesSummary.headingAndSummary(userAnswers, isCheckYourAnswers)
-    val contractPacking: Option[(String, SummaryList)] = ContractPackingSummary.headingAndSummary(userAnswers, isCheckYourAnswers)
-    val imports: Option[(String, SummaryList)] = ImportsSummary.headingAndSummary(userAnswers, isCheckYourAnswers)
-    val startDate: Option[(String, SummaryList)] = StartDateSummary.headingAndSummary(userAnswers, isCheckYourAnswers)
-    val contactDetails: Option[(String, SummaryList)] = ContactDetailsSummary.headingAndSummary(userAnswers, isCheckYourAnswers)
-    val packingDetails: Option[(String, SummaryList)] = UKSitesSummary.summaryList(userAnswers, isCheckYourAnswers)
+
+    val subscription = createdSubscriptionAndAmountProducedGlobally.subscription
+    val howManyLitresGlobally = createdSubscriptionAndAmountProducedGlobally.howManyLitresGlobally
+
+    val businessDetails: (String, SummaryList) = BusinessDetailsSummary.headingAndSummary(howManyLitresGlobally, subscription, isCheckYourAnswers)
+    val thirdPartyPackersSummary: Option[(String, SummaryList)] = ThirdPartyPackersSummary.getOptHeadingAndSummary(subscription, howManyLitresGlobally, isCheckYourAnswers)
+    val operatePackagingSites: Option[(String, SummaryList)] = OperatePackagingSitesSummary.getOptHeadingAndSummary(subscription, howManyLitresGlobally, isCheckYourAnswers)
+    val contractPacking: (String, SummaryList) = ContractPackingSummary.getOptHeadingAndSummary(subscription, isCheckYourAnswers)
+    val imports: (String, SummaryList) = ImportsSummary.getOptHeadingAndSummary(subscription, isCheckYourAnswers)
+    val startDate: Option[(String, SummaryList)] = StartDateSummary.optHeadingAndSummary(subscription, howManyLitresGlobally, isCheckYourAnswers)
+    val contactDetails: (String, SummaryList) = ContactDetailsSummary.headingAndSummary(subscription, isCheckYourAnswers)
+    val packingDetails: Option[(String, SummaryList)] = UKSitesSummary.summaryList(subscription, isCheckYourAnswers)
     Seq(
-      businessDetails,
+      Some(businessDetails),
+      thirdPartyPackersSummary,
       operatePackagingSites,
-      contractPacking,
-      imports,
+      Some(contractPacking),
+      Some(imports),
       startDate,
-      contactDetails,
+      Some(contactDetails),
       packingDetails
     ).flatten
   }

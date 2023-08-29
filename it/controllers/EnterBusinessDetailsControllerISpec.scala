@@ -1,7 +1,7 @@
 package controllers
 
 import models.backend.{Site, UkAddress}
-import models.{Identify, NormalMode, SmallProducer, Warehouse}
+import models.{Identify, NormalMode, Warehouse}
 import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
 import pages.EnterBusinessDetailsPage
@@ -120,7 +120,6 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
               .set(EnterBusinessDetailsPage, Identify("0000001611", "AA1 1AA")).success.get
               .copy(
                 address = Some(UkAddress(List.empty,"")),
-                smallProducerList = List(SmallProducer("","", (0,0))),
                 packagingSiteList = Map("" -> Site(UkAddress(List.empty,""),None,None,None)),
                 warehouseList = Map("" -> Warehouse(None, UkAddress(List.empty,""))),
                 submittedOn = None
@@ -146,7 +145,6 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
               updatedAnswers.get.warehouseList mustBe Map.empty
               updatedAnswers.get.packagingSiteList mustBe Map.empty
               updatedAnswers.get.submittedOn mustBe None
-              updatedAnswers.get.smallProducerList mustBe List.empty
               updatedAnswers.get.data mustBe Json.obj("enterBusinessDetails" -> Json.obj("utr" -> "0000001611", "postcode" -> "GU14 8NL"))
             }
           }
@@ -157,7 +155,6 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
               .set(EnterBusinessDetailsPage, Identify("0000001611", "GU14 8NL")).success.get
               .copy(
                 address = Some(UkAddress(List.empty,"")),
-                smallProducerList = List(SmallProducer("","", (0,0))),
                 packagingSiteList = Map("" -> Site(UkAddress(List.empty,""),None,None,None)),
                 warehouseList = Map("" -> Warehouse(None, UkAddress(List.empty,""))),
                 submittedOn = None
@@ -180,7 +177,6 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
               updatedAnswers.get.warehouseList mustBe userAnswersWithIdenticalData.warehouseList
               updatedAnswers.get.packagingSiteList mustBe userAnswersWithIdenticalData.packagingSiteList
               updatedAnswers.get.submittedOn mustBe userAnswersWithIdenticalData.submittedOn
-              updatedAnswers.get.smallProducerList mustBe userAnswersWithIdenticalData.smallProducerList
               updatedAnswers.get.data mustBe userAnswersWithIdenticalData.data
             }
           }

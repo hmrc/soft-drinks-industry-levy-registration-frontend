@@ -18,41 +18,43 @@ package controllers
 
 import config.FrontendAppConfig
 import controllers.actions._
-import models.NormalMode
-import pages.ContactDetailsPage
-
-import javax.inject.Inject
+import models.CreatedSubscriptionAndAmountProducedGlobally
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import repositories.{SDILSessionCache, SDILSessionKeys}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.RegistrationConfirmationView
 import views.summary.RegistrationSummary
 
 import java.time.{LocalDateTime, ZoneId}
+import javax.inject.Inject
+import scala.concurrent.ExecutionContext
 
 class RegistrationConfirmationController @Inject()(
                                        override val messagesApi: MessagesApi,
                                        identify: IdentifierAction,
                                        getData: DataRetrievalAction,
                                        requireData: DataRequiredAction,
+                                       sdilSessionCache: SDILSessionCache,
                                        val controllerComponents: MessagesControllerComponents,
                                        view: RegistrationConfirmationView
-                                     )(implicit config: FrontendAppConfig) extends FrontendBaseController with I18nSupport {
+                                     )(implicit config: FrontendAppConfig, ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData) {
-    implicit request =>
-      (request.userAnswers.submittedOn, request.userAnswers.get(ContactDetailsPage)) match {
-        case (Some(dtInstant), Some(contactDetails)) =>
-          val sentDateTime = LocalDateTime.ofInstant(dtInstant, ZoneId.of("UTC"))
-          val summaryList = RegistrationSummary.summaryList(request.userAnswers, request.rosmWithUtr, false)
+  def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData).async {
+    implicit request => {
+      sdilSessionCache.fetchEntry[CreatedSubscriptionAndAmountProducedGlobally](
+        request.internalId, SDILSessionKeys.CREATED_SUBSCRIPTION_AND_AMOUNT_PRODUCED_GLOBALLY).map{
+        case Some(createdSubscriptionAndAmountProducedGlobally) if request.userAnswers.submittedOn.isDefined =>
+          val sentDateTime = LocalDateTime.ofInstant(request.userAnswers.submittedOn.get, ZoneId.of("UTC"))
+          val summaryList = RegistrationSummary.summaryList(createdSubscriptionAndAmountProducedGlobally, false)
           Ok(view(
             summaryList,
             sentDateTime,
             request.rosmWithUtr.rosmRegistration.organisationName,
-            contactDetails.email
+            createdSubscriptionAndAmountProducedGlobally.subscription.contact.email
           ))
-        case _ =>
-          Redirect(routes.VerifyController.onPageLoad(NormalMode).url)
+        case _ => Redirect(routes.RegistrationController.start)
       }
+    }
   }
 }

@@ -45,7 +45,7 @@ class RegistrationOrchestratorSpec extends RegistrationSubscriptionHelper with M
               "that has all litres pages populated, warehouses and packagaing site" in {
                 val userAnswers = getCompletedUserAnswers(orgType, litresGlobally, true)
                 val dataRequest: DataRequest[AnyContent] = DataRequest(FakeRequest(), identifier, true, Some(utr), userAnswers, rosmRegistration)
-                val expectedSubscription = getExpectedSubscription(orgType, litresGlobally, true)
+                val expectedSubscription = generateSubscription(orgType, litresGlobally, true)
                 when(mockSDILConnector.createSubscription(expectedSubscription, "safeid")(hc)).thenReturn(createSuccessRegistrationResult((): Unit))
                 when(mockSessionService.set(any())).thenReturn(createSuccessRegistrationResult(true))
 
@@ -58,7 +58,7 @@ class RegistrationOrchestratorSpec extends RegistrationSubscriptionHelper with M
               "that has no litres pages populated" in {
                 val userAnswers = getCompletedUserAnswers(orgType, litresGlobally, false)
                 val dataRequest: DataRequest[AnyContent] = DataRequest(FakeRequest(), identifier, true, Some(utr), userAnswers, rosmRegistration)
-                val expectedSubscription = getExpectedSubscription(orgType, litresGlobally, false)
+                val expectedSubscription = generateSubscription(orgType, litresGlobally, false)
 
                 when(mockSDILConnector.createSubscription(expectedSubscription, "safeid")(hc)).thenReturn(createSuccessRegistrationResult((): Unit))
                 when(mockSessionService.set(any())).thenReturn(createSuccessRegistrationResult(true))
@@ -78,7 +78,7 @@ class RegistrationOrchestratorSpec extends RegistrationSubscriptionHelper with M
               "that has all litres pages populated, warehouses and packagaing site" in {
                 val userAnswers = getCompletedUserAnswers(orgType, litresGlobally, true)
                 val dataRequest: DataRequest[AnyContent] = DataRequest(FakeRequest(), identifier, true, Some(utr), userAnswers, rosmRegistration)
-                val expectedSubscription = getExpectedSubscription(orgType, litresGlobally, true)
+                val expectedSubscription = generateSubscription(orgType, litresGlobally, true)
                 when(mockSDILConnector.createSubscription(expectedSubscription, "safeid")(hc)).thenReturn(createSuccessRegistrationResult((): Unit))
                 when(mockSessionService.set(any())).thenReturn(createFailureRegistrationResult(SessionDatabaseInsertError))
 
@@ -91,7 +91,7 @@ class RegistrationOrchestratorSpec extends RegistrationSubscriptionHelper with M
               "that has no litres pages populated" in {
                 val userAnswers = getCompletedUserAnswers(orgType, litresGlobally, false)
                 val dataRequest: DataRequest[AnyContent] = DataRequest(FakeRequest(), identifier, true, Some(utr), userAnswers, rosmRegistration)
-                val expectedSubscription = getExpectedSubscription(orgType, litresGlobally, false)
+                val expectedSubscription = generateSubscription(orgType, litresGlobally, false)
 
                 when(mockSDILConnector.createSubscription(expectedSubscription, "safeid")(hc)).thenReturn(createSuccessRegistrationResult((): Unit))
                 when(mockSessionService.set(any())).thenReturn(createFailureRegistrationResult(SessionDatabaseInsertError))

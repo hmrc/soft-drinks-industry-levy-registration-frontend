@@ -16,7 +16,7 @@
 
 package models.backend
 
-import models.{Contact, RosmWithUtr, UserAnswers}
+import models.{Contact, HowManyLitresGlobally, RosmWithUtr, UserAnswers}
 import pages.{ContactDetailsPage, OrganisationTypePage, StartDatePage}
 import play.api.libs.json.{Format, Json}
 
@@ -31,7 +31,10 @@ case class Subscription(
   liabilityDate: LocalDate,
   productionSites: Seq[Site],
   warehouseSites: Seq[Site],
-  contact: Contact)
+  contact: Contact) {
+  def copacks = activity.Copackee.fold(false)(_.nonEmpty)
+  def isVoluntary(producerType: HowManyLitresGlobally) = producerType == HowManyLitresGlobally.Small && copacks && activity.CopackerAll.isEmpty && activity.Imported.isEmpty
+}
 
 object Subscription {
   implicit val format: Format[Subscription] = Json.format[Subscription]

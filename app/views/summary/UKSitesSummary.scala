@@ -17,24 +17,20 @@
 package views.summary
 
 import controllers.routes
-import models.{CheckMode, UserAnswers}
-import pages.{AskSecondaryWarehousesPage, PackAtBusinessAddressPage}
+import models.CheckMode
+import models.backend.Subscription
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.{SummaryList, Value}
-import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{Content, Empty, HtmlContent}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
 
-import javax.swing.text.AbstractDocument.Content
-import scala.reflect.internal.util.NoSourceFile.content
-
 object UKSitesSummary {
 
-  private def getPackAtBusinessAddressRow(userAnswers: UserAnswers, isCheckAnswers: Boolean)(implicit messages: Messages): SummaryListRow = {
+  private def getPackAtBusinessAddressRow(subscription: Subscription, isCheckAnswers: Boolean)(implicit messages: Messages): SummaryListRow = {
       SummaryListRowViewModel(
-        key =  if(userAnswers.packagingSiteList.size > 1){
-          messages("checkYourAnswers.packing.checkYourAnswersLabel.multiple",  {userAnswers.packagingSiteList.size.toString})}else{
+        key =  if(subscription.productionSites.size > 1){
+          messages("checkYourAnswers.packing.checkYourAnswersLabel.multiple",  {subscription.productionSites.size.toString})} else{
           messages("checkYourAnswers.packing.checkYourAnswersLabel.one")
         },
         value = Value(),
@@ -50,10 +46,10 @@ object UKSitesSummary {
       )
   }
 
-  private def getAskSecondaryWarehouseRow (userAnswers: UserAnswers, isCheckAnswers: Boolean)(implicit messages: Messages): SummaryListRow = {
+  private def getAskSecondaryWarehouseRow (subscription: Subscription, isCheckAnswers: Boolean)(implicit messages: Messages): SummaryListRow = {
       SummaryListRowViewModel(
-        key = if(userAnswers.warehouseList.size > 1){
-          messages("checkYourAnswers.warehouse.checkYourAnswersLabel.multiple",  {userAnswers.warehouseList.size.toString})}else{
+        key = if(subscription.warehouseSites.size > 1){
+          messages("checkYourAnswers.warehouse.checkYourAnswersLabel.multiple",  {subscription.warehouseSites.size.toString})} else {
           messages("checkYourAnswers.warehouse.checkYourAnswersLabel.one")
         },
         value = Value(),
@@ -69,27 +65,28 @@ object UKSitesSummary {
       )
   }
 
-  def summaryList(userAnswers: UserAnswers, isCheckAnswers: Boolean)
+  def summaryList(subscription: Subscription, isCheckAnswers: Boolean)
                  (implicit messages: Messages): Option[(String, SummaryList)] = {
-    (userAnswers.get(PackAtBusinessAddressPage), userAnswers.get(AskSecondaryWarehousesPage)) match {
-      case (Some(true), Some(false)) =>
+
+    (subscription.productionSites.nonEmpty, subscription.warehouseSites.nonEmpty) match {
+      case (true, false) =>
         Option(
           SummaryListViewModel(
-            rows = Seq(getPackAtBusinessAddressRow(userAnswers, isCheckAnswers))
+            rows = Seq(getPackAtBusinessAddressRow(subscription, isCheckAnswers))
           )
         ).map(list => "checkYourAnswers.sites" -> list)
-      case (Some(false), Some(true)) =>
+      case (false, true) =>
         Some(
           SummaryListViewModel(
-            rows = Seq(getAskSecondaryWarehouseRow(userAnswers, isCheckAnswers))
+            rows = Seq(getAskSecondaryWarehouseRow(subscription, isCheckAnswers))
           )
         ).map(list => "checkYourAnswers.sites" -> list)
-      case (Some(true), Some(true)) =>
+      case (true, true) =>
         Some(
           SummaryListViewModel(
             Seq(
-              getPackAtBusinessAddressRow(userAnswers, isCheckAnswers),
-              getAskSecondaryWarehouseRow(userAnswers, isCheckAnswers)
+              getPackAtBusinessAddressRow(subscription, isCheckAnswers),
+              getAskSecondaryWarehouseRow(subscription, isCheckAnswers)
             )
           )
         ).map(list => "checkYourAnswers.sites" -> list)

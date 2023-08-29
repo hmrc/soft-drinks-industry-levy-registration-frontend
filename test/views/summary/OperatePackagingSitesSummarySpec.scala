@@ -16,15 +16,58 @@
 
 package views.summary
 
-import base.SpecBase
-import models.LitresInBands
+import base.{RegistrationSubscriptionHelper, SpecBase}
+import models.{HowManyLitresGlobally, LitresInBands}
 import pages.{HowManyOperatePackagingSitesPage, OperatePackagingSitesPage}
 import play.twirl.api.Html
 import uk.gov.hmrc.govukfrontend.views.Aliases.Actions
 
-class OperatePackagingSitesSummarySpec extends SpecBase {
+class OperatePackagingSitesSummarySpec extends RegistrationSubscriptionHelper {
 
-  "summaryList" - {
+  "getOptHeadingAndSummary" - {
+    HowManyLitresGlobally.values.foreach {amountProduced =>
+      s"when the amount produced globally is $amountProduced" - {
+        if(amountProduced == HowManyLitresGlobally.None) {
+
+        } else {
+          "and the litres is populated in the subscription" - {
+            "should return a summary list with Yes and the number of litres" in {
+              val subscription = generateSubscription(allFieldsPopulated = true)
+              val res = OperatePackagingSitesSummary.getOptHeadingAndSummary(subscription, amountProduced, isCheckAnswers = true)
+              res mustBe defined
+              val heading = res.get._1
+              heading mustBe "Reporting own brands packaged at your own site?"
+              val rows = res.get._2.rows
+              rows.head.key.content.asHtml mustBe Html("Reporting own brands packaged at your own site?")
+              rows.head.key.classes mustBe ""
+              rows.head.value.content.asHtml mustBe Html("Yes")
+              rows.head.value.classes.trim mustBe "sdil-right-align--desktop"
+              rows.head.actions.head.items.head.href mustBe "/soft-drinks-industry-levy-registration/change-operate-packaging-sites"
+              rows.head.actions.head.items.head.attributes mustBe Map("id" -> "change-operatePackagingSites")
+              rows.head.actions.head.items.head.content.asHtml mustBe Html("Change")
+
+              rows(1).key.content.asHtml mustBe Html("Litres in the low band")
+              rows(1).key.classes mustBe ""
+              rows(1).value.content.asHtml mustBe Html("1,000")
+              rows(1).value.classes.trim mustBe "sdil-right-align--desktop"
+              rows(1).actions.head.items.head.href mustBe "/soft-drinks-industry-levy-registration/change-how-many-own-brands-next-12-months"
+              rows(1).actions.head.items.head.attributes mustBe Map("id" -> "change-litresInLowBand-litreage-operatePackagingSites")
+              rows(1).actions.head.items.head.content.asHtml mustBe Html("Change")
+
+              rows(2).key.content.asHtml mustBe Html("Litres in the high band")
+              rows(2).key.classes mustBe ""
+              rows(2).value.content.asHtml mustBe Html("2,000")
+              rows(2).value.classes.trim mustBe "sdil-right-align--desktop"
+              rows(2).actions.head.items.head.href mustBe "/soft-drinks-industry-levy-registration/change-how-many-own-brands-next-12-months"
+              rows(2).actions.head.items.head.attributes mustBe Map("id" -> "change-litresInHighBand-litreage-operatePackagingSites")
+              rows(2).actions.head.items.head.content.asHtml mustBe Html("Change")
+
+              rows.size mustBe 3
+            }
+          }
+        }
+      }
+    }
     "should return correct elements when passed in with TRUE and litres provided and check answers is true" in {
       val userAnswers = emptyUserAnswers
         .set(OperatePackagingSitesPage, true).success.value

@@ -17,32 +17,32 @@
 package viewmodels.summary
 
 import controllers.routes
-import models.{CheckMode, ContactDetails, UserAnswers}
-import pages.ContactDetailsPage
+import models.{CheckMode, Contact}
+import models.backend.Subscription
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.{ActionItem, SummaryList, Text}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
 
+
 object ContactDetailsSummary  {
 
-  def headingAndSummary(userAnswers: UserAnswers, isCheckAnswers: Boolean = true)
-                         (implicit messages: Messages): Option[(String, SummaryList)] = {
-    userAnswers.get(ContactDetailsPage).map { contactDetails =>
-      val heading = messages("contactDetails.title")
-      val summaryList = SummaryListViewModel(
-        rows(contactDetails, isCheckAnswers)
-      )
-      heading -> summaryList
-    }
+  def headingAndSummary(subscription: Subscription, isCheckAnswers: Boolean = true)
+                         (implicit messages: Messages): (String, SummaryList) = {
+    val contactDetails = subscription.contact
+    val heading = messages("contactDetails.title")
+    val summaryList = SummaryListViewModel(
+      rows(contactDetails, isCheckAnswers)
+    )
+    heading -> summaryList
   }
 
-  private def rows(contactDetails: ContactDetails, isCheckAnswers: Boolean)
+  private def rows(contactDetails: Contact, isCheckAnswers: Boolean)
           (implicit messages: Messages): Seq[SummaryListRow] = {
     Seq(
-      createSummaryListItem("fullName", contactDetails.fullName, isCheckAnswers),
-      createSummaryListItem("position", contactDetails.position, isCheckAnswers),
+      createSummaryListItem("fullName", contactDetails.name.getOrElse(""), isCheckAnswers),
+      createSummaryListItem("position", contactDetails.positionInCompany.getOrElse(""), isCheckAnswers),
       createSummaryListItem("phoneNumber", contactDetails.phoneNumber, isCheckAnswers),
       createSummaryListItem("email", contactDetails.email, isCheckAnswers)
     )

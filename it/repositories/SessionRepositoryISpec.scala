@@ -66,7 +66,6 @@ class SessionRepositoryISpec
       updatedRecord.submittedOn mustBe userAnswersBefore.submittedOn
       updatedRecord.data mustBe userAnswersBefore.data
       updatedRecord.address mustBe userAnswersBefore.address
-      updatedRecord.smallProducerList mustBe userAnswersBefore.smallProducerList
       updatedRecord.warehouseList mustBe userAnswersBefore.warehouseList
       updatedRecord.packagingSiteList mustBe userAnswersBefore.packagingSiteList
     }
@@ -76,7 +75,6 @@ class SessionRepositoryISpec
       val userAnswersBefore = UserAnswers("id",
         Json.obj("foo" -> "bar"),
         Some(UkAddress(List("Line 1", "Line 2", "Line 3", "Line 4"),"aa1 1aa", alfId = Some(alfId))),
-        List(SmallProducer("foo", "bar", (1,1))),
         Map("foo" -> Site(UkAddress(List("foo"),"foo", Some("foo")),Some("foo"), Some("foo"),Some(LocalDate.now()))),
         Map("foo" -> Warehouse(Some("foo"),UkAddress(List("foo"),"foo", Some("foo")))),
         None,
@@ -91,9 +89,6 @@ class SessionRepositoryISpec
       val businessAddressDecrypted = {
         Json.fromJson[Option[UkAddress]](Json.parse(encryption.crypto.decrypt((resultParsedToJson \ "address").as[EncryptedValue],userAnswersBefore.id)))(Reads.optionWithNull[UkAddress]).get
       }
-      val smallProducerListDecrypted = {
-        Json.parse(encryption.crypto.decrypt((resultParsedToJson \ "smallProducerList").as[EncryptedValue],userAnswersBefore.id)).as[List[SmallProducer]]
-      }
       val packagingSiteListDecrypted = {
         val json = (resultParsedToJson \ "packagingSiteList").as[Map[String, EncryptedValue]]
         json.map(site => site._1 -> Json.parse(encryption.crypto.decrypt(site._2, userAnswersBefore.id)).as[Site])
@@ -104,7 +99,6 @@ class SessionRepositoryISpec
       }
 
       dataDecrypted mustBe userAnswersBefore.data
-      smallProducerListDecrypted mustBe userAnswersBefore.smallProducerList
       businessAddressDecrypted mustBe userAnswersBefore.address
       packagingSiteListDecrypted mustBe userAnswersBefore.packagingSiteList
       warehouseListDecrypted mustBe userAnswersBefore.warehouseList
@@ -135,7 +129,6 @@ class SessionRepositoryISpec
         updatedRecord.submittedOn mustBe userAnswersBefore.submittedOn
         updatedRecord.data mustBe userAnswersBefore.data
         updatedRecord.address mustBe userAnswersBefore.address
-        updatedRecord.smallProducerList mustBe userAnswersBefore.smallProducerList
         updatedRecord.warehouseList mustBe userAnswersBefore.warehouseList
         updatedRecord.packagingSiteList mustBe userAnswersBefore.packagingSiteList
       }
@@ -197,7 +190,6 @@ class SessionRepositoryISpec
         updatedRecord.submittedOn mustBe userAnswersBefore.submittedOn
         updatedRecord.data mustBe userAnswersBefore.data
         updatedRecord.address mustBe userAnswersBefore.address
-        updatedRecord.smallProducerList mustBe userAnswersBefore.smallProducerList
         updatedRecord.warehouseList mustBe userAnswersBefore.warehouseList
         updatedRecord.packagingSiteList mustBe userAnswersBefore.packagingSiteList
       }

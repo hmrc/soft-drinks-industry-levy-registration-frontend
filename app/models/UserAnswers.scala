@@ -31,7 +31,6 @@ case class UserAnswers(
                         id: String,
                         data: JsObject = Json.obj(),
                         address: Option[UkAddress] = None,
-                        smallProducerList: List[SmallProducer] = List.empty,
                         packagingSiteList: Map[String, Site] = Map.empty,
                         warehouseList: Map[String, Warehouse] = Map.empty,
                         submittedOn: Option[Instant] = None,
@@ -40,21 +39,6 @@ case class UserAnswers(
 
   def get[A](page: Gettable[A])(implicit rds: Reads[A]): Option[A] =
     Reads.optionNoError(Reads.at(page.path)).reads(data).getOrElse(None)
-
-  def setList[A](producer: Settable[A], value: A)(implicit writes: Writes[A]): Try[UserAnswers] = {
-    val updatedData = data.setObject(path = (JsPath \ s"producerList"), Json.toJson(value)) match {
-      case JsSuccess(jsValue, _) =>
-        Success(jsValue)
-      case JsError(errors) =>
-        Failure(JsResultException(errors))
-    }
-
-    updatedData.flatMap {
-      d =>
-        val updatedAnswers = copy(data = d)
-        producer.cleanup(Some(value), updatedAnswers)
-    }
-  }
 
   def set[A](page: Settable[A], value: A)(implicit writes: Writes[A]): Try[UserAnswers] = {
 
@@ -125,7 +109,6 @@ object UserAnswers {
           (__ \ "_id").read[String] and
             (__ \ "data").read[EncryptedValue] and
             (__ \ "address").read[EncryptedValue] and
-            (__ \ "smallProducerList").read[EncryptedValue] and
             (__ \ "packagingSiteList").read[Map[String, EncryptedValue]] and
             (__ \ "warehouseList").read[Map[String, EncryptedValue]] and
             (__ \ "submittedOn").readNullable[Instant] and
@@ -135,18 +118,17 @@ object UserAnswers {
 
       def writes(implicit encryption: Encryption): OWrites[UserAnswers] = new OWrites[UserAnswers] {
         override def writes(userAnswers: UserAnswers): JsObject = {
-          val encryptedValue: (String, EncryptedValue, EncryptedValue, EncryptedValue, Map[String, EncryptedValue], Map[String, EncryptedValue], Option[Instant], Instant) = {
+          val encryptedValue: (String, EncryptedValue, EncryptedValue, Map[String, EncryptedValue], Map[String, EncryptedValue], Option[Instant], Instant) = {
             ModelEncryption.encryptUserAnswers(userAnswers)
           }
           Json.obj(
             "id" -> encryptedValue._1,
             "data" -> encryptedValue._2,
             "address" -> encryptedValue._3,
-            "smallProducerList" -> encryptedValue._4,
-            "packagingSiteList" -> encryptedValue._5,
-            "warehouseList" -> encryptedValue._6,
-            "submittedOn" -> encryptedValue._7,
-            "lastUpdated" -> encryptedValue._8
+            "packagingSiteList" -> encryptedValue._4,
+            "warehouseList" -> encryptedValue._5,
+            "submittedOn" -> encryptedValue._6,
+            "lastUpdated" -> encryptedValue._7
           )
         }
       }

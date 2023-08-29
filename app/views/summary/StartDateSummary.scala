@@ -17,8 +17,8 @@
 package views.summary
 
 import controllers.routes
-import models.{CheckMode, UserAnswers}
-import pages.{QuestionPage, StartDatePage}
+import models.{CheckMode, HowManyLitresGlobally}
+import models.backend.Subscription
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
@@ -31,44 +31,43 @@ import java.time.format.DateTimeFormatter
 
 object StartDateSummary {
 
-  def row(answers: UserAnswers, isCheckAnswers: Boolean = false)(implicit messages: Messages): Seq[SummaryListRow] = {
-    answers.get(page) match {
-      case None => Seq.empty
-      case Some(answered) =>
-        val dateFormatter = DateTimeFormatter.ofPattern("dd MMMM yyyy")
-        val value: String = answered.format(dateFormatter)
-        Seq(
-          SummaryListRowViewModel(
-            key = key,
-            value = ValueViewModel(value).withCssClass("sdil-right-align--desktop"),
-            actions = if (isCheckAnswers) {
-              Seq(
-                ActionItemViewModel("site.change", action)
-                  .withAttribute(("id", actionId))
-                  .withVisuallyHiddenText(messages(s"$hiddenText.change.hidden"))
-              )
-            } else {
-              Seq.empty
-            }
+  def row(startDate: LocalDate, isCheckAnswers: Boolean = false)(implicit messages: Messages): Seq[SummaryListRow] = {
+    val dateFormatter = DateTimeFormatter.ofPattern("dd MMMM yyyy")
+    val value: String = startDate.format(dateFormatter)
+    Seq(
+      SummaryListRowViewModel(
+        key = key,
+        value = ValueViewModel(value).withCssClass("sdil-right-align--desktop"),
+        actions = if (isCheckAnswers) {
+          Seq(
+            ActionItemViewModel("site.change", action)
+              .withAttribute(("id", actionId))
+              .withVisuallyHiddenText(messages(s"$hiddenText.change.hidden"))
           )
-        )
-    }
-  }
-
-  def summaryList(userAnswers: UserAnswers, isCheckAnswers: Boolean)(implicit messages: Messages): SummaryList = {
-    SummaryListViewModel(rows =
-      row(userAnswers, isCheckAnswers)
+        } else {
+          Seq.empty
+        }
+      )
     )
   }
 
-  val page: QuestionPage[LocalDate] = StartDatePage
+  def summaryList(startDate: LocalDate, isCheckAnswers: Boolean)(implicit messages: Messages): SummaryList = {
+    SummaryListViewModel(rows =
+      row(startDate, isCheckAnswers)
+    )
+  }
+
   val key: String = "startDate.checkYourAnswersKey"
   val action: String = routes.StartDateController.onPageLoad(CheckMode).url
   val actionId: String = "change-startDate"
   val hiddenText: String = "startDate"
-  def headingAndSummary(userAnswers: UserAnswers, isCheckAnswers: Boolean = true)(implicit messages: Messages): Option[(String, SummaryList)] = {
-    val list = summaryList(userAnswers, isCheckAnswers)
-    list.rows.headOption.fold(Option.empty[(String, SummaryList)])(_ => Some("startDate.checkYourAnswersLabel" -> list))
+  def optHeadingAndSummary(subscription: Subscription, howManyLitresGlobally: HowManyLitresGlobally, isCheckAnswers: Boolean = true)(implicit messages: Messages): Option[(String, SummaryList)] = {
+    if (subscription.isVoluntary(howManyLitresGlobally)) {
+      None
+    } else {
+      val list = summaryList(subscription.liabilityDate, isCheckAnswers)
+      list.rows.headOption.fold(Option.empty[(String, SummaryList)])(_ => Some("startDate.checkYourAnswersLabel" -> list))
+    }
   }
 
 }

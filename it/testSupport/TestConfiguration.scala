@@ -16,8 +16,8 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc.{CookieHeaderEncoding, MessagesControllerComponents, Session, SessionCookieBaker}
 import play.api.test.Helpers._
 import play.api.{Application, Environment, Mode}
-import repositories.{SDILSessionCacheRepository, SessionRepository}
-import testSupport.databases.SessionDatabaseOperations
+import repositories.{SDILSessionCache, SDILSessionCacheRepository, SessionRepository}
+import testSupport.databases.{SDILSessionCacheOperations, SessionDatabaseOperations}
 import uk.gov.hmrc.crypto.PlainText
 import uk.gov.hmrc.play.bootstrap.frontend.filters.crypto.SessionCookieCrypto
 
@@ -31,7 +31,8 @@ trait TestConfiguration
     with PatienceConfiguration
     with BeforeAndAfterEach
     with BeforeAndAfterAll
-    with SessionDatabaseOperations {
+    with SessionDatabaseOperations
+    with SDILSessionCacheOperations {
 
   me: Suite with TestSuite =>
 
@@ -94,6 +95,7 @@ trait TestConfiguration
 
   override implicit lazy val app: Application = appBuilder().build()
   lazy val sessionCache = app.injector.instanceOf[SDILSessionCacheRepository]
+  lazy val sdilSessionCache: SDILSessionCache = app.injector.instanceOf[SDILSessionCache]
   lazy val mongo: SessionRepository = app.injector.instanceOf[SessionRepository]
 
   def configParams: Map[String, Any] = Map()

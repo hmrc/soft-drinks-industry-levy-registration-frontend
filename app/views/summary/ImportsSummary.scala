@@ -17,16 +17,13 @@
 package views.summary
 
 import controllers.routes
-import models.{CheckMode, LitresInBands, UserAnswers}
-import pages.{HowManyImportsPage, ImportsPage, QuestionPage}
+import models.CheckMode
+import models.backend.Subscription
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
-import views.summary.{ReturnDetailsSummaryListWithLitres, SummaryListRowLitresHelper}
 
 object ImportsSummary extends ReturnDetailsSummaryListWithLitres  {
 
-  override val page: QuestionPage[Boolean] = ImportsPage
-  override val optLitresPage: Option[QuestionPage[LitresInBands]] = Some(HowManyImportsPage)
   override val summaryLitres: SummaryListRowLitresHelper = HowManyImportsSummary
   //LDS ignore
   override val key: String = "imports"
@@ -34,9 +31,9 @@ object ImportsSummary extends ReturnDetailsSummaryListWithLitres  {
   override val actionId: String = "change-imports"
   override val hiddenText: String = "imports"
 
-  def headingAndSummary(userAnswers: UserAnswers, isCheckAnswers: Boolean = true)(implicit messages: Messages): Option[(String, SummaryList)] = {
-    val list = summaryList(userAnswers = userAnswers, isCheckAnswers)
-    list.rows.headOption.fold(Option.empty[(String, SummaryList)])(_ => Some("imports.checkYourAnswersLabel" -> list))
+  def getOptHeadingAndSummary(subscription: Subscription, isCheckAnswers: Boolean)
+                             (implicit messages: Messages): (String, SummaryList) = {
+    getHeadingAndSummary(subscription.activity.Imported, isCheckAnswers)
   }
 
 }

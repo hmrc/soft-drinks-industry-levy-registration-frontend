@@ -16,7 +16,7 @@
 
 package views.summary
 
-import models.LitresInBands
+import models.Litreage
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
@@ -30,10 +30,10 @@ trait SummaryListRowLitresHelper {
   val bandActionIdKey: String
   val bandHiddenKey: String
 
-  def rows(litresInBands: LitresInBands, isCheckAnswers: Boolean)(implicit messages: Messages): Seq[SummaryListRow] = {
+  def rows(literage: Litreage, isCheckAnswers: Boolean)(implicit messages: Messages): Seq[SummaryListRow] = {
     Seq(
-      bandRow(litresInBands.lowBand, "litresInLowBand", isCheckAnswers),
-      bandRow(litresInBands.highBand, "litresInHighBand", isCheckAnswers)
+      bandRow(literage.lower, "litresInLowBand", isCheckAnswers),
+      bandRow(literage.upper, "litresInHighBand", isCheckAnswers)
     )
   }
 

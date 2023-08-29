@@ -17,16 +17,13 @@
 package views.summary
 
 import controllers.routes
-import models.{CheckMode, LitresInBands, UserAnswers}
-import pages.{ContractPackingPage, HowManyContractPackingPage, QuestionPage}
+import models.CheckMode
+import models.backend.Subscription
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
-import views.summary.{ReturnDetailsSummaryListWithLitres, SummaryListRowLitresHelper}
 
 object ContractPackingSummary extends ReturnDetailsSummaryListWithLitres  {
 
-  override val page: QuestionPage[Boolean] = ContractPackingPage
-  override val optLitresPage: Option[QuestionPage[LitresInBands]] = Some(HowManyContractPackingPage)
   override val summaryLitres: SummaryListRowLitresHelper = HowManyContractPackingSummary
   //LDS ignore
   override val key: String = "contractPacking"
@@ -34,9 +31,9 @@ object ContractPackingSummary extends ReturnDetailsSummaryListWithLitres  {
   override val actionId: String = "change-contractPacking"
   override val hiddenText: String = "contractPacking"
 
-  def headingAndSummary(userAnswers: UserAnswers, isCheckAnswers: Boolean = true)(implicit messages: Messages): Option[(String, SummaryList)] = {
-    val list = summaryList(userAnswers = userAnswers, isCheckAnswers)
-    list.rows.headOption.fold(Option.empty[(String, SummaryList)])(_ => Some("contractPacking.checkYourAnswersLabel" -> list))
+  def getOptHeadingAndSummary(subscription: Subscription, isCheckAnswers: Boolean)
+                             (implicit messages: Messages): (String, SummaryList) = {
+    getHeadingAndSummary(subscription.activity.CopackerAll, isCheckAnswers)
   }
 
 }

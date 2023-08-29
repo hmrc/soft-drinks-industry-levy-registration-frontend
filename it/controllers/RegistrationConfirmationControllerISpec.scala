@@ -1,113 +1,332 @@
 package controllers
 
-import models.NormalMode
+import models.HowManyLitresGlobally.{Large, Small}
+import models.backend.Subscription
+import models.{CreatedSubscriptionAndAmountProducedGlobally, HowManyLitresGlobally, NormalMode, RosmWithUtr}
 import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
 import play.api.http.HeaderNames
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.i18n.Messages
 import play.api.test.WsTestClient
+import repositories.SDILSessionKeys
 
 class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
 
-  val normalRoutePath = "/registration-confirmation"
+  val path = "/registration-confirmation"
 
-  "GET " + normalRoutePath - {
+  "GET " + path - {
     "when the user has submitted a registration request" - {
       "should return OK and render the RegistrationConfirmation page" - {
         "with the expected content" - {
-          "when the user answered yes to all litres questions" in {
-            given
-              .commonPrecondition
+          s"when the user has selected they are a Large producer type" - {
+            "and they have populated all pages including litres" in {
+              val userAnswers = userAnswerWithLitresForAllPagesIncludingOnesNotRequired(HowManyLitresGlobally.Large)
+                .copy(submittedOn = Some(submittedDate))
+              val createdSubscriptionAndAmountProducedGlobally = CreatedSubscriptionAndAmountProducedGlobally(
+                Subscription.generate(userAnswers, RosmWithUtr("0000001611", rosmRegistration)), HowManyLitresGlobally.Large)
+              given
+                .commonPrecondition
 
-            val userAnswers = userAnswersWithLitres.copy(submittedOn = Some(submittedDate))
+              setAnswers(userAnswers)
+              addToCache(SDILSessionKeys.CREATED_SUBSCRIPTION_AND_AMOUNT_PRODUCED_GLOBALLY, createdSubscriptionAndAmountProducedGlobally)
 
-            setAnswers(userAnswers)
+              WsTestClient.withClient { client =>
+                val result = createClientRequestGet(client, baseUrl + path)
 
-            WsTestClient.withClient { client =>
-              val result = createClientRequestGet(client, baseUrl + normalRoutePath)
+                whenReady(result) { res =>
+                  res.status mustBe OK
+                  val page = Jsoup.parse(res.body)
+                  page.title must include(Messages("Application complete"))
+                  validateSummaryContent(page)
+                  val detailsSection = page.getElementsByClass("govuk-details").get(0)
+                  detailsSection.getElementsByClass("govuk-summary-list").size() mustBe 7
 
-              whenReady(result) { res =>
-                res.status mustBe OK
-                val page = Jsoup.parse(res.body)
-                page.title must include(Messages("Application complete"))
+                  val businessDetails = detailsSection.getElementsByClass("govuk-summary-list").first()
+                  detailsSection.getElementsByTag("h2").first().text() mustBe "Business details"
+                  validateBusinessDetailsSummaryList(businessDetails, "0000001611", rosmAddress, Large, false)
 
-                page.getElementsByClass("govuk-summary-list").size() mustBe 7
+                  val operatePackagingSites = detailsSection.getElementsByClass("govuk-summary-list").get(1)
+                  detailsSection.getElementsByTag("h2").get(1).text() mustBe "Own brands packaged at your own site"
+                  validateOperatePackagingSitesWithLitresSummaryList(operatePackagingSites, operatePackagingSiteLitres, false)
 
-                validateSummaryContent(page)
-                val detailsSection = page.getElementsByClass("govuk-details").get(0)
+                  val contractPacking = detailsSection.getElementsByClass("govuk-summary-list").get(2)
 
-                val businessDetails = detailsSection.getElementsByClass("govuk-summary-list").first()
-                detailsSection.getElementsByTag("h2").first().text() mustBe "Business details"
-                validateBusinessDetailsSummaryList(businessDetails, "0000001611", rosmAddress, "1 million litres or more", false)
+                  detailsSection.getElementsByTag("h2").get(2).text() mustBe "Contract packed at your own site"
+                  validateContractPackingWithLitresSummaryList(contractPacking, contractPackingLitres, false)
 
-                val operatePackagingSites = detailsSection.getElementsByClass("govuk-summary-list").get(1)
-                detailsSection.getElementsByTag("h2").get(1).text() mustBe "Own brands packaged at your own site"
-                validateOperatePackagingSitesWithLitresSummaryList(operatePackagingSites, operatePackagingSiteLitres, false)
+                  val imports = detailsSection.getElementsByClass("govuk-summary-list").get(3)
+                  detailsSection.getElementsByTag("h2").get(3).text() mustBe "Brought into the UK"
+                  validateImportsWithLitresSummaryList(imports, importsLitres, false)
 
-                val contractPacking = detailsSection.getElementsByClass("govuk-summary-list").get(2)
-                detailsSection.getElementsByTag("h2").get(2).text() mustBe "Contract packed at your own site"
-                validateContractPackingWithLitresSummaryList(contractPacking, contractPackingLitres, false)
+                  val startDateSummaryListItem = detailsSection.getElementsByClass("govuk-summary-list").get(4)
+                  detailsSection.getElementsByTag("h2").get(4).text() mustBe "Soft Drinks Industry Levy liability date"
+                  validateStartDateSummaryList(startDateSummaryListItem, startDate, false)
 
-                val imports = detailsSection.getElementsByClass("govuk-summary-list").get(3)
-                detailsSection.getElementsByTag("h2").get(3).text() mustBe "Brought into the UK"
-                validateImportsWithLitresSummaryList(imports, importsLitres, false)
+                  val contactDetailsSummaryListItem = detailsSection.getElementsByClass("govuk-summary-list").get(5)
+                  detailsSection.getElementsByTag("h2").get(5).text() mustBe "Contact person details"
+                  validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, false)
 
-                val startDateSummaryListItem = detailsSection.getElementsByClass("govuk-summary-list").get(4)
-                detailsSection.getElementsByTag("h2").get(4).text() mustBe "Soft Drinks Industry Levy liability date"
-                validateStartDateSummaryList(startDateSummaryListItem, startDate, false)
+                  val packingSiteDetailsSummaryListItem = detailsSection.getElementsByClass("govuk-summary-list").get(6)
+                  detailsSection.getElementsByTag("h2").get(6).text() mustBe "UK site details"
+                  validatePackingSiteDetailsSummary(packingSiteDetailsSummaryListItem, false)
 
-                val contactDetailsSummaryListItem = detailsSection.getElementsByClass("govuk-summary-list").get(5)
-                detailsSection.getElementsByTag("h2").get(5).text() mustBe "Contact person details"
-                validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, false)
+                }
+              }
+            }
+
+            "and they have only populated the required pages and have no litres" in {
+              val userAnswers = userAnswerWithAllNoAndNoPagesToFilterOut(HowManyLitresGlobally.Large)
+                .copy(submittedOn = Some(submittedDate))
+              val createdSubscriptionAndAmountProducedGlobally = CreatedSubscriptionAndAmountProducedGlobally(
+                Subscription.generate(userAnswers, RosmWithUtr("0000001611", rosmRegistration)), HowManyLitresGlobally.Large)
+              given
+                .commonPrecondition
+
+              setAnswers(userAnswers)
+              addToCache(SDILSessionKeys.CREATED_SUBSCRIPTION_AND_AMOUNT_PRODUCED_GLOBALLY, createdSubscriptionAndAmountProducedGlobally)
+
+              WsTestClient.withClient { client =>
+                val result = createClientRequestGet(client, baseUrl + path)
+
+                whenReady(result) { res =>
+                  res.status mustBe OK
+                  val page = Jsoup.parse(res.body)
+                  page.title must include(Messages("Application complete"))
+                  validateSummaryContent(page)
+                  val detailsSection = page.getElementsByClass("govuk-details").get(0)
+                  detailsSection.getElementsByClass("govuk-summary-list").size() mustBe 6
+
+                  val businessDetails = detailsSection.getElementsByClass("govuk-summary-list").first()
+                  detailsSection.getElementsByTag("h2").first().text() mustBe "Business details"
+                  validateBusinessDetailsSummaryList(businessDetails, "0000001611", newAddress, Large, false)
+
+                  val operatePackagingSites = detailsSection.getElementsByClass("govuk-summary-list").get(1)
+                  detailsSection.getElementsByTag("h2").get(1).text() mustBe "Own brands packaged at your own site"
+                  validateOperatePackagingSitesWithNoLitresSummaryList(operatePackagingSites, false)
+
+                  val contractPacking = detailsSection.getElementsByClass("govuk-summary-list").get(2)
+
+                  detailsSection.getElementsByTag("h2").get(2).text() mustBe "Contract packed at your own site"
+                  validateContractPackingWithNoLitresSummaryList(contractPacking, false)
+
+                  val imports = detailsSection.getElementsByClass("govuk-summary-list").get(3)
+                  detailsSection.getElementsByTag("h2").get(3).text() mustBe "Brought into the UK"
+                  validateImportsWithNoLitresSummaryList(imports, false)
+
+                  val startDateSummaryListItem = detailsSection.getElementsByClass("govuk-summary-list").get(4)
+                  detailsSection.getElementsByTag("h2").get(4).text() mustBe "Soft Drinks Industry Levy liability date"
+                  validateStartDateSummaryList(startDateSummaryListItem, startDate, false)
+
+                  val contactDetailsSummaryListItem = detailsSection.getElementsByClass("govuk-summary-list").get(5)
+                  detailsSection.getElementsByTag("h2").get(5).text() mustBe "Contact person details"
+                  validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, false)
+
+                }
               }
             }
           }
 
-          "when the user answered no to all litres questions" in {
-            given
-              .commonPrecondition
+          s"when the user has selected they are a Small producer type" - {
+            "and they have populated all pages including litres" in {
+              val userAnswers = userAnswerWithLitresForAllPagesIncludingOnesNotRequired(HowManyLitresGlobally.Small)
+                .copy(submittedOn = Some(submittedDate))
+              val createdSubscriptionAndAmountProducedGlobally = CreatedSubscriptionAndAmountProducedGlobally(
+                Subscription.generate(userAnswers, RosmWithUtr("0000001611", rosmRegistration)), HowManyLitresGlobally.Small)
+              given
+                .commonPrecondition
 
-            val userAnswers = userAnswersWithAllNo.copy(submittedOn = Some(submittedDate))
+              setAnswers(userAnswers)
+              addToCache(SDILSessionKeys.CREATED_SUBSCRIPTION_AND_AMOUNT_PRODUCED_GLOBALLY, createdSubscriptionAndAmountProducedGlobally)
 
-            setAnswers(userAnswers)
+              WsTestClient.withClient { client =>
+                val result = createClientRequestGet(client, baseUrl + path)
 
-            WsTestClient.withClient { client =>
-              val result = createClientRequestGet(client, baseUrl + normalRoutePath)
+                whenReady(result) { res =>
+                  res.status mustBe OK
+                  val page = Jsoup.parse(res.body)
+                  page.title must include(Messages("Application complete"))
+                  validateSummaryContent(page)
+                  val detailsSection = page.getElementsByClass("govuk-details").get(0)
+                  detailsSection.getElementsByClass("govuk-summary-list").size() mustBe 8
 
-              whenReady(result) { res =>
-                res.status mustBe OK
-                val page = Jsoup.parse(res.body)
-                page.title must include(Messages("Application complete"))
+                  val businessDetails = detailsSection.getElementsByClass("govuk-summary-list").first()
+                  detailsSection.getElementsByTag("h2").first().text() mustBe "Business details"
+                  validateBusinessDetailsSummaryList(businessDetails, "0000001611", rosmAddress, Small, false)
 
-                page.getElementsByClass("govuk-summary-list").size() mustBe 7
+                  val copackee = detailsSection.getElementsByClass("govuk-summary-list").get(1)
+                  detailsSection.getElementsByTag("h2").get(1).text() mustBe "Reporting contract packed at your own site"
+                  validateThirdPartyPackersSummaryList(copackee, false)
 
-                validateSummaryContent(page)
-                val detailsSection = page.getElementsByClass("govuk-details").get(0)
+                  val operatePackagingSites = detailsSection.getElementsByClass("govuk-summary-list").get(2)
+                  detailsSection.getElementsByTag("h2").get(2).text() mustBe "Own brands packaged at your own site"
+                  validateOperatePackagingSitesWithLitresSummaryList(operatePackagingSites, operatePackagingSiteLitres, false)
 
-                val businessDetails = detailsSection.getElementsByClass("govuk-summary-list").first()
-                detailsSection.getElementsByTag("h2").first().text() mustBe "Business details"
-                validateBusinessDetailsSummaryList(businessDetails, "0000001611", newAddress, "Less than 1 million litres", false)
+                  val contractPacking = detailsSection.getElementsByClass("govuk-summary-list").get(3)
+                  detailsSection.getElementsByTag("h2").get(3).text() mustBe "Contract packed at your own site"
+                  validateContractPackingWithLitresSummaryList(contractPacking, contractPackingLitres, false)
 
-                val operatePackagingSites = detailsSection.getElementsByClass("govuk-summary-list").get(1)
-                detailsSection.getElementsByTag("h2").get(1).text() mustBe "Own brands packaged at your own site"
-                validateOperatePackagingSitesWithNoLitresSummaryList(operatePackagingSites, false)
+                  val imports = detailsSection.getElementsByClass("govuk-summary-list").get(4)
+                  detailsSection.getElementsByTag("h2").get(4).text() mustBe "Brought into the UK"
+                  validateImportsWithLitresSummaryList(imports, importsLitres, false)
 
-                val contractPacking = detailsSection.getElementsByClass("govuk-summary-list").get(2)
-                detailsSection.getElementsByTag("h2").get(2).text() mustBe "Contract packed at your own site"
-                validateContractPackingWithNoLitresSummaryList(contractPacking, false)
+                  val startDateSummaryListItem = detailsSection.getElementsByClass("govuk-summary-list").get(5)
+                  detailsSection.getElementsByTag("h2").get(5).text() mustBe "Soft Drinks Industry Levy liability date"
+                  validateStartDateSummaryList(startDateSummaryListItem, startDate, false)
 
-                val imports = detailsSection.getElementsByClass("govuk-summary-list").get(3)
-                detailsSection.getElementsByTag("h2").get(3).text() mustBe "Brought into the UK"
-                validateImportsWithNoLitresSummaryList(imports, false)
+                  val contactDetailsSummaryListItem = detailsSection.getElementsByClass("govuk-summary-list").get(6)
+                  detailsSection.getElementsByTag("h2").get(6).text() mustBe "Contact person details"
+                  validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, false)
 
-                val startDateSummaryListItem = detailsSection.getElementsByClass("govuk-summary-list").get(4)
-                detailsSection.getElementsByTag("h2").get(4).text() mustBe "Soft Drinks Industry Levy liability date"
-                validateStartDateSummaryList(startDateSummaryListItem, startDate, false)
+                  val packingSiteDetailsSummaryListItem = detailsSection.getElementsByClass("govuk-summary-list").get(7)
+                  detailsSection.getElementsByTag("h2").get(7).text() mustBe "UK site details"
+                  validatePackingSiteDetailsSummary(packingSiteDetailsSummaryListItem, false)
+                }
+              }
+            }
 
-                val contactDetailsSummaryListItem = detailsSection.getElementsByClass("govuk-summary-list").get(5)
-                detailsSection.getElementsByTag("h2").get(5).text() mustBe "Contact person details"
-                validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, false)
+            "and they have only populated the required pages and have no litres" in {
+              val userAnswers = userAnswerWithAllNoAndNoPagesToFilterOut(HowManyLitresGlobally.Small)
+                .copy(submittedOn = Some(submittedDate))
+              val createdSubscriptionAndAmountProducedGlobally = CreatedSubscriptionAndAmountProducedGlobally(
+                Subscription.generate(userAnswers, RosmWithUtr("0000001611", rosmRegistration)), HowManyLitresGlobally.Small)
+              given
+                .commonPrecondition
+
+              setAnswers(userAnswers)
+              addToCache(SDILSessionKeys.CREATED_SUBSCRIPTION_AND_AMOUNT_PRODUCED_GLOBALLY, createdSubscriptionAndAmountProducedGlobally)
+
+              WsTestClient.withClient { client =>
+                val result = createClientRequestGet(client, baseUrl + path)
+
+                whenReady(result) { res =>
+                  res.status mustBe OK
+                  val page = Jsoup.parse(res.body)
+                  page.title must include(Messages("Application complete"))
+                  validateSummaryContent(page)
+                  val detailsSection = page.getElementsByClass("govuk-details").get(0)
+                  detailsSection.getElementsByClass("govuk-summary-list").size() mustBe 6
+
+                  val businessDetails = detailsSection.getElementsByClass("govuk-summary-list").first()
+                  detailsSection.getElementsByTag("h2").first().text() mustBe "Business details"
+                  validateBusinessDetailsSummaryList(businessDetails, "0000001611", newAddress, HowManyLitresGlobally.Small, false)
+
+                  val copackee = detailsSection.getElementsByClass("govuk-summary-list").get(1)
+                  detailsSection.getElementsByTag("h2").get(1).text() mustBe "Reporting contract packed at your own site"
+                  validateThirdPartyPackersSummaryList(copackee, false)
+
+                  val operatePackagingSites = detailsSection.getElementsByClass("govuk-summary-list").get(2)
+                  detailsSection.getElementsByTag("h2").get(2).text() mustBe "Own brands packaged at your own site"
+                  validateOperatePackagingSitesWithNoLitresSummaryList(operatePackagingSites, false)
+
+                  val contractPacking = detailsSection.getElementsByClass("govuk-summary-list").get(3)
+                  detailsSection.getElementsByTag("h2").get(3).text() mustBe "Contract packed at your own site"
+                  validateContractPackingWithNoLitresSummaryList(contractPacking, false)
+
+                  val imports = detailsSection.getElementsByClass("govuk-summary-list").get(4)
+                  detailsSection.getElementsByTag("h2").get(4).text() mustBe "Brought into the UK"
+                  validateImportsWithNoLitresSummaryList(imports, false)
+
+
+                  val contactDetailsSummaryListItem = detailsSection.getElementsByClass("govuk-summary-list").get(5)
+                  detailsSection.getElementsByTag("h2").get(5).text() mustBe "Contact person details"
+                  validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, false)
+                }
+              }
+            }
+          }
+
+          s"when the user has selected they are a None producer type" - {
+            "and they have populated all pages including litres" in {
+              val userAnswers = userAnswerWithLitresForAllPagesIncludingOnesNotRequired(HowManyLitresGlobally.None)
+                .copy(submittedOn = Some(submittedDate))
+              val createdSubscriptionAndAmountProducedGlobally = CreatedSubscriptionAndAmountProducedGlobally(
+                Subscription.generate(userAnswers, RosmWithUtr("0000001611", rosmRegistration)), HowManyLitresGlobally.None)
+              given
+                .commonPrecondition
+
+              setAnswers(userAnswers)
+              addToCache(SDILSessionKeys.CREATED_SUBSCRIPTION_AND_AMOUNT_PRODUCED_GLOBALLY, createdSubscriptionAndAmountProducedGlobally)
+
+              WsTestClient.withClient { client =>
+                val result = createClientRequestGet(client, baseUrl + path)
+
+                whenReady(result) { res =>
+                  res.status mustBe OK
+                  val page = Jsoup.parse(res.body)
+                  page.title must include(Messages("Application complete"))
+                  validateSummaryContent(page)
+                  val detailsSection = page.getElementsByClass("govuk-details").get(0)
+                  detailsSection.getElementsByClass("govuk-summary-list").size() mustBe 6
+
+                  val businessDetails = detailsSection.getElementsByClass("govuk-summary-list").first()
+                  detailsSection.getElementsByTag("h2").first().text() mustBe "Business details"
+                  validateBusinessDetailsSummaryList(businessDetails, "0000001611", rosmAddress, HowManyLitresGlobally.None, false)
+
+                  val contractPacking = detailsSection.getElementsByClass("govuk-summary-list").get(1)
+                  detailsSection.getElementsByTag("h2").get(1).text() mustBe "Contract packed at your own site"
+                  validateContractPackingWithLitresSummaryList(contractPacking, contractPackingLitres, false)
+
+                  val imports = detailsSection.getElementsByClass("govuk-summary-list").get(2)
+                  detailsSection.getElementsByTag("h2").get(2).text() mustBe "Brought into the UK"
+                  validateImportsWithLitresSummaryList(imports, importsLitres, false)
+
+                  val startDateSummaryListItem = detailsSection.getElementsByClass("govuk-summary-list").get(3)
+                  detailsSection.getElementsByTag("h2").get(3).text() mustBe "Soft Drinks Industry Levy liability date"
+                  validateStartDateSummaryList(startDateSummaryListItem, startDate, false)
+
+                  val contactDetailsSummaryListItem = detailsSection.getElementsByClass("govuk-summary-list").get(4)
+                  detailsSection.getElementsByTag("h2").get(4).text() mustBe "Contact person details"
+                  validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, false)
+
+                  val packingSiteDetailsSummaryListItem = detailsSection.getElementsByClass("govuk-summary-list").get(5)
+                  detailsSection.getElementsByTag("h2").get(5).text() mustBe "UK site details"
+                  validatePackingSiteDetailsSummary(packingSiteDetailsSummaryListItem, false)
+                }
+              }
+            }
+            "and they have only populated the required pages and have no litres" in {
+              val userAnswers = userAnswerWithAllNoAndNoPagesToFilterOut(HowManyLitresGlobally.None)
+                .copy(submittedOn = Some(submittedDate))
+              val createdSubscriptionAndAmountProducedGlobally = CreatedSubscriptionAndAmountProducedGlobally(
+                Subscription.generate(userAnswers, RosmWithUtr("0000001611", rosmRegistration)), HowManyLitresGlobally.None)
+              given
+                .commonPrecondition
+
+              setAnswers(userAnswers)
+              addToCache(SDILSessionKeys.CREATED_SUBSCRIPTION_AND_AMOUNT_PRODUCED_GLOBALLY, createdSubscriptionAndAmountProducedGlobally)
+
+              WsTestClient.withClient { client =>
+                val result = createClientRequestGet(client, baseUrl + path)
+
+                whenReady(result) { res =>
+                  res.status mustBe OK
+                  val page = Jsoup.parse(res.body)
+                  page.title must include(Messages("Application complete"))
+                  validateSummaryContent(page)
+                  val detailsSection = page.getElementsByClass("govuk-details").get(0)
+                  detailsSection.getElementsByClass("govuk-summary-list").size() mustBe 5
+
+                  val businessDetails = detailsSection.getElementsByClass("govuk-summary-list").first()
+                  detailsSection.getElementsByTag("h2").first().text() mustBe "Business details"
+                  validateBusinessDetailsSummaryList(businessDetails, "0000001611", newAddress, HowManyLitresGlobally.None, false)
+
+                  val contractPacking = detailsSection.getElementsByClass("govuk-summary-list").get(1)
+                  detailsSection.getElementsByTag("h2").get(1).text() mustBe "Contract packed at your own site"
+                  validateContractPackingWithNoLitresSummaryList(contractPacking, false)
+
+                  val imports = detailsSection.getElementsByClass("govuk-summary-list").get(2)
+                  detailsSection.getElementsByTag("h2").get(2).text() mustBe "Brought into the UK"
+                  validateImportsWithNoLitresSummaryList(imports, false)
+
+                  val startDateSummaryListItem = detailsSection.getElementsByClass("govuk-summary-list").get(3)
+                  detailsSection.getElementsByTag("h2").get(3).text() mustBe "Soft Drinks Industry Levy liability date"
+                  validateStartDateSummaryList(startDateSummaryListItem, startDate, false)
+
+                  val contactDetailsSummaryListItem = detailsSection.getElementsByClass("govuk-summary-list").get(4)
+                  detailsSection.getElementsByTag("h2").get(4).text() mustBe "Contact person details"
+                  validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, false)
+                }
               }
             }
           }
@@ -125,17 +344,15 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
         setAnswers(userAnswers)
 
         WsTestClient.withClient { client =>
-          val result = createClientRequestGet(client, baseUrl + normalRoutePath)
+          val result = createClientRequestGet(client, baseUrl + path)
 
           whenReady(result) { res =>
             res.status mustBe SEE_OTHER
-            res.header(HeaderNames.LOCATION) mustBe Some(routes.VerifyController.onPageLoad(NormalMode).url)
+            res.header(HeaderNames.LOCATION) mustBe Some(routes.RegistrationController.start.url)
           }
         }
       }
     }
-    testOtherSuccessUserTypes(baseUrl + normalRoutePath, Messages("registrationConfirmation" + ".title"), fullExampleUserAnswers.copy(submittedOn = Some(submittedDate)))
-    testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)
-    testUnauthorisedUser(baseUrl + normalRoutePath)
+    testUnauthorisedUser(baseUrl + path)
   }
 }

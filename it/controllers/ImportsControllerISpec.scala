@@ -1,14 +1,10 @@
 package controllers
 
-import models.HowManyLitresGlobally.Small
-import models.OrganisationType.LimitedCompany
-import models.Verify.YesRegister
-import models.{CheckMode, LitresInBands, NormalMode, UserAnswers}
+import models.{CheckMode, LitresInBands, NormalMode}
 import org.jsoup.Jsoup
-import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
-import pages.{ContactDetailsPage, ContractPackingPage, HowManyImportsPage, HowManyLitresGloballyPage, HowManyOperatePackagingSitesPage, ImportsPage, OperatePackagingSitesPage, OrganisationTypePage, StartDatePage, ThirdPartyPackagersPage, VerifyPage}
+import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
+import pages._
 import play.api.http.HeaderNames
-import play.api.i18n.Messages
 import play.api.libs.json.Json
 import play.api.test.WsTestClient
 
