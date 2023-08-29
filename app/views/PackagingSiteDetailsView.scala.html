@@ -42,7 +42,7 @@
 
         <p class="govuk-body">@messages("packagingSiteDetails.siteRequiredInfo")</p>
 
-        @govukSummaryList(PackagingSiteDetailsSummary.summaryList(siteList))
+        @govukSummaryList(PackagingSiteDetailsSummary.summaryList(siteList, mode))
 
         @if(siteList.size == 1) {
             @govukDetails(Details(

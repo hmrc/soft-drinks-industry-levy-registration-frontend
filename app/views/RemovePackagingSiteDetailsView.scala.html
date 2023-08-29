@@ -22,7 +22,7 @@
     govukButton: GovukButton
 )
 
-@(form: Form[_], addressRef: String, packagingSite: Html)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, addressRef: String, packagingSite: Html)(implicit request: Request[_], messages: Messages)
 
 @hintContent = {
 <span id="packagingSiteDetails" class="govuk-!-font-weight-bold">@packagingSite </span>
@@ -30,7 +30,7 @@
 
 @layout(pageTitle = title(form, messages("removePackagingSiteDetails.title"))) {
 
-    @formHelper(action = routes.RemovePackagingSiteDetailsController.onSubmit(addressRef), Symbol("autoComplete") -> "off") {
+    @formHelper(action = routes.RemovePackagingSiteDetailsController.onSubmit(mode, addressRef), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))

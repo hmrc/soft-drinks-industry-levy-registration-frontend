@@ -56,6 +56,8 @@ class Navigator @Inject()() {
   }
 
   private val checkRouteMap: Page => UserAnswers => Option[String] => Call = {
+    case EnterBusinessDetailsPage => _ =>_ => routes.VerifyController.onPageLoad(NormalMode)
+    case RemovePackagingSiteDetailsPage => _ => _ => routes.PackagingSiteDetailsController.onPageLoad(CheckMode)
     case RemoveWarehouseDetailsPage => _ => _ => routes.WarehouseDetailsController.onPageLoad(CheckMode)
     case StartDatePage => userAnswers => _ => navigationForStartDate(userAnswers, CheckMode)
     case ContractPackingPage => userAnswers => _ => navigationForContractPacking(userAnswers, CheckMode)

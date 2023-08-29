@@ -104,8 +104,10 @@ POST       /warehouses                                      controllers.Warehous
 GET        /change-warehouses                               controllers.WarehouseDetailsController.onPageLoad(mode: Mode = CheckMode)
 POST       /change-warehouses                               controllers.WarehouseDetailsController.onSubmit(mode: Mode = CheckMode)
 
-GET        /packaging-site-details/remove/:ref              controllers.RemovePackagingSiteDetailsController.onPageLoad(ref: String)
-POST       /packaging-site-details/remove/:ref              controllers.RemovePackagingSiteDetailsController.onSubmit(ref: String)
+GET        /packaging-site-details/remove/:ref                        controllers.RemovePackagingSiteDetailsController.onPageLoad(mode: Mode = NormalMode, ref: String)
+POST       /packaging-site-details/remove/:ref                        controllers.RemovePackagingSiteDetailsController.onSubmit(mode: Mode = NormalMode, ref: String)
+GET        /change-packaging-site-details/remove/:ref                 controllers.RemovePackagingSiteDetailsController.onPageLoad(mode: Mode = CheckMode, ref: String)
+POST       /change-packaging-site-details/remove/:ref                 controllers.RemovePackagingSiteDetailsController.onSubmit(mode: Mode = CheckMode, ref: String)
 
 GET        /verify                                          controllers.VerifyController.onPageLoad(mode: Mode = NormalMode)
 POST       /verify                                          controllers.VerifyController.onSubmit(mode: Mode = NormalMode)
