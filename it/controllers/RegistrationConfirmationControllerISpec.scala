@@ -95,7 +95,7 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                   page.title must include(Messages("Application complete"))
                   validateSummaryContent(page)
                   val detailsSection = page.getElementsByClass("govuk-details").get(0)
-                  detailsSection.getElementsByClass("govuk-summary-list").size() mustBe 6
+                  detailsSection.getElementsByClass("govuk-summary-list").size() mustBe 7
 
                   val businessDetails = detailsSection.getElementsByClass("govuk-summary-list").first()
                   detailsSection.getElementsByTag("h2").first().text() mustBe "Business details"
@@ -205,7 +205,7 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                   page.title must include(Messages("Application complete"))
                   validateSummaryContent(page)
                   val detailsSection = page.getElementsByClass("govuk-details").get(0)
-                  detailsSection.getElementsByClass("govuk-summary-list").size() mustBe 6
+                  detailsSection.getElementsByClass("govuk-summary-list").size() mustBe 7
 
                   val businessDetails = detailsSection.getElementsByClass("govuk-summary-list").first()
                   detailsSection.getElementsByTag("h2").first().text() mustBe "Business details"
@@ -305,7 +305,7 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                   page.title must include(Messages("Application complete"))
                   validateSummaryContent(page)
                   val detailsSection = page.getElementsByClass("govuk-details").get(0)
-                  detailsSection.getElementsByClass("govuk-summary-list").size() mustBe 5
+                  detailsSection.getElementsByClass("govuk-summary-list").size() mustBe 6
 
                   val businessDetails = detailsSection.getElementsByClass("govuk-summary-list").first()
                   detailsSection.getElementsByTag("h2").first().text() mustBe "Business details"

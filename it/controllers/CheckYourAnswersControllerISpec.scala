@@ -107,7 +107,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
               res.status mustBe OK
               val page = Jsoup.parse(res.body)
               page.title must include(Messages("checkYourAnswers.title"))
-              page.getElementsByClass("govuk-summary-list").size() mustBe 6
+              page.getElementsByClass("govuk-summary-list").size() mustBe 7
 
               val businessDetails = page.getElementsByClass("govuk-summary-list").first()
               page.getElementsByTag("h2").first().text() mustBe "Business details"
@@ -214,7 +214,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
               res.status mustBe OK
               val page = Jsoup.parse(res.body)
               page.title must include(Messages("checkYourAnswers.title"))
-              page.getElementsByClass("govuk-summary-list").size() mustBe 6
+              page.getElementsByClass("govuk-summary-list").size() mustBe 7
 
               val businessDetails = page.getElementsByClass("govuk-summary-list").first()
               page.getElementsByTag("h2").first().text() mustBe "Business details"
@@ -313,7 +313,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
               res.status mustBe OK
               val page = Jsoup.parse(res.body)
               page.title must include(Messages("checkYourAnswers.title"))
-              page.getElementsByClass("govuk-summary-list").size() mustBe 5
+              page.getElementsByClass("govuk-summary-list").size() mustBe 6
 
               val businessDetails = page.getElementsByClass("govuk-summary-list").first()
               page.getElementsByTag("h2").first().text() mustBe "Business details"
