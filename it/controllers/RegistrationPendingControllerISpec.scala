@@ -61,7 +61,6 @@ class RegistrationPendingControllerISpec extends ControllerITTestHelper {
         }
       }
     }
-    testOtherSuccessUserTypes(baseUrl + normalRoutePath, Messages("registrationPending" + ".title"), ua = emptyUserAnswers.copy(registerState = RegisterState.RegistrationPending))
     testUnauthorisedUser(baseUrl + normalRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)
   }

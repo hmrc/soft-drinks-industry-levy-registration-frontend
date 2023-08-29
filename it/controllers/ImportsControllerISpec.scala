@@ -68,6 +68,7 @@ class ImportsControllerISpec extends ControllerITTestHelper {
     testOtherSuccessUserTypes(baseUrl + normalRoutePath,
       "Do you bring liable drinks into the UK from anywhere outside of the UK?")
     testUnauthorisedUser(baseUrl + normalRoutePath)
+    testWhoIsUnableToRegisterWithGivenUtr(baseUrl + normalRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)
   }
 
@@ -127,6 +128,7 @@ class ImportsControllerISpec extends ControllerITTestHelper {
     testOtherSuccessUserTypes(baseUrl + checkRoutePath,
       "Do you bring liable drinks into the UK from anywhere outside of the UK?")
     testUnauthorisedUser(baseUrl + checkRoutePath)
+    testWhoIsUnableToRegisterWithGivenUtr(baseUrl + checkRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath)
   }
 
@@ -225,6 +227,7 @@ class ImportsControllerISpec extends ControllerITTestHelper {
       }
     }
     testUnauthorisedUser(baseUrl + normalRoutePath, Some(Json.obj("value" -> "true")))
+    testWhoIsUnableToRegisterWithGivenUtr(baseUrl + normalRoutePath, Some(Json.obj("value" -> "true")))
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath, Some(Json.obj("value" -> "true")))
   }
 

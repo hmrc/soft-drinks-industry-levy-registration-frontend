@@ -65,6 +65,7 @@ class HowManyImportsControllerISpec extends LitresISpecHelper {
       }
       testOtherSuccessUserTypes(baseUrl + path, "How many litres will you bring into the UK in the next 12 months?")
       testUnauthorisedUser(baseUrl + path)
+      testWhoIsUnableToRegisterWithGivenUtr(baseUrl + path)
       testAuthenticatedUserButNoUserAnswers(baseUrl + path)
     }
 
@@ -208,6 +209,7 @@ class HowManyImportsControllerISpec extends LitresISpecHelper {
       }
 
       testUnauthorisedUser(baseUrl + path, Some(Json.toJson(litresInBandsDiff)))
+      testWhoIsUnableToRegisterWithGivenUtr(baseUrl + path, Some(Json.toJson(litresInBandsDiff)))
       testAuthenticatedUserButNoUserAnswers(baseUrl + path, Some(Json.toJson(litresInBandsDiff)))
     }
 

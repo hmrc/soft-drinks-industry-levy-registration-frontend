@@ -86,8 +86,8 @@ class AuthenticatedIdentifierAction @Inject()(
   private def handleUserWithNoUTRAndSDILEnrolment[A](internalId: String, sdil: EnrolmentIdentifier, hasCTEnrolment: Boolean)
                                  (implicit hc: HeaderCarrier, request: Request[A]): Future[Either[Result, IdentifierRequest[A]]] = {
       sdilConnector.retrieveSubscription(sdil.value, "sdil", internalId).value.map{
-        case Right(Some(sub)) if sub.deregDate.nonEmpty => Right(IdentifierRequest(request, internalId, hasCTEnrolment, None))
-        case Right(_) => Left(Redirect(config.sdilFrontendBaseUrl))
+        case Right(Some(sub)) if sub.deregDate.isEmpty => Left(Redirect(config.sdilFrontendBaseUrl))
+        case Right(_) => Right(IdentifierRequest(request, internalId, hasCTEnrolment, None))
         case Left(_) => Left(InternalServerError(errorHandler.internalServerErrorTemplate(request)))
       }
   }

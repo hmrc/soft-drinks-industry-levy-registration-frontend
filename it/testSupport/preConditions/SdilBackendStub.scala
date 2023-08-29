@@ -1,6 +1,7 @@
 package testSupport.preConditions
 
 import com.github.tomakehurst.wiremock.client.WireMock._
+import connectors.{Pending, Registered, SubscriptionStatus}
 import models.backend.{Site, UkAddress}
 import models.{Contact, IndividualDetails, OrganisationDetails, RetrievedActivity, RetrievedSubscription, RosmRegistration}
 import play.api.http.Status.ACCEPTED
@@ -68,6 +69,30 @@ case class SdilBackendStub()
           ok(Json.toJson(aSubscription).toString())))
     builder
   }
+
+  def checkPendingQueue(utr: String, subStatus: SubscriptionStatus) = {
+    val response = subStatus match {
+      case Pending => status(ACCEPTED)
+      case Registered => ok()
+      case _ => notFound()
+    }
+
+    stubFor(
+      get(
+        urlPathMatching(s"/check-enrolment-status/$utr"))
+        .willReturn(response)
+    )
+    builder
+  }
+
+  def checkPendingQueueError(utr: String) = {
+    stubFor(
+      get(
+        urlPathMatching(s"/check-enrolment-status/$utr"))
+        .willReturn(serverError())
+    )
+    builder
+  }
   def checkPendingQueueDoesntExist(utr: String) = {
     stubFor(
       get(
@@ -108,6 +133,16 @@ case class SdilBackendStub()
         urlPathMatching(s"/rosm-registration/lookup/$utr"))
         .willReturn(
           notFound()))
+    builder
+  }
+
+
+  def retrieveRosmError(utr: String) = {
+    stubFor(
+      get(
+        urlPathMatching(s"/rosm-registration/lookup/$utr"))
+        .willReturn(
+          serverError()))
     builder
   }
 

@@ -64,17 +64,18 @@ class EnterBusinessDetailsController @Inject()(
         formWithErrors =>
           Future.successful(BadRequest(view(formWithErrors))),
         identify => {
-          if(sameBusinessDetailsEntered(identify, request.userAnswers)) {
-            Redirect(navigator.nextPage(EnterBusinessDetailsPage, NormalMode, request.userAnswers))
-          }
-          registrationOrchestrator.checkEnteredBusinessDetailsAreValidAndUpdateUserAnswers(identify, request.internalId).value flatMap {
-            case Right(state) =>
-              val updatedUserAnswersWithPageDataAndState = UserAnswers(request.userAnswers.id, registerState = state)
-                .set(EnterBusinessDetailsPage, identify)
-              updateDatabaseAndRedirect(updatedUserAnswersWithPageDataAndState, EnterBusinessDetailsPage, NormalMode)
-            case Left(error) if List(NoROSMRegistration, EnteredBusinessDetailsDoNotMatch).contains(error) =>
-              Future.successful(BadRequest(view(form.fill(identify).withError("utr", "enterBusinessDetails.no-record.utr"))))
-            case Left(_) => Future.successful(InternalServerError(errorHandler.internalServerErrorTemplate))
+          if (sameBusinessDetailsEntered(identify, request.userAnswers)) {
+            Future.successful(Redirect(navigator.nextPage(EnterBusinessDetailsPage, NormalMode, request.userAnswers)))
+          } else {
+            registrationOrchestrator.checkEnteredBusinessDetailsAreValidAndUpdateUserAnswers(identify, request.internalId).value flatMap {
+              case Right(state) =>
+                val updatedUserAnswersWithPageDataAndState = UserAnswers(request.userAnswers.id, registerState = state)
+                  .set(EnterBusinessDetailsPage, identify)
+                updateDatabaseAndRedirect(updatedUserAnswersWithPageDataAndState, EnterBusinessDetailsPage, NormalMode)
+              case Left(error) if List(NoROSMRegistration, EnteredBusinessDetailsDoNotMatch).contains(error) =>
+                Future.successful(BadRequest(view(form.fill(identify).withError("utr", "enterBusinessDetails.no-record.utr"))))
+              case Left(_) => Future.successful(InternalServerError(errorHandler.internalServerErrorTemplate))
+            }
           }
         }
       )
@@ -84,7 +85,7 @@ class EnterBusinessDetailsController @Inject()(
     userAnswers.get(EnterBusinessDetailsPage).fold(false) { businessDetails =>
       val postcodesMatch = identify.postcode.replaceAll(" ", "")
         .equalsIgnoreCase(businessDetails.postcode.replaceAll(" ", ""))
-      businessDetails.utr == identify.utr && postcodesMatch
+      (businessDetails.utr == identify.utr) && postcodesMatch
     }
   }
 }

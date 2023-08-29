@@ -61,6 +61,7 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
       }
     }
     testUnauthorisedUser(baseUrl + normalRoutePath(indexOfWarehouseToBeRemoved))
+    testWhoIsUnableToRegisterWithGivenUtr(baseUrl + normalRoutePath(indexOfWarehouseToBeRemoved))
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath(indexOfWarehouseToBeRemoved))  }
 
   s"GET " + checkRoutePath(indexOfWarehouseToBeRemoved) - {
@@ -110,6 +111,7 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
     }
 
     testUnauthorisedUser(baseUrl + checkRoutePath(indexOfWarehouseToBeRemoved))
+    testWhoIsUnableToRegisterWithGivenUtr(baseUrl + checkRoutePath(indexOfWarehouseToBeRemoved))
     testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath(indexOfWarehouseToBeRemoved))
   }
 
@@ -198,6 +200,7 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
       }
     }
     testUnauthorisedUser(baseUrl + normalRoutePath(indexOfWarehouseToBeRemoved), Some(Json.obj("value" -> "true")))
+    testWhoIsUnableToRegisterWithGivenUtr(baseUrl + normalRoutePath(indexOfWarehouseToBeRemoved), Some(Json.obj("value" -> "true")))
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath(indexOfWarehouseToBeRemoved), Some(Json.obj("value" -> "true")))
   }
 
@@ -286,6 +289,7 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
       }
     }
     testUnauthorisedUser(baseUrl + checkRoutePath(indexOfWarehouseToBeRemoved), Some(Json.obj("value" -> "true")))
+    testWhoIsUnableToRegisterWithGivenUtr(baseUrl + checkRoutePath(indexOfWarehouseToBeRemoved), Some(Json.obj("value" -> "true")))
     testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath(indexOfWarehouseToBeRemoved), Some(Json.obj("value" -> "true")))
   }
 }

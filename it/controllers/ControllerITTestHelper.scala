@@ -1,8 +1,9 @@
 package controllers
 
-import models.UserAnswers
+import models.{Identify, RegisterState, UserAnswers}
 import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
+import pages.EnterBusinessDetailsPage
 import play.api.http.HeaderNames
 import play.api.libs.json.JsValue
 import play.api.libs.ws.{DefaultWSCookie, WSClient, WSResponse}
@@ -47,61 +48,25 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
       }
     }
 
-//    "the user is authenticated by Identify page with no enrolments, has a sdil subscription with a deregDate no pending sub" - {
-//      s"render the $expectedPageTitle page" in {
-//        given.authorisedButNoEnrolmentsPrecondition
-//        given.sdilBackend.retrieveRosm("1")
-//        given.sdilBackend.checkPendingQueueDoesntExist("1")
-//
-//          setAnswers(ua.set(EnterBusinessDetailsPage,Identify(utr = "1", postcode = "fakepostcode")).success.value)
-//
-//        WsTestClient.withClient { client =>
-//          val result1 = createClientRequestGet(client, url)
-//
-//          whenReady(result1) { res =>
-//            res.status mustBe 200
-//            val page = Jsoup.parse(res.body)
-//            page.title() must include(expectedPageTitle + " - Soft Drinks Industry Levy - GOV.UK")
-//          }
-//        }
-//      }
-//    }
-//    s"the user is authenticated by Identify page with no enrolments, has a sdil subscription with a deregDate $Pending sub" - {
-//      s"redirect to journey stopper" in {
-//        given.authorisedButNoEnrolmentsPrecondition
-//        given.sdilBackend.retrieveRosm("1")
-//        given.sdilBackend.checkPendingQueuePending("1")
-//
-//        setAnswers(ua.set(EnterBusinessDetailsPage,Identify(utr = "1", postcode = "fakepostcode")).success.value)
-//
-//        WsTestClient.withClient { client =>
-//          val result1 = createClientRequestGet(client, url)
-//
-//          whenReady(result1) { res =>
-//            res.status mustBe 303
-//            res.header(HeaderNames.LOCATION) mustBe Some(routes.RegistrationPendingController.onPageLoad.url)
-//          }
-//        }
-//      }
-//    }
-//    s"the user is authenticated by Identify page with no enrolments, has a sdil subscription with a deregDate $Registered sub" - {
-//      s"redirect to journey stopper" in {
-//        given.authorisedButNoEnrolmentsPrecondition
-//        given.sdilBackend.retrieveRosm("1")
-//        given.sdilBackend.checkPendingQueueRegistered("1")
-//
-//        setAnswers(ua.set(EnterBusinessDetailsPage,Identify(utr = "1", postcode = "fakepostcode")).success.value)
-//
-//        WsTestClient.withClient { client =>
-//          val result1 = createClientRequestGet(client, url)
-//
-//          whenReady(result1) { res =>
-//            res.status mustBe 303
-//            res.header(HeaderNames.LOCATION) mustBe Some(routes.ApplicationAlreadySubmittedController.onPageLoad.url)
-//          }
-//        }
-//      }
-//    }
+    "the user is authenticated, has no sdilEnrolment but has entered utr" - {
+      s"render the $expectedPageTitle page" in {
+        given.user.isAuthorisedButNotEnrolled()
+          .sdilBackend.retrieveRosm("0000001611")
+          .sdilBackend.checkPendingQueueDoesntExist("0000001611")
+
+        setAnswers(ua.copy(registerState = RegisterState.RegisterWithOtherUTR).set(EnterBusinessDetailsPage, Identify("0000001611", "GU14 8NL")).success.value)
+
+        WsTestClient.withClient { client =>
+          val result1 = createClientRequestGet(client, url)
+
+          whenReady(result1) { res =>
+            res.status mustBe 200
+            val page = Jsoup.parse(res.body)
+            page.title() must include(expectedPageTitle + " - Soft Drinks Industry Levy - GOV.UK")
+          }
+        }
+      }
+    }
   }
 
   def testUnauthorisedUser(url: String, optJson: Option[JsValue] = None): Unit = {
@@ -209,6 +174,34 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
             res.status mustBe 500
             val page = Jsoup.parse(res.body)
             page.title() mustBe "Sorry, we are experiencing technical difficulties - 500 - Soft Drinks Industry Levy - GOV.UK"
+          }
+        }
+      }
+    }
+  }
+
+  def testWhoIsUnableToRegisterWithGivenUtr(url: String, optJson: Option[JsValue] = None): Unit = {
+    RegisterState.values.filterNot(state => RegisterState.canRegister(state)).foreach{registerState =>
+      val expectedLocation = registerState match {
+        case RegisterState.AlreadyRegistered => routes.AlreadyRegisteredController.onPageLoad.url
+        case RegisterState.RegistrationPending => routes.RegistrationPendingController.onPageLoad.url
+        case RegisterState.RequiresBusinessDetails => routes.EnterBusinessDetailsController.onPageLoad.url
+        case _ => routes.ApplicationAlreadySubmittedController.onPageLoad.url
+      }
+      s"when the user has a register state of $registerState" - {
+        s"should redirect to $expectedLocation" in {
+          given.commonPrecondition
+          setAnswers(emptyUserAnswers.copy(registerState = registerState))
+          WsTestClient.withClient { client =>
+            val result1 = optJson match {
+              case Some(json) => createClientRequestPOST(client, url, json)
+              case _ => createClientRequestGet(client, url)
+            }
+
+            whenReady(result1) { res =>
+              res.status mustBe 303
+              res.header(HeaderNames.LOCATION).get mustBe expectedLocation
+            }
           }
         }
       }

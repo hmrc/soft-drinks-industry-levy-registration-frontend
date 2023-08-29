@@ -62,6 +62,38 @@ case class UserStub
 
   }
 
+
+
+  def isAuthorisedAndEnrolledSdilEnrolment = {
+    stubFor(
+      post(urlPathEqualTo("/auth/authorise"))
+        .willReturn(
+          ok(
+            s"""
+               |{
+               |  "internalId": "some-id",
+               |  "email": "test@test.com",
+               |  "allEnrolments": [{
+               |     "key": "HMRC-OBTDS-ORG",
+               |     "identifiers": [{
+               |       "key":"EtmpRegistrationNumber",
+               |       "value": "XKSDIL000000022"
+               |     }]
+               |  }],
+               |  "affinityGroup" : "Organisation",
+               |  "loginTimes": {
+               |     "currentLogin": "2018-03-27T09:00:00.000Z",
+               |     "previousLogin": "2018-03-01T12:00:00.000Z"
+               |  }
+               |}
+             """.stripMargin
+          )
+        )
+    )
+    builder
+
+  }
+
   def isAuthorisedAndEnrolledBoth = {
     stubFor(
       post(urlPathEqualTo("/auth/authorise"))
