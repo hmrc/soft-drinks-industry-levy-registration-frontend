@@ -16,10 +16,8 @@
 
 package views.summary
 
-import base.{RegistrationSubscriptionHelper, SpecBase}
-import models.Warehouse
-import models.backend.{Site, UkAddress}
-import pages.{AskSecondaryWarehousesPage, PackAtBusinessAddressPage}
+import base.RegistrationSubscriptionHelper
+import models.backend.Site
 import uk.gov.hmrc.govukfrontend.views.Aliases._
 
 class UKSitesSummarySpec extends RegistrationSubscriptionHelper {
