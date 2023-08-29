@@ -3,7 +3,7 @@ package controllers
 import models.NormalMode
 import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
-import pages.WarehouseDetailsPage
+import pages.{AskSecondaryWarehousesPage, WarehouseDetailsPage}
 import play.api.http.HeaderNames
 import play.api.i18n.Messages
 import play.api.libs.json.Json
@@ -116,17 +116,21 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
     testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath)
   }
 
-  "Get should return redirect to index controller page when 0 warehouses listed" in {
+  "Get should return redirect to AskSecondaryWarehouses page when 0 warehouses listed with No answer on AskSecondaryWarehouses page" in {
     given
       .commonPrecondition
 
-    setAnswers(emptyUserAnswers)
+    setAnswers(emptyUserAnswers
+      .set(AskSecondaryWarehousesPage, true).success.value
+    )
 
     WsTestClient.withClient { client =>
       val result = createClientRequestGet(client, baseUrl + checkRoutePath)
       whenReady(result) { res =>
         res.status mustBe 303
         res.header(HeaderNames.LOCATION) mustBe Some(routes.AskSecondaryWarehousesController.onPageLoad(NormalMode).url)
+        val dataStoredForPage = getAnswers(identifier).fold[Option[Boolean]](None)(_.get(AskSecondaryWarehousesPage))
+        dataStoredForPage.nonEmpty mustBe false
       }
     }
   }
@@ -141,7 +145,7 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
         res.status mustBe 200
         val page = Jsoup.parse(res.body)
         page.title must include(Messages("warehouseDetails.title.heading", "1", ""))
-        page.getElementsByClass("remove-link").size() mustEqual 0
+        page.getElementsByClass("remove-link").size() mustEqual 1
       }
     }
   }

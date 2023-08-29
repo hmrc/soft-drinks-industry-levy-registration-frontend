@@ -69,10 +69,10 @@ class AskSecondaryWarehousesSummarySpec extends SpecBase {
     WarehouseDetailsSummaryRowList mustBe List()
 }
 
-  "must not return a remove action if only 1 packaging site is passed in" in {
+  "must return a remove action if only 1 packaging site is passed in" in {
   val warehouseSummaryRowList = WarehouseDetailsSummary.warehouseDetailsRow(warehouseListWith1)
 
-    warehouseSummaryRowList.mkString mustNot include("Remove")
+    warehouseSummaryRowList.mkString must include("Remove")
 }
   "must include Correct elements in list with 2 elements" in {
   val site1 = Warehouse(
