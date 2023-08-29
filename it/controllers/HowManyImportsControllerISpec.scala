@@ -1,13 +1,12 @@
 package controllers
 
-import models.{CheckMode, LitresInBands, NormalMode, UserAnswers}
+import models.{CheckMode, LitresInBands, NormalMode}
 import org.jsoup.Jsoup
-import pages.{HowManyImportsPage, StartDatePage}
+import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
+import pages.HowManyImportsPage
 import play.api.http.HeaderNames
-import play.api.i18n.Messages
 import play.api.libs.json.Json
 import play.api.test.WsTestClient
-import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
 
 
 class HowManyImportsControllerISpec extends LitresISpecHelper {
@@ -66,6 +65,7 @@ class HowManyImportsControllerISpec extends LitresISpecHelper {
       }
       testOtherSuccessUserTypes(baseUrl + path, "How many litres will you bring into the UK in the next 12 months?")
       testUnauthorisedUser(baseUrl + path)
+      testWhoIsUnableToRegisterWithGivenUtr(baseUrl + path)
       testAuthenticatedUserButNoUserAnswers(baseUrl + path)
     }
 
@@ -209,6 +209,7 @@ class HowManyImportsControllerISpec extends LitresISpecHelper {
       }
 
       testUnauthorisedUser(baseUrl + path, Some(Json.toJson(litresInBandsDiff)))
+      testWhoIsUnableToRegisterWithGivenUtr(baseUrl + path, Some(Json.toJson(litresInBandsDiff)))
       testAuthenticatedUserButNoUserAnswers(baseUrl + path, Some(Json.toJson(litresInBandsDiff)))
     }
 

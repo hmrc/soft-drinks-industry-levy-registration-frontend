@@ -28,5 +28,14 @@ object UnexpectedResponseFromSDIL extends RegistrationErrors
 
 object MissingRequiredUserAnswers extends RegistrationErrors
 
+object NoROSMRegistration extends RegistrationErrors
+
+object EnteredBusinessDetailsDoNotMatch extends RegistrationErrors
+
+object EnteredBusinessDetailsNotChanged extends RegistrationErrors
+
+
+object AuthenticationError extends RegistrationErrors
+
 
 

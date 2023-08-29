@@ -17,6 +17,7 @@
 package connectors
 
 import base.SpecBase
+import errors.NoROSMRegistration
 import models.{OptRetrievedSubscription, RetrievedSubscription, RosmRegistration, RosmWithUtr}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -47,23 +48,23 @@ class SoftDrinksIndustryLevyConnectorSpec extends SpecBase with MockitoSugar wit
 
       val res = softDrinksIndustryLevyConnector.retreiveRosmSubscription(utr = utr, "foo")
       whenReady(
-        res
+        res.value
       ) {
         response =>
-          response mustEqual Some(rosmRegistration)
+          response mustEqual Right(rosmRegistration)
       }
     }
 
-    s"should not call the backend and return None" in{
+    s"should call the backend and return NoRosmRegistration if no rosm for utr" in{
       when(mockSDILSessionCache.fetchEntry[RosmRegistration](any(), any())(any()))
         .thenReturn(Future.successful(None))
       when(mockHttp.GET[Option[RosmRegistration]](any(),any(), any())(any(), any(), any())).thenReturn(Future.successful(None))
       val res = softDrinksIndustryLevyConnector.retreiveRosmSubscription("utr here", "foo")
       whenReady(
-        res
+        res.value
       ) {
         response =>
-          response mustEqual (None)
+          response mustEqual Left(NoROSMRegistration)
       }
     }
 
@@ -74,9 +75,9 @@ class SoftDrinksIndustryLevyConnectorSpec extends SpecBase with MockitoSugar wit
         when(mockSDILSessionCache.save[RosmRegistration](any, any, any)(any())).thenReturn(Future.successful(CacheMap("test", Map("ROSM_REGISTRATION" -> Json.toJson(rosmRegistration)))))
         val res = softDrinksIndustryLevyConnector.retreiveRosmSubscription(utr = utr, "foo")
         whenReady(
-          res) {
+          res.value) {
           response =>
-            response mustEqual Some(rosmRegistration)
+            response mustEqual Right(rosmRegistration)
         }
       }
     }
@@ -92,10 +93,10 @@ class SoftDrinksIndustryLevyConnectorSpec extends SpecBase with MockitoSugar wit
               val res = softDrinksIndustryLevyConnector.retrieveSubscription(identiferValue, identifierType, "id")
 
               whenReady(
-                res
+                res.value
               ) {
                 response =>
-                  response mustEqual (Some(aSubscription))
+                  response mustEqual Right(Some(aSubscription))
               }
             }
           }
@@ -107,10 +108,10 @@ class SoftDrinksIndustryLevyConnectorSpec extends SpecBase with MockitoSugar wit
               val res = softDrinksIndustryLevyConnector.retrieveSubscription(identiferValue, identifierType, "id")
 
               whenReady(
-                res
+                res.value
               ) {
                 response =>
-                  response mustEqual None
+                  response mustEqual Right(None)
               }
             }
           }
@@ -123,10 +124,10 @@ class SoftDrinksIndustryLevyConnectorSpec extends SpecBase with MockitoSugar wit
                 val res = softDrinksIndustryLevyConnector.retrieveSubscription(sdilNumber, identifierType, "id")
 
                 whenReady(
-                  res
+                  res.value
                 ) {
                   response =>
-                    response mustEqual Some(aSubscription)
+                    response mustEqual Right(Some(aSubscription))
                 }
               }
               "and return None when no subscription returned" in {
@@ -136,10 +137,10 @@ class SoftDrinksIndustryLevyConnectorSpec extends SpecBase with MockitoSugar wit
                 val res = softDrinksIndustryLevyConnector.retrieveSubscription(sdilNumber, identifierType, "id")
 
                 whenReady(
-                  res
+                  res.value
                 ) {
                   response =>
-                    response mustEqual None
+                    response mustEqual Right(None)
                 }
               }
             }

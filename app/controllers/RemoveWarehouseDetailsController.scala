@@ -37,9 +37,7 @@ class RemoveWarehouseDetailsController @Inject()(
                                                   override val messagesApi: MessagesApi,
                                                   val sessionService: SessionService,
                                                   val navigator: Navigator,
-                                                  identify: IdentifierAction,
-                                                  getData: DataRetrievalAction,
-                                                  requireData: DataRequiredAction,
+                                                  controllerActions: ControllerActions,
                                                   formProvider: RemoveWarehouseDetailsFormProvider,
                                                   val controllerComponents: MessagesControllerComponents,
                                                   view: RemoveWarehouseDetailsView,
@@ -49,7 +47,7 @@ class RemoveWarehouseDetailsController @Inject()(
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode, index: String): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(mode: Mode, index: String): Action[AnyContent] = controllerActions.withUserWhoCanRegister {
     implicit request =>
       request.userAnswers.warehouseList.get(index) match {
         case Some(warehouse) =>
@@ -57,11 +55,11 @@ class RemoveWarehouseDetailsController @Inject()(
           Ok(view(form, mode, formattedAddress, index))
         case _ => genericLogger.logger.warn(s"Warehouse index $index doesn't exist ${request.userAnswers.id} warehouse list length:" +
           s"${request.userAnswers.warehouseList.size}")
-          Redirect(routes.IndexController.onPageLoad)
+          Redirect(routes.WarehouseDetailsController.onPageLoad(mode))
       }
   }
 
-  def onSubmit(mode: Mode, index: String): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onSubmit(mode: Mode, index: String): Action[AnyContent] = controllerActions.withUserWhoCanRegister.async {
     implicit request =>
       val warehouseToRemove: Option[Warehouse] = request.userAnswers.warehouseList.get(index)
       warehouseToRemove match {

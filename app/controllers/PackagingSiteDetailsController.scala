@@ -35,9 +35,7 @@ class PackagingSiteDetailsController @Inject()(
                                        override val messagesApi: MessagesApi,
                                        val sessionService: SessionService,
                                        val navigator: Navigator,
-                                       identify: IdentifierAction,
-                                       getData: DataRetrievalAction,
-                                       requireData: DataRequiredAction,
+                                       controllerActions: ControllerActions,
                                        formProvider: PackagingSiteDetailsFormProvider,
                                        addressLookupService: AddressLookupService,
                                        val controllerComponents: MessagesControllerComponents,
@@ -48,7 +46,7 @@ class PackagingSiteDetailsController @Inject()(
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = controllerActions.withUserWhoCanRegister {
     implicit request =>
 
       val preparedForm = request.userAnswers.get(PackagingSiteDetailsPage) match {
@@ -58,7 +56,7 @@ class PackagingSiteDetailsController @Inject()(
       Ok(view(preparedForm, mode, request.userAnswers.packagingSiteList))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = controllerActions.withUserWhoCanRegister.async {
     implicit request =>
 
       form.bindFromRequest().fold(

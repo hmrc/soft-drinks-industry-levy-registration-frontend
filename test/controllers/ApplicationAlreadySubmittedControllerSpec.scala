@@ -17,6 +17,12 @@
 package controllers
 
 import base.SpecBase
+import connectors.SoftDrinksIndustryLevyConnector
+import models.RegisterState
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
+import org.mockito.MockitoSugar.mock
+import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import viewmodels.AddressFormattingHelper
@@ -27,10 +33,16 @@ class ApplicationAlreadySubmittedControllerSpec extends SpecBase {
   "ApplicationAlreadySubmitted Controller" - {
 
     "must return OK and the correct view for a GET" in {
+      val mockSdilConnector = mock[SoftDrinksIndustryLevyConnector]
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers.copy(registerState = RegisterState.RegisterApplicationAccepted)),
+        utr = Some(utr))
+        .overrides(
+          bind[SoftDrinksIndustryLevyConnector].toInstance(mockSdilConnector)
+        ).build()
 
       running(application) {
+        when(mockSdilConnector.retreiveRosmSubscription(any(), any())(any())).thenReturn(createSuccessRegistrationResult(rosmRegistration))
         val request = FakeRequest(GET, routes.ApplicationAlreadySubmittedController.onPageLoad.url)
 
         val result = route(application, request).value

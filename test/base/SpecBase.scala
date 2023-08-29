@@ -17,17 +17,17 @@
 package base
 
 import cats.data.EitherT
+import cats.implicits._
 import config.FrontendAppConfig
 import controllers.actions._
 import controllers.routes
 import errors.RegistrationErrors
 import models.backend.{Site, UkAddress}
-import models.{Contact, IndividualDetails, LitresInBands, OrganisationDetails, RetrievedActivity, RetrievedSubscription, RosmRegistration, RosmWithUtr, UserAnswers, Warehouse}
+import models.{Contact, IndividualDetails, LitresInBands, OrganisationDetails, RegisterState, RetrievedActivity, RetrievedSubscription, RosmRegistration, RosmWithUtr, UserAnswers, Warehouse}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{BeforeAndAfterEach, OptionValues, TryValues}
-import play.api.{Application, Play}
 import play.api.i18n.{Lang, Messages, MessagesApi, MessagesImpl}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
@@ -35,9 +35,9 @@ import play.api.libs.json.Writes
 import play.api.mvc.{Call, MessagesControllerComponents}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.stubControllerComponents
+import play.api.{Application, Play}
 import queries.Settable
 import service.RegistrationResult
-import cats.implicits._
 import uk.gov.hmrc.http.HeaderCarrier
 import utilities.GenericLogger
 
@@ -128,7 +128,7 @@ trait SpecBase
     Play.stop(application)
     super.afterEach()
   }
-  val emptyUserAnswers : UserAnswers = UserAnswers(identifier)
+  val emptyUserAnswers : UserAnswers = UserAnswers(identifier, RegisterState.RegisterWithAuthUTR)
 
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 
@@ -139,8 +139,7 @@ trait SpecBase
       .overrides(
         bind[IdentifierAction].toInstance(new FakeIdentifierAction(bodyParsers, hasCTEnrolment, utr)),
         bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(userAnswers)),
-        bind[DataRequiredAction].toInstance(new FakeDataRequiredAction(rosmRegistration, userAnswers))
-      )
+        bind[DataRequiredAction].toInstance(new FakeDataRequiredAction(rosmRegistration, userAnswers)))
   }
 
   val packingSiteAddress45Characters = Site(
@@ -207,7 +206,7 @@ trait SpecBase
     deregDate = None
   )
 
-  val userDetailsWithSetMethodsReturningFailure: UserAnswers = new UserAnswers("sdilId") {
+  val userDetailsWithSetMethodsReturningFailure: UserAnswers = new UserAnswers("sdilId", RegisterState.RegisterWithAuthUTR) {
     override def set[A](page: Settable[A], value: A)(implicit writes: Writes[A]): Try[UserAnswers] = Failure[UserAnswers](new Exception(""))
 
     override def setList[A](producer: Settable[A], value: A)(implicit writes: Writes[A]): Try[UserAnswers] = Failure[UserAnswers](new Exception(""))

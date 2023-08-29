@@ -37,9 +37,7 @@ class ContactDetailsController @Inject()(
                                        override val messagesApi: MessagesApi,
                                        val sessionService: SessionService,
                                        val navigator: Navigator,
-                                       identify: IdentifierAction,
-                                       getData: DataRetrievalAction,
-                                       requireData: DataRequiredAction,
+                                       controllerActions: ControllerActions,
                                        formProvider: ContactDetailsFormProvider,
                                        val controllerComponents: MessagesControllerComponents,
                                        view: ContactDetailsView,
@@ -49,7 +47,7 @@ class ContactDetailsController @Inject()(
 
   val form: Form[ContactDetails] = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = controllerActions.withUserWhoCanRegister {
     implicit request =>
 
       val preparedForm = request.userAnswers.get(ContactDetailsPage) match {
@@ -60,7 +58,7 @@ class ContactDetailsController @Inject()(
       Ok(view(preparedForm, mode))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = controllerActions.withUserWhoCanRegister.async {
     implicit request =>
 
       form.bindFromRequest().fold(

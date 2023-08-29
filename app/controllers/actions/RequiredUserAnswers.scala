@@ -74,7 +74,7 @@ class RequiredUserAnswers @Inject()(genericLogger: GenericLogger)(implicit val e
     }
   }
 
-  private[controllers] def journey(implicit request: DataRequest[_]): List[RequiredPage[_,_,_]] = {
+  private[controllers] def journey: List[RequiredPage[_,_,_]] = {
     val previousPageSmallOrNonProducer = PreviousPage(HowManyLitresGloballyPage, List(HowManyLitresGlobally.enumerable.withName("small").get,
       HowManyLitresGlobally.enumerable.withName("xnot").get))(implicitly[Reads[HowManyLitresGlobally]])
     val largeProducer = HowManyLitresGlobally.enumerable.withName("large").get

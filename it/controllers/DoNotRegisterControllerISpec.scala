@@ -29,6 +29,7 @@ class DoNotRegisterControllerISpec extends ControllerITTestHelper {
     testOtherSuccessUserTypes(baseUrl + normalRoutePath, Messages("doNotRegister" + ".title"
     ) )
     testUnauthorisedUser(baseUrl + normalRoutePath)
+    testWhoIsUnableToRegisterWithGivenUtr(baseUrl + normalRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)
   }
 }

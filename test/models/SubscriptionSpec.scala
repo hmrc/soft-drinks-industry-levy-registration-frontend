@@ -18,7 +18,7 @@ package models
 
 import base.RegistrationSubscriptionHelper
 import models.backend.Subscription
-import pages.{ContactDetailsPage, OrganisationTypePage, StartDatePage}
+import pages.{ContactDetailsPage, OrganisationTypePage}
 import play.api.libs.json.{JsBoolean, JsNumber, JsString, Json}
 
 class SubscriptionSpec extends RegistrationSubscriptionHelper {

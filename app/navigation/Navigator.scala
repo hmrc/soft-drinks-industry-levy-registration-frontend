@@ -19,6 +19,7 @@ package navigation
 import controllers.routes
 import models.HowManyLitresGlobally.{Large, Small}
 import models.OrganisationType.Partnership
+import models.RegisterState.{RegisterApplicationAccepted, RegisterWithOtherUTR, RegistrationPending}
 import models._
 import pages._
 import play.api.mvc.Call
@@ -38,7 +39,7 @@ class Navigator @Inject()() {
   private val normalRoutes: Page => UserAnswers => Call = {
     case VerifyPage => _ => routes.OrganisationTypeController.onPageLoad(NormalMode)
     case RemovePackagingSiteDetailsPage => _ => routes.PackagingSiteDetailsController.onPageLoad(NormalMode)
-    case EnterBusinessDetailsPage => _ => routes.VerifyController.onPageLoad(NormalMode)
+    case EnterBusinessDetailsPage => userAnswers => navigationForEnterBusinessDetails(userAnswers)
     case RemoveWarehouseDetailsPage => _ => routes.WarehouseDetailsController.onPageLoad(NormalMode)
     case ContactDetailsPage => _ => routes.CheckYourAnswersController.onPageLoad
     case ContractPackingPage => userAnswers => navigationForContractPacking(userAnswers, NormalMode)
@@ -51,11 +52,10 @@ class Navigator @Inject()() {
     case StartDatePage => userAnswers => navigationForStartDate(userAnswers, NormalMode)
     case OrganisationTypePage => userAnswers => navigationForOrganisationType(userAnswers, NormalMode)
     case HowManyLitresGloballyPage => userAnswers => navigationForHowManyLitresGloballyNormalMode(userAnswers)
-    case _ => _ => routes.IndexController.onPageLoad
+    case _ => _ => routes.RegistrationController.start
   }
 
   private val checkRouteMap: Page => UserAnswers => Option[String] => Call = {
-    case EnterBusinessDetailsPage => _ =>_ => routes.VerifyController.onPageLoad(NormalMode)
     case RemoveWarehouseDetailsPage => _ => _ => routes.WarehouseDetailsController.onPageLoad(CheckMode)
     case StartDatePage => userAnswers => _ => navigationForStartDate(userAnswers, CheckMode)
     case ContractPackingPage => userAnswers => _ => navigationForContractPacking(userAnswers, CheckMode)
@@ -78,7 +78,7 @@ class Navigator @Inject()() {
       case (_, Some(HowManyLitresGlobally.None)) =>
         routes.ContractPackingController.onPageLoad(CheckMode)
       case (_, _) =>
-        routes.IndexController.onPageLoad
+        routes.RegistrationController.start
     }
   }
 
@@ -91,7 +91,7 @@ class Navigator @Inject()() {
       case Some(litres) if litres == HowManyLitresGlobally.None =>
         routes.ContractPackingController.onPageLoad(NormalMode)
       case _ =>
-        routes.IndexController.onPageLoad
+        routes.RegistrationController.start
     }
   }
 
@@ -201,6 +201,15 @@ class Navigator @Inject()() {
       routes.ContactDetailsController.onPageLoad(mode)
     } else {
       routes.DoNotRegisterController.onPageLoad
+    }
+  }
+
+  private def navigationForEnterBusinessDetails(userAnswers: UserAnswers): Call = {
+    userAnswers.registerState match {
+      case RegisterWithOtherUTR => routes.VerifyController.onPageLoad(NormalMode)
+      case RegistrationPending => routes.RegistrationPendingController.onPageLoad
+      case RegisterApplicationAccepted => routes.ApplicationAlreadySubmittedController.onPageLoad
+      case _ => routes.RegistrationController.start
     }
   }
 

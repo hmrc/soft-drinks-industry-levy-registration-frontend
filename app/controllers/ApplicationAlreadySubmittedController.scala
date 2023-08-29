@@ -27,14 +27,12 @@ import views.html.ApplicationAlreadySubmittedView
 
 class ApplicationAlreadySubmittedController @Inject()(
                                        override val messagesApi: MessagesApi,
-                                       identify: IdentifierAction,
-                                       getData: DataRetrievalAction,
-                                       requireData: DataRequiredAction,
+                                       controllerActions: ControllerActions,
                                        val controllerComponents: MessagesControllerComponents,
                                        view: ApplicationAlreadySubmittedView
                                      ) extends FrontendBaseController with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad: Action[AnyContent] = controllerActions.withRegisterApplicationAcceptedAction {
     implicit request =>
       val rosmRegistration = request.rosmWithUtr.rosmRegistration
       val formattedAddress = AddressFormattingHelper.formatBusinessAddress(rosmRegistration.address, Some(rosmRegistration.organisationName))

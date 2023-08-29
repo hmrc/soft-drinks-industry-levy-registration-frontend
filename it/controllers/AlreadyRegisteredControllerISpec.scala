@@ -1,5 +1,6 @@
 package controllers
 
+import models.RegisterState
 import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
 import play.api.i18n.Messages
@@ -12,9 +13,9 @@ class AlreadyRegisteredControllerISpec extends ControllerITTestHelper {
   "GET " + normalRoutePath - {
     "should return OK and render the AlreadyRegistered page" in {
       given
-        .commonPrecondition
+        .authorisedWithBothSDILandUTRInEnrolmentsAndHasROSM
 
-      setAnswers(emptyUserAnswers)
+      setAnswers(emptyUserAnswers.copy(registerState = RegisterState.AlreadyRegistered))
 
       WsTestClient.withClient { client =>
         val result1 = createClientRequestGet(client, baseUrl + normalRoutePath)
@@ -32,8 +33,7 @@ class AlreadyRegisteredControllerISpec extends ControllerITTestHelper {
         }
       }
     }
-    testOtherSuccessUserTypes(baseUrl + normalRoutePath, Messages("alreadyRegistered.heading.title"
-    ) )
+
     testUnauthorisedUser(baseUrl + normalRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)
   }

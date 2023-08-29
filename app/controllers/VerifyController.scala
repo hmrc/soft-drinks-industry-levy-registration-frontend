@@ -37,9 +37,7 @@ class VerifyController @Inject()(
                                        override val messagesApi: MessagesApi,
                                        val sessionService: SessionService,
                                        val navigator: Navigator,
-                                       identify: IdentifierAction,
-                                       getData: DataRetrievalAction,
-                                       requireData: DataRequiredAction,
+                                       controllerActions: ControllerActions,
                                        formProvider: VerifyFormProvider,
                                        val controllerComponents: MessagesControllerComponents,
                                        view: VerifyView,
@@ -53,7 +51,7 @@ class VerifyController @Inject()(
   private val formattedAddress = (rosmRegistration: RosmRegistration) =>
     AddressFormattingHelper.formatBusinessAddress(rosmRegistration.address, Some(rosmRegistration.organisationName))
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = controllerActions.withUserWhoCanRegister {
     implicit request =>
       val preparedForm = request.userAnswers.get(VerifyPage) match {
         case None => form
@@ -63,7 +61,7 @@ class VerifyController @Inject()(
       Ok(view(preparedForm, mode, request.rosmWithUtr.utr, formattedAddress(request.rosmWithUtr.rosmRegistration)))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = controllerActions.withUserWhoCanRegister.async {
     implicit request =>
 
       form.bindFromRequest().fold(

@@ -37,9 +37,7 @@ class WarehouseDetailsController @Inject()(
                                        override val messagesApi: MessagesApi,
                                        val sessionService: SessionService,
                                        val navigator: Navigator,
-                                       identify: IdentifierAction,
-                                       getData: DataRetrievalAction,
-                                       requireData: DataRequiredAction,
+                                       controllerActions: ControllerActions,
                                        warehouseDetailsChecker: WarehouseDetailsChecker,
                                        formProvider: WarehouseDetailsFormProvider,
                                        addressLookupService: AddressLookupService,
@@ -51,7 +49,7 @@ class WarehouseDetailsController @Inject()(
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = controllerActions.withUserWhoCanRegister {
     implicit request =>
 
       warehouseDetailsChecker.checkWarehouseDetails(request.userAnswers) {
@@ -66,7 +64,7 @@ class WarehouseDetailsController @Inject()(
 
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = controllerActions.withUserWhoCanRegister.async {
     implicit request =>
 
       val warehouses = request.userAnswers.warehouseList

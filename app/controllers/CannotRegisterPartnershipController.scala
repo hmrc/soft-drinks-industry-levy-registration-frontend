@@ -27,15 +27,13 @@ import views.html.CannotRegisterPartnershipView
 
 class CannotRegisterPartnershipController @Inject()(
                                        override val messagesApi: MessagesApi,
-                                       identify: IdentifierAction,
-                                       getData: DataRetrievalAction,
-                                       requireData: DataRequiredAction,
+                                       controllerActions: ControllerActions,
                                        val controllerComponents: MessagesControllerComponents,
                                        view: CannotRegisterPartnershipView,
                                        config: FrontendAppConfig
                                      ) extends FrontendBaseController with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad: Action[AnyContent] = controllerActions.withUserWhoCanRegister {
     implicit request =>
       val phoneNumber = config.helpdeskPhoneNumber
       Ok(view(phoneNumber))

@@ -18,26 +18,24 @@ package controllers
 
 import controllers.actions._
 import forms.ContractPackingFormProvider
-import javax.inject.Inject
+import handlers.ErrorHandler
 import models.Mode
 import navigation.Navigator
 import pages.{ContractPackingPage, HowManyContractPackingPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SessionService
-import views.html.ContractPackingView
-import handlers.ErrorHandler
 import utilities.GenericLogger
+import views.html.ContractPackingView
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class ContractPackingController @Inject()(
                                          override val messagesApi: MessagesApi,
                                          val sessionService: SessionService,
                                          val navigator: Navigator,
-                                         identify: IdentifierAction,
-                                         getData: DataRetrievalAction,
-                                         requireData: DataRequiredAction,
+                                         controllerActions: ControllerActions,
                                          formProvider: ContractPackingFormProvider,
                                          val controllerComponents: MessagesControllerComponents,
                                          view: ContractPackingView,
@@ -47,7 +45,7 @@ class ContractPackingController @Inject()(
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = controllerActions.withUserWhoCanRegister {
     implicit request =>
 
       val preparedForm = request.userAnswers.get(ContractPackingPage) match {
@@ -58,7 +56,7 @@ class ContractPackingController @Inject()(
       Ok(view(preparedForm, mode))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = controllerActions.withUserWhoCanRegister.async {
     implicit request =>
 
       form.bindFromRequest().fold(

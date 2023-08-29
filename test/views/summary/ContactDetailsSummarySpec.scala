@@ -17,7 +17,7 @@
 package views.summary
 
 import base.SpecBase
-import models.{ContactDetails, UserAnswers}
+import models.{ContactDetails, RegisterState, UserAnswers}
 import play.api.libs.json.Json
 import play.twirl.api.Html
 import viewmodels.summary.ContactDetailsSummary
@@ -38,7 +38,7 @@ class ContactDetailsSummarySpec extends SpecBase {
 
   "headingAndSummary" - {
     "when the user answers contain contact details" - {
-      val userAnswersWithContact = UserAnswers("id", Json.obj("contactDetails" -> userContactDetails))
+      val userAnswersWithContact = UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj("contactDetails" -> userContactDetails))
       "should return the heading and summary list" - {
         "that contains change links" - {
           "when called for check your answers" in {

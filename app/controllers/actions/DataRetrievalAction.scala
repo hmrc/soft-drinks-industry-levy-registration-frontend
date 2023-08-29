@@ -21,7 +21,7 @@ import models.requests.{IdentifierRequest, OptionalDataRequest}
 import play.api.mvc.Results.InternalServerError
 import play.api.mvc.{ActionRefiner, Result}
 import services.SessionService
-import cats.implicits._
+
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -33,7 +33,7 @@ class DataRetrievalActionImpl @Inject()(val sessionService: SessionService,
     sessionService.get(request.internalId).value.map {
       case Right(userAnsOps) =>
         Right(
-          OptionalDataRequest(request, request.internalId, request.hasCTEnrolment, request.utr, userAnsOps))
+          OptionalDataRequest(request, request.internalId, request.hasCTEnrolment, request.optUTR, userAnsOps))
       case Left(_) =>
         Left(InternalServerError(errorHandler.internalServerErrorTemplate(request)))
     }

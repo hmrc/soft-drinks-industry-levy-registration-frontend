@@ -23,14 +23,14 @@ import play.api.libs.json.Json
 
 
 class UserTypeCheckModelSpec extends SpecBase with MockitoSugar with DataHelper {
-  val largeProducerUserAnswersNoContractPacking: UserAnswers = UserAnswers("id", Json.obj("howManyLitresGlobally" -> "large",
+  val largeProducerUserAnswersNoContractPacking: UserAnswers = UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj("howManyLitresGlobally" -> "large",
     "howManyImports" -> Json.obj("lowBand" -> 1,"highBand" -> 1)))
-  val smallProducerUserAnswersNoOperatePackagingSites: UserAnswers = UserAnswers("id", Json.obj("howManyLitresGlobally" -> "small",
+  val smallProducerUserAnswersNoOperatePackagingSites: UserAnswers = UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj("howManyLitresGlobally" -> "small",
     "howManyContractPacking" -> Json.obj("lowBand" -> 1,"highBand" -> 1), "thirdPartyPackagers" -> true,
     "howManyImports" -> Json.obj("lowBand" -> 1,"highBand" -> 1)))
-  val notAProducerUserAnswersNoThirdPartyPackagers: UserAnswers = UserAnswers("id", Json.obj("howManyLitresGlobally" -> "xnot",
+  val notAProducerUserAnswersNoThirdPartyPackagers: UserAnswers = UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj("howManyLitresGlobally" -> "xnot",
     "howManyOperatePackagingSites" -> Json.obj("lowBand" -> 1,"highBand" -> 1), "howManyContractPacking" -> Json.obj("lowBand" -> 1,"highBand" -> 1)))
-  val answersNoImports: UserAnswers = UserAnswers("id", Json.obj("howManyLitresGlobally" -> "xnot",
+  val answersNoImports: UserAnswers = UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj("howManyLitresGlobally" -> "xnot",
     "howManyOperatePackagingSites" -> Json.obj("lowBand" -> 1,"highBand" -> 1), "thirdPartyPackagers" -> false))
 
   "UserTypeCheckModel" - {

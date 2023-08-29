@@ -35,9 +35,7 @@ class OrganisationTypeController @Inject()(
                                        override val messagesApi: MessagesApi,
                                        val sessionService: SessionService,
                                        val navigator: Navigator,
-                                       identify: IdentifierAction,
-                                       getData: DataRetrievalAction,
-                                       requireData: DataRequiredAction,
+                                       controllerActions: ControllerActions,
                                        formProvider: OrganisationTypeFormProvider,
                                        val genericLogger: GenericLogger,
                                        val controllerComponents: MessagesControllerComponents,
@@ -47,7 +45,7 @@ class OrganisationTypeController @Inject()(
 
   private val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) {
+  def onPageLoad(mode: Mode): Action[AnyContent] = controllerActions.withUserWhoCanRegister {
     implicit request =>
       val withoutSoleTrader: Boolean = if (request.hasCTEnrolment) true else false
       val preparedForm = request.userAnswers.get(OrganisationTypePage) match {
@@ -58,7 +56,7 @@ class OrganisationTypeController @Inject()(
       Ok(view(preparedForm, mode, withoutSoleTrader))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def onSubmit(mode: Mode): Action[AnyContent] = controllerActions.withUserWhoCanRegister.async {
     implicit request =>
       val withoutSoleTrader: Boolean = if (request.hasCTEnrolment) true else false
       form.bindFromRequest().fold(

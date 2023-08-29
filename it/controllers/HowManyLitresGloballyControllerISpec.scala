@@ -72,6 +72,7 @@ class HowManyLitresGloballyControllerISpec extends ControllerITTestHelper {
     }
     testOtherSuccessUserTypes(baseUrl + normalRoutePath, Messages("howManyLitresGlobally" + ".title"))
     testUnauthorisedUser(baseUrl + normalRoutePath)
+    testWhoIsUnableToRegisterWithGivenUtr(baseUrl + normalRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)
   }
 
@@ -134,6 +135,7 @@ class HowManyLitresGloballyControllerISpec extends ControllerITTestHelper {
     }
     testOtherSuccessUserTypes(baseUrl + checkRoutePath, Messages("howManyLitresGlobally" + ".title"))
     testUnauthorisedUser(baseUrl + checkRoutePath)
+    testWhoIsUnableToRegisterWithGivenUtr(baseUrl + checkRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath)
 
   }
@@ -306,6 +308,7 @@ class HowManyLitresGloballyControllerISpec extends ControllerITTestHelper {
       }
     }
     testUnauthorisedUser(baseUrl + normalRoutePath, Some(Json.obj("value" -> "true")))
+    testWhoIsUnableToRegisterWithGivenUtr(baseUrl + normalRoutePath, Some(Json.obj("value" -> "true")))
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath, Some(Json.obj("value" -> "true")))
   }
 
@@ -477,6 +480,7 @@ class HowManyLitresGloballyControllerISpec extends ControllerITTestHelper {
       }
     }
     testUnauthorisedUser(baseUrl + checkRoutePath, Some(Json.obj("value" -> "true")))
+    testWhoIsUnableToRegisterWithGivenUtr(baseUrl + checkRoutePath, Some(Json.obj("value" -> "true")))
     testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath, Some(Json.obj("value" -> "true")))
   }
 }

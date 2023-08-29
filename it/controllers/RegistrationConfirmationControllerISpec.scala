@@ -136,6 +136,7 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
     }
     testOtherSuccessUserTypes(baseUrl + normalRoutePath, Messages("registrationConfirmation" + ".title"), fullExampleUserAnswers.copy(submittedOn = Some(submittedDate)))
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)
+    testWhoIsUnableToRegisterWithGivenUtr(baseUrl + normalRoutePath)
     testUnauthorisedUser(baseUrl + normalRoutePath)
   }
 }

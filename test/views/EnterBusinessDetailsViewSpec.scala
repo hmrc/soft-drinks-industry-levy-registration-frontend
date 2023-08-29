@@ -18,7 +18,7 @@ package views
 
 import controllers.routes
 import forms.EnterBusinessDetailsFormProvider
-import models.{CheckMode, Identify, NormalMode}
+import models.Identify
 import play.api.i18n.Messages
 import play.api.mvc.Request
 import play.api.test.FakeRequest
@@ -46,7 +46,7 @@ class EnterBusinessDetailsViewSpec extends ViewSpecHelper {
   }
 
   "View" - {
-    val html = view(form, NormalMode)(request, messages(application), frontendAppConfig)
+    val html = view(form)(request, messages(application), frontendAppConfig)
     val document = doc(html)
     val formGroup = document.getElementsByClass(Selectors.formGroup)
     "should contain the expected title" in {
@@ -81,28 +81,18 @@ class EnterBusinessDetailsViewSpec extends ViewSpecHelper {
       document.getElementsByClass(Selectors.button).text() mustBe "Save and continue"
     }
 
-    "contains a form with the correct action" - {
-      "when in CheckMode" in {
-        val htmlAllSelected = view(form.fill(Identify("testing", "testing")), CheckMode)(request, messages(application), frontendAppConfig)
+    "contains a form with the correct action" in {
+        val htmlAllSelected = view(form.fill(Identify("testing", "testing")))(request, messages(application), frontendAppConfig)
         val documentAllSelected = doc(htmlAllSelected)
 
         documentAllSelected.select(Selectors.form)
-          .attr("action") mustEqual routes.EnterBusinessDetailsController.onSubmit(CheckMode).url
-      }
-
-      "when in NormalMode" in {
-        val htmlAllSelected = view(form.fill(Identify("testing", "testing")), NormalMode)(request, messages(application), frontendAppConfig)
-        val documentAllSelected = doc(htmlAllSelected)
-
-        documentAllSelected.select(Selectors.form)
-          .attr("action") mustEqual routes.EnterBusinessDetailsController.onSubmit(NormalMode).url
-      }
+          .attr("action") mustEqual routes.EnterBusinessDetailsController.onSubmit.url
     }
 
     "when a form error exists (utr invalid characters + no postcode)" - {
       val valueOutOfMaxRange = Random.nextString(10 + 1)
 
-      val htmlWithErrors = view(form.bind(Map("utr" -> valueOutOfMaxRange)), NormalMode)(request, messages(application), frontendAppConfig)
+      val htmlWithErrors = view(form.bind(Map("utr" -> valueOutOfMaxRange)))(request, messages(application), frontendAppConfig)
       val documentWithErrors = doc(htmlWithErrors)
       "should have a title containing error" in {
         val titleMessage = Messages("enterBusinessDetails.title")

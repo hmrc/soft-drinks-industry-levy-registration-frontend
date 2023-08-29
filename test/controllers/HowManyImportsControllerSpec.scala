@@ -20,7 +20,7 @@ import base.SpecBase
 import errors.SessionDatabaseInsertError
 import forms.HowManyLitresFormProvider
 import helpers.LoggerHelper
-import models.{LitresInBands, NormalMode, UserAnswers}
+import models.{LitresInBands, NormalMode, RegisterState, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
@@ -64,7 +64,7 @@ class HowManyImportsControllerSpec extends SpecBase with MockitoSugar with Logge
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(identifier).set(HowManyImportsPage, LitresInBands(100, 200)).success.value
+      val userAnswers = UserAnswers(identifier, RegisterState.RegisterWithAuthUTR).set(HowManyImportsPage, LitresInBands(100, 200)).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers), rosmRegistration = rosmRegistration).build()
 
