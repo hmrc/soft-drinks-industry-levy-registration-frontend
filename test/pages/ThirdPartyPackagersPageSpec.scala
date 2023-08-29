@@ -16,6 +16,7 @@
 
 package pages
 
+import models.{CheckMode, NormalMode}
 import pages.behaviours.PageBehaviours
 
 class ThirdPartyPackagersPageSpec extends PageBehaviours {
@@ -27,5 +28,12 @@ class ThirdPartyPackagersPageSpec extends PageBehaviours {
     beSettable[Boolean](ThirdPartyPackagersPage)
 
     beRemovable[Boolean](ThirdPartyPackagersPage)
+
+    s"url should be correct for $NormalMode" in {
+      ThirdPartyPackagersPage.url(NormalMode) mustBe controllers.routes.ThirdPartyPackagersController.onPageLoad(NormalMode).url
+    }
+    s"url should be correct for $CheckMode" in {
+      ThirdPartyPackagersPage.url(CheckMode) mustBe controllers.routes.ThirdPartyPackagersController.onPageLoad(CheckMode).url
+    }
   }
 }

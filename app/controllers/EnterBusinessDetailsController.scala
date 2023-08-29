@@ -21,7 +21,7 @@ import controllers.actions._
 import errors.{EnteredBusinessDetailsDoNotMatch, NoROSMRegistration}
 import forms.EnterBusinessDetailsFormProvider
 import handlers.ErrorHandler
-import models.{Identify, NormalMode, RegisterState, UserAnswers}
+import models.{Identify, NormalMode, UserAnswers}
 import navigation.Navigator
 import orchestrators.RegistrationOrchestrator
 import pages.EnterBusinessDetailsPage

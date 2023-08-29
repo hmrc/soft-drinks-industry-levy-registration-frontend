@@ -16,10 +16,10 @@
 
 package pages
 
-import models.Verify
+import models.{CheckMode, NormalMode, Verify}
 import pages.behaviours.PageBehaviours
 
-class VerifySpec extends PageBehaviours {
+class VerifyPageSpec extends PageBehaviours {
 
   "VerifyPage" - {
 
@@ -28,5 +28,12 @@ class VerifySpec extends PageBehaviours {
     beSettable[Verify](VerifyPage)
 
     beRemovable[Verify](VerifyPage)
+
+    s"url should be correct for $NormalMode" in {
+      VerifyPage.url(NormalMode) mustBe controllers.routes.VerifyController.onPageLoad(NormalMode).url
+    }
+    s"url should be correct for $CheckMode" in {
+      VerifyPage.url(CheckMode) mustBe controllers.routes.VerifyController.onPageLoad(CheckMode).url
+    }
   }
 }
