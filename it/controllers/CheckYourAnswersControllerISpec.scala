@@ -1,11 +1,11 @@
 package controllers
 
 import models.HowManyLitresGlobally.{Large, Small}
-import models.{CheckMode, HowManyLitresGlobally, NormalMode}
 import models.OrganisationType.LimitedCompany
 import models.Verify.YesRegister
+import models.{CheckMode, HowManyLitresGlobally}
 import org.jsoup.Jsoup
-import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
+import org.scalatest.matchers.must.Matchers.include
 import pages._
 import play.api.http.HeaderNames
 import play.api.http.Status.OK
@@ -165,7 +165,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
               validateBusinessDetailsSummaryList(businessDetails, "0000001611", rosmAddress, Small, true)
 
               val copackee = page.getElementsByClass("govuk-summary-list").get(1)
-              page.getElementsByTag("h2").get(1).text() mustBe "Reporting contract packed at your own site"
+              page.getElementsByTag("h2").get(1).text() mustBe "Use third party packagers"
               validateThirdPartyPackersSummaryList(copackee, true)
 
               val operatePackagingSites = page.getElementsByClass("govuk-summary-list").get(2)
@@ -221,7 +221,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
               validateBusinessDetailsSummaryList(businessDetails, "0000001611", newAddress, HowManyLitresGlobally.Small, true)
 
               val copackee = page.getElementsByClass("govuk-summary-list").get(1)
-              page.getElementsByTag("h2").get(1).text() mustBe "Reporting contract packed at your own site"
+              page.getElementsByTag("h2").get(1).text() mustBe "Use third party packagers"
               validateThirdPartyPackersSummaryList(copackee, true)
 
               val operatePackagingSites = page.getElementsByClass("govuk-summary-list").get(2)
@@ -313,7 +313,6 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
               res.status mustBe OK
               val page = Jsoup.parse(res.body)
               page.title must include(Messages("checkYourAnswers.title"))
-              val summaryLists = page.getElementsByClass("govuk-summary-list")
               page.getElementsByClass("govuk-summary-list").size() mustBe 5
 
               val businessDetails = page.getElementsByClass("govuk-summary-list").first()

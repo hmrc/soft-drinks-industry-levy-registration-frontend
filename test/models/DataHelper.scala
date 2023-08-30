@@ -27,14 +27,6 @@ trait DataHelper {
     postCode = "AA111AA"
   )
 
-  def testSmallProducer(alias: String,
-                        sdilRef: String,
-                        litreage: (Long, Long)): SmallProducer = SmallProducer(
-    alias = alias,
-    sdilRef = sdilRef,
-    litreage = litreage
-  )
-
   def testProducer(
                     isProducer: Boolean,
                     isLarge: Option[Boolean] = None

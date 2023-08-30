@@ -2,9 +2,9 @@ package controllers
 
 import models.HowManyLitresGlobally.{Large, Small}
 import models.backend.Subscription
-import models.{CreatedSubscriptionAndAmountProducedGlobally, HowManyLitresGlobally, NormalMode, RosmWithUtr}
+import models.{CreatedSubscriptionAndAmountProducedGlobally, HowManyLitresGlobally, RosmWithUtr}
 import org.jsoup.Jsoup
-import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
+import org.scalatest.matchers.must.Matchers.include
 import play.api.http.HeaderNames
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.i18n.Messages
@@ -155,7 +155,7 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                   validateBusinessDetailsSummaryList(businessDetails, "0000001611", rosmAddress, Small, false)
 
                   val copackee = detailsSection.getElementsByClass("govuk-summary-list").get(1)
-                  detailsSection.getElementsByTag("h2").get(1).text() mustBe "Reporting contract packed at your own site"
+                  detailsSection.getElementsByTag("h2").get(1).text() mustBe "Use third party packagers"
                   validateThirdPartyPackersSummaryList(copackee, false)
 
                   val operatePackagingSites = detailsSection.getElementsByClass("govuk-summary-list").get(2)
@@ -212,7 +212,7 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                   validateBusinessDetailsSummaryList(businessDetails, "0000001611", newAddress, HowManyLitresGlobally.Small, false)
 
                   val copackee = detailsSection.getElementsByClass("govuk-summary-list").get(1)
-                  detailsSection.getElementsByTag("h2").get(1).text() mustBe "Reporting contract packed at your own site"
+                  detailsSection.getElementsByTag("h2").get(1).text() mustBe "Use third party packagers"
                   validateThirdPartyPackersSummaryList(copackee, false)
 
                   val operatePackagingSites = detailsSection.getElementsByClass("govuk-summary-list").get(2)
