@@ -1,7 +1,7 @@
 package repositories
 
 import models.backend.{Site, UkAddress}
-import models.{RegisterState, SmallProducer, UserAnswers, Warehouse}
+import models.{RegisterState, UserAnswers, Warehouse}
 import org.mongodb.scala.bson.BsonDocument
 import org.mongodb.scala.model.{IndexModel, IndexOptions, Indexes}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}

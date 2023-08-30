@@ -19,8 +19,8 @@ package controllers
 import models.HowManyLitresGlobally.{Large, Small}
 import models.OrganisationType.LimitedCompany
 import models.Verify.YesRegister
-import models.backend.{Activity, Subscription, UkAddress}
-import models.{CheckMode, ContactDetails, HowManyLitresGlobally, IndividualDetails, Litreage, LitresInBands, OrganisationDetails, RosmRegistration, RosmWithUtr, Verify}
+import models.backend.{Subscription, UkAddress}
+import models.{CheckMode, ContactDetails, HowManyLitresGlobally, IndividualDetails, LitresInBands, OrganisationDetails, RosmRegistration, RosmWithUtr, Verify}
 import org.jsoup.nodes.{Document, Element}
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import pages._
@@ -223,8 +223,8 @@ trait RegSummaryISpecHelper extends ControllerITTestHelper {
     val yesNoRow = rows.get(0)
     yesNoRow.getElementsByClass("govuk-summary-list__value").first().text() mustBe "Yes"
     if (isCheckYourAnswers) {
-      yesNoRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByTag("a").first().text() mustBe "Change if you use any third parties in the UK to package liable drinks on your behalf?"
-      yesNoRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByClass("govuk-visually-hidden").first().text() mustBe "if you use any third parties in the UK to package liable drinks on your behalf?"
+      yesNoRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByTag("a").first().text() mustBe "Change if you use any third parties in the UK to package liable drinks on your behalf"
+      yesNoRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByClass("govuk-visually-hidden").first().text() mustBe "if you use any third parties in the UK to package liable drinks on your behalf"
       yesNoRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByTag("a").first().attr("href") mustBe routes.ThirdPartyPackagersController.onPageLoad(CheckMode).url
     } else {
       yesNoRow.getElementsByClass("govuk-summary-list__actions").size() mustBe 0
