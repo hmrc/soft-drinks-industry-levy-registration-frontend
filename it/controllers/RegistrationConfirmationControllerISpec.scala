@@ -67,9 +67,9 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                   detailsSection.getElementsByTag("h2").get(5).text() mustBe "Contact person details"
                   validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, false)
 
-                  val packingSiteDetailsSummaryListItem = detailsSection.getElementsByClass("govuk-summary-list").get(6)
+                  val siteDetailsSummaryListItem = detailsSection.getElementsByClass("govuk-summary-list").get(6)
                   detailsSection.getElementsByTag("h2").get(6).text() mustBe "UK site details"
-                  validatePackingSiteDetailsSummary(packingSiteDetailsSummaryListItem, false)
+                  validateSiteDetailsSummary(siteDetailsSummaryListItem, false)
 
                 }
               }
@@ -122,6 +122,9 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                   detailsSection.getElementsByTag("h2").get(5).text() mustBe "Contact person details"
                   validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, false)
 
+                  val siteDetailsSummaryListItem = detailsSection.getElementsByClass("govuk-summary-list").get(6)
+                  detailsSection.getElementsByTag("h2").get(6).text() mustBe "UK site details"
+                  validateSiteDetailsSummary(siteDetailsSummaryListItem, false)
                 }
               }
             }
@@ -178,9 +181,9 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                   detailsSection.getElementsByTag("h2").get(6).text() mustBe "Contact person details"
                   validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, false)
 
-                  val packingSiteDetailsSummaryListItem = detailsSection.getElementsByClass("govuk-summary-list").get(7)
+                  val siteDetailsSummaryListItem = detailsSection.getElementsByClass("govuk-summary-list").get(7)
                   detailsSection.getElementsByTag("h2").get(7).text() mustBe "UK site details"
-                  validatePackingSiteDetailsSummary(packingSiteDetailsSummaryListItem, false)
+                  validateSiteDetailsSummary(siteDetailsSummaryListItem, false)
                 }
               }
             }
@@ -227,10 +230,13 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                   detailsSection.getElementsByTag("h2").get(4).text() mustBe "Brought into the UK"
                   validateImportsWithNoLitresSummaryList(imports, false)
 
-
                   val contactDetailsSummaryListItem = detailsSection.getElementsByClass("govuk-summary-list").get(5)
                   detailsSection.getElementsByTag("h2").get(5).text() mustBe "Contact person details"
                   validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, false)
+
+                  val siteDetailsSummaryListItem = detailsSection.getElementsByClass("govuk-summary-list").get(6)
+                  detailsSection.getElementsByTag("h2").get(6).text() mustBe "UK site details"
+                  validateSiteDetailsSummary(siteDetailsSummaryListItem, false)
                 }
               }
             }
@@ -279,9 +285,9 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                   detailsSection.getElementsByTag("h2").get(4).text() mustBe "Contact person details"
                   validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, false)
 
-                  val packingSiteDetailsSummaryListItem = detailsSection.getElementsByClass("govuk-summary-list").get(5)
+                  val siteDetailsSummaryListItem = detailsSection.getElementsByClass("govuk-summary-list").get(5)
                   detailsSection.getElementsByTag("h2").get(5).text() mustBe "UK site details"
-                  validatePackingSiteDetailsSummary(packingSiteDetailsSummaryListItem, false)
+                  validateSiteDetailsSummary(siteDetailsSummaryListItem, false)
                 }
               }
             }
@@ -326,6 +332,10 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                   val contactDetailsSummaryListItem = detailsSection.getElementsByClass("govuk-summary-list").get(4)
                   detailsSection.getElementsByTag("h2").get(4).text() mustBe "Contact person details"
                   validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, false)
+
+                  val siteDetailsSummaryListItem = detailsSection.getElementsByClass("govuk-summary-list").get(5)
+                  detailsSection.getElementsByTag("h2").get(5).text() mustBe "UK site details"
+                  validateSiteDetailsSummary(siteDetailsSummaryListItem, false)
                 }
               }
             }

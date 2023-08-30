@@ -81,9 +81,9 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
               page.getElementsByTag("h2").get(5).text() mustBe "Contact person details"
               validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, true)
 
-              val packingSiteDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(6)
+              val siteDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(6)
               page.getElementsByTag("h2").get(6).text() mustBe "UK site details"
-              validatePackingSiteDetailsSummary(packingSiteDetailsSummaryListItem, true)
+              validateSiteDetailsSummary(siteDetailsSummaryListItem, true)
 
               page.getElementsByTag("form").first().attr("action") mustBe routes.CheckYourAnswersController.onSubmit.url
               page.getElementsByTag("form").first().getElementsByTag("button").first().text() mustBe "Confirm details and apply"
@@ -133,6 +133,10 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
               val contactDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(5)
               page.getElementsByTag("h2").get(5).text() mustBe "Contact person details"
               validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, true)
+
+              val siteDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(6)
+              page.getElementsByTag("h2").get(6).text() mustBe "UK site details"
+              validateSiteDetailsSummary(siteDetailsSummaryListItem, true)
 
               page.getElementsByTag("form").first().attr("action") mustBe routes.CheckYourAnswersController.onSubmit.url
               page.getElementsByTag("form").first().getElementsByTag("button").first().text() mustBe "Confirm details and apply"
@@ -188,9 +192,9 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
               page.getElementsByTag("h2").get(6).text() mustBe "Contact person details"
               validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, true)
 
-              val packingSiteDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(7)
+              val siteDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(7)
               page.getElementsByTag("h2").get(7).text() mustBe "UK site details"
-              validatePackingSiteDetailsSummary(packingSiteDetailsSummaryListItem, true)
+              validateSiteDetailsSummary(siteDetailsSummaryListItem, true)
 
               page.getElementsByTag("form").first().attr("action") mustBe routes.CheckYourAnswersController.onSubmit.url
               page.getElementsByTag("form").first().getElementsByTag("button").first().text() mustBe "Confirm details and apply"
@@ -236,10 +240,13 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
               page.getElementsByTag("h2").get(4).text() mustBe "Brought into the UK"
               validateImportsWithNoLitresSummaryList(imports, true)
 
-
               val contactDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(5)
               page.getElementsByTag("h2").get(5).text() mustBe "Contact person details"
               validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, true)
+
+              val siteDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(6)
+              page.getElementsByTag("h2").get(6).text() mustBe "UK site details"
+              validateSiteDetailsSummary(siteDetailsSummaryListItem, true)
 
               page.getElementsByTag("form").first().attr("action") mustBe routes.CheckYourAnswersController.onSubmit.url
               page.getElementsByTag("form").first().getElementsByTag("button").first().text() mustBe "Confirm details and apply"
@@ -287,9 +294,9 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
               page.getElementsByTag("h2").get(4).text() mustBe "Contact person details"
               validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, true)
 
-              val packingSiteDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(5)
+              val siteDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(5)
               page.getElementsByTag("h2").get(5).text() mustBe "UK site details"
-              validatePackingSiteDetailsSummary(packingSiteDetailsSummaryListItem, true)
+              validateSiteDetailsSummary(siteDetailsSummaryListItem, true)
 
               page.getElementsByTag("form").first().attr("action") mustBe routes.CheckYourAnswersController.onSubmit.url
               page.getElementsByTag("form").first().getElementsByTag("button").first().text() mustBe "Confirm details and apply"
@@ -334,6 +341,10 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
               val contactDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(4)
               page.getElementsByTag("h2").get(4).text() mustBe "Contact person details"
               validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, true)
+
+              val siteDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(5)
+              page.getElementsByTag("h2").get(5).text() mustBe "UK site details"
+              validateSiteDetailsSummary(siteDetailsSummaryListItem, true)
 
               page.getElementsByTag("form").first().attr("action") mustBe routes.CheckYourAnswersController.onSubmit.url
               page.getElementsByTag("form").first().getElementsByTag("button").first().text() mustBe "Confirm details and apply"
