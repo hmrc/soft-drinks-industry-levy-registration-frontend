@@ -37,15 +37,12 @@ object WarehouseDetailsSummary  {
             content = HtmlContent(AddressFormattingHelper.addressFormatting(warehouse._2.address, warehouse._2.tradingName)),
             classes = "govuk-!-font-weight-regular govuk-!-width-full"
           ),
-          actions = if(numberOfWarehouses != 1) {
+          actions =
             Some(Actions("", Seq(
               ActionItemViewModel("site.remove", routes.RemoveWarehouseDetailsController.onPageLoad(NormalMode, warehouse._1).url)
                 .withCssClass("remove-link")
-                .withVisuallyHiddenText(messages("warehouseDetails.remove.hidden"))
-            )))
-          } else {
-            None
-          }
+                .withVisuallyHiddenText(messages("warehouseDetails.remove.hidden", warehouse._2.tradingName.getOrElse(""), warehouse._2.address.lines.head)))
+            ))
         )
     }.toList
   }

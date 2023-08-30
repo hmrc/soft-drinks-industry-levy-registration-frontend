@@ -21,7 +21,8 @@ import forms.WarehouseDetailsFormProvider
 import handlers.ErrorHandler
 import models.{Mode, NormalMode, Warehouse}
 import navigation.Navigator
-import pages.WarehouseDetailsPage
+import pages.{AskSecondaryWarehousesPage, WarehouseDetailsPage}
+import play.api.data.Form
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{AddressLookupService, SessionService, WarehouseDetails}
@@ -47,12 +48,12 @@ class WarehouseDetailsController @Inject()(
                                        val genericLogger: GenericLogger
                                      )(implicit ec: ExecutionContext) extends ControllerHelper with SummaryListFluency {
 
-  val form = formProvider()
+  val form: Form[Boolean] = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] = controllerActions.withUserWhoCanRegister {
     implicit request =>
 
-      warehouseDetailsChecker.checkWarehouseDetails(request.userAnswers) {
+      warehouseDetailsChecker.checkWarehouseDetails(request.userAnswers, mode) {
         val preparedForm = request.userAnswers.get(WarehouseDetailsPage) match {
           case None => form
           case Some(value) => form.fill(value)
@@ -61,7 +62,6 @@ class WarehouseDetailsController @Inject()(
 
         Ok(view(preparedForm, mode, createWarehouseSummary(warehouses), warehouses.size))
       }
-
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = controllerActions.withUserWhoCanRegister.async {
