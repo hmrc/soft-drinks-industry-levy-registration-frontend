@@ -61,10 +61,11 @@ class AskSecondaryWarehousesSummarySpec extends SpecBase {
 
   val WarehouseListWith3 = Map(("rieajnldkaljnk13", address45Characters), ("jfkladnlr12", address47Characters), ("jgklaj;ll;e;o", address49Characters))
 
-  "row2" - {
+  List(NormalMode, CheckMode).foreach { mode =>
+    s"In ${mode.toString}" - {
 
-    List(NormalMode, CheckMode).foreach { mode =>
-      s"In ${mode.toString}" - {
+      "row2" - {
+
         "should return an empty list of summaryListRows when no packaging site list is passed in" in {
           val WarehouseDetailsSummaryRowList = WarehouseDetailsSummary.warehouseDetailsRow(Map.empty, mode)
 
