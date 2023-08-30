@@ -129,60 +129,12 @@ class PackagingSiteDetailsViewSpec extends ViewSpecHelper {
                   val action = summaryRow.getElementsByClass(Selectors.link)
                   if (numberOfPackagingSites > 1) {
                     action.text() must include("Remove")
-                    action.attr("href") mustBe routes.RemovePackagingSiteDetailsController.onPageLoad(NormalMode, id).url
+                    action.attr("href") mustBe routes.RemovePackagingSiteDetailsController.onPageLoad(mode, id).url
                   } else {
                     Messages("packagingSiteDetails.title1Site")
                   }
-//                  TODO: Implement this
-//                  document.title() must include(expectedTitle)
-                }
-
-                "should include the expected h1 heading" in {
-                  val expectedHeading = if (numberOfPackagingSites > 1) {
-                    Messages("packagingSiteDetails.headingMultipleSites", numberOfPackagingSites)
-                  } else {
-                    Messages("packagingSiteDetails.heading1Site")
-                  }
-                  val h1 = document.getElementsByTag("h1")
-                  h1.size() mustBe 1
-                  h1.text() mustEqual expectedHeading
-                }
-
-                "should include the expected body" in {
-                  val p = document.getElementsByTag("p")
-                  p.size() mustBe 1
-                  p.text() mustEqual "You must always have at least one packaging site listed"
-                }
-
-                "should include the expected summary list" - {
-                  val summaryListRows = document.getElementsByClass(Selectors.summaryListRow)
-                  s"that contains $numberOfPackagingSites rows" in {
-                    summaryListRows.size() mustEqual numberOfPackagingSites
-                  }
-
-                  packagingSites.zipWithIndex.foreach { case ((id, site), index) =>
-                    s"that includes a summary row for ${site.address.lines.head}" in {
-                      val summaryRow = summaryListRows.get(index)
-                      summaryRow.getElementsByTag("dt").text() must include((site.address.lines :+ site.address.postCode).mkString(", "))
-                      val action = summaryRow.getElementsByClass(Selectors.link)
-                      if (numberOfPackagingSites > 1) {
-                        action.text() must include("Remove packaging site")
-                        action.attr("href") mustBe routes.RemovePackagingSiteDetailsController.onPageLoad(mode, id).url
-                      } else {
-                        action.size() mustEqual 0
-                      }
-                    }
-                  }
-                }
-
-                "should include the expected details section" in {
-                  val expectedDetailsLinkInfo = if (numberOfPackagingSites == 1) {
-                    Messages("packagingSiteDetails.detailsLink")
-                  } else {
-                    ""
-                  }
-                  val details = document.getElementsByClass("govuk-details__summary-text")
-                  details.text() mustEqual expectedDetailsLinkInfo
+                  val expectedTitle = s"You added $numberOfPackagingSites UK packaging site${if (numberOfPackagingSites != 1) "s" else ""} - Soft Drinks Industry Levy - GOV.UK"
+                  document.title() must include(expectedTitle)
                 }
               }
             }
