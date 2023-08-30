@@ -4,7 +4,7 @@ import models.HowManyLitresGlobally.{Large, Small}
 import models.backend.Subscription
 import models.{CreatedSubscriptionAndAmountProducedGlobally, HowManyLitresGlobally, RosmWithUtr}
 import org.jsoup.Jsoup
-import org.scalatest.matchers.must.Matchers.include
+import org.scalatest.matchers.must.Matchers.{include, convertToAnyMustWrapper}
 import play.api.http.HeaderNames
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.i18n.Messages

@@ -5,7 +5,7 @@ import models.OrganisationType.LimitedCompany
 import models.Verify.YesRegister
 import models.{CheckMode, HowManyLitresGlobally}
 import org.jsoup.Jsoup
-import org.scalatest.matchers.must.Matchers.include
+import org.scalatest.matchers.must.Matchers.{include, convertToAnyMustWrapper}
 import pages._
 import play.api.http.HeaderNames
 import play.api.http.Status.OK
