@@ -57,12 +57,7 @@ class RampOffController @Inject()(identify: IdentifierAction,
         updatedUserAnswers = addressLookupService.addAddressUserAnswers(WarehouseDetails, alfResponse.address, request.userAnswers, sdilId, alfId)
         _                   <- sessionRepository.set(updatedUserAnswers)
       } yield {
-        val redirectUrl = if (mode == NormalMode) {
-          controllers.routes.WarehouseDetailsController.onPageLoad(NormalMode)
-        } else {
-          controllers.routes.CheckYourAnswersController.onPageLoad
-        }
-        Redirect(redirectUrl)
+        Redirect(controllers.routes.WarehouseDetailsController.onPageLoad(mode))
       }
   }
 
@@ -73,12 +68,7 @@ class RampOffController @Inject()(identify: IdentifierAction,
         updatedUserAnswers = addressLookupService.addAddressUserAnswers(PackingDetails, alfResponse.address, request.userAnswers, sdilId, alfId)
         _                   <- sessionRepository.set(updatedUserAnswers)
       } yield {
-        val redirectUrl = if (mode == NormalMode) {
-          controllers.routes.PackagingSiteDetailsController.onPageLoad(NormalMode)
-        } else {
-          controllers.routes.CheckYourAnswersController.onPageLoad
-        }
-        Redirect(redirectUrl)
+        Redirect(controllers.routes.PackagingSiteDetailsController.onPageLoad(mode))
       }
   }
 }

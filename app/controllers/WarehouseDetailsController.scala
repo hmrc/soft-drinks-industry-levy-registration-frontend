@@ -60,7 +60,7 @@ class WarehouseDetailsController @Inject()(
         }
         val warehouses = request.userAnswers.warehouseList
 
-        Ok(view(preparedForm, mode, createWarehouseSummary(warehouses), warehouses.size))
+        Ok(view(preparedForm, mode, createWarehouseSummary(warehouses, mode), warehouses.size))
       }
   }
 
@@ -71,7 +71,7 @@ class WarehouseDetailsController @Inject()(
 
       form.bindFromRequest().fold(
         formWithErrors =>
-          Future.successful(BadRequest(view(formWithErrors, mode, createWarehouseSummary(warehouses), warehouses.size))),
+          Future.successful(BadRequest(view(formWithErrors, mode, createWarehouseSummary(warehouses, mode), warehouses.size))),
 
         value => {
           for {
@@ -89,7 +89,7 @@ class WarehouseDetailsController @Inject()(
       )
   }
 
-  private def createWarehouseSummary(warehouses: Map[String, Warehouse])(implicit messages:Messages) = {
-    Some(SummaryListViewModel(rows = WarehouseDetailsSummary.warehouseDetailsRow(warehouses)))
+  private def createWarehouseSummary(warehouses: Map[String, Warehouse], mode: Mode)(implicit messages:Messages) = {
+    Some(SummaryListViewModel(rows = WarehouseDetailsSummary.warehouseDetailsRow(warehouses, mode)))
   }
 }

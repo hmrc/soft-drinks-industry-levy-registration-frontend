@@ -400,22 +400,31 @@ trait RegSummaryISpecHelper extends ControllerITTestHelper {
   }
 
 
-  def validatePackingSiteDetailsSummary(summaryList: Element,
-                                        isCheckAnswers: Boolean = true) = {
+  def validateSiteDetailsSummary(summaryList: Element,
+                                 isCheckAnswers: Boolean = true) = {
     val rows = summaryList.getElementsByClass("govuk-summary-list__row")
     rows.size() mustBe 2
     val packingRow = rows.get(0)
     val warehouseRow = rows.get(1)
     if (isCheckAnswers) {
+      val zeroPackingSites = packingRow.text().contains("0")
+      val packingLink = if (zeroPackingSites)
+        routes.PackAtBusinessAddressController.onPageLoad(CheckMode).url else
+        routes.PackagingSiteDetailsController.onPageLoad(CheckMode).url
       packingRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByTag("a").first().text() mustBe "Change the UK packaging site that you operate to produce liable drinks"
       packingRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByClass("govuk-visually-hidden").first().text() mustBe "the UK packaging site that you operate to produce liable drinks"
-      packingRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByTag("a").first().attr("href") mustBe routes.PackAtBusinessAddressController.onPageLoad(CheckMode).url
+      packingRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByTag("a").first().attr("href") mustBe packingLink
 
+      val zeroWarehouses = warehouseRow.text().contains("0")
+      val warehouseLink = if (zeroWarehouses)
+        routes.AskSecondaryWarehousesController.onPageLoad(CheckMode).url else
+        routes.WarehouseDetailsController.onPageLoad(CheckMode).url
       warehouseRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByTag("a").first().text() mustBe "Change the UK warehouses you use to store liable drinks"
       warehouseRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByClass("govuk-visually-hidden").first().text() mustBe "the UK warehouses you use to store liable drinks"
-      warehouseRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByTag("a").first().attr("href") mustBe routes.AskSecondaryWarehousesController.onPageLoad(CheckMode).url
+      warehouseRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByTag("a").first().attr("href") mustBe warehouseLink
     } else {
       packingRow.getElementsByClass("govuk-summary-list__actions").size() mustBe 0
+      warehouseRow.getElementsByClass("govuk-summary-list__actions").size() mustBe 0
     }
   }
 

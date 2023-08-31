@@ -202,12 +202,7 @@ class RampOffControllerSpec extends SpecBase with MockitoSugar {
 
             val result = route(app, request).value
             status(result) mustBe SEE_OTHER
-            val expectedLocation = if (mode == CheckMode) {
-              controllers.routes.CheckYourAnswersController.onPageLoad.url
-            } else {
-              controllers.routes.WarehouseDetailsController.onPageLoad(NormalMode).url
-            }
-            redirectLocation(result).get mustBe expectedLocation
+            redirectLocation(result).get mustBe controllers.routes.WarehouseDetailsController.onPageLoad(mode).url
           }
         }
         s"should return exception to the next page when ALF doesnt return Address successfully" in new Setup {
@@ -316,12 +311,7 @@ class RampOffControllerSpec extends SpecBase with MockitoSugar {
 
             val result = route(application, request).value
             status(result) mustBe SEE_OTHER
-            val expectedLocation = if (mode == CheckMode) {
-              controllers.routes.CheckYourAnswersController.onPageLoad.url
-            } else {
-              controllers.routes.PackagingSiteDetailsController.onPageLoad(NormalMode).url
-            }
-            redirectLocation(result).get mustBe expectedLocation
+            redirectLocation(result).get mustBe controllers.routes.PackagingSiteDetailsController.onPageLoad(mode).url
           }
         }
         s"should return exception to the next page when ALF doesnt return Address successfully" in new Setup {

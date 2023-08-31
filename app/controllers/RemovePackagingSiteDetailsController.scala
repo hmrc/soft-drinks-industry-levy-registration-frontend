@@ -19,7 +19,7 @@ package controllers
 import controllers.actions._
 import forms.RemovePackagingSiteDetailsFormProvider
 import handlers.ErrorHandler
-import models.{NormalMode, UserAnswers}
+import models.{Mode, NormalMode, UserAnswers}
 import navigation.Navigator
 import pages.RemovePackagingSiteDetailsPage
 import play.api.i18n.MessagesApi
@@ -53,24 +53,24 @@ class RemovePackagingSiteDetailsController @Inject()(
       .map(packagingSite => AddressFormattingHelper.addressFormatting(packagingSite.address, packagingSite.tradingName))
   }
 
-  def onPageLoad(ref: String): Action[AnyContent] = controllerActions.withUserWhoCanRegister {
+  def onPageLoad(mode: Mode, ref: String): Action[AnyContent] = controllerActions.withUserWhoCanRegister {
     implicit request =>
       getPackagingSiteAddressBaseOnRef(ref, request.userAnswers) match {
         case None =>
           genericLogger.logger.warn(s"user has potentially hit page and ref does not exist for packaging site" +
             s"$ref ${request.userAnswers.id} amount currently: ${request.userAnswers.packagingSiteList.size}")
-          Redirect(routes.PackagingSiteDetailsController.onPageLoad(NormalMode))
+          Redirect(routes.PackagingSiteDetailsController.onPageLoad(mode))
         case Some(packagingSiteDetails) =>
           val preparedForm = request.userAnswers.get(RemovePackagingSiteDetailsPage) match {
             case None => form
             case Some(value) => form.fill(value)
           }
 
-          Ok(view(preparedForm, ref, packagingSiteDetails))
+          Ok(view(preparedForm, mode, ref, packagingSiteDetails))
       }
   }
 
-  def onSubmit(ref: String): Action[AnyContent] = controllerActions.withUserWhoCanRegister.async {
+  def onSubmit(mode: Mode, ref: String): Action[AnyContent] = controllerActions.withUserWhoCanRegister.async {
     implicit request =>
       def removePackagingDetailsFromUserAnswers(userSelection: Boolean, userAnswers: UserAnswers, refOfSite: String): UserAnswers = {
         if (userSelection) {
@@ -84,15 +84,15 @@ class RemovePackagingSiteDetailsController @Inject()(
         case None =>
           genericLogger.logger.warn(s"user has potentially submit page and ref does not exist for packaging site" +
             s"$ref ${request.userAnswers.id} amount currently: ${request.userAnswers.packagingSiteList.size}")
-          Future.successful(Redirect(routes.PackagingSiteDetailsController.onPageLoad(NormalMode)))
+          Future.successful(Redirect(routes.PackagingSiteDetailsController.onPageLoad(mode)))
         case Some(packagingSiteDetails) =>
           form.bindFromRequest().fold(
             formWithErrors =>
-              Future.successful(BadRequest(view(formWithErrors, ref, packagingSiteDetails))),
+              Future.successful(BadRequest(view(formWithErrors, mode, ref, packagingSiteDetails))),
 
             value => {
               val updatedAnswersAfterUserAnswer = removePackagingDetailsFromUserAnswers(value, request.userAnswers, ref)
-              updateDatabaseAndRedirect(updatedAnswersAfterUserAnswer, RemovePackagingSiteDetailsPage, NormalMode)
+              updateDatabaseAndRedirect(updatedAnswersAfterUserAnswer, RemovePackagingSiteDetailsPage, mode)
             }
           )
       }

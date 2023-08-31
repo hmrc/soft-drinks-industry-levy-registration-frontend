@@ -29,14 +29,18 @@ object UKSitesSummary {
 
   private def getPackAtBusinessAddressRow(subscription: Subscription, isCheckAnswers: Boolean)(implicit messages: Messages): SummaryListRow = {
       SummaryListRowViewModel(
-        key =  if(subscription.productionSites.size > 1){
-          messages("checkYourAnswers.packing.checkYourAnswersLabel.multiple",  {subscription.productionSites.size.toString})} else{
+        key = if (subscription.productionSites.size != 1) {
+          messages("checkYourAnswers.packing.checkYourAnswersLabel.multiple", subscription.productionSites.size.toString)
+        } else {
           messages("checkYourAnswers.packing.checkYourAnswersLabel.one")
         },
         value = Value(),
         actions = if (isCheckAnswers) {
+          val onwardRoute = if (subscription.productionSites.nonEmpty)
+            routes.PackagingSiteDetailsController.onPageLoad(CheckMode).url else
+            routes.PackAtBusinessAddressController.onPageLoad(CheckMode).url
           Seq(
-            ActionItemViewModel("site.change", routes.PackAtBusinessAddressController.onPageLoad(CheckMode).url)
+            ActionItemViewModel("site.change", onwardRoute)
               .withAttribute(("id", "change-packaging-sites"))
               .withVisuallyHiddenText(messages("checkYourAnswers.sites.packing.change.hidden"))
           )
@@ -48,14 +52,18 @@ object UKSitesSummary {
 
   private def getAskSecondaryWarehouseRow (subscription: Subscription, isCheckAnswers: Boolean)(implicit messages: Messages): SummaryListRow = {
       SummaryListRowViewModel(
-        key = if(subscription.warehouseSites.size > 1){
-          messages("checkYourAnswers.warehouse.checkYourAnswersLabel.multiple",  {subscription.warehouseSites.size.toString})} else {
+        key = if (subscription.warehouseSites.size != 1) {
+          messages("checkYourAnswers.warehouse.checkYourAnswersLabel.multiple", subscription.warehouseSites.size.toString)
+        } else {
           messages("checkYourAnswers.warehouse.checkYourAnswersLabel.one")
         },
         value = Value(),
         actions = if (isCheckAnswers) {
+          val onwardRoute = if (subscription.warehouseSites.nonEmpty)
+            routes.WarehouseDetailsController.onPageLoad(CheckMode).url else
+            routes.AskSecondaryWarehousesController.onPageLoad(CheckMode).url
           Seq(
-            ActionItemViewModel("site.change", routes.AskSecondaryWarehousesController.onPageLoad(CheckMode).url)
+            ActionItemViewModel("site.change", onwardRoute)
               .withAttribute(("id", "change-warehouse-sites"))
               .withVisuallyHiddenText(messages("checkYourAnswers.sites.warehouse.change.hidden"))
           )
@@ -67,31 +75,14 @@ object UKSitesSummary {
 
   def summaryList(subscription: Subscription, isCheckAnswers: Boolean)
                  (implicit messages: Messages): Option[(String, SummaryList)] = {
-
-    (subscription.productionSites.nonEmpty, subscription.warehouseSites.nonEmpty) match {
-      case (true, false) =>
-        Option(
-          SummaryListViewModel(
-            rows = Seq(getPackAtBusinessAddressRow(subscription, isCheckAnswers))
-          )
-        ).map(list => "checkYourAnswers.sites" -> list)
-      case (false, true) =>
-        Some(
-          SummaryListViewModel(
-            rows = Seq(getAskSecondaryWarehouseRow(subscription, isCheckAnswers))
-          )
-        ).map(list => "checkYourAnswers.sites" -> list)
-      case (true, true) =>
-        Some(
-          SummaryListViewModel(
-            Seq(
-              getPackAtBusinessAddressRow(subscription, isCheckAnswers),
-              getAskSecondaryWarehouseRow(subscription, isCheckAnswers)
-            )
-          )
-        ).map(list => "checkYourAnswers.sites" -> list)
-      case _ => None
-    }
+    Option(
+      SummaryListViewModel(
+        Seq(
+          getPackAtBusinessAddressRow(subscription, isCheckAnswers),
+          getAskSecondaryWarehouseRow(subscription, isCheckAnswers)
+        )
+      )
+    ).map(list => "checkYourAnswers.sites" -> list)
   }
 
 }

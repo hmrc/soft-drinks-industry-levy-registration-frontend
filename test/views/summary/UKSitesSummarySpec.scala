@@ -27,56 +27,74 @@ class UKSitesSummarySpec extends RegistrationSubscriptionHelper {
 
   "summaryList" - {
 
-    "should return an None when no packaging site or warehouse list is passed in" in {
+    "should return summary with link to pack-at-business-address for packaging sites and ask-secondary-warehouses for warehouses " +
+      "when no packaging site or warehouse list is passed in" in {
       val subscription = defaultSubscriptionNoSites
-      val packagingSiteSummaryRowList = UKSitesSummary.summaryList(subscription,true)
-      packagingSiteSummaryRowList mustBe None
+      val ukSitesSummary = UKSitesSummary.summaryList(subscription,true)
+      ukSitesSummary mustBe Some(("checkYourAnswers.sites",
+        SummaryList(List(
+          SummaryListRow(Key(Text("You have 0 packaging sites"), ""), Value(Empty, ""), "",
+            Some(Actions("", List(ActionItem("/soft-drinks-industry-levy-registration/change-pack-at-business-address",
+              Text("Change"), Some("the UK packaging site that you operate to produce liable drinks"), "", Map("id" -> "change-packaging-sites")))))),
+          SummaryListRow(Key(Text("You have 0 warehouses"), ""), Value(Empty, ""), "",
+            Some(Actions("", List(ActionItem("/soft-drinks-industry-levy-registration/change-ask-secondary-warehouses",
+              Text("Change"), Some("the UK warehouses you use to store liable drinks"), "", Map("id" -> "change-warehouse-sites"))))))),
+          None, "", Map())))
     }
 
-    "should return a Some summary for packing site when one packaging site and no warehouse is passed in" in {
+    "should return summary with link to packaging-site-details for packaging sites and ask-secondary-warehouses for warehouses " +
+      "when one packaging site and no warehouse are passed in" in {
       val subscription = defaultSubscriptionNoSites.copy(productionSites = packagingSiteListWith1.values.toSeq)
 
-      val packagingSiteSummaryRowList = UKSitesSummary.summaryList(subscription,true)
+      val ukSitesSummary = UKSitesSummary.summaryList(subscription,true)
 
-      packagingSiteSummaryRowList mustBe
-        Some((
-          "checkYourAnswers.sites", SummaryList(List(SummaryListRow(Key(Text("You have 1 packaging site"), ""),
-          Value(Empty, ""), "",
-          Some(Actions("", List(ActionItem("/soft-drinks-industry-levy-registration/change-pack-at-business-address",
-            Text("Change"), Some("the UK packaging site that you operate to produce liable drinks"), "",
-            Map("id" -> "change-packaging-sites"))))))), None, "", Map())))
+      ukSitesSummary mustBe Some(("checkYourAnswers.sites",
+        SummaryList(List(
+          SummaryListRow(Key(Text("You have 1 packaging site"), ""), Value(Empty, ""), "",
+            Some(Actions("", List(ActionItem("/soft-drinks-industry-levy-registration/change-packaging-site-details",
+              Text("Change"), Some("the UK packaging site that you operate to produce liable drinks"), "", Map("id" -> "change-packaging-sites")))))),
+          SummaryListRow(Key(Text("You have 0 warehouses"), ""), Value(Empty, ""), "",
+            Some(Actions("", List(ActionItem("/soft-drinks-industry-levy-registration/change-ask-secondary-warehouses",
+              Text("Change"), Some("the UK warehouses you use to store liable drinks"), "", Map("id" -> "change-warehouse-sites"))))))),
+          None, "", Map())))
     }
 
-    "should return summary for warehouses when one warehouse and no packing site is passed in" in {
+    "should return summary with link to pack-at-business-address for packaging sites and warehouse-details for warehouses " +
+      "when no packaging site and one warehouse are passed in" in {
       val subscription = defaultSubscriptionNoSites.copy(warehouseSites = warehouseListWith1.values.map(Site.fromWarehouse(_)).toSeq)
 
-      val warehouseSummaryRowList = UKSitesSummary.summaryList(subscription,true)
+      val ukSitesSummary = UKSitesSummary.summaryList(subscription,true)
 
-      warehouseSummaryRowList mustBe
-        Some(("checkYourAnswers.sites", SummaryList(List(SummaryListRow(Key(Text("You have 1 warehouse"), ""),
-          Value(Empty, ""), "",
-          Some(Actions("", List(ActionItem("/soft-drinks-industry-levy-registration/change-ask-secondary-warehouses",
-            Text("Change"), Some("the UK warehouses you use to store liable drinks"), "",
-            Map("id" -> "change-warehouse-sites"))))))), None, "", Map())))
+      ukSitesSummary mustBe Some(("checkYourAnswers.sites",
+        SummaryList(List(
+          SummaryListRow(Key(Text("You have 0 packaging sites"), ""), Value(Empty, ""), "",
+            Some(Actions("", List(ActionItem("/soft-drinks-industry-levy-registration/change-pack-at-business-address",
+              Text("Change"), Some("the UK packaging site that you operate to produce liable drinks"), "", Map("id" -> "change-packaging-sites")))))),
+          SummaryListRow(Key(Text("You have 1 warehouse"), ""), Value(Empty, ""), "",
+            Some(Actions("", List(ActionItem("/soft-drinks-industry-levy-registration/change-warehouses",
+              Text("Change"), Some("the UK warehouses you use to store liable drinks"), "", Map("id" -> "change-warehouse-sites"))))))),
+          None, "", Map())))
     }
 
-
-    "should return summary for warehouses and packing sites when one warehouse and one packing site is passed in" in {
+    "should return summary with link to packaging-site-details for packaging sites and warehouse-details for warehouses " +
+      "when one packaging site and one warehouse are passed in" in {
       val subscription = defaultSubscriptionNoSites.copy(
         productionSites = packagingSiteListWith1.values.toSeq,
         warehouseSites = warehouseListWith1.values.map(Site.fromWarehouse(_)).toSeq)
 
-      val warehouseSummaryRowList = UKSitesSummary.summaryList(subscription, true)
+      val ukSitesSummary = UKSitesSummary.summaryList(subscription, true)
 
-      warehouseSummaryRowList mustBe
-        Some(("checkYourAnswers.sites", SummaryList(List(SummaryListRow(Key(Text("You have 1 packaging site"), ""),
-          Value(Empty, ""), "", Some(Actions("", List(ActionItem("/soft-drinks-industry-levy-registration/change-pack-at-business-address",
-            Text("Change"), Some("the UK packaging site that you operate to produce liable drinks"), "",
-            Map("id" -> "change-packaging-sites")))))), SummaryListRow(Key(Text("You have 1 warehouse"), ""),
-          Value(Empty, ""), "", Some(Actions("", List(ActionItem("/soft-drinks-industry-levy-registration/change-ask-secondary-warehouses",
-            Text("Change"), Some("the UK warehouses you use to store liable drinks"), "",
-            Map("id" -> "change-warehouse-sites"))))))), None, "", Map())))
+      ukSitesSummary mustBe Some(("checkYourAnswers.sites",
+        SummaryList(List(
+          SummaryListRow(Key(Text("You have 1 packaging site"), ""), Value(Empty, ""), "",
+            Some(Actions("", List(ActionItem("/soft-drinks-industry-levy-registration/change-packaging-site-details",
+              Text("Change"), Some("the UK packaging site that you operate to produce liable drinks"), "", Map("id" -> "change-packaging-sites")))))),
+          SummaryListRow(Key(Text("You have 1 warehouse"), ""), Value(Empty, ""), "",
+            Some(Actions("", List(ActionItem("/soft-drinks-industry-levy-registration/change-warehouses",
+              Text("Change"), Some("the UK warehouses you use to store liable drinks"), "", Map("id" -> "change-warehouse-sites"))))))),
+          None, "", Map())))
     }
+
   }
 
 }
