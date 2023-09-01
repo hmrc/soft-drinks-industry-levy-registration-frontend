@@ -5,7 +5,7 @@ import models.OrganisationType.LimitedCompany
 import models.Verify.YesRegister
 import models.{CheckMode, HowManyLitresGlobally}
 import org.jsoup.Jsoup
-import org.scalatest.matchers.must.Matchers.{include, convertToAnyMustWrapper}
+import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
 import pages._
 import play.api.http.HeaderNames
 import play.api.http.Status.OK
@@ -144,6 +144,231 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
           }
         }
       }
+
+      "and the user answers are no to own brands and co-pack and imports " +
+        "but have existing sites on their answers from the previous answers, sites should be cleared" in {
+          val userAnswers = userAnswerWithLitresForAllPagesIncludingOnesNotRequired(Large)
+            .set(OperatePackagingSitesPage, false).success.value
+            .remove(HowManyOperatePackagingSitesPage).success.value
+            .set(ContractPackingPage, false).success.value
+            .remove(HowManyContractPackingPage).success.value
+            .set(ImportsPage, false).success.value
+            .remove(HowManyImportsPage).success.value
+
+        given
+            .commonPrecondition
+
+          setAnswers(userAnswers)
+
+          WsTestClient.withClient { client =>
+            val result = createClientRequestGet(client, baseUrl + route)
+
+            whenReady(result) { res =>
+              res.status mustBe OK
+              val page = Jsoup.parse(res.body)
+              page.getElementsByTag("dt").text() mustNot include("UK site details")
+              page.getElementsByTag("dt").text() mustNot include("You have 3 packaging sites")
+
+              val startDateSummaryListItem = page.getElementsByClass("govuk-summary-list").get(4)
+              page.getElementsByTag("h2").get(4).text() mustBe "Soft Drinks Industry Levy liability date"
+              validateStartDateSummaryList(startDateSummaryListItem, startDate, true)
+
+              val contactDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(5)
+              page.getElementsByTag("h2").get(5).text() mustBe "Contact person details"
+              validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, true)
+            }
+          }
+      }
+
+      "and the user answers are no to own brands and co-pack to and yes to imports " +
+        "but have existing sites on their answers from the previous answers, sites should be cleared" in {
+        val userAnswers = userAnswerWithLitresForAllPagesIncludingOnesNotRequired(Large)
+          .set(OperatePackagingSitesPage, false).success.value
+          .remove(HowManyOperatePackagingSitesPage).success.value
+          .set(ContractPackingPage, false).success.value
+          .remove(HowManyContractPackingPage).success.value
+          .set(ImportsPage, true).success.value
+          .set(HowManyImportsPage, importsLitres).success.value
+
+        given
+          .commonPrecondition
+
+        setAnswers(userAnswers)
+
+        WsTestClient.withClient { client =>
+          val result = createClientRequestGet(client, baseUrl + route)
+
+          whenReady(result) { res =>
+            res.status mustBe OK
+            val page = Jsoup.parse(res.body)
+            page.getElementsByTag("dt").text() mustNot include("You have 3 packaging sites")
+
+            val startDateSummaryListItem = page.getElementsByClass("govuk-summary-list").get(4)
+            page.getElementsByTag("h2").get(4).text() mustBe "Soft Drinks Industry Levy liability date"
+            validateStartDateSummaryList(startDateSummaryListItem, startDate, true)
+
+            val contactDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(5)
+            page.getElementsByTag("h2").get(5).text() mustBe "Contact person details"
+            validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, true)
+          }
+        }
+      }
+
+      "and the user answers are no to own brands and yes to co-pack and import " +
+        "then sites should be displayed" in {
+        val userAnswers = userAnswerWithLitresForAllPagesIncludingOnesNotRequired(Large)
+          .set(OperatePackagingSitesPage, false).success.value
+          .remove(HowManyOperatePackagingSitesPage).success.value
+
+        given
+          .commonPrecondition
+
+        setAnswers(userAnswers)
+
+        WsTestClient.withClient { client =>
+          val result = createClientRequestGet(client, baseUrl + route)
+
+          whenReady(result) { res =>
+            res.status mustBe OK
+            val page = Jsoup.parse(res.body)
+            page.getElementsByTag("dt").text() must include("You have 3 packaging sites")
+
+            val startDateSummaryListItem = page.getElementsByClass("govuk-summary-list").get(4)
+            page.getElementsByTag("h2").get(4).text() mustBe "Soft Drinks Industry Levy liability date"
+            validateStartDateSummaryList(startDateSummaryListItem, startDate, true)
+
+            val contactDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(5)
+            page.getElementsByTag("h2").get(5).text() mustBe "Contact person details"
+            validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, true)
+          }
+        }
+      }
+
+      "and the user answers are no to own brands and imports and yes to co-pack " +
+        "then sites should be displayed" in {
+        val userAnswers = userAnswerWithLitresForAllPagesIncludingOnesNotRequired(Large)
+          .set(OperatePackagingSitesPage, false).success.value
+          .remove(HowManyOperatePackagingSitesPage).success.value
+          .set(ImportsPage, false).success.value
+          .remove(HowManyImportsPage).success.value
+
+        given
+          .commonPrecondition
+
+        setAnswers(userAnswers)
+
+        WsTestClient.withClient { client =>
+          val result = createClientRequestGet(client, baseUrl + route)
+
+          whenReady(result) { res =>
+            res.status mustBe OK
+            val page = Jsoup.parse(res.body)
+            page.getElementsByTag("dt").text() must include("You have 3 packaging sites")
+
+            val startDateSummaryListItem = page.getElementsByClass("govuk-summary-list").get(4)
+            page.getElementsByTag("h2").get(4).text() mustBe "Soft Drinks Industry Levy liability date"
+            validateStartDateSummaryList(startDateSummaryListItem, startDate, true)
+
+            val contactDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(5)
+            page.getElementsByTag("h2").get(5).text() mustBe "Contact person details"
+            validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, true)
+          }
+        }
+      }
+
+      "and the user answers are no to co-pack and imports and yes to own brands " +
+        "then sites should be displayed" in {
+        val userAnswers = userAnswerWithLitresForAllPagesIncludingOnesNotRequired(Large)
+          .set(ContractPackingPage, false).success.value
+          .remove(HowManyContractPackingPage).success.value
+          .set(ImportsPage, false).success.value
+          .remove(HowManyImportsPage).success.value
+
+        given
+          .commonPrecondition
+
+        setAnswers(userAnswers)
+
+        WsTestClient.withClient { client =>
+          val result = createClientRequestGet(client, baseUrl + route)
+
+          whenReady(result) { res =>
+            res.status mustBe OK
+            val page = Jsoup.parse(res.body)
+            page.getElementsByTag("dt").text() must include("You have 3 packaging sites")
+
+            val startDateSummaryListItem = page.getElementsByClass("govuk-summary-list").get(4)
+            page.getElementsByTag("h2").get(4).text() mustBe "Soft Drinks Industry Levy liability date"
+            validateStartDateSummaryList(startDateSummaryListItem, startDate, true)
+
+            val contactDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(5)
+            page.getElementsByTag("h2").get(5).text() mustBe "Contact person details"
+            validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, true)
+          }
+        }
+      }
+
+      "and the user answers are no to co-pack and imports and yes to own brands " +
+        "packing sites and warehouses added previously should still be displayed" in {
+        val userAnswers = userAnswerWithLitresForAllPagesIncludingOnesNotRequired(Large)
+          .set(ContractPackingPage, false).success.value
+          .remove(HowManyContractPackingPage).success.value
+
+        given
+          .commonPrecondition
+
+        setAnswers(userAnswers)
+
+        WsTestClient.withClient { client =>
+          val result = createClientRequestGet(client, baseUrl + route)
+
+          whenReady(result) { res =>
+            res.status mustBe OK
+            val page = Jsoup.parse(res.body)
+            page.getElementsByTag("dt").text() must include("You have 3 packaging sites")
+
+            val startDateSummaryListItem = page.getElementsByClass("govuk-summary-list").get(4)
+            page.getElementsByTag("h2").get(4).text() mustBe "Soft Drinks Industry Levy liability date"
+            validateStartDateSummaryList(startDateSummaryListItem, startDate, true)
+
+            val contactDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(5)
+            page.getElementsByTag("h2").get(5).text() mustBe "Contact person details"
+            validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, true)
+          }
+        }
+      }
+
+      "and the user answers are no to imports and yes to own brands and co-pack " +
+        "packing sites and warehouses added previously should still be displayed" in {
+        val userAnswers = userAnswerWithLitresForAllPagesIncludingOnesNotRequired(Large)
+          .set(ImportsPage, false).success.value
+          .remove(HowManyImportsPage).success.value
+
+        given
+          .commonPrecondition
+
+        setAnswers(userAnswers)
+
+        WsTestClient.withClient { client =>
+          val result = createClientRequestGet(client, baseUrl + route)
+
+          whenReady(result) { res =>
+            res.status mustBe OK
+            val page = Jsoup.parse(res.body)
+            page.getElementsByTag("dt").text() must include("You have 3 packaging sites")
+            page.getElementsByTag("dt").text() must include("You have 1 warehouse")
+
+            val startDateSummaryListItem = page.getElementsByClass("govuk-summary-list").get(4)
+            page.getElementsByTag("h2").get(4).text() mustBe "Soft Drinks Industry Levy liability date"
+            validateStartDateSummaryList(startDateSummaryListItem, startDate, true)
+
+            val contactDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(5)
+            page.getElementsByTag("h2").get(5).text() mustBe "Contact person details"
+            validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, true)
+          }
+        }
+      }
+
     }
 
     s"when the user has selected they are a Small producer type" - {
@@ -254,6 +479,464 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
           }
         }
       }
+
+      "and the user answers are no to own brands, co-pack, imports, third party " +
+        "any packaging sites and other data added previously should be cleared" in {
+        val userAnswers = userAnswerWithLitresForAllPagesIncludingOnesNotRequired(Small)
+          .set(ThirdPartyPackagersPage, false).success.value
+          .set(OperatePackagingSitesPage, false).success.value
+          .remove(HowManyOperatePackagingSitesPage).success.value
+          .set(ContractPackingPage, false).success.value
+          .remove(HowManyContractPackingPage).success.value
+          .set(ImportsPage, false).success.value
+          .remove(HowManyImportsPage).success.value
+
+        given
+          .commonPrecondition
+
+        setAnswers(userAnswers)
+
+        WsTestClient.withClient { client =>
+          val result = createClientRequestGet(client, baseUrl + route)
+
+          whenReady(result) { res =>
+            res.status mustBe OK
+            val page = Jsoup.parse(res.body)
+            page.getElementsByTag("dt").text() mustNot include("You have 3 packaging sites")
+
+          }
+        }
+      }
+
+      "and the user answers are no to co-pack " +
+        "any packaging sites added previously should be cleared" in {
+        val userAnswers = userAnswerWithLitresForAllPagesIncludingOnesNotRequired(Small)
+          .set(ContractPackingPage, false).success.value
+          .remove(HowManyContractPackingPage).success.value
+
+        given
+          .commonPrecondition
+
+        setAnswers(userAnswers)
+
+        WsTestClient.withClient { client =>
+          val result = createClientRequestGet(client, baseUrl + route)
+
+          whenReady(result) { res =>
+            res.status mustBe OK
+            val page = Jsoup.parse(res.body)
+            page.getElementsByTag("dt").text() mustNot include("You have 3 packaging sites")
+
+            val startDateSummaryListItem = page.getElementsByClass("govuk-summary-list").get(5)
+            page.getElementsByTag("h2").get(5).text() mustBe "Soft Drinks Industry Levy liability date"
+            validateStartDateSummaryList(startDateSummaryListItem, startDate, true)
+
+            val contactDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(6)
+            page.getElementsByTag("h2").get(6).text() mustBe "Contact person details"
+            validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, true)
+          }
+        }
+      }
+
+      "and the user answers are no to co-pack and imports " +
+        "any packaging sites added previously should be cleared" in {
+        val userAnswers = userAnswerWithLitresForAllPagesIncludingOnesNotRequired(Small)
+          .set(ContractPackingPage, false).success.value
+          .remove(HowManyContractPackingPage).success.value
+          .set(ImportsPage, false).success.value
+          .remove(HowManyImportsPage).success.value
+
+        given
+          .commonPrecondition
+
+        setAnswers(userAnswers)
+
+        WsTestClient.withClient { client =>
+          val result = createClientRequestGet(client, baseUrl + route)
+
+          whenReady(result) { res =>
+            res.status mustBe OK
+            val page = Jsoup.parse(res.body)
+            page.getElementsByTag("dt").text() mustNot include("You have 3 packaging sites")
+            page.getElementsByTag("dl").text() mustNot include("Date liable from 01 June 2022")
+
+            val contactDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(5)
+            page.getElementsByTag("h2").get(5).text() mustBe "Contact person details"
+            validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, true)
+          }
+        }
+      }
+
+      "and the user answers are no to own brands, co pack and imports " +
+        "any packaging sites added previously should be cleared" in {
+        val userAnswers = userAnswerWithLitresForAllPagesIncludingOnesNotRequired(Small)
+          .set(OperatePackagingSitesPage, false).success.value
+          .remove(HowManyOperatePackagingSitesPage).success.value
+          .set(ContractPackingPage, false).success.value
+          .remove(HowManyContractPackingPage).success.value
+          .set(ImportsPage, false).success.value
+          .remove(HowManyImportsPage).success.value
+
+        given
+          .commonPrecondition
+
+        setAnswers(userAnswers)
+
+        WsTestClient.withClient { client =>
+          val result = createClientRequestGet(client, baseUrl + route)
+
+          whenReady(result) { res =>
+            res.status mustBe OK
+            val page = Jsoup.parse(res.body)
+            page.getElementsByTag("dt").text() mustNot include("You have 3 packaging sites")
+            page.getElementsByTag("dl").text() mustNot include("Date liable from 01 June 2022")
+
+            val contactDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(5)
+            page.getElementsByTag("h2").get(5).text() mustBe "Contact person details"
+            validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, true)
+          }
+        }
+      }
+
+      "and the user answers are no to third party, own brands, co-pack and yes to imports" +
+        "any packaging sites added previously should be cleared" in {
+        val userAnswers = userAnswerWithLitresForAllPagesIncludingOnesNotRequired(Small)
+          .set(ThirdPartyPackagersPage, false).success.value
+          .set(OperatePackagingSitesPage, false).success.value
+          .remove(HowManyOperatePackagingSitesPage).success.value
+          .set(ContractPackingPage, false).success.value
+          .remove(HowManyContractPackingPage).success.value
+
+        given
+          .commonPrecondition
+
+        setAnswers(userAnswers)
+
+        WsTestClient.withClient { client =>
+          val result = createClientRequestGet(client, baseUrl + route)
+
+          whenReady(result) { res =>
+            res.status mustBe OK
+            val page = Jsoup.parse(res.body)
+            page.getElementsByTag("dt").text() mustNot include("You have 3 packaging sites")
+
+            val startDateSummaryListItem = page.getElementsByClass("govuk-summary-list").get(5)
+            page.getElementsByTag("h2").get(5).text() mustBe "Soft Drinks Industry Levy liability date"
+            validateStartDateSummaryList(startDateSummaryListItem, startDate, true)
+
+            val contactDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(6)
+            page.getElementsByTag("h2").get(6).text() mustBe "Contact person details"
+            validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, true)
+          }
+        }
+      }
+
+      "and the user answers are no to third party, own brands and imports and yes to co-pack " +
+        "any packaging sites should be displayed" in {
+        val userAnswers = userAnswerWithLitresForAllPagesIncludingOnesNotRequired(Small)
+          .set(ThirdPartyPackagersPage, false).success.value
+          .set(OperatePackagingSitesPage, false).success.value
+          .remove(HowManyOperatePackagingSitesPage).success.value
+          .set(ImportsPage, false).success.value
+          .remove(HowManyImportsPage).success.value
+
+        given
+          .commonPrecondition
+
+        setAnswers(userAnswers)
+
+        WsTestClient.withClient { client =>
+          val result = createClientRequestGet(client, baseUrl + route)
+
+          whenReady(result) { res =>
+            res.status mustBe OK
+            val page = Jsoup.parse(res.body)
+            page.getElementsByTag("dt").text() must include("You have 3 packaging sites")
+
+            val startDateSummaryListItem = page.getElementsByClass("govuk-summary-list").get(5)
+            page.getElementsByTag("h2").get(5).text() mustBe "Soft Drinks Industry Levy liability date"
+            validateStartDateSummaryList(startDateSummaryListItem, startDate, true)
+
+            val contactDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(6)
+            page.getElementsByTag("h2").get(6).text() mustBe "Contact person details"
+            validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, true)
+          }
+        }
+      }
+
+      "and the user answers are no to third party, own brands and yes to co-pack and imports " +
+        "any packaging sites should be displayed" in {
+        val userAnswers = userAnswerWithLitresForAllPagesIncludingOnesNotRequired(Small)
+          .set(ThirdPartyPackagersPage, false).success.value
+          .set(OperatePackagingSitesPage, false).success.value
+          .remove(HowManyOperatePackagingSitesPage).success.value
+
+        given
+          .commonPrecondition
+
+        setAnswers(userAnswers)
+
+        WsTestClient.withClient { client =>
+          val result = createClientRequestGet(client, baseUrl + route)
+
+          whenReady(result) { res =>
+            res.status mustBe OK
+            val page = Jsoup.parse(res.body)
+            page.getElementsByTag("dt").text() must include("You have 3 packaging sites")
+
+            val startDateSummaryListItem = page.getElementsByClass("govuk-summary-list").get(5)
+            page.getElementsByTag("h2").get(5).text() mustBe "Soft Drinks Industry Levy liability date"
+            validateStartDateSummaryList(startDateSummaryListItem, startDate, true)
+
+            val contactDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(6)
+            page.getElementsByTag("h2").get(6).text() mustBe "Contact person details"
+            validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, true)
+          }
+        }
+      }
+
+      "and the user answers are no to third party and yes to own brands, co-pack and imports " +
+        "any packaging sites should be displayed" in {
+        val userAnswers = userAnswerWithLitresForAllPagesIncludingOnesNotRequired(Small)
+          .set(ThirdPartyPackagersPage, false).success.value
+
+        given
+          .commonPrecondition
+
+        setAnswers(userAnswers)
+
+        WsTestClient.withClient { client =>
+          val result = createClientRequestGet(client, baseUrl + route)
+
+          whenReady(result) { res =>
+            res.status mustBe OK
+            val page = Jsoup.parse(res.body)
+            page.getElementsByTag("dt").text() must include("You have 3 packaging sites")
+
+            val startDateSummaryListItem = page.getElementsByClass("govuk-summary-list").get(5)
+            page.getElementsByTag("h2").get(5).text() mustBe "Soft Drinks Industry Levy liability date"
+            validateStartDateSummaryList(startDateSummaryListItem, startDate, true)
+
+            val contactDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(6)
+            page.getElementsByTag("h2").get(6).text() mustBe "Contact person details"
+            validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, true)
+          }
+        }
+      }
+
+      "and the user answers are no to third party and imports and yes to own brands, co-pack " +
+        "any packaging sites should be displayed" in {
+        val userAnswers = userAnswerWithLitresForAllPagesIncludingOnesNotRequired(Small)
+          .set(ThirdPartyPackagersPage, false).success.value
+          .set(ImportsPage, false).success.value
+          .remove(HowManyImportsPage).success.value
+
+        given
+          .commonPrecondition
+
+        setAnswers(userAnswers)
+
+        WsTestClient.withClient { client =>
+          val result = createClientRequestGet(client, baseUrl + route)
+
+          whenReady(result) { res =>
+            res.status mustBe OK
+            val page = Jsoup.parse(res.body)
+            page.getElementsByTag("dt").text() must include("You have 3 packaging sites")
+
+            val startDateSummaryListItem = page.getElementsByClass("govuk-summary-list").get(5)
+            page.getElementsByTag("h2").get(5).text() mustBe "Soft Drinks Industry Levy liability date"
+            validateStartDateSummaryList(startDateSummaryListItem, startDate, true)
+
+            val contactDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(6)
+            page.getElementsByTag("h2").get(6).text() mustBe "Contact person details"
+            validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, true)
+          }
+        }
+      }
+
+      "and the user answers are yes to third party and co-pack and no to own brands imports " +
+        "any packaging sites should be displayed" in {
+        val userAnswers = userAnswerWithLitresForAllPagesIncludingOnesNotRequired(Small)
+          .set(OperatePackagingSitesPage, false).success.value
+          .remove(HowManyOperatePackagingSitesPage).success.value
+          .set(ImportsPage, false).success.value
+          .remove(HowManyImportsPage).success.value
+
+        given
+          .commonPrecondition
+
+        setAnswers(userAnswers)
+
+        WsTestClient.withClient { client =>
+          val result = createClientRequestGet(client, baseUrl + route)
+
+          whenReady(result) { res =>
+            res.status mustBe OK
+            val page = Jsoup.parse(res.body)
+            page.getElementsByTag("dt").text() must include("You have 3 packaging sites")
+
+            val startDateSummaryListItem = page.getElementsByClass("govuk-summary-list").get(5)
+            page.getElementsByTag("h2").get(5).text() mustBe "Soft Drinks Industry Levy liability date"
+            validateStartDateSummaryList(startDateSummaryListItem, startDate, true)
+
+            val contactDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(6)
+            page.getElementsByTag("h2").get(6).text() mustBe "Contact person details"
+            validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, true)
+          }
+        }
+      }
+
+      "and the user answers are yes to third party and co-pack and imports and no to own brands " +
+        "any packaging sites should be displayed" in {
+        val userAnswers = userAnswerWithLitresForAllPagesIncludingOnesNotRequired(Small)
+          .set(OperatePackagingSitesPage, false).success.value
+          .remove(HowManyOperatePackagingSitesPage).success.value
+
+        given
+          .commonPrecondition
+
+        setAnswers(userAnswers)
+
+        WsTestClient.withClient { client =>
+          val result = createClientRequestGet(client, baseUrl + route)
+
+          whenReady(result) { res =>
+            res.status mustBe OK
+            val page = Jsoup.parse(res.body)
+            page.getElementsByTag("dt").text() must include("You have 3 packaging sites")
+
+            val startDateSummaryListItem = page.getElementsByClass("govuk-summary-list").get(5)
+            page.getElementsByTag("h2").get(5).text() mustBe "Soft Drinks Industry Levy liability date"
+            validateStartDateSummaryList(startDateSummaryListItem, startDate, true)
+
+            val contactDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(6)
+            page.getElementsByTag("h2").get(6).text() mustBe "Contact person details"
+            validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, true)
+          }
+        }
+      }
+
+      "and the user answers are yes to third party co-pack and own brands and no to own imports " +
+        "any packaging sites should be displayed" in {
+        val userAnswers = userAnswerWithLitresForAllPagesIncludingOnesNotRequired(Small)
+          .set(ImportsPage, false).success.value
+          .remove(HowManyImportsPage).success.value
+
+        given
+          .commonPrecondition
+
+        setAnswers(userAnswers)
+
+        WsTestClient.withClient { client =>
+          val result = createClientRequestGet(client, baseUrl + route)
+
+          whenReady(result) { res =>
+            res.status mustBe OK
+            val page = Jsoup.parse(res.body)
+            page.getElementsByTag("dt").text() must include("You have 3 packaging sites")
+
+            val startDateSummaryListItem = page.getElementsByClass("govuk-summary-list").get(5)
+            page.getElementsByTag("h2").get(5).text() mustBe "Soft Drinks Industry Levy liability date"
+            validateStartDateSummaryList(startDateSummaryListItem, startDate, true)
+
+            val contactDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(6)
+            page.getElementsByTag("h2").get(6).text() mustBe "Contact person details"
+            validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, true)
+          }
+        }
+      }
+
+      "and the user answers are no to third party and co-pack and yes to imports and own brands" +
+        "any packaging sites added previously should be cleared" in {
+        val userAnswers = userAnswerWithLitresForAllPagesIncludingOnesNotRequired(Small)
+          .set(ThirdPartyPackagersPage, false).success.value
+          .set(ContractPackingPage, false).success.value
+          .remove(HowManyContractPackingPage).success.value
+
+        given
+          .commonPrecondition
+
+        setAnswers(userAnswers)
+
+        WsTestClient.withClient { client =>
+          val result = createClientRequestGet(client, baseUrl + route)
+
+          whenReady(result) { res =>
+            res.status mustBe OK
+            val page = Jsoup.parse(res.body)
+            page.getElementsByTag("dt").text() mustNot include("You have 3 packaging sites")
+
+            val startDateSummaryListItem = page.getElementsByClass("govuk-summary-list").get(5)
+            page.getElementsByTag("h2").get(5).text() mustBe "Soft Drinks Industry Levy liability date"
+            validateStartDateSummaryList(startDateSummaryListItem, startDate, true)
+
+            val contactDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(6)
+            page.getElementsByTag("h2").get(6).text() mustBe "Contact person details"
+            validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, true)
+          }
+        }
+      }
+
+      "and the user answers are yes to third party and imports and no to co-pack and own brands " +
+        "any packaging sites added previously should be cleared" in {
+        val userAnswers = userAnswerWithLitresForAllPagesIncludingOnesNotRequired(Small)
+          .set(ContractPackingPage, false).success.value
+          .remove(HowManyContractPackingPage).success.value
+          .set(OperatePackagingSitesPage, false).success.value
+          .remove(HowManyOperatePackagingSitesPage).success.value
+
+        given
+          .commonPrecondition
+
+        setAnswers(userAnswers)
+
+        WsTestClient.withClient { client =>
+          val result = createClientRequestGet(client, baseUrl + route)
+
+          whenReady(result) { res =>
+            res.status mustBe OK
+            val page = Jsoup.parse(res.body)
+            page.getElementsByTag("dt").text() mustNot include("You have 3 packaging sites")
+
+            val startDateSummaryListItem = page.getElementsByClass("govuk-summary-list").get(5)
+            page.getElementsByTag("h2").get(5).text() mustBe "Soft Drinks Industry Levy liability date"
+            validateStartDateSummaryList(startDateSummaryListItem, startDate, true)
+
+            val contactDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(6)
+            page.getElementsByTag("h2").get(6).text() mustBe "Contact person details"
+            validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, true)
+          }
+        }
+      }
+
+      "and the user answers are no to third party, own brands imports and co-pack " +
+        "all packaging sites and warehouses should be cleared" in {
+        val userAnswers = userAnswerWithLitresForAllPagesIncludingOnesNotRequired(Small)
+          .set(ThirdPartyPackagersPage, false).success.value
+          .set(OperatePackagingSitesPage, false).success.value
+          .remove(HowManyOperatePackagingSitesPage).success.value
+          .set(ContractPackingPage, false).success.value
+          .remove(HowManyContractPackingPage).success.value
+          .set(ImportsPage, false).success.value
+          .remove(HowManyImportsPage).success.value
+
+        given
+          .commonPrecondition
+
+        setAnswers(userAnswers)
+
+        WsTestClient.withClient { client =>
+          val result = createClientRequestGet(client, baseUrl + route)
+
+          whenReady(result) { res =>
+            res.status mustBe OK
+            val page = Jsoup.parse(res.body)
+            page.getElementsByTag("dt").text() mustNot include("You have 3 packaging sites")
+            page.getElementsByTag("dt").text() mustNot include("You have 1 warehouse")
+          }
+        }
+      }
     }
 
     s"when the user has selected they are a None producer type" - {
@@ -348,6 +1031,110 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
 
               page.getElementsByTag("form").first().attr("action") mustBe routes.CheckYourAnswersController.onSubmit.url
               page.getElementsByTag("form").first().getElementsByTag("button").first().text() mustBe "Confirm details and apply"
+            }
+          }
+        }
+      }
+
+      "and they have answered yes to co-pack and import" - {
+        "any existing packaging sites should be displayed" in {
+          val userAnswers = userAnswerWithAllNoAndNoPagesToFilterOut(HowManyLitresGlobally.None)
+            .copy(packagingSiteList = packagingSiteListWith3, warehouseList = warehouseListWith1)
+            .set(HowManyLitresGloballyPage, HowManyLitresGlobally.None).success.value
+            .set(ContractPackingPage, true).success.value
+            .set(HowManyContractPackingPage, contractPackingLitres).success.value
+            .set(ImportsPage, true).success.value
+            .set(HowManyImportsPage, importsLitres).success.value
+
+          given
+            .commonPrecondition
+
+          setAnswers(userAnswers)
+
+          WsTestClient.withClient { client =>
+            val result = createClientRequestGet(client, baseUrl + route)
+
+            whenReady(result) { res =>
+              res.status mustBe OK
+              val page = Jsoup.parse(res.body)
+              page.getElementsByTag("dt").text() must include("You have 3 packaging sites")
+
+              val startDateSummaryListItem = page.getElementsByClass("govuk-summary-list").get(3)
+              page.getElementsByTag("h2").get(3).text() mustBe "Soft Drinks Industry Levy liability date"
+              validateStartDateSummaryList(startDateSummaryListItem, startDate, true)
+
+              val contactDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(4)
+              page.getElementsByTag("h2").get(4).text() mustBe "Contact person details"
+              validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, true)
+
+            }
+          }
+        }
+      }
+
+      "and they have answered yes to co-pack and no to import" - {
+        "any existing packaging sites should be displayed" in {
+          val userAnswers = userAnswerWithAllNoAndNoPagesToFilterOut(HowManyLitresGlobally.None)
+            .copy(packagingSiteList = packagingSiteListWith3, warehouseList = warehouseListWith1)
+            .set(HowManyLitresGloballyPage, HowManyLitresGlobally.None).success.value
+            .set(ContractPackingPage, true).success.value
+            .set(HowManyContractPackingPage, contractPackingLitres).success.value
+
+          given
+            .commonPrecondition
+
+          setAnswers(userAnswers)
+
+          WsTestClient.withClient { client =>
+            val result = createClientRequestGet(client, baseUrl + route)
+
+            whenReady(result) { res =>
+              res.status mustBe OK
+              val page = Jsoup.parse(res.body)
+              page.getElementsByTag("dt").text() must include("You have 3 packaging sites")
+
+              val startDateSummaryListItem = page.getElementsByClass("govuk-summary-list").get(3)
+              page.getElementsByTag("h2").get(3).text() mustBe "Soft Drinks Industry Levy liability date"
+              validateStartDateSummaryList(startDateSummaryListItem, startDate, true)
+
+              val contactDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(4)
+              page.getElementsByTag("h2").get(4).text() mustBe "Contact person details"
+              validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, true)
+
+            }
+          }
+        }
+      }
+
+      "and they have answered no to co-pack and yes to import" - {
+        "any existing packaging sites should be cleared" in {
+          val userAnswers = userAnswerWithAllNoAndNoPagesToFilterOut(HowManyLitresGlobally.None)
+            .copy(packagingSiteList = packagingSiteListWith3, warehouseList = warehouseListWith1)
+            .set(HowManyLitresGloballyPage, HowManyLitresGlobally.None).success.value
+            .set(ImportsPage, true).success.value
+            .set(HowManyImportsPage, importsLitres).success.value
+
+          given
+            .commonPrecondition
+
+          setAnswers(userAnswers)
+
+          WsTestClient.withClient { client =>
+            val result = createClientRequestGet(client, baseUrl + route)
+
+            whenReady(result) { res =>
+              res.status mustBe OK
+              val page = Jsoup.parse(res.body)
+              page.getElementsByTag("dt").text() mustNot include("You have 3 packaging sites")
+
+              val startDateSummaryListItem = page.getElementsByClass("govuk-summary-list").get(3)
+              page.getElementsByTag("h2").get(3).text() mustBe "Soft Drinks Industry Levy liability date"
+              validateStartDateSummaryList(startDateSummaryListItem, startDate, true)
+
+              val contactDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(4)
+              page.getElementsByTag("h2").get(4).text() mustBe "Contact person details"
+              validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, true)
+
             }
           }
         }
