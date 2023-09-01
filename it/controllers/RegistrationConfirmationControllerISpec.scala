@@ -159,6 +159,7 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
 
                   val copackee = detailsSection.getElementsByClass("govuk-summary-list").get(1)
                   detailsSection.getElementsByTag("h2").get(1).text() mustBe "Use third party packagers"
+                  println(copackee)
                   validateThirdPartyPackersSummaryList(copackee, false)
 
                   val operatePackagingSites = detailsSection.getElementsByClass("govuk-summary-list").get(2)
