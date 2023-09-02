@@ -49,7 +49,7 @@ trait RegSummaryISpecHelper extends ControllerITTestHelper {
   )
   val newAddress = UkAddress(List("10 Linden Close", "Langly"), "LA16 3KL")
 
-  val dateFormatter = DateTimeFormatter.ofPattern("dd MMMM yyyy")
+  val dateFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
 
   val submittedDate = LocalDateTime.of(2023, 7, 10, 14, 30).toInstant(ZoneOffset.UTC)
 
@@ -58,6 +58,7 @@ trait RegSummaryISpecHelper extends ControllerITTestHelper {
   val contractPackingLitres = LitresInBands(3000, 4000)
   val importsLitres = LitresInBands(5000, 6000)
   val startDate = LocalDate.of(2022, 6, 1)
+  val startDate1 = LocalDate.of(2022, 6, 30)
 
   def userAnswerWithLitresForAllPagesIncludingOnesNotRequired(producerType: HowManyLitresGlobally) = emptyUserAnswers
     .copy(packagingSiteList = packagingSiteListWith3, warehouseList = warehouseListWith1)
@@ -108,7 +109,7 @@ trait RegSummaryISpecHelper extends ControllerITTestHelper {
         .set(ThirdPartyPackagersPage, true).success.value
         .set(OperatePackagingSitesPage, false).success.value
       case _ => uaThatAllPagesHave
-        .set(StartDatePage, startDate).success.value
+        .set(StartDatePage, startDate1).success.value
     }
   }
 
@@ -382,14 +383,19 @@ trait RegSummaryISpecHelper extends ControllerITTestHelper {
   }
 
   def validateStartDateSummaryList(summaryList: Element,
-                                   date: LocalDate,
+                                   date: LocalDate = startDate,
                                    isCheckAnswers: Boolean = true) = {
+    val formattedStartDate = if(date == startDate) {
+      "1 June 2022"
+    } else {
+      "30 June 2022"
+    }
     val summaryRows = summaryList.getElementsByClass("govuk-summary-list__row")
     summaryRows.size mustBe 1
 
     val startDateRow = summaryRows.first()
     startDateRow.getElementsByClass("govuk-summary-list__key").text() mustBe "Date liable from"
-    startDateRow.getElementsByClass("govuk-summary-list__value").text() mustBe date.format(dateFormatter)
+    startDateRow.getElementsByClass("govuk-summary-list__value").text() mustBe formattedStartDate
     if (isCheckAnswers) {
       val fullNameAction = startDateRow.getElementsByClass("govuk-summary-list__actions").first()
       fullNameAction.text() mustBe "Change liability date"

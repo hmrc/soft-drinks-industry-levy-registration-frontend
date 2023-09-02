@@ -38,7 +38,7 @@ object RegistrationSummary {
     val imports: (String, SummaryList) = ImportsSummary.getOptHeadingAndSummary(subscription, isCheckYourAnswers)
     val startDate: Option[(String, SummaryList)] = StartDateSummary.optHeadingAndSummary(subscription, howManyLitresGlobally, isCheckYourAnswers)
     val contactDetails: (String, SummaryList) = ContactDetailsSummary.headingAndSummary(subscription, isCheckYourAnswers)
-    val packingDetails: Option[(String, SummaryList)] = UKSitesSummary.summaryList(subscription, isCheckYourAnswers)
+    val packingDetails: Option[(String, SummaryList)] = UKSitesSummary.getHeadingAndSummary(subscription, isCheckYourAnswers)
     Seq(
       Some(businessDetails),
       thirdPartyPackersSummary,
@@ -53,7 +53,7 @@ object RegistrationSummary {
 
   def applicationSentDetailsMessage(dateTime: LocalDateTime)
                                    (implicit messages: Messages): String = {
-    val dateFormatter = DateTimeFormatter.ofPattern("dd MMMM yyyy")
+    val dateFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
     val timeFormatter = DateTimeFormatter.ofPattern("h:mma")
 
     val registeredDate = dateTime.format(dateFormatter)

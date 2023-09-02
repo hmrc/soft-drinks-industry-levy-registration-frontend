@@ -32,7 +32,7 @@ import java.time.format.DateTimeFormatter
 object StartDateSummary {
 
   def row(startDate: LocalDate, isCheckAnswers: Boolean = false)(implicit messages: Messages): Seq[SummaryListRow] = {
-    val dateFormatter = DateTimeFormatter.ofPattern("dd MMMM yyyy")
+    val dateFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
     val value: String = startDate.format(dateFormatter)
     Seq(
       SummaryListRowViewModel(

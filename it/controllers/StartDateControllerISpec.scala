@@ -310,7 +310,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
 
   s"POST " + checkRoutePath - {
     "when the user inserts a valid day, month and year" - {
-      "should update the session with the new value and redirect to the Ask Secondary Warehouse controller" - {
+      "should update the session with the new value and redirect to Check your answers" - {
         "when the session contains no data for page" in {
           given
             .commonPrecondition
@@ -324,7 +324,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
 
             whenReady(result) { res =>
               res.status mustBe 303
-              res.header(HeaderNames.LOCATION) mustBe Some(routes.AskSecondaryWarehousesController.onPageLoad(CheckMode).url)
+              res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
               val dataStoredForPage = getAnswers(identifier).fold[Option[LocalDate]](None)(_.get(StartDatePage))
               dataStoredForPage.nonEmpty mustBe true
               dataStoredForPage.get mustBe date
@@ -346,7 +346,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
 
             whenReady(result) { res =>
               res.status mustBe 303
-              res.header(HeaderNames.LOCATION) mustBe Some(routes.AskSecondaryWarehousesController.onPageLoad(CheckMode).url)
+              res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
               val dataStoredForPage = getAnswers(identifier).fold[Option[LocalDate]](None)(_.get(StartDatePage))
               dataStoredForPage.nonEmpty mustBe true
               dataStoredForPage.get mustBe date
@@ -479,7 +479,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
     testUnauthorisedUser(baseUrl + normalRoutePath, Some(Json.obj("value" -> "true")))
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath, Some(Json.obj("value" -> "true")))
   }
-  "Post in either normal mode or check mode " - {
+  "Post in normal mode" - {
     "Should redirect to the Pack-At-Business address controller when the user is a large producer and has answered Yes " +
       "to either Operate Packaging Sites or Contract Packer" in {
       given
@@ -489,12 +489,12 @@ class StartDateControllerISpec extends ControllerITTestHelper {
       WsTestClient.withClient { client =>
 
         val result = createClientRequestPOST(
-          client, baseUrl + checkRoutePath, validDateJson
+          client, baseUrl + normalRoutePath, validDateJson
         )
 
         whenReady(result) { res =>
           res.status mustBe 303
-          res.header(HeaderNames.LOCATION) mustBe Some(routes.PackAtBusinessAddressController.onPageLoad(CheckMode).url)
+          res.header(HeaderNames.LOCATION) mustBe Some(routes.PackAtBusinessAddressController.onPageLoad(NormalMode).url)
           val dataStoredForPage = getAnswers(identifier).fold[Option[LocalDate]](None)(_.get(StartDatePage))
           dataStoredForPage.nonEmpty mustBe true
           dataStoredForPage.get mustBe date
@@ -511,12 +511,12 @@ class StartDateControllerISpec extends ControllerITTestHelper {
       WsTestClient.withClient { client =>
 
         val result = createClientRequestPOST(
-          client, baseUrl + checkRoutePath, validDateJson
+          client, baseUrl + normalRoutePath, validDateJson
         )
 
         whenReady(result) { res =>
           res.status mustBe 303
-          res.header(HeaderNames.LOCATION) mustBe Some(routes.PackAtBusinessAddressController.onPageLoad(CheckMode).url)
+          res.header(HeaderNames.LOCATION) mustBe Some(routes.PackAtBusinessAddressController.onPageLoad(NormalMode).url)
           val dataStoredForPage = getAnswers(identifier).fold[Option[LocalDate]](None)(_.get(StartDatePage))
           dataStoredForPage.nonEmpty mustBe true
           dataStoredForPage.get mustBe date
@@ -533,12 +533,12 @@ class StartDateControllerISpec extends ControllerITTestHelper {
       WsTestClient.withClient { client =>
 
         val result = createClientRequestPOST(
-          client, baseUrl + checkRoutePath, validDateJson
+          client, baseUrl + normalRoutePath, validDateJson
         )
 
         whenReady(result) { res =>
           res.status mustBe 303
-          res.header(HeaderNames.LOCATION) mustBe Some(routes.PackAtBusinessAddressController.onPageLoad(CheckMode).url)
+          res.header(HeaderNames.LOCATION) mustBe Some(routes.PackAtBusinessAddressController.onPageLoad(NormalMode).url)
           val dataStoredForPage = getAnswers(identifier).fold[Option[LocalDate]](None)(_.get(StartDatePage))
           dataStoredForPage.nonEmpty mustBe true
           dataStoredForPage.get mustBe date
@@ -555,12 +555,12 @@ class StartDateControllerISpec extends ControllerITTestHelper {
       WsTestClient.withClient { client =>
 
         val result = createClientRequestPOST(
-          client, baseUrl + checkRoutePath, validDateJson
+          client, baseUrl + normalRoutePath, validDateJson
         )
 
         whenReady(result) { res =>
           res.status mustBe 303
-          res.header(HeaderNames.LOCATION) mustBe Some(routes.AskSecondaryWarehousesController.onPageLoad(CheckMode).url)
+          res.header(HeaderNames.LOCATION) mustBe Some(routes.AskSecondaryWarehousesController.onPageLoad(NormalMode).url)
           val dataStoredForPage = getAnswers(identifier).fold[Option[LocalDate]](None)(_.get(StartDatePage))
           dataStoredForPage.nonEmpty mustBe true
           dataStoredForPage.get mustBe date
@@ -577,12 +577,12 @@ class StartDateControllerISpec extends ControllerITTestHelper {
       WsTestClient.withClient { client =>
 
         val result = createClientRequestPOST(
-          client, baseUrl + checkRoutePath, validDateJson
+          client, baseUrl + normalRoutePath, validDateJson
         )
 
         whenReady(result) { res =>
           res.status mustBe 303
-          res.header(HeaderNames.LOCATION) mustBe Some(routes.AskSecondaryWarehousesController.onPageLoad(CheckMode).url)
+          res.header(HeaderNames.LOCATION) mustBe Some(routes.AskSecondaryWarehousesController.onPageLoad(NormalMode).url)
           val dataStoredForPage = getAnswers(identifier).fold[Option[LocalDate]](None)(_.get(StartDatePage))
           dataStoredForPage.nonEmpty mustBe true
           dataStoredForPage.get mustBe date
@@ -599,15 +599,151 @@ class StartDateControllerISpec extends ControllerITTestHelper {
       WsTestClient.withClient { client =>
 
         val result = createClientRequestPOST(
-          client, baseUrl + checkRoutePath, validDateJson
+          client, baseUrl + normalRoutePath, validDateJson
         )
 
         whenReady(result) { res =>
           res.status mustBe 303
-          res.header(HeaderNames.LOCATION) mustBe Some(routes.AskSecondaryWarehousesController.onPageLoad(CheckMode).url)
+          res.header(HeaderNames.LOCATION) mustBe Some(routes.AskSecondaryWarehousesController.onPageLoad(NormalMode).url)
           val dataStoredForPage = getAnswers(identifier).fold[Option[LocalDate]](None)(_.get(StartDatePage))
           dataStoredForPage.nonEmpty mustBe true
           dataStoredForPage.get mustBe date
+        }
+      }
+    }
+  }
+
+  "Post in checkmode" - {
+    "should redirect to check your answers" - {
+      "when the user is a large producer and has answered Yes " +
+        "to either Operate Packaging Sites or Contract Packer" in {
+        given
+          .commonPrecondition
+
+        setAnswers(largeProducerImportsTrueUserAnswers)
+        WsTestClient.withClient { client =>
+
+          val result = createClientRequestPOST(
+            client, baseUrl + checkRoutePath, validDateJson
+          )
+
+          whenReady(result) { res =>
+            res.status mustBe 303
+            res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
+            val dataStoredForPage = getAnswers(identifier).fold[Option[LocalDate]](None)(_.get(StartDatePage))
+            dataStoredForPage.nonEmpty mustBe true
+            dataStoredForPage.get mustBe date
+          }
+        }
+      }
+
+      "when the user is a small producer and has answered Yes " +
+        "to Contract Packer" in {
+        given
+          .commonPrecondition
+
+        setAnswers(smallProducerUserAnswers)
+        WsTestClient.withClient { client =>
+
+          val result = createClientRequestPOST(
+            client, baseUrl + checkRoutePath, validDateJson
+          )
+
+          whenReady(result) { res =>
+            res.status mustBe 303
+            res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
+            val dataStoredForPage = getAnswers(identifier).fold[Option[LocalDate]](None)(_.get(StartDatePage))
+            dataStoredForPage.nonEmpty mustBe true
+            dataStoredForPage.get mustBe date
+          }
+        }
+      }
+
+      "when the user is a non producer and has answered Yes " +
+        "to Contract Packer" in {
+        given
+          .commonPrecondition
+
+        setAnswers(smallProducerUserAnswers)
+        WsTestClient.withClient { client =>
+
+          val result = createClientRequestPOST(
+            client, baseUrl + checkRoutePath, validDateJson
+          )
+
+          whenReady(result) { res =>
+            res.status mustBe 303
+            res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
+            val dataStoredForPage = getAnswers(identifier).fold[Option[LocalDate]](None)(_.get(StartDatePage))
+            dataStoredForPage.nonEmpty mustBe true
+            dataStoredForPage.get mustBe date
+          }
+        }
+      }
+
+      "when the user is a large producer and has answered No " +
+        "to both Operate Packaging Sites and Contract Packer" in {
+        given
+          .commonPrecondition
+
+        setAnswers(largeProducerNoPackagingRouteUserAnswers)
+        WsTestClient.withClient { client =>
+
+          val result = createClientRequestPOST(
+            client, baseUrl + checkRoutePath, validDateJson
+          )
+
+          whenReady(result) { res =>
+            res.status mustBe 303
+            res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
+            val dataStoredForPage = getAnswers(identifier).fold[Option[LocalDate]](None)(_.get(StartDatePage))
+            dataStoredForPage.nonEmpty mustBe true
+            dataStoredForPage.get mustBe date
+          }
+        }
+      }
+
+      "when the user is a small producer and has answered No " +
+        "to Contract Packer" in {
+        given
+          .commonPrecondition
+
+        setAnswers(nonProducerNoPackagingRouteUserAnswers)
+        WsTestClient.withClient { client =>
+
+          val result = createClientRequestPOST(
+            client, baseUrl + checkRoutePath, validDateJson
+          )
+
+          whenReady(result) { res =>
+            res.status mustBe 303
+            res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
+            val dataStoredForPage = getAnswers(identifier).fold[Option[LocalDate]](None)(_.get(StartDatePage))
+            dataStoredForPage.nonEmpty mustBe true
+            dataStoredForPage.get mustBe date
+          }
+        }
+      }
+
+      "when the user is a non producer and has answered No " +
+        "to Contract Packer" in {
+        given
+          .commonPrecondition
+
+        setAnswers(nonProducerNoPackagingRouteUserAnswers)
+        WsTestClient.withClient { client =>
+
+          val result = createClientRequestPOST(
+            client, baseUrl + checkRoutePath, validDateJson
+          )
+
+          whenReady(result) { res =>
+            res.status mustBe 303
+            res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
+            val dataStoredForPage = getAnswers(identifier).fold[Option[LocalDate]](None)(_.get(StartDatePage))
+            dataStoredForPage.nonEmpty mustBe true
+            dataStoredForPage.get mustBe date
+          }
         }
       }
     }

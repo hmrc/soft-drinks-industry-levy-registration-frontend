@@ -21,7 +21,7 @@ import forms.WarehouseDetailsFormProvider
 import handlers.ErrorHandler
 import models.{Mode, NormalMode, Warehouse}
 import navigation.Navigator
-import pages.{AskSecondaryWarehousesPage, WarehouseDetailsPage}
+import pages.WarehouseDetailsPage
 import play.api.data.Form
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}

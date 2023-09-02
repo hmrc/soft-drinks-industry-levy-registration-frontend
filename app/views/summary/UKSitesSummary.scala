@@ -73,16 +73,34 @@ object UKSitesSummary {
       )
   }
 
-  def summaryList(subscription: Subscription, isCheckAnswers: Boolean)
-                 (implicit messages: Messages): Option[(String, SummaryList)] = {
-    Option(
-      SummaryListViewModel(
-        Seq(
-          getPackAtBusinessAddressRow(subscription, isCheckAnswers),
-          getAskSecondaryWarehouseRow(subscription, isCheckAnswers)
+  def getHeadingAndSummary(subscription: Subscription, isCheckAnswers: Boolean)
+                          (implicit messages: Messages): Option[(String, SummaryList)] = {
+    val optSummaryList = (subscription.productionSites.nonEmpty, subscription.warehouseSites.nonEmpty) match {
+      case (true, true) => Option(
+        SummaryListViewModel(
+          Seq(
+            getPackAtBusinessAddressRow(subscription, isCheckAnswers),
+            getAskSecondaryWarehouseRow(subscription, isCheckAnswers)
+          )
         )
       )
-    ).map(list => "checkYourAnswers.sites" -> list)
+      case (true, false) => Option(
+        SummaryListViewModel(
+          Seq(
+            getPackAtBusinessAddressRow(subscription, isCheckAnswers),
+          )
+        )
+      )
+      case (false, true) => Option(
+        SummaryListViewModel(
+          Seq(
+            getAskSecondaryWarehouseRow(subscription, isCheckAnswers)
+          )
+        )
+      )
+      case _ => None
+    }
+    optSummaryList.map(list => "checkYourAnswers.sites" -> list)
   }
 
 }

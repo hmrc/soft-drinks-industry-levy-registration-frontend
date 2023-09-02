@@ -4,7 +4,7 @@ import models.HowManyLitresGlobally.{Large, Small}
 import models.backend.Subscription
 import models.{CreatedSubscriptionAndAmountProducedGlobally, HowManyLitresGlobally, RosmWithUtr}
 import org.jsoup.Jsoup
-import org.scalatest.matchers.must.Matchers.{include, convertToAnyMustWrapper}
+import org.scalatest.matchers.must.Matchers.{contain, convertToAnyMustWrapper, include}
 import play.api.http.HeaderNames
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.i18n.Messages
@@ -95,7 +95,7 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                   page.title must include(Messages("Application complete"))
                   validateSummaryContent(page)
                   val detailsSection = page.getElementsByClass("govuk-details").get(0)
-                  detailsSection.getElementsByClass("govuk-summary-list").size() mustBe 7
+                  detailsSection.getElementsByClass("govuk-summary-list").size() mustBe 6
 
                   val businessDetails = detailsSection.getElementsByClass("govuk-summary-list").first()
                   detailsSection.getElementsByTag("h2").first().text() mustBe "Business details"
@@ -122,9 +122,7 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                   detailsSection.getElementsByTag("h2").get(5).text() mustBe "Contact person details"
                   validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, false)
 
-                  val siteDetailsSummaryListItem = detailsSection.getElementsByClass("govuk-summary-list").get(6)
-                  detailsSection.getElementsByTag("h2").get(6).text() mustBe "UK site details"
-                  validateSiteDetailsSummary(siteDetailsSummaryListItem, false)
+                  detailsSection.getElementsByTag("h2").eachText() mustNot contain("UK site details")
                 }
               }
             }
@@ -208,7 +206,7 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                   page.title must include(Messages("Application complete"))
                   validateSummaryContent(page)
                   val detailsSection = page.getElementsByClass("govuk-details").get(0)
-                  detailsSection.getElementsByClass("govuk-summary-list").size() mustBe 7
+                  detailsSection.getElementsByClass("govuk-summary-list").size() mustBe 6
 
                   val businessDetails = detailsSection.getElementsByClass("govuk-summary-list").first()
                   detailsSection.getElementsByTag("h2").first().text() mustBe "Business details"
@@ -234,9 +232,7 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                   detailsSection.getElementsByTag("h2").get(5).text() mustBe "Contact person details"
                   validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, false)
 
-                  val siteDetailsSummaryListItem = detailsSection.getElementsByClass("govuk-summary-list").get(6)
-                  detailsSection.getElementsByTag("h2").get(6).text() mustBe "UK site details"
-                  validateSiteDetailsSummary(siteDetailsSummaryListItem, false)
+                  detailsSection.getElementsByTag("h2").eachText() mustNot contain("UK site details")
                 }
               }
             }
@@ -311,7 +307,7 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                   page.title must include(Messages("Application complete"))
                   validateSummaryContent(page)
                   val detailsSection = page.getElementsByClass("govuk-details").get(0)
-                  detailsSection.getElementsByClass("govuk-summary-list").size() mustBe 6
+                  detailsSection.getElementsByClass("govuk-summary-list").size() mustBe 5
 
                   val businessDetails = detailsSection.getElementsByClass("govuk-summary-list").first()
                   detailsSection.getElementsByTag("h2").first().text() mustBe "Business details"
@@ -327,15 +323,13 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
 
                   val startDateSummaryListItem = detailsSection.getElementsByClass("govuk-summary-list").get(3)
                   detailsSection.getElementsByTag("h2").get(3).text() mustBe "Soft Drinks Industry Levy liability date"
-                  validateStartDateSummaryList(startDateSummaryListItem, startDate, false)
+                  validateStartDateSummaryList(startDateSummaryListItem, startDate1, false)
 
                   val contactDetailsSummaryListItem = detailsSection.getElementsByClass("govuk-summary-list").get(4)
                   detailsSection.getElementsByTag("h2").get(4).text() mustBe "Contact person details"
                   validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, false)
 
-                  val siteDetailsSummaryListItem = detailsSection.getElementsByClass("govuk-summary-list").get(5)
-                  detailsSection.getElementsByTag("h2").get(5).text() mustBe "UK site details"
-                  validateSiteDetailsSummary(siteDetailsSummaryListItem, false)
+                  detailsSection.getElementsByTag("h2").eachText() mustNot contain("UK site details")
                 }
               }
             }

@@ -17,17 +17,15 @@
 package controllers.actions
 
 import controllers.routes
-import models.{Mode, NormalMode, UserAnswers}
-import org.bson.json.JsonObject
-import pages.{AskSecondaryWarehousesPage, WarehouseDetailsPage}
+import models.{Mode, UserAnswers}
+import pages.AskSecondaryWarehousesPage
 import play.api.mvc.Result
 import play.api.mvc.Results.Redirect
-import play.mvc.BodyParser.Json
 import services.SessionService
 import utilities.GenericLogger
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 class WarehouseDetailsChecker @Inject()(genericLogger: GenericLogger, val sessionService: SessionService)
                                        (implicit val executionContext: ExecutionContext) extends ActionHelpers {

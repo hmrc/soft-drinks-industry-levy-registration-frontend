@@ -480,28 +480,33 @@ class NavigatorSpec extends SpecBase {
       }
 
       "when on how many litres globally page" - {
-        "must navigate to third party packagers page when less than 1 million litres is selected in check mode" in {
-          val result = navigator.nextPage(HowManyLitresGloballyPage, CheckMode,
-            UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj(HowManyLitresGloballyPage.toString -> Large.toString)))
-          result mustBe routes.OperatePackagingSitesController.onPageLoad(CheckMode)
-        }
+        "in checkmode" - {
+          HowManyLitresGlobally.values.foreach { previousValue =>
+            HowManyLitresGlobally.values.foreach { newValue =>
+              val userAnswers = UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj(HowManyLitresGloballyPage.toString -> newValue.toString))
+              if (newValue != previousValue) {
+                val expectedUrl = newValue match {
+                  case Large => routes.OperatePackagingSitesController.onPageLoad(NormalMode)
+                  case Small => routes.ThirdPartyPackagersController.onPageLoad(NormalMode)
+                  case _ => routes.ContractPackingController.onPageLoad(NormalMode)
+                }
+                s"must redirect to the ${expectedUrl.url} when the useranswers amount produced is $newValue" - {
+                  s"and the previous value is $previousValue" in {
+                    val result = navigator.nextPage(HowManyLitresGloballyPage, CheckMode, userAnswers, Some(previousValue.toString))
 
-        "must navigate to third party packagers page when less than less than 1 million litres is selected in check mode" in {
-          val result = navigator.nextPage(HowManyLitresGloballyPage, CheckMode,
-            UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj(HowManyLitresGloballyPage.toString -> Small.toString)))
-          result mustBe routes.ThirdPartyPackagersController.onPageLoad(CheckMode)
-        }
-
-        "must navigate to third party packagers page when None is selected in check mode" in {
-          val result = navigator.nextPage(HowManyLitresGloballyPage, CheckMode,
-            UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj(HowManyLitresGloballyPage.toString -> HowManyLitresGlobally.None.toString)))
-          result mustBe routes.ContractPackingController.onPageLoad(CheckMode)
-        }
-
-        "must navigate to the start when no answer available in user answers" in {
-          val result = navigator.nextPage(HowManyLitresGloballyPage, CheckMode,
-            UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj()))
-          result mustBe routes.RegistrationController.start
+                    result mustBe expectedUrl
+                  }
+                }
+              } else {
+                "must redirect to check your answers" - {
+                  s"if the updated answers and the previous answer is $newValue" in {
+                    val result = navigator.nextPage(HowManyLitresGloballyPage, CheckMode, userAnswers, Some(previousValue.toString))
+                    result mustBe routes.CheckYourAnswersController.onPageLoad
+                  }
+                }
+              }
+            }
+          }
         }
       }
 
@@ -564,11 +569,11 @@ class NavigatorSpec extends SpecBase {
       }
 
       "when on start date page in check mode" - {
-        "must navigate to the correct page as it does in normal mode" in {
+        "must navigate to check your answers" in {
           val result = navigator.nextPage(StartDatePage, CheckMode, emptyUserAnswers.copy(data = Json.obj("howManyLitresGlobally" -> "small",
             "thirdPartyPackagers" -> false, "operatePackagingSites" -> false, "contractPacking" -> false, "imports" -> true,
             "howManyImports" -> Json.obj("lowBand" -> 1, "highBand" -> 1))))
-          result mustBe routes.AskSecondaryWarehousesController.onPageLoad(CheckMode)
+          result mustBe routes.CheckYourAnswersController.onPageLoad
         }
       }
 
