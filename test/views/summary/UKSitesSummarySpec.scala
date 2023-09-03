@@ -17,66 +17,100 @@
 package views.summary
 
 import base.RegistrationSubscriptionHelper
-import models.backend.Site
+import models.HowManyLitresGlobally
 import uk.gov.hmrc.govukfrontend.views.Aliases._
 
 class UKSitesSummarySpec extends RegistrationSubscriptionHelper {
 
-  val defaultSubscriptionNoSites = generateSubscription(allFieldsPopulated = false)
-
-
   "getHeadingAndSummary" - {
 
-    "should return an None when no packaging site or warehouse list is passed in" in {
-      val subscription = defaultSubscriptionNoSites
-      val packagingSiteSummaryRowList = UKSitesSummary.getHeadingAndSummary(subscription, true)
-      packagingSiteSummaryRowList mustBe None
+    HowManyLitresGlobally.values.foreach { case howManyLitresGlobally =>
+      "when the user is not voluntary" - {
+        s"and is a $howManyLitresGlobally producer type" - {
+          "that has both production sites and warehouses in the subscription" - {
+            "should return summary for warehouses and packing sites" in {
+              val subscription = generateSubscription(litresGlobally = howManyLitresGlobally, allFieldsPopulated = true)
+
+              val headingAndSummary = UKSitesSummary.getHeadingAndSummary(subscription, howManyLitresGlobally, true)
+
+              headingAndSummary mustBe defined
+              val (heading, summary) = headingAndSummary.get
+              heading mustBe "checkYourAnswers.sites"
+              summary mustBe SummaryList(List(SummaryListRow(Key(Text("You have 1 packaging site"), ""),
+                Value(Empty, ""), "", Some(Actions("", List(ActionItem("/soft-drinks-industry-levy-registration/change-packaging-site-details",
+                  Text("Change"), Some("the UK packaging site that you operate to produce liable drinks"), "",
+                  Map("id" -> "change-packaging-sites")))))), SummaryListRow(Key(Text("You have 1 warehouse"), ""),
+                Value(Empty, ""), "", Some(Actions("", List(ActionItem("/soft-drinks-industry-levy-registration/change-warehouses",
+                  Text("Change"), Some("the UK warehouses you use to store liable drinks"), "",
+                  Map("id" -> "change-warehouse-sites"))))))), None, "", Map())
+            }
+          }
+
+          "that has only production sites in the subscription" - {
+            "should return summary for warehouses and packing sites" in {
+              val subscription = generateSubscription(litresGlobally = howManyLitresGlobally, allFieldsPopulated = true)
+                .copy(warehouseSites = Seq.empty)
+
+              val headingAndSummary = UKSitesSummary.getHeadingAndSummary(subscription, howManyLitresGlobally, true)
+
+              headingAndSummary mustBe defined
+              val (heading, summary) = headingAndSummary.get
+              heading mustBe "checkYourAnswers.sites"
+              summary mustBe SummaryList(List(SummaryListRow(Key(Text("You have 1 packaging site"), ""),
+                Value(Empty, ""), "", Some(Actions("", List(ActionItem("/soft-drinks-industry-levy-registration/change-packaging-site-details",
+                  Text("Change"), Some("the UK packaging site that you operate to produce liable drinks"), "",
+                  Map("id" -> "change-packaging-sites")))))), SummaryListRow(Key(Text("You have 0 warehouses"), ""),
+                Value(Empty, ""), "", Some(Actions("", List(ActionItem("/soft-drinks-industry-levy-registration/change-ask-secondary-warehouses",
+                  Text("Change"), Some("the UK warehouses you use to store liable drinks"), "",
+                  Map("id" -> "change-warehouse-sites"))))))), None, "", Map())
+            }
+          }
+
+          "that only has warehouse sites in the subscription" - {
+            "should return summary for warehouses only" in {
+              val subscription = generateSubscription(litresGlobally = howManyLitresGlobally, allFieldsPopulated = true)
+                .copy(productionSites = Seq.empty)
+
+              val headingAndSummary = UKSitesSummary.getHeadingAndSummary(subscription, howManyLitresGlobally, true)
+
+              headingAndSummary mustBe defined
+              val (heading, summary) = headingAndSummary.get
+              heading mustBe "checkYourAnswers.sites"
+              summary mustBe SummaryList(List(SummaryListRow(Key(Text("You have 1 warehouse"), ""),
+                Value(Empty, ""), "", Some(Actions("", List(ActionItem("/soft-drinks-industry-levy-registration/change-warehouses",
+                  Text("Change"), Some("the UK warehouses you use to store liable drinks"), "",
+                  Map("id" -> "change-warehouse-sites"))))))), None, "", Map())
+            }
+          }
+
+          "that has no production or warehouse sites in the subscription" - {
+            "should return summary for warehouses only" in {
+              val subscription = generateSubscription(litresGlobally = howManyLitresGlobally, allFieldsPopulated = true)
+                .copy(warehouseSites = Seq.empty, productionSites = Seq.empty)
+
+              val headingAndSummary = UKSitesSummary.getHeadingAndSummary(subscription, howManyLitresGlobally, true)
+
+              headingAndSummary mustBe defined
+              val (heading, summary) = headingAndSummary.get
+              heading mustBe "checkYourAnswers.sites"
+              summary mustBe SummaryList(List(SummaryListRow(Key(Text("You have 0 warehouses"), ""),
+                Value(Empty, ""), "", Some(Actions("", List(ActionItem("/soft-drinks-industry-levy-registration/change-ask-secondary-warehouses",
+                  Text("Change"), Some("the UK warehouses you use to store liable drinks"), "",
+                  Map("id" -> "change-warehouse-sites"))))))), None, "", Map())
+            }
+          }
+        }
+      }
     }
 
-    "should return a Some summary for packing site when one packaging site and no warehouse is passed in" in {
-      val subscription = defaultSubscriptionNoSites.copy(productionSites = packagingSiteListWith1.values.toSeq)
+    "when the user is voluntary" - {
+      "and there is no packaging sites or warehouses" - {
+        "should return None" in {
+          val headingAndSummary = UKSitesSummary.getHeadingAndSummary(voluntarySubscription, HowManyLitresGlobally.Small, true)
 
-      val packagingSiteSummaryRowList = UKSitesSummary.getHeadingAndSummary(subscription, true)
-
-      packagingSiteSummaryRowList mustBe
-        Some((
-          "checkYourAnswers.sites", SummaryList(List(SummaryListRow(Key(Text("You have 1 packaging site"), ""),
-          Value(Empty, ""), "",
-          Some(Actions("", List(ActionItem("/soft-drinks-industry-levy-registration/change-packaging-site-details",
-            Text("Change"), Some("the UK packaging site that you operate to produce liable drinks"), "",
-            Map("id" -> "change-packaging-sites"))))))), None, "", Map())))
-    }
-
-    "should return summary for warehouses when one warehouse and no packing site is passed in" in {
-      val subscription = defaultSubscriptionNoSites.copy(warehouseSites = warehouseListWith1.values.map(Site.fromWarehouse(_)).toSeq)
-
-      val warehouseSummaryRowList = UKSitesSummary.getHeadingAndSummary(subscription, true)
-
-      warehouseSummaryRowList mustBe
-        Some(("checkYourAnswers.sites", SummaryList(List(SummaryListRow(Key(Text("You have 1 warehouse"), ""),
-          Value(Empty, ""), "",
-          Some(Actions("", List(ActionItem("/soft-drinks-industry-levy-registration/change-warehouses",
-            Text("Change"), Some("the UK warehouses you use to store liable drinks"), "",
-            Map("id" -> "change-warehouse-sites"))))))), None, "", Map())))
-    }
-
-
-    "should return summary for warehouses and packing sites when one warehouse and one packing site is passed in" in {
-      val subscription = defaultSubscriptionNoSites.copy(
-        productionSites = packagingSiteListWith1.values.toSeq,
-        warehouseSites = warehouseListWith1.values.map(Site.fromWarehouse(_)).toSeq)
-
-      val warehouseSummaryRowList = UKSitesSummary.getHeadingAndSummary(subscription, true)
-
-      warehouseSummaryRowList mustBe
-        Some(("checkYourAnswers.sites", SummaryList(List(SummaryListRow(Key(Text("You have 1 packaging site"), ""),
-          Value(Empty, ""), "", Some(Actions("", List(ActionItem("/soft-drinks-industry-levy-registration/change-packaging-site-details",
-            Text("Change"), Some("the UK packaging site that you operate to produce liable drinks"), "",
-            Map("id" -> "change-packaging-sites")))))), SummaryListRow(Key(Text("You have 1 warehouse"), ""),
-          Value(Empty, ""), "", Some(Actions("", List(ActionItem("/soft-drinks-industry-levy-registration/change-warehouses",
-            Text("Change"), Some("the UK warehouses you use to store liable drinks"), "",
-            Map("id" -> "change-warehouse-sites"))))))), None, "", Map())))
+          headingAndSummary mustBe None
+        }
+      }
     }
   }
-
 }

@@ -17,7 +17,7 @@
 package views.summary
 
 import controllers.routes
-import models.CheckMode
+import models.{CheckMode, HowManyLitresGlobally}
 import models.backend.Subscription
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.{SummaryList, Value}
@@ -73,10 +73,10 @@ object UKSitesSummary {
       )
   }
 
-  def getHeadingAndSummary(subscription: Subscription, isCheckAnswers: Boolean)
+  def getHeadingAndSummary(subscription: Subscription, howManyLitresGlobally: HowManyLitresGlobally, isCheckAnswers: Boolean)
                           (implicit messages: Messages): Option[(String, SummaryList)] = {
-    val optSummaryList = (subscription.productionSites.nonEmpty, subscription.warehouseSites.nonEmpty) match {
-      case (true, true) => Option(
+    val optSummaryList = (subscription.productionSites.nonEmpty, subscription.isVoluntary(howManyLitresGlobally)) match {
+      case (true, false) => Option(
         SummaryListViewModel(
           Seq(
             getPackAtBusinessAddressRow(subscription, isCheckAnswers),
@@ -84,14 +84,14 @@ object UKSitesSummary {
           )
         )
       )
-      case (true, false) => Option(
+      case (true, true) => Option(
         SummaryListViewModel(
           Seq(
             getPackAtBusinessAddressRow(subscription, isCheckAnswers),
           )
         )
       )
-      case (false, true) => Option(
+      case (false, false) => Option(
         SummaryListViewModel(
           Seq(
             getAskSecondaryWarehouseRow(subscription, isCheckAnswers)

@@ -1,7 +1,7 @@
 package controllers
 
 import models.HowManyLitresGlobally.{Large, Small}
-import models.{CheckMode, HowManyLitresGlobally, NormalMode}
+import models.{HowManyLitresGlobally, NormalMode}
 import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
 import pages.HowManyLitresGloballyPage

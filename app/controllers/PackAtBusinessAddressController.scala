@@ -20,7 +20,7 @@ import controllers.actions._
 import forms.PackAtBusinessAddressFormProvider
 import handlers.ErrorHandler
 import models.backend.Site
-import models.{Mode, NormalMode, RosmRegistration}
+import models.{Mode, RosmRegistration}
 import navigation.Navigator
 import pages.PackAtBusinessAddressPage
 import play.api.i18n.MessagesApi
@@ -84,7 +84,7 @@ class PackAtBusinessAddressController @Inject()(
                   closureDate = None
                 )
               )), PackAtBusinessAddressPage).flatMap(_ =>
-                Future.successful(routes.PackagingSiteDetailsController.onPageLoad(NormalMode).url))
+                Future.successful(routes.PackagingSiteDetailsController.onPageLoad(mode).url))
             }else {
               addressLookupService.initJourneyAndReturnOnRampUrl(PackingDetails, mode = mode)
             }

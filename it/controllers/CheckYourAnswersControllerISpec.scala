@@ -8,7 +8,7 @@ import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers.{contain, convertToAnyMustWrapper, include}
 import pages._
 import play.api.http.HeaderNames
-import play.api.http.Status.OK
+import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.i18n.Messages
 import play.api.libs.json.Json
 import play.api.test.WsTestClient
@@ -83,7 +83,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
 
               val siteDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(6)
               page.getElementsByTag("h2").get(6).text() mustBe "UK site details"
-              validateSiteDetailsSummary(siteDetailsSummaryListItem, true)
+              validateSiteDetailsSummary(siteDetailsSummaryListItem, 3, 1, true)
 
               page.getElementsByTag("form").first().attr("action") mustBe routes.CheckYourAnswersController.onSubmit.url
               page.getElementsByTag("form").first().getElementsByTag("button").first().text() mustBe "Confirm details and apply"
@@ -107,7 +107,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
               res.status mustBe OK
               val page = Jsoup.parse(res.body)
               page.title must include(Messages("checkYourAnswers.title"))
-              page.getElementsByClass("govuk-summary-list").size() mustBe 6
+              page.getElementsByClass("govuk-summary-list").size() mustBe 7
 
               val businessDetails = page.getElementsByClass("govuk-summary-list").first()
               page.getElementsByTag("h2").first().text() mustBe "Business details"
@@ -134,7 +134,9 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
               page.getElementsByTag("h2").get(5).text() mustBe "Contact person details"
               validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, true)
 
-              page.getElementsByTag("h2").eachText() mustNot contain("UK site details")
+              val siteDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(6)
+              page.getElementsByTag("h2").get(6).text() mustBe "UK site details"
+              validateSiteDetailsSummary(siteDetailsSummaryListItem, 0, 0, true)
 
               page.getElementsByTag("form").first().attr("action") mustBe routes.CheckYourAnswersController.onSubmit.url
               page.getElementsByTag("form").first().getElementsByTag("button").first().text() mustBe "Confirm details and apply"
@@ -417,7 +419,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
 
               val siteDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(7)
               page.getElementsByTag("h2").get(7).text() mustBe "UK site details"
-              validateSiteDetailsSummary(siteDetailsSummaryListItem, true)
+              validateSiteDetailsSummary(siteDetailsSummaryListItem, 3, 1, true)
 
               page.getElementsByTag("form").first().attr("action") mustBe routes.CheckYourAnswersController.onSubmit.url
               page.getElementsByTag("form").first().getElementsByTag("button").first().text() mustBe "Confirm details and apply"
@@ -426,9 +428,10 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
         }
       }
 
-      "and they have only populated the required pages and have no litres" - {
-        "should render the check your answers page with expected summary items" in {
+      "and they have only populated the required pages and have no litres and no to copackee" - {
+        "should redirect to doNotRegister page" in {
           val userAnswers = userAnswerWithAllNoAndNoPagesToFilterOut(Small)
+            .set(ThirdPartyPackagersPage, false).success.value
           given
             .commonPrecondition
 
@@ -438,48 +441,17 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
             val result = createClientRequestGet(client, baseUrl + route)
 
             whenReady(result) { res =>
-              res.status mustBe OK
-              val page = Jsoup.parse(res.body)
-              page.title must include(Messages("checkYourAnswers.title"))
-              page.getElementsByClass("govuk-summary-list").size() mustBe 6
-
-              val businessDetails = page.getElementsByClass("govuk-summary-list").first()
-              page.getElementsByTag("h2").first().text() mustBe "Business details"
-              validateBusinessDetailsSummaryList(businessDetails, "0000001611", newAddress, HowManyLitresGlobally.Small, true)
-
-              val copackee = page.getElementsByClass("govuk-summary-list").get(1)
-              page.getElementsByTag("h2").get(1).text() mustBe "Use third party packagers"
-              validateThirdPartyPackersSummaryList(copackee, true)
-
-              val operatePackagingSites = page.getElementsByClass("govuk-summary-list").get(2)
-              page.getElementsByTag("h2").get(2).text() mustBe "Own brands packaged at your own site"
-              validateOperatePackagingSitesWithNoLitresSummaryList(operatePackagingSites, true)
-
-              val contractPacking = page.getElementsByClass("govuk-summary-list").get(3)
-              page.getElementsByTag("h2").get(3).text() mustBe "Contract packed at your own site"
-              validateContractPackingWithNoLitresSummaryList(contractPacking, true)
-
-              val imports = page.getElementsByClass("govuk-summary-list").get(4)
-              page.getElementsByTag("h2").get(4).text() mustBe "Brought into the UK"
-              validateImportsWithNoLitresSummaryList(imports, true)
-
-              val contactDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(5)
-              page.getElementsByTag("h2").get(5).text() mustBe "Contact person details"
-              validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, true)
-
-              page.getElementsByTag("h2").eachText() mustNot contain("UK site details")
-
-              page.getElementsByTag("form").first().attr("action") mustBe routes.CheckYourAnswersController.onSubmit.url
-              page.getElementsByTag("form").first().getElementsByTag("button").first().text() mustBe "Confirm details and apply"
+              res.status mustBe SEE_OTHER
+              res.header(HeaderNames.LOCATION).get mustBe routes.DoNotRegisterController.onPageLoad.url
             }
           }
         }
       }
 
-      "and the user answers are no to own brands, co-pack, imports, third party " +
+      "and the user answers are no to own brands, co-pack, imports and yes to third party " +
         "any packaging sites and other data added previously should be cleared" in {
         val userAnswers = userAnswerWithLitresForAllPagesIncludingOnesNotRequired(Small)
-          .set(ThirdPartyPackagersPage, false).success.value
+          .set(ThirdPartyPackagersPage, true).success.value
           .set(OperatePackagingSitesPage, false).success.value
           .remove(HowManyOperatePackagingSitesPage).success.value
           .set(ContractPackingPage, false).success.value
@@ -906,10 +878,10 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
         }
       }
 
-      "and the user answers are no to third party, own brands imports and co-pack " +
+      "and the user answers are no to imports and co-pack and have answers that need filtering" +
         "all packaging sites and warehouses should be cleared" in {
         val userAnswers = userAnswerWithLitresForAllPagesIncludingOnesNotRequired(Small)
-          .set(ThirdPartyPackagersPage, false).success.value
+          .set(ThirdPartyPackagersPage, true).success.value
           .set(OperatePackagingSitesPage, false).success.value
           .remove(HowManyOperatePackagingSitesPage).success.value
           .set(ContractPackingPage, false).success.value
@@ -975,7 +947,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
 
               val siteDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(5)
               page.getElementsByTag("h2").get(5).text() mustBe "UK site details"
-              validateSiteDetailsSummary(siteDetailsSummaryListItem, true)
+              validateSiteDetailsSummary(siteDetailsSummaryListItem, 3, 1, true)
 
               page.getElementsByTag("form").first().attr("action") mustBe routes.CheckYourAnswersController.onSubmit.url
               page.getElementsByTag("form").first().getElementsByTag("button").first().text() mustBe "Confirm details and apply"
@@ -985,7 +957,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
       }
 
       "and they have only populated the required pages and have no litres" - {
-        "should render the check your answers page with expected summary items" in {
+        "should redirect to doNotRegister page" in {
           val userAnswers = userAnswerWithAllNoAndNoPagesToFilterOut(HowManyLitresGlobally.None)
           given
             .commonPrecondition
@@ -996,35 +968,8 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
             val result = createClientRequestGet(client, baseUrl + route)
 
             whenReady(result) { res =>
-              res.status mustBe OK
-              val page = Jsoup.parse(res.body)
-              page.title must include(Messages("checkYourAnswers.title"))
-              page.getElementsByClass("govuk-summary-list").size() mustBe 5
-
-              val businessDetails = page.getElementsByClass("govuk-summary-list").first()
-              page.getElementsByTag("h2").first().text() mustBe "Business details"
-              validateBusinessDetailsSummaryList(businessDetails, "0000001611", newAddress, HowManyLitresGlobally.None, true)
-
-              val contractPacking = page.getElementsByClass("govuk-summary-list").get(1)
-              page.getElementsByTag("h2").get(1).text() mustBe "Contract packed at your own site"
-              validateContractPackingWithNoLitresSummaryList(contractPacking, true)
-
-              val imports = page.getElementsByClass("govuk-summary-list").get(2)
-              page.getElementsByTag("h2").get(2).text() mustBe "Brought into the UK"
-              validateImportsWithNoLitresSummaryList(imports, true)
-
-              val startDateSummaryListItem = page.getElementsByClass("govuk-summary-list").get(3)
-              page.getElementsByTag("h2").get(3).text() mustBe "Soft Drinks Industry Levy liability date"
-              validateStartDateSummaryList(startDateSummaryListItem, startDate1, true)
-
-              val contactDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(4)
-              page.getElementsByTag("h2").get(4).text() mustBe "Contact person details"
-              validateContactDetailsSummaryList(contactDetailsSummaryListItem, contactDetails, true)
-
-              page.getElementsByTag("h2").eachText() mustNot contain("UK site details")
-
-              page.getElementsByTag("form").first().attr("action") mustBe routes.CheckYourAnswersController.onSubmit.url
-              page.getElementsByTag("form").first().getElementsByTag("button").first().text() mustBe "Confirm details and apply"
+              res.status mustBe SEE_OTHER
+              res.header(HeaderNames.LOCATION).get mustBe routes.DoNotRegisterController.onPageLoad.url
             }
           }
         }

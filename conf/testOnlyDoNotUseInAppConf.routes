@@ -13,6 +13,8 @@
 ->         /                          prod.Routes
 
 +nocsrf
-POST  /soft-drinks-industry-levy-registration/test-only/api/init   controllers.test.AddressFrontendStubController.initialise()
+POST  /soft-drinks-industry-levy-registration/test-only/api/init     controllers.test.AddressFrontendStubController.initialise()
 
-GET  /soft-drinks-industry-levy-registration/test-only/api/confirmed   controllers.test.AddressFrontendStubController.addresses(id: String)
+GET  /soft-drinks-industry-levy-registration/test-only/api/confirmed  controllers.test.AddressFrontendStubController.addresses(id: String)
+
+GET  /soft-drinks-industry-levy-registration/test-only/reset         controllers.test.TestingController.reset

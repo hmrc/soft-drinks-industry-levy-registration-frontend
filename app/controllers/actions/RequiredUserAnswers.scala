@@ -16,9 +16,10 @@
 
 package controllers.actions
 
+import controllers.routes
 import models.HowManyLitresGlobally._
 import models.requests.DataRequest
-import models.{CheckMode, ContactDetails, HowManyLitresGlobally, LitresInBands, OrganisationType, Verify}
+import models.{CheckMode, ContactDetails, HowManyLitresGlobally, LitresInBands, OrganisationType, UserTypeCheck, Verify}
 import pages._
 import play.api.libs.json.Reads
 import play.api.mvc.Result
@@ -33,6 +34,7 @@ import scala.reflect.ClassTag
 class RequiredUserAnswers @Inject()(genericLogger: GenericLogger)(implicit val executionContext: ExecutionContext) extends ActionHelpers {
   def requireData(page: Page)(action: => Future[Result])(implicit request: DataRequest[_]): Future[Result] = {
     page match {
+      case CheckYourAnswersPage if UserTypeCheck.doesNotNeedToRegister(request.userAnswers) => Future.successful(Redirect(routes.DoNotRegisterController.onPageLoad))
       case CheckYourAnswersPage => checkYourAnswersRequiredData(action)
       case _ => action
     }

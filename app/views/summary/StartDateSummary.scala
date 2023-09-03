@@ -70,4 +70,10 @@ object StartDateSummary {
     }
   }
 
+  val startDateHint = {
+    val todaysDate = LocalDate.now()
+    val formatter = DateTimeFormatter.ofPattern("d M yyyy")
+    todaysDate.format(formatter)
+  }
+
 }
