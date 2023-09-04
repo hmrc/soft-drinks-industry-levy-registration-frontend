@@ -25,7 +25,7 @@ object AddressFormattingHelper {
   def formatBusinessAddress(ukAddress: UkAddress, tradingName: Option[String]): HtmlContent = {
     HtmlContent( tradingName.fold("")(tradingName => tradingName + "<br/>") +
                  ukAddress.lines.map(line  => if(line.isEmpty){""}else{HtmlFormat.escape(line).toString() + "<br/>"}).mkString +
-                 ukAddress.postCode)
+      ukAddress.postCode)
   }
 
   def addressFormatting(address: UkAddress, tradingName: Option[String]): Html = {
