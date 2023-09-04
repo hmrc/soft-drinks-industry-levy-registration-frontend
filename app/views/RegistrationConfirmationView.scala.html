@@ -45,7 +45,8 @@
 
     @printLinkWithJs(messages("site.print"))
 
-    <p class="govuk-body" id="applicationSentAt">@RegistrationSummary.applicationSentDetailsMessage(sentDateTime)</p>
+    <p class="govuk-body" id="applicationSentAt">
+        @messages("registrationConfirmation.applicationSent.at") <span class="nowrap" style="white-space: nowrap;">@RegistrationSummary.applicationSentFormattedDateTime(sentDateTime).</span></p>
     <p class="govuk-body" id="applicationSentEmailed">@messages("registrationConfirmation.applicationSent.emailSent", email)</p>
 
 

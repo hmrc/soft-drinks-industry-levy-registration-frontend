@@ -246,14 +246,15 @@ class ImportsControllerISpec extends ControllerITTestHelper {
                 client, baseUrl + checkRoutePath, Json.obj("value" -> yesSelected.toString)
               )
 
+              val expectedUrl = if(yesSelected) {
+                routes.HowManyImportsController.onPageLoad(CheckMode).url
+              } else {
+                routes.CheckYourAnswersController.onPageLoad.url
+              }
+
               whenReady(result) { res =>
                 res.status mustBe 303
-                val expectedLocation = if (yesSelected) {
-                  routes.HowManyImportsController.onPageLoad(CheckMode).url
-                } else {
-                  routes.DoNotRegisterController.onPageLoad.url
-                }
-                res.header(HeaderNames.LOCATION) mustBe Some(expectedLocation)
+                res.header(HeaderNames.LOCATION) mustBe Some(expectedUrl)
                 val dataStoredForPage = getAnswers(emptyUserAnswers.id).fold[Option[Boolean]](None)(_.get(ImportsPage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe yesSelected
@@ -276,13 +277,13 @@ class ImportsControllerISpec extends ControllerITTestHelper {
               )
 
               whenReady(result) { res =>
-                res.status mustBe 303
-                val expectedLocation = if (yesSelected) {
+                val expectedUrl = if (yesSelected) {
                   routes.HowManyImportsController.onPageLoad(CheckMode).url
                 } else {
-                  routes.DoNotRegisterController.onPageLoad.url
+                  routes.CheckYourAnswersController.onPageLoad.url
                 }
-                res.header(HeaderNames.LOCATION) mustBe Some(expectedLocation)
+                res.status mustBe 303
+                res.header(HeaderNames.LOCATION) mustBe Some(expectedUrl)
                 val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(ImportsPage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe yesSelected
@@ -328,116 +329,117 @@ class ImportsControllerISpec extends ControllerITTestHelper {
     testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath, Some(Json.obj("value" -> "true")))
   }
 
-  "Post in either normal mode or check mode " - {
-    s"Should redirect to the $StartDatePage when the user is a large producer " in {
-      given
-        .commonPrecondition
+  "Post" - {
+    "in normal mode" - {
+      s"Should redirect to the $StartDatePage when the user is a large producer " in {
+        given
+          .commonPrecondition
 
-      setAnswers(largeProducerNoPackagingRouteUserAnswers)
-      WsTestClient.withClient { client =>
+        setAnswers(largeProducerNoPackagingRouteUserAnswers)
+        WsTestClient.withClient { client =>
 
-        val result = createClientRequestPOST(
-          client, baseUrl + normalRoutePath, Json.obj("value" -> "false")
-        )
+          val result = createClientRequestPOST(
+            client, baseUrl + normalRoutePath, Json.obj("value" -> "false")
+          )
 
-        whenReady(result) { res =>
-          res.status mustBe 303
-          res.header(HeaderNames.LOCATION) mustBe Some(routes.StartDateController.onPageLoad(NormalMode).url)
+          whenReady(result) { res =>
+            res.status mustBe 303
+            res.header(HeaderNames.LOCATION) mustBe Some(routes.StartDateController.onPageLoad(NormalMode).url)
+          }
+        }
+      }
+
+      s"Should redirect to the $StartDatePage when the user is a non producer and selected yes on the $ContractPackingPage" in {
+        given
+          .commonPrecondition
+
+        setAnswers(nonProducerUserAnswers)
+        WsTestClient.withClient { client =>
+
+          val result = createClientRequestPOST(
+            client, baseUrl + normalRoutePath, Json.obj("value" -> "false")
+          )
+
+          whenReady(result) { res =>
+            res.status mustBe 303
+            res.header(HeaderNames.LOCATION) mustBe Some(routes.StartDateController.onPageLoad(NormalMode).url)
+          }
+        }
+      }
+
+      s"Should redirect to the DoNotRegister page when the user is a non producer and selected no on the $ContractPackingPage" in {
+        given
+          .commonPrecondition
+
+        setAnswers(nonProducerDeregisterUserAnswers)
+        WsTestClient.withClient { client =>
+
+          val result = createClientRequestPOST(
+            client, baseUrl + normalRoutePath, Json.obj("value" -> "false")
+          )
+
+          whenReady(result) { res =>
+            res.status mustBe 303
+            res.header(HeaderNames.LOCATION) mustBe Some(routes.DoNotRegisterController.onPageLoad.url)
+          }
+        }
+      }
+
+      s"Should redirect to the $StartDatePage when the user is a small producer and selected yes on the $ContractPackingPage" in {
+        given
+          .commonPrecondition
+
+        setAnswers(smallProducerUserAnswers)
+        WsTestClient.withClient { client =>
+
+          val result = createClientRequestPOST(
+            client, baseUrl + normalRoutePath, Json.obj("value" -> "false")
+          )
+
+          whenReady(result) { res =>
+            res.status mustBe 303
+            res.header(HeaderNames.LOCATION) mustBe Some(routes.StartDateController.onPageLoad(NormalMode).url)
+          }
+        }
+      }
+
+      s"Should redirect to the $ContactDetailsPage if user selected yes on the $ThirdPartyPackagersPage, no on the $OperatePackagingSitesPage, " +
+        s"and no on $ContractPackingPage" in {
+        given
+          .commonPrecondition
+
+        setAnswers(smallProducerNoPackagingRouteUserAnswers)
+        WsTestClient.withClient { client =>
+
+          val result = createClientRequestPOST(
+            client, baseUrl + normalRoutePath, Json.obj("value" -> "false")
+          )
+
+          whenReady(result) { res =>
+            res.status mustBe 303
+            res.header(HeaderNames.LOCATION) mustBe Some(routes.ContactDetailsController.onPageLoad(NormalMode).url)
+          }
+        }
+      }
+
+      s"Should redirect to the DoNotRegister page if user selected no on the $ThirdPartyPackagersPage, no on the $OperatePackagingSitesPage, " +
+        s"and no on $ContractPackingPage" in {
+        given
+          .commonPrecondition
+
+        setAnswers(smallProducerDoNotRegisterUserAnswers)
+        WsTestClient.withClient { client =>
+
+          val result = createClientRequestPOST(
+            client, baseUrl + normalRoutePath, Json.obj("value" -> "false")
+          )
+
+          whenReady(result) { res =>
+            res.status mustBe 303
+            res.header(HeaderNames.LOCATION) mustBe Some(routes.DoNotRegisterController.onPageLoad.url)
+          }
         }
       }
     }
-
-    s"Should redirect to the $StartDatePage when the user is a non producer and selected yes on the $ContractPackingPage" in {
-      given
-        .commonPrecondition
-
-      setAnswers(nonProducerUserAnswers)
-      WsTestClient.withClient { client =>
-
-        val result = createClientRequestPOST(
-          client, baseUrl + normalRoutePath, Json.obj("value" -> "false")
-        )
-
-        whenReady(result) { res =>
-          res.status mustBe 303
-          res.header(HeaderNames.LOCATION) mustBe Some(routes.StartDateController.onPageLoad(NormalMode).url)
-        }
-      }
-    }
-
-    s"Should redirect to the DoNotRegister page when the user is a non producer and selected no on the $ContractPackingPage" in {
-      given
-        .commonPrecondition
-
-      setAnswers(nonProducerDeregisterUserAnswers)
-      WsTestClient.withClient { client =>
-
-        val result = createClientRequestPOST(
-          client, baseUrl + normalRoutePath, Json.obj("value" -> "false")
-        )
-
-        whenReady(result) { res =>
-          res.status mustBe 303
-          res.header(HeaderNames.LOCATION) mustBe Some(routes.DoNotRegisterController.onPageLoad.url)
-        }
-      }
-    }
-
-    s"Should redirect to the $StartDatePage when the user is a small producer and selected yes on the $ContractPackingPage" in {
-      given
-        .commonPrecondition
-
-      setAnswers(smallProducerUserAnswers)
-      WsTestClient.withClient { client =>
-
-        val result = createClientRequestPOST(
-          client, baseUrl + normalRoutePath, Json.obj("value" -> "false")
-        )
-
-        whenReady(result) { res =>
-          res.status mustBe 303
-          res.header(HeaderNames.LOCATION) mustBe Some(routes.StartDateController.onPageLoad(NormalMode).url)
-        }
-      }
-    }
-
-    s"Should redirect to the $ContactDetailsPage if user selected yes on the $ThirdPartyPackagersPage, no on the $OperatePackagingSitesPage, " +
-      s"and no on $ContractPackingPage" in {
-      given
-        .commonPrecondition
-
-      setAnswers(smallProducerNoPackagingRouteUserAnswers)
-      WsTestClient.withClient { client =>
-
-        val result = createClientRequestPOST(
-          client, baseUrl + normalRoutePath, Json.obj("value" -> "false")
-        )
-
-        whenReady(result) { res =>
-          res.status mustBe 303
-          res.header(HeaderNames.LOCATION) mustBe Some(routes.ContactDetailsController.onPageLoad(NormalMode).url)
-        }
-      }
-    }
-
-    s"Should redirect to the DoNotRegister page if user selected no on the $ThirdPartyPackagersPage, no on the $OperatePackagingSitesPage, " +
-      s"and no on $ContractPackingPage" in {
-      given
-        .commonPrecondition
-
-      setAnswers(smallProducerDoNotRegisterUserAnswers)
-      WsTestClient.withClient { client =>
-
-        val result = createClientRequestPOST(
-          client, baseUrl + normalRoutePath, Json.obj("value" -> "false")
-        )
-
-        whenReady(result) { res =>
-          res.status mustBe 303
-          res.header(HeaderNames.LOCATION) mustBe Some(routes.DoNotRegisterController.onPageLoad.url)
-        }
-      }
-    }
-
   }
 }

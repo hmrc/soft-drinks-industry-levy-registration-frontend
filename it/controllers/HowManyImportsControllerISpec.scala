@@ -20,7 +20,7 @@ class HowManyImportsControllerISpec extends LitresISpecHelper {
     val (path, redirectLocation) = if(mode == NormalMode) {
       (normalRoutePath, routes.StartDateController.onPageLoad(NormalMode).url)
     } else {
-      (checkRoutePath, routes.StartDateController.onPageLoad(CheckMode).url)
+      (checkRoutePath, routes.CheckYourAnswersController.onPageLoad.url)
     }
 
     "GET " + path - {

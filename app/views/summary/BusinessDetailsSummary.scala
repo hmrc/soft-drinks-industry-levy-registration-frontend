@@ -20,9 +20,9 @@ import controllers.routes
 import models.backend.Subscription
 import models.{CheckMode, HowManyLitresGlobally}
 import play.api.i18n.Messages
-import uk.gov.hmrc.govukfrontend.views.Aliases.{ActionItem, SummaryList, Text}
+import uk.gov.hmrc.govukfrontend.views.Aliases.{SummaryList, Text}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Content
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Actions, SummaryListRow}
 import viewmodels.AddressFormattingHelper
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
@@ -51,8 +51,8 @@ object BusinessDetailsSummary  {
     Seq(
       createSummaryListItem("utr", Text(subscription.utr)),
       createSummaryListItem("name", Text(subscription.orgName)),
-      createSummaryListItem("address", formattedAddress, businessAddressAction),
-      createSummaryListItem("litresGlobally", Text(messages(s"howManyLitresGlobally.${numberOfLitres.toString}")), litresGloballyAction)
+      createSummaryListItem("address", formattedAddress, Some(businessAddressAction)),
+      createSummaryListItem("litresGlobally", Text(messages(s"howManyLitresGlobally.${numberOfLitres.toString}")), Some(litresGloballyAction))
     )
   }
 
@@ -67,19 +67,21 @@ object BusinessDetailsSummary  {
   }
 
 
-  private def createSummaryListItem(fieldName: String, content: Content, actions: Seq[ActionItem] = Seq.empty[ActionItem])
+  private def createSummaryListItem(fieldName: String, content: Content, actions: Option[Actions] = None)
                                    (implicit messages: Messages): SummaryListRow = {
-    SummaryListRowViewModel(
+    SummaryListRow(
       key = s"checkYourAnswers.businessDetails.$fieldName",
       value = ValueViewModel(content).withCssClass("sdil-right-align--desktop"),
-      actions = actions
+      classes = "govuk-summary-list__row",
+      actions = actions.headOption
     )
   }
 
   private def getAction(fieldName: String, url: String)
-                       (implicit messages: Messages): Seq[ActionItem] = {
-    Seq(ActionItemViewModel("site.change", url)
+                       (implicit messages: Messages): Actions = {
+    val actionItems = Seq(ActionItemViewModel("site.change", url)
       .withAttribute(("id", s"change-$fieldName"))
       .withVisuallyHiddenText(messages(s"businessDetails.$fieldName.change.hidden")))
+    Actions("", actionItems)
   }
 }

@@ -48,7 +48,7 @@ class CheckYourAnswersViewSpec extends ViewSpecHelper {
     val html = view(summaryList, call)(request, messages(application))
     val document = doc(html)
     "should have the expected heading" in {
-      document.getElementsByClass(Selectors.heading).text() mustEqual "Check Your Answers"
+      document.getElementsByClass(Selectors.heading).text() mustEqual "Check your answers before sending your application"
     }
     "contain the correct button" - {
       document.getElementsByClass(Selectors.button).text() mustBe "Confirm details and apply"

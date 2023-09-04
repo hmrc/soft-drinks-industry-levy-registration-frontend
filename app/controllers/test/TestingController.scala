@@ -17,26 +17,20 @@
 package controllers.test
 
 import connectors.TestConnector
-import controllers.routes
 import play.api.mvc.{AnyContent, MessagesControllerComponents, Action => action}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.IndexView
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
-class TestingController @Inject()(testConnector: TestConnector, val controllerComponents: MessagesControllerComponents, indexView: IndexView)(implicit ec: ExecutionContext)
+class TestingController @Inject()(testConnector: TestConnector, val controllerComponents: MessagesControllerComponents)(implicit ec: ExecutionContext)
   extends FrontendBaseController {
 
   def reset: action[AnyContent] =  Action.async(parse.anyContent) { implicit request =>
-    testConnector.resetPending.map(_.status match {
-      case OK => Future.successful(routes.IndexController.onPageLoad)
-      Status(OK)
-    })
-    testConnector.resetSubscriptions.map(_.status match {
-      case OK => Future.successful(routes.IndexController.onPageLoad)
-        Status(OK)
-    })
+    for {
+      _ <- testConnector.resetPending
+      _ <- testConnector.resetSubscriptions
+    } yield Status(OK)
   }
 
 }

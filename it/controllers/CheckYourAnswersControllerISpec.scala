@@ -83,7 +83,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
 
               val siteDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(6)
               page.getElementsByTag("h2").get(6).text() mustBe "UK site details"
-              validateSiteDetailsSummary(siteDetailsSummaryListItem, true)
+              validateSiteDetailsSummary(siteDetailsSummaryListItem, 3, 1, true)
 
               page.getElementsByTag("form").first().attr("action") mustBe routes.CheckYourAnswersController.onSubmit.url
               page.getElementsByTag("form").first().getElementsByTag("button").first().text() mustBe "Confirm details and apply"
@@ -136,7 +136,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
 
               val siteDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(6)
               page.getElementsByTag("h2").get(6).text() mustBe "UK site details"
-              validateSiteDetailsSummary(siteDetailsSummaryListItem, true)
+              validateSiteDetailsSummary(siteDetailsSummaryListItem, 0, 0, true)
 
               page.getElementsByTag("form").first().attr("action") mustBe routes.CheckYourAnswersController.onSubmit.url
               page.getElementsByTag("form").first().getElementsByTag("button").first().text() mustBe "Confirm details and apply"
@@ -419,7 +419,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
 
               val siteDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(7)
               page.getElementsByTag("h2").get(7).text() mustBe "UK site details"
-              validateSiteDetailsSummary(siteDetailsSummaryListItem, true)
+              validateSiteDetailsSummary(siteDetailsSummaryListItem, 3, 1, true)
 
               page.getElementsByTag("form").first().attr("action") mustBe routes.CheckYourAnswersController.onSubmit.url
               page.getElementsByTag("form").first().getElementsByTag("button").first().text() mustBe "Confirm details and apply"
@@ -947,7 +947,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
 
               val siteDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(5)
               page.getElementsByTag("h2").get(5).text() mustBe "UK site details"
-              validateSiteDetailsSummary(siteDetailsSummaryListItem, true)
+              validateSiteDetailsSummary(siteDetailsSummaryListItem, 3, 1, true)
 
               page.getElementsByTag("form").first().attr("action") mustBe routes.CheckYourAnswersController.onSubmit.url
               page.getElementsByTag("form").first().getElementsByTag("button").first().text() mustBe "Confirm details and apply"
@@ -1000,7 +1000,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
 
               val startDateSummaryListItem = page.getElementsByClass("govuk-summary-list").get(3)
               page.getElementsByTag("h2").get(3).text() mustBe "Soft Drinks Industry Levy liability date"
-              validateStartDateSummaryList(startDateSummaryListItem, startDate, true)
+              validateStartDateSummaryList(startDateSummaryListItem, startDate1, true)
 
               val contactDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(4)
               page.getElementsByTag("h2").get(4).text() mustBe "Contact person details"
@@ -1034,7 +1034,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
 
               val startDateSummaryListItem = page.getElementsByClass("govuk-summary-list").get(3)
               page.getElementsByTag("h2").get(3).text() mustBe "Soft Drinks Industry Levy liability date"
-              validateStartDateSummaryList(startDateSummaryListItem, startDate, true)
+              validateStartDateSummaryList(startDateSummaryListItem, startDate1, true)
 
               val contactDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(4)
               page.getElementsByTag("h2").get(4).text() mustBe "Contact person details"
@@ -1068,7 +1068,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
 
               val startDateSummaryListItem = page.getElementsByClass("govuk-summary-list").get(3)
               page.getElementsByTag("h2").get(3).text() mustBe "Soft Drinks Industry Levy liability date"
-              validateStartDateSummaryList(startDateSummaryListItem, startDate, true)
+              validateStartDateSummaryList(startDateSummaryListItem, startDate1, true)
 
               val contactDetailsSummaryListItem = page.getElementsByClass("govuk-summary-list").get(4)
               page.getElementsByTag("h2").get(4).text() mustBe "Contact person details"
