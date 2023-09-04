@@ -1,6 +1,6 @@
 package controllers
 
-import models.{CheckMode, NormalMode}
+import models.CheckMode
 import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
 import pages.PackAtBusinessAddressPage

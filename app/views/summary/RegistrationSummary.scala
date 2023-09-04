@@ -52,7 +52,12 @@ object RegistrationSummary {
   }
 
   def applicationSentFormattedDateTime(dateTime: LocalDateTime): String = {
-    val dateFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy 'at' h:mma")
-    dateTime.format(dateFormatter)
+    val dateFormatter = DateTimeFormatter.ofPattern("dd MMMM yyyy")
+    val timeFormatter = DateTimeFormatter.ofPattern("h:mma")
+
+    val registeredDate = dateTime.format(dateFormatter)
+    val registeredTime = dateTime.format(timeFormatter).toLowerCase
+
+    s"$registeredDate at $registeredTime"
   }
 }
