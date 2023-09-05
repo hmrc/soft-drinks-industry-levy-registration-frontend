@@ -29,12 +29,17 @@ import play.api.mvc.Results.InternalServerError
 import play.api.test.FakeRequest
 import play.twirl.api.Html
 import services.SessionService
+import utilities.GenericLogger
 
 import scala.concurrent.Future
 
 class DataRetrievalActionSpec extends SpecBase with MockitoSugar {
 
-  class Harness(sessionService: SessionService, errorHandler: ErrorHandler) extends DataRetrievalActionImpl(sessionService, errorHandler) {
+  class Harness(
+                 sessionService: SessionService,
+                 errorHandler: ErrorHandler,
+                 genericLogger: GenericLogger
+               ) extends DataRetrievalActionImpl(sessionService, errorHandler, genericLogger) {
     def callRefine[A](request: IdentifierRequest[A]): Future[Either[Result, OptionalDataRequest[A]]] = refine(request)
   }
 
@@ -47,7 +52,7 @@ class DataRetrievalActionSpec extends SpecBase with MockitoSugar {
         val sessionService = mock[SessionService]
         val errorHandler = mock[ErrorHandler]
         when(sessionService.get("id")) thenReturn createSuccessRegistrationResult(None)
-        val action = new Harness(sessionService, errorHandler)
+        val action = new Harness(sessionService, errorHandler, logger)
 
         val result = action.callRefine(IdentifierRequest(FakeRequest(), "id")).futureValue
 
@@ -62,7 +67,7 @@ class DataRetrievalActionSpec extends SpecBase with MockitoSugar {
         val sessionService = mock[SessionService]
         val errorHandler = mock[ErrorHandler]
         when(sessionService.get("id")) thenReturn createSuccessRegistrationResult(Some(UserAnswers("id", RegisterState.RegisterWithAuthUTR)))
-        val action = new Harness(sessionService, errorHandler)
+        val action = new Harness(sessionService, errorHandler, logger)
 
         val result = action.callRefine(new IdentifierRequest(FakeRequest(), "id")).futureValue
 
@@ -76,7 +81,7 @@ class DataRetrievalActionSpec extends SpecBase with MockitoSugar {
         val errorHandler = mock[ErrorHandler]
         when(sessionService.get("id")) thenReturn createFailureRegistrationResult(SessionDatabaseGetError)
         when(errorHandler.internalServerErrorTemplate(any())) thenReturn(Html("error"))
-        val action = new Harness(sessionService, errorHandler)
+        val action = new Harness(sessionService, errorHandler, logger)
 
         val result = action.callRefine(new IdentifierRequest(FakeRequest(), "id")).futureValue
 

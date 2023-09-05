@@ -21,12 +21,14 @@ import models.requests.{IdentifierRequest, OptionalDataRequest}
 import play.api.mvc.Results.InternalServerError
 import play.api.mvc.{ActionRefiner, Result}
 import services.SessionService
+import utilities.GenericLogger
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class DataRetrievalActionImpl @Inject()(val sessionService: SessionService,
-                                        errorHandler: ErrorHandler
+                                        errorHandler: ErrorHandler,
+                                        val genericLogger: GenericLogger
                                        )(implicit val executionContext: ExecutionContext) extends DataRetrievalAction {
 
   override protected def refine[A](request: IdentifierRequest[A]): Future[Either[Result, OptionalDataRequest[A]]] = {
@@ -35,6 +37,7 @@ class DataRetrievalActionImpl @Inject()(val sessionService: SessionService,
         Right(
           OptionalDataRequest(request, request.internalId, request.hasCTEnrolment, request.optUTR, userAnsOps))
       case Left(_) =>
+        genericLogger.logger.error(s"${getClass.getName} - failed to get session data")
         Left(InternalServerError(errorHandler.internalServerErrorTemplate(request)))
     }
   }
