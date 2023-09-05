@@ -33,7 +33,7 @@ class BusinessDetailsSummarySpec extends RegistrationSubscriptionHelper {
   val ROSM_WITH_UTR: RosmWithUtr = RosmWithUtr(UTR, ROSM_REGISTRATION)
 
   def formatAddress(address: UkAddress) = {
-    address.lines.mkString("<br/>") + "<br/>" + address.postCode
+    address.lines.mkString("<br/>") + s"<br/><span class=\"nowrap\" style=\"white-space: nowrap;\">${address.postCode}</span>"
   }
 
   def expectedLitresContent(numberOfLitresGlobally: HowManyLitresGlobally): String = numberOfLitresGlobally match {

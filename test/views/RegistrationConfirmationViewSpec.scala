@@ -41,7 +41,7 @@ class RegistrationConfirmationViewSpec extends ViewSpecHelper {
 
   object Selectors {
     val heading = "govuk-heading-l"
-    val panel = "govuk-panel govuk-panel--confirmation"
+    val panel = "govuk-panel govuk-panel--confirmation panel-indent"
     val panel_title = "govuk-panel__title"
     val panel_body = "govuk-panel__body"
     val bodyM = "govuk-body-m"

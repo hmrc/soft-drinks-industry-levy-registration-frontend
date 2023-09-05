@@ -24,8 +24,8 @@ object AddressFormattingHelper {
 
   def formatBusinessAddress(ukAddress: UkAddress, tradingName: Option[String]): HtmlContent = {
     HtmlContent( tradingName.fold("")(tradingName => tradingName + "<br/>") +
-                 ukAddress.lines.map(line  => if(line.isEmpty){""}else{HtmlFormat.escape(line).toString() + "<br/>"}).mkString +
-      ukAddress.postCode)
+      ukAddress.lines.map(line  => if(line.isEmpty){""}else{HtmlFormat.escape(line).toString() + "<br/>"}).mkString +
+      s"""<span class="nowrap" style="white-space: nowrap;">${ukAddress.postCode}</span>""")
   }
 
   def addressFormatting(address: UkAddress, tradingName: Option[String]): Html = {
@@ -33,7 +33,7 @@ object AddressFormattingHelper {
 
     val commaFormattedSiteAddress = address.lines.map(line => { if (line.isEmpty) "" else line + ", " })
     val htmlSiteAddress = HtmlFormat.escape(commaFormattedSiteAddress.mkString(""))
-    val htmlPostcode = HtmlFormat.escape(address.postCode)
+    val htmlPostcode = Html(s"""<span class="nowrap" style="white-space: nowrap;">${address.postCode}</span>""")
     val htmlTradingName = HtmlFormat.escape(tradingName.getOrElse(""))
     val breakLine = Html("<br>")
 
@@ -88,3 +88,4 @@ case object SeparatePostCodeAddressNoTradingName extends AddressMatching
 case object AddressNoTradingName extends AddressMatching
 case object SeparatePostCodeAddressWithTradingName extends AddressMatching
 case object AddressWithTradingName extends AddressMatching
+
