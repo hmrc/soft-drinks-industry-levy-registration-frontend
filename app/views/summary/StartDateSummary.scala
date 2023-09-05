@@ -32,7 +32,7 @@ import java.time.format.DateTimeFormatter
 object StartDateSummary {
 
   def row(startDate: LocalDate, isCheckAnswers: Boolean = false)(implicit messages: Messages): Seq[SummaryListRow] = {
-    val dateFormatter = DateTimeFormatter.ofPattern("dd MMMM yyyy")
+    val dateFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
     val value: String = startDate.format(dateFormatter)
     Seq(
       SummaryListRowViewModel(
@@ -68,6 +68,12 @@ object StartDateSummary {
       val list = summaryList(subscription.liabilityDate, isCheckAnswers)
       list.rows.headOption.fold(Option.empty[(String, SummaryList)])(_ => Some("startDate.checkYourAnswersLabel" -> list))
     }
+  }
+
+  val startDateHint = {
+    val todaysDate = LocalDate.now()
+    val formatter = DateTimeFormatter.ofPattern("d M yyyy")
+    todaysDate.format(formatter)
   }
 
 }

@@ -84,7 +84,8 @@ class RemovePackagingSiteDetailsControllerSpec extends SpecBase with MockitoSuga
         val ref: String = "foo"
         val htmlExpectedInView: Html = AddressFormattingHelper.addressFormatting(test._2.address, test._2.tradingName)
 
-        val htmlExpectedAfterRender: Html = Html(htmlExpectedInView.body.replace("<br>", " "))
+        val htmlExpectedAfterRender: Html = Html(htmlExpectedInView.body.replace("<br>", " ")
+        .replace("<span class=\"nowrap\" style=\"white-space: nowrap;\">", "").replace("</span>", ""))
         val userAnswers = emptyUserAnswers.copy(packagingSiteList = Map(ref -> test._2))
         val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
@@ -172,7 +173,7 @@ class RemovePackagingSiteDetailsControllerSpec extends SpecBase with MockitoSuga
         None,
         Some("trading"),
         None))
-      val htmlExpectedInView = Html("trading<br>a, b, c")
+      val htmlExpectedInView = Html("trading<br>a, b, <span class=\"nowrap\" style=\"white-space: nowrap;\">c</span>")
       val htmlExpectedAfterRender = Html("trading a, b, c")
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers.copy(packagingSiteList = packagingSite))).build()
 

@@ -108,11 +108,11 @@ class PackagingSiteDetailsSummarySpec extends SpecBase {
             Some("trade"),
             None)
           val packagingSiteSummaryRowList = PackagingSiteDetailsSummary.row2(Map("ref1" -> site1, "ref2" -> site2), mode)
-          packagingSiteSummaryRowList.head.key.content.asHtml.toString() mustBe "trade2<br>foo2, bar2, wizz2"
+          packagingSiteSummaryRowList.head.key.content.asHtml.toString() mustBe "trade2<br>foo2, bar2, <span class=\"nowrap\" style=\"white-space: nowrap;\">wizz2</span>"
           packagingSiteSummaryRowList.head.actions.toList.head.items.last.content.asHtml.toString() mustBe "Remove"
           packagingSiteSummaryRowList.head.actions.toList.head.items.last.href mustBe routes.RemovePackagingSiteDetailsController.onPageLoad(mode, "ref1").url
 
-          packagingSiteSummaryRowList.last.key.content.asHtml.toString() mustBe "trade<br>foo, bar, wizz"
+          packagingSiteSummaryRowList.last.key.content.asHtml.toString() mustBe "trade<br>foo, bar, <span class=\"nowrap\" style=\"white-space: nowrap;\">wizz</span>"
           packagingSiteSummaryRowList.last.actions.toList.head.items.last.content.asHtml.toString() mustBe "Remove"
           packagingSiteSummaryRowList.last.actions.toList.head.items.last.href mustBe routes.RemovePackagingSiteDetailsController.onPageLoad(mode, "ref2").url
         }
@@ -122,23 +122,23 @@ class PackagingSiteDetailsSummarySpec extends SpecBase {
 
         "should place a break after a trading name if a trading name is used" in {
           val packagingSiteSummaryRowList = PackagingSiteDetailsSummary.row2(Map(("90831480921", addressWith3AddressLines)), mode)
-          val expectedAddressContent = HtmlContent("Test trading name 1<br>The house, The Road, ugzhkxcajkcjfrqsgkjruzlmsxytwhg vdg, NW88 8II")
+          val expectedAddressContent = HtmlContent("Test trading name 1<br>The house, The Road, ugzhkxcajkcjfrqsgkjruzlmsxytwhg vdg, <span class=\"nowrap\" style=\"white-space: nowrap;\">NW88 8II</span>")
 
           packagingSiteSummaryRowList.head.key.content mustBe expectedAddressContent
         }
 
         "should not place a break before the post code if the address line and post code length is 44 characters" in {
           val packagingSiteSummaryRowList = PackagingSiteDetailsSummary.row2(Map(("1208934391", address44Characters)), mode)
-          val expectedAddressContent = HtmlContent("29 Station Rd, The Railyard, Cambridge, CB1 2FP")
+          val expectedAddressContent = HtmlContent("29 Station Rd, The Railyard, Cambridge, <span class=\"nowrap\" style=\"white-space: nowrap;\">CB1 2FP</span>")
 
           packagingSiteSummaryRowList.head.key.content mustBe expectedAddressContent
         }
 
         "should place a break before the post code if the address line and post code length is between 45 and 49 characters" in {
           val packagingSiteSummaryRowList = PackagingSiteDetailsSummary.row2(packagingSiteListWith3, mode)
-          val expectedAddressContent45 = HtmlContent("29 Station Pl., The Railyard, Cambridge, <br>CB1 2FP")
-          val expectedAddressContent47 = HtmlContent("29 Station Place, The Railyard, Cambridge, <br>CB1 2FP")
-          val expectedAddressContent49 = HtmlContent("29 Station PlaceDr, The Railyard, Cambridge, <br>CB1 2FP")
+          val expectedAddressContent45 = HtmlContent("29 Station Pl., The Railyard, Cambridge, <br><span class=\"nowrap\" style=\"white-space: nowrap;\">CB1 2FP</span>")
+          val expectedAddressContent47 = HtmlContent("29 Station Place, The Railyard, Cambridge, <br><span class=\"nowrap\" style=\"white-space: nowrap;\">CB1 2FP</span>")
+          val expectedAddressContent49 = HtmlContent("29 Station PlaceDr, The Railyard, Cambridge, <br><span class=\"nowrap\" style=\"white-space: nowrap;\">CB1 2FP</span>")
 
           packagingSiteSummaryRowList.head.key.content mustBe expectedAddressContent45
           packagingSiteSummaryRowList.apply(1).key.content mustBe expectedAddressContent47
@@ -147,13 +147,14 @@ class PackagingSiteDetailsSummarySpec extends SpecBase {
 
         "should not place a break before the post code if the address line and post code length is 50 characters" in {
           val packagingSiteSummaryRowList = PackagingSiteDetailsSummary.row2(Map(("3489028394r", address50Characters)), mode)
-          val expectedAddressContent = HtmlContent("29 Station Place Dr, The Railyard, Cambridge, CB1 2FP")
+          val expectedAddressContent = HtmlContent("29 Station Place Dr, The Railyard, Cambridge, <span class=\"nowrap\" style=\"white-space: nowrap;\">CB1 2FP</span>")
 
           packagingSiteSummaryRowList.head.key.content mustBe expectedAddressContent
         }
         "should autowrap and place a break before the post code if the address line and post code length is between 98 & 103 characters" in {
           val packagingSiteSummaryRowList = PackagingSiteDetailsSummary.row2(Map(("45641351", PackagingSiteEvenLongerAddressNoTradeName)), mode)
-          val expectedAddressContent = HtmlContent("29 Station Rd, This address will auto wrap but not in postcode, it is 4 lines 103 char, Cambridge, <br>CB1 2FP")
+          val expectedAddressContent = HtmlContent("29 Station Rd, This address will auto wrap but not in postcode," +
+            " it is 4 lines 103 char, Cambridge, <br><span class=\"nowrap\" style=\"white-space: nowrap;\">CB1 2FP</span>")
 
           packagingSiteSummaryRowList.head.key.content mustBe expectedAddressContent
         }
@@ -162,7 +163,7 @@ class PackagingSiteDetailsSummarySpec extends SpecBase {
           "and post code length is between 98 & 103 characters" in {
           val packagingSiteSummaryRowList = PackagingSiteDetailsSummary.row2(Map(("56458678", PackagingSiteEvenLongerAddressWithTradeName)), mode)
           val expectedAddressContent = HtmlContent("Test Trading Name Inc<br>29 Station Rd, This address will auto wrap but not " +
-            "in postcode, it is 4 lines 103 char, Cambridge, <br>CB1 2FP")
+            "in postcode, it is 4 lines 103 char, Cambridge, <br><span class=\"nowrap\" style=\"white-space: nowrap;\">CB1 2FP</span>")
 
           packagingSiteSummaryRowList.head.key.content mustBe expectedAddressContent
         }

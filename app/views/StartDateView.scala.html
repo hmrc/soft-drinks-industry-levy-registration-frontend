@@ -15,6 +15,7 @@
  *@
 
 @import views.html.helpers._
+@import views.summary.StartDateSummary.startDateHint
 
 @this(
     layout: templates.Layout,
@@ -41,7 +42,7 @@
                 field  = form("startDate"),
                 legend = LegendViewModel(messages("startDate.heading")).asPageHeading()
             )
-            .withHint(HintViewModel(messages("startDate.hint")))
+            .withHint(HintViewModel(messages("startDate.hint", startDateHint)))
         )
 
         @howDoIKnowWhenIBecameLiable(form)(messages)

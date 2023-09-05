@@ -19,7 +19,7 @@ package controllers
 import controllers.actions._
 import forms.RemovePackagingSiteDetailsFormProvider
 import handlers.ErrorHandler
-import models.{Mode, NormalMode, UserAnswers}
+import models.{Mode, UserAnswers}
 import navigation.Navigator
 import pages.RemovePackagingSiteDetailsPage
 import play.api.i18n.MessagesApi

@@ -43,7 +43,7 @@
         @govukRadios(
             RadiosViewModel(
                 field  = form("value"),
-                legend = LegendViewModel("verify.subHeading").withCssClass("govuk-fieldset__legend--m"),
+                legend = LegendViewModel("verify.subHeading").asPageSubHeading(),
                 items  = Verify.options
             )
         )

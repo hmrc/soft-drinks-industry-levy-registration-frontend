@@ -147,6 +147,16 @@ trait RegistrationSubscriptionHelper extends SpecBase {
     )
   }
 
+  val voluntaryActivity: Activity = {
+    Activity(
+      None,
+      None,
+      None,
+      Some(Litreage(1, 1)),
+      false
+    )
+  }
+
   def generateSubscription(orgType: OrganisationType = OrganisationType.LimitedCompany,
                            litresGlobally: HowManyLitresGlobally = HowManyLitresGlobally.Large,
                            allFieldsPopulated: Boolean): Subscription = {
@@ -163,4 +173,16 @@ trait RegistrationSubscriptionHelper extends SpecBase {
     )
 
   }
+
+  val voluntarySubscription = Subscription(
+    utr,
+    rosmRegistration.rosmRegistration.organisationName,
+    "1",
+    address,
+    voluntaryActivity,
+    userAnswerDate,
+    Seq.empty,
+    Seq.empty,
+    contact
+  )
 }

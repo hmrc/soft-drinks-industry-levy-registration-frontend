@@ -45,11 +45,11 @@ class Navigator @Inject()() {
     case ContractPackingPage => userAnswers => navigationForContractPacking(userAnswers, NormalMode)
     case HowManyContractPackingPage => _ => routes.ImportsController.onPageLoad(NormalMode)
     case ImportsPage => userAnswers => navigationForImports(userAnswers, NormalMode)
-    case HowManyImportsPage => userAnswers => navigationForHowManyImports(userAnswers, NormalMode)
+    case HowManyImportsPage => userAnswers => navigationForHowManyImports(userAnswers)
     case OperatePackagingSitesPage => userAnswers => navigationForOperatePackagingSites(userAnswers, NormalMode)
     case HowManyOperatePackagingSitesPage => _ => routes.ContractPackingController.onPageLoad(NormalMode)
     case ThirdPartyPackagersPage => _ => routes.OperatePackagingSitesController.onPageLoad(NormalMode)
-    case StartDatePage => userAnswers => navigationForStartDate(userAnswers, NormalMode)
+    case StartDatePage => userAnswers => navigationForStartDate(userAnswers)
     case OrganisationTypePage => userAnswers => navigationForOrganisationType(userAnswers, NormalMode)
     case HowManyLitresGloballyPage => userAnswers => navigationForHowManyLitresGloballyNormalMode(userAnswers)
     case _ => _ => routes.RegistrationController.start
@@ -59,11 +59,9 @@ class Navigator @Inject()() {
     case EnterBusinessDetailsPage => _ =>_ => routes.VerifyController.onPageLoad(NormalMode)
     case RemovePackagingSiteDetailsPage => _ => _ => routes.PackagingSiteDetailsController.onPageLoad(CheckMode)
     case RemoveWarehouseDetailsPage => _ => _ => routes.WarehouseDetailsController.onPageLoad(CheckMode)
-    case StartDatePage => userAnswers => _ => navigationForStartDate(userAnswers, CheckMode)
     case ContractPackingPage => userAnswers => _ => navigationForContractPacking(userAnswers, CheckMode)
     case OperatePackagingSitesPage => userAnswers => _ =>  navigationForOperatePackagingSites(userAnswers, CheckMode)
     case ImportsPage => userAnswers => _ => navigationForImports(userAnswers, CheckMode)
-    case HowManyImportsPage =>userAnswers => _ => navigationForHowManyImports(userAnswers, CheckMode)
     case OrganisationTypePage => userAnswers => _ => navigationForOrganisationType(userAnswers, CheckMode)
     case HowManyLitresGloballyPage => userAnswers => previousAnswer => navigationForHowManyLitresGloballyCheckMode(userAnswers, previousAnswer)
     case _ => _ => _ => routes.CheckYourAnswersController.onPageLoad
@@ -73,14 +71,7 @@ class Navigator @Inject()() {
     (previousAnswer, userAnswers.get(page = HowManyLitresGloballyPage)) match {
       case (Some(previousAnswer), Some(newGlobalLitresAnswer)) if previousAnswer == newGlobalLitresAnswer.toString =>
         routes.CheckYourAnswersController.onPageLoad
-      case (_, Some(Large)) =>
-        routes.OperatePackagingSitesController.onPageLoad(CheckMode)
-      case (_, Some(Small)) =>
-        routes.ThirdPartyPackagersController.onPageLoad(CheckMode)
-      case (_, Some(HowManyLitresGlobally.None)) =>
-        routes.ContractPackingController.onPageLoad(CheckMode)
-      case (_, _) =>
-        routes.RegistrationController.start
+      case _ => navigationForHowManyLitresGloballyNormalMode(userAnswers)
     }
   }
 
@@ -121,16 +112,17 @@ class Navigator @Inject()() {
   private def navigationForImports(userAnswers: UserAnswers, mode: Mode): Call = {
     userAnswers.get(page = ImportsPage).contains(true) match {
       case true => routes.HowManyImportsController.onPageLoad(mode)
+      case false if mode == CheckMode => routes.CheckYourAnswersController.onPageLoad
       case false if navigateToStartDate(userAnswers) => routes.StartDateController.onPageLoad(mode)
-      case false => contactDetailsOrDoNotRegister(userAnswers, mode)
+      case false => contactDetailsOrDoNotRegister(userAnswers)
     }
   }
 
-  private def navigationForHowManyImports(userAnswers: UserAnswers, mode: Mode): Call = {
+  private def navigationForHowManyImports(userAnswers: UserAnswers): Call = {
     if (navigateToStartDate(userAnswers)) {
-      routes.StartDateController.onPageLoad(mode)
+      routes.StartDateController.onPageLoad(NormalMode)
     } else {
-      contactDetailsOrDoNotRegister(userAnswers, mode)
+      contactDetailsOrDoNotRegister(userAnswers)
     }
   }
 
@@ -144,11 +136,11 @@ class Navigator @Inject()() {
     }
   }
 
-  private def navigationForStartDate(userAnswers: UserAnswers, mode: Mode): Call = {
+  private def navigationForStartDate(userAnswers: UserAnswers): Call = {
     if (isLarge(userAnswers)) {
-      largeProducerToPackagingSiteOrWarehouse(userAnswers, mode)
+      largeProducerToPackagingSiteOrWarehouse(userAnswers)
     } else {
-      notALargeProducerToPackagingSiteOrWarehouse(userAnswers, mode)
+      notALargeProducerToPackagingSiteOrWarehouse(userAnswers)
     }
   }
 
@@ -160,19 +152,19 @@ class Navigator @Inject()() {
   private def importer(userAnswers: UserAnswers): Boolean = UserTypeCheck.importer(userAnswers)
   private def operatesPackagingSite(userAnswers: UserAnswers): Boolean = UserTypeCheck.operatesPackagingSite(userAnswers)
 
-  private def largeProducerToPackagingSiteOrWarehouse(userAnswers: UserAnswers, mode: Mode): Call = {
+  private def largeProducerToPackagingSiteOrWarehouse(userAnswers: UserAnswers): Call = {
     if (!operatesPackagingSite(userAnswers) && (!copackerAll(userAnswers))) {
-      routes.AskSecondaryWarehousesController.onPageLoad(mode)
+      routes.AskSecondaryWarehousesController.onPageLoad(NormalMode)
     } else {
-      routes.PackAtBusinessAddressController.onPageLoad(mode)
+      routes.PackAtBusinessAddressController.onPageLoad(NormalMode)
     }
   }
 
-  private def notALargeProducerToPackagingSiteOrWarehouse(userAnswers: UserAnswers, mode: Mode): Call = {
+  private def notALargeProducerToPackagingSiteOrWarehouse(userAnswers: UserAnswers): Call = {
     if ((isSmall(userAnswers) || notAProducer(userAnswers)) && copackerAll(userAnswers)) {
-      routes.PackAtBusinessAddressController.onPageLoad(mode)
+      routes.PackAtBusinessAddressController.onPageLoad(NormalMode)
     } else {
-      routes.AskSecondaryWarehousesController.onPageLoad(mode)
+      routes.AskSecondaryWarehousesController.onPageLoad(NormalMode)
     }
   }
 
@@ -196,11 +188,11 @@ class Navigator @Inject()() {
     if (!copackerAll(userAnswers) && !importer(userAnswers)) true else false
   }
 
-  private def contactDetailsOrDoNotRegister(userAnswers: UserAnswers, mode: Mode): Call = {
+  private def contactDetailsOrDoNotRegister(userAnswers: UserAnswers): Call = {
     if (notAProducer(userAnswers)) {
       routes.DoNotRegisterController.onPageLoad
     } else if (copackee(userAnswers)) {
-      routes.ContactDetailsController.onPageLoad(mode)
+      routes.ContactDetailsController.onPageLoad(NormalMode)
     } else {
       routes.DoNotRegisterController.onPageLoad
     }

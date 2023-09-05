@@ -49,7 +49,7 @@ trait RegSummaryISpecHelper extends ControllerITTestHelper {
   )
   val newAddress = UkAddress(List("10 Linden Close", "Langly"), "LA16 3KL")
 
-  val dateFormatter = DateTimeFormatter.ofPattern("dd MMMM yyyy")
+  val dateFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy")
 
   val submittedDate = LocalDateTime.of(2023, 7, 10, 14, 30).toInstant(ZoneOffset.UTC)
 
@@ -58,6 +58,7 @@ trait RegSummaryISpecHelper extends ControllerITTestHelper {
   val contractPackingLitres = LitresInBands(3000, 4000)
   val importsLitres = LitresInBands(5000, 6000)
   val startDate = LocalDate.of(2022, 6, 1)
+  val startDate1 = LocalDate.of(2022, 6, 30)
 
   def userAnswerWithLitresForAllPagesIncludingOnesNotRequired(producerType: HowManyLitresGlobally) = emptyUserAnswers
     .copy(packagingSiteList = packagingSiteListWith3, warehouseList = warehouseListWith1)
@@ -108,7 +109,7 @@ trait RegSummaryISpecHelper extends ControllerITTestHelper {
         .set(ThirdPartyPackagersPage, true).success.value
         .set(OperatePackagingSitesPage, false).success.value
       case _ => uaThatAllPagesHave
-        .set(StartDatePage, startDate).success.value
+        .set(StartDatePage, startDate1).success.value
     }
   }
 
@@ -382,14 +383,19 @@ trait RegSummaryISpecHelper extends ControllerITTestHelper {
   }
 
   def validateStartDateSummaryList(summaryList: Element,
-                                   date: LocalDate,
+                                   date: LocalDate = startDate,
                                    isCheckAnswers: Boolean = true) = {
+    val formattedStartDate = if(date == startDate) {
+      "1 June 2022"
+    } else {
+      "30 June 2022"
+    }
     val summaryRows = summaryList.getElementsByClass("govuk-summary-list__row")
     summaryRows.size mustBe 1
 
     val startDateRow = summaryRows.first()
     startDateRow.getElementsByClass("govuk-summary-list__key").text() mustBe "Date liable from"
-    startDateRow.getElementsByClass("govuk-summary-list__value").text() mustBe date.format(dateFormatter)
+    startDateRow.getElementsByClass("govuk-summary-list__value").text() mustBe formattedStartDate
     if (isCheckAnswers) {
       val fullNameAction = startDateRow.getElementsByClass("govuk-summary-list__actions").first()
       fullNameAction.text() mustBe "Change liability date"
@@ -401,30 +407,41 @@ trait RegSummaryISpecHelper extends ControllerITTestHelper {
 
 
   def validateSiteDetailsSummary(summaryList: Element,
+                                 numberOfPackagingSites: Int = 0,
+                                 numberOfWarehouses: Int = 0,
                                  isCheckAnswers: Boolean = true) = {
     val rows = summaryList.getElementsByClass("govuk-summary-list__row")
-    rows.size() mustBe 2
-    val packingRow = rows.get(0)
-    val warehouseRow = rows.get(1)
-    if (isCheckAnswers) {
-      val zeroPackingSites = packingRow.text().contains("0")
-      val packingLink = if (zeroPackingSites)
-        routes.PackAtBusinessAddressController.onPageLoad(CheckMode).url else
-        routes.PackagingSiteDetailsController.onPageLoad(CheckMode).url
-      packingRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByTag("a").first().text() mustBe "Change the UK packaging site that you operate to produce liable drinks"
-      packingRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByClass("govuk-visually-hidden").first().text() mustBe "the UK packaging site that you operate to produce liable drinks"
-      packingRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByTag("a").first().attr("href") mustBe packingLink
-
-      val zeroWarehouses = warehouseRow.text().contains("0")
-      val warehouseLink = if (zeroWarehouses)
-        routes.AskSecondaryWarehousesController.onPageLoad(CheckMode).url else
-        routes.WarehouseDetailsController.onPageLoad(CheckMode).url
-      warehouseRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByTag("a").first().text() mustBe "Change the UK warehouses you use to store liable drinks"
-      warehouseRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByClass("govuk-visually-hidden").first().text() mustBe "the UK warehouses you use to store liable drinks"
-      warehouseRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByTag("a").first().attr("href") mustBe warehouseLink
+    if(numberOfPackagingSites == 0) {
+      rows.size() mustBe 1
+      testWarehouseSitesRow(rows.get(0))
     } else {
-      packingRow.getElementsByClass("govuk-summary-list__actions").size() mustBe 0
-      warehouseRow.getElementsByClass("govuk-summary-list__actions").size() mustBe 0
+      rows.size() mustBe 2
+      testPackingSitesRow(rows.get(0))
+      testWarehouseSitesRow(rows.get(1))
+    }
+
+    def testPackingSitesRow(packingRow: Element) = {
+      if (isCheckAnswers) {
+        val packingLink = routes.PackagingSiteDetailsController.onPageLoad(CheckMode).url
+        packingRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByTag("a").first().text() mustBe "Change the UK packaging site that you operate to produce liable drinks"
+        packingRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByClass("govuk-visually-hidden").first().text() mustBe "the UK packaging site that you operate to produce liable drinks"
+        packingRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByTag("a").first().attr("href") mustBe packingLink
+      } else {
+        packingRow.getElementsByClass("govuk-summary-list__actions").size() mustBe 0
+      }
+    }
+
+    def testWarehouseSitesRow(warehouseRow: Element) = {
+      if (isCheckAnswers) {
+        val warehouseLink = if (numberOfWarehouses == 0)
+          routes.AskSecondaryWarehousesController.onPageLoad(CheckMode).url else
+          routes.WarehouseDetailsController.onPageLoad(CheckMode).url
+        warehouseRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByTag("a").first().text() mustBe "Change the UK warehouses you use to store liable drinks"
+        warehouseRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByClass("govuk-visually-hidden").first().text() mustBe "the UK warehouses you use to store liable drinks"
+        warehouseRow.getElementsByClass("govuk-summary-list__actions").first().getElementsByTag("a").first().attr("href") mustBe warehouseLink
+      } else {
+        warehouseRow.getElementsByClass("govuk-summary-list__actions").size() mustBe 0
+      }
     }
   }
 

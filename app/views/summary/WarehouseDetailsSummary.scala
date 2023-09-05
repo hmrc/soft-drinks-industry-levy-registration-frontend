@@ -17,7 +17,7 @@
 package views.summary
 
 import controllers.routes
-import models.{Mode, NormalMode, Warehouse}
+import models.{Mode, Warehouse}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.Actions
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
@@ -29,7 +29,6 @@ import viewmodels.implicits._
 object WarehouseDetailsSummary  {
 
   def warehouseDetailsRow(warehouseList: Map[String, Warehouse], mode: Mode)(implicit messages: Messages): List[SummaryListRow] = {
-    val numberOfWarehouses = warehouseList.size
     warehouseList.map {
       warehouse =>
         SummaryListRow(

@@ -22,6 +22,7 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import uk.gov.hmrc.http.HttpReads.Implicits._
 
 class TestConnector @Inject() (http: HttpClient, val configuration: Configuration
                     )(implicit ec: ExecutionContext)

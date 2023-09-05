@@ -1,6 +1,7 @@
 package controllers
 
-import models.{CheckMode, HowManyLitresGlobally, NormalMode}
+import models.HowManyLitresGlobally.{Large, Small}
+import models.{HowManyLitresGlobally, NormalMode}
 import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
 import pages.HowManyLitresGloballyPage
@@ -313,168 +314,88 @@ class HowManyLitresGloballyControllerISpec extends ControllerITTestHelper {
   }
 
   s"POST " + checkRoutePath - {
-    HowManyLitresGlobally.values.foreach {
-      case radio if radio == HowManyLitresGlobally.Large =>
-        "when the user selects " + radio.toString - {
-        "should update the session with the new value and redirect to the checkAnswers controller" - {
-          "when the session contains no data for page" in {
-            given
-              .commonPrecondition
+    HowManyLitresGlobally.values.foreach { case selectedValue =>
+      s"when the user selects $selectedValue" - {
+        HowManyLitresGlobally.values.foreach { case previousSelectedValue =>
+          if (previousSelectedValue == selectedValue) {
+            s"that is the same as the answer stored in useranswers" - {
+              "should update the database and redirect to check your answers" in {
+                given
+                  .commonPrecondition
 
-            setAnswers(emptyUserAnswers)
-            WsTestClient.withClient { client =>
-              val result = createClientRequestPOST(
-                client, baseUrl + checkRoutePath, Json.obj("value" -> Json.toJson(radio))
-              )
+                val userAnswers = emptyUserAnswers.set(HowManyLitresGloballyPage, previousSelectedValue).success.value
 
-              whenReady(result) { res =>
-                res.status mustBe 303
-                res.header(HeaderNames.LOCATION) mustBe Some(routes.OperatePackagingSitesController.onPageLoad(CheckMode).url)
-                val dataStoredForPage = getAnswers(identifier).fold[Option[HowManyLitresGlobally]](None)(_.get(HowManyLitresGloballyPage))
-                dataStoredForPage.nonEmpty mustBe true
-                dataStoredForPage.get mustBe radio
+                setAnswers(userAnswers)
+                WsTestClient.withClient { client =>
+                  val result = createClientRequestPOST(
+                    client, baseUrl + checkRoutePath, Json.obj("value" -> Json.toJson(selectedValue))
+                  )
+
+                  whenReady(result) { res =>
+                    res.status mustBe 303
+                    res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
+                    val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[HowManyLitresGlobally]](None)(_.get(HowManyLitresGloballyPage))
+                    dataStoredForPage.nonEmpty mustBe true
+                    dataStoredForPage.get mustBe selectedValue
+                  }
+                }
               }
             }
-          }
-
-          "when the session already contains data for page and user clicks save and continue without changing the selection" in {
-            given
-              .commonPrecondition
-
-            val userAnswers = emptyUserAnswers.set(HowManyLitresGloballyPage, radio).success.value
-
-            setAnswers(userAnswers)
-            WsTestClient.withClient { client =>
-              val result = createClientRequestPOST(
-                client, baseUrl + checkRoutePath, Json.obj("value" -> Json.toJson(radio))
-              )
-
-              whenReady(result) { res =>
-                res.status mustBe 303
-                res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
-                val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[HowManyLitresGlobally]](None)(_.get(HowManyLitresGloballyPage))
-                dataStoredForPage.nonEmpty mustBe true
-                dataStoredForPage.get mustBe radio
+          } else {
+            s"and the user previously selected $previousSelectedValue" - {
+              val expectedUrl = selectedValue match {
+                case Large => routes.OperatePackagingSitesController.onPageLoad(NormalMode).url
+                case Small => routes.ThirdPartyPackagersController.onPageLoad(NormalMode).url
+                case _ => routes.ContractPackingController.onPageLoad(NormalMode).url
               }
-            }
-          }
-        }
-      }
-      case radio if radio == HowManyLitresGlobally.Small =>
-        "when the user selects " + radio.toString - {
-        "should update the session with the new value and redirect to the checkAnswers controller" - {
-          "when the session contains no data for page" in {
-            given
-              .commonPrecondition
+              s"should update the database and redirect to $expectedUrl " in {
+                given
+                  .commonPrecondition
 
-            setAnswers(emptyUserAnswers)
-            WsTestClient.withClient { client =>
-              val result = createClientRequestPOST(
-                client, baseUrl + checkRoutePath, Json.obj("value" -> Json.toJson(radio))
-              )
+                val userAnswers = emptyUserAnswers.set(HowManyLitresGloballyPage, previousSelectedValue).success.value
 
-              whenReady(result) { res =>
-                res.status mustBe 303
-                res.header(HeaderNames.LOCATION) mustBe Some(routes.ThirdPartyPackagersController.onPageLoad(CheckMode).url)
-                val dataStoredForPage = getAnswers(identifier).fold[Option[HowManyLitresGlobally]](None)(_.get(HowManyLitresGloballyPage))
-                dataStoredForPage.nonEmpty mustBe true
-                dataStoredForPage.get mustBe radio
-              }
-            }
-          }
+                setAnswers(userAnswers)
+                WsTestClient.withClient { client =>
+                  val result = createClientRequestPOST(
+                    client, baseUrl + checkRoutePath, Json.obj("value" -> Json.toJson(selectedValue))
+                  )
 
-          "when the session already contains data for page and user clicks save and continue without changing the selection" in {
-            given
-              .commonPrecondition
-
-            val userAnswers = emptyUserAnswers.set(HowManyLitresGloballyPage, radio).success.value
-
-            setAnswers(userAnswers)
-            WsTestClient.withClient { client =>
-              val result = createClientRequestPOST(
-                client, baseUrl + checkRoutePath, Json.obj("value" -> Json.toJson(radio))
-              )
-
-              whenReady(result) { res =>
-                res.status mustBe 303
-                res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
-                val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[HowManyLitresGlobally]](None)(_.get(HowManyLitresGloballyPage))
-                dataStoredForPage.nonEmpty mustBe true
-                dataStoredForPage.get mustBe radio
+                  whenReady(result) { res =>
+                    res.status mustBe 303
+                    res.header(HeaderNames.LOCATION) mustBe Some(expectedUrl)
+                    val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[HowManyLitresGlobally]](None)(_.get(HowManyLitresGloballyPage))
+                    dataStoredForPage.nonEmpty mustBe true
+                    dataStoredForPage.get mustBe selectedValue
+                  }
+                }
               }
             }
           }
         }
-      }
-      case radio =>
-        "when the user selects " + radio.toString - {
-        "should update the session with the new value and redirect to the checkAnswers controller" - {
-          "when the session contains no data for page" in {
-            given
-              .commonPrecondition
-
-            setAnswers(emptyUserAnswers)
-            WsTestClient.withClient { client =>
-              val result = createClientRequestPOST(
-                client, baseUrl + checkRoutePath, Json.obj("value" -> Json.toJson(radio))
-              )
-
-              whenReady(result) { res =>
-                res.status mustBe 303
-                res.header(HeaderNames.LOCATION) mustBe Some(routes.ContractPackingController.onPageLoad(CheckMode).url)
-                val dataStoredForPage = getAnswers(identifier).fold[Option[HowManyLitresGlobally]](None)(_.get(HowManyLitresGloballyPage))
-                dataStoredForPage.nonEmpty mustBe true
-                dataStoredForPage.get mustBe radio
-              }
-            }
-          }
-
-          "when the session already contains data for page and user clicks save and continue without changing the selection" in {
-            given
-              .commonPrecondition
-
-            val userAnswers = emptyUserAnswers.set(HowManyLitresGloballyPage, radio).success.value
-
-            setAnswers(userAnswers)
-            WsTestClient.withClient { client =>
-              val result = createClientRequestPOST(
-                client, baseUrl + checkRoutePath, Json.obj("value" -> Json.toJson(radio))
-              )
-
-              whenReady(result) { res =>
-                res.status mustBe 303
-                res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
-                val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[HowManyLitresGlobally]](None)(_.get(HowManyLitresGloballyPage))
-                dataStoredForPage.nonEmpty mustBe true
-                dataStoredForPage.get mustBe radio
-              }
-            }
-          }
+        val expectedUrl = selectedValue match {
+          case Large => routes.OperatePackagingSitesController.onPageLoad(NormalMode).url
+          case Small => routes.ThirdPartyPackagersController.onPageLoad(NormalMode).url
+          case _ => routes.ContractPackingController.onPageLoad(NormalMode).url
         }
-      }
-    }
+        s"should update the database and redirect to $expectedUrl when no producerType in useranswers" in {
+          given
+            .commonPrecondition
 
-    "when the user does not select and option" - {
-      "should return 400 with required error" in {
-        given
-          .commonPrecondition
+          val userAnswers = emptyUserAnswers
 
-        setAnswers(emptyUserAnswers)
-        WsTestClient.withClient { client =>
-          val result = createClientRequestPOST(
-            client, baseUrl + checkRoutePath, Json.obj("value" -> "")
-          )
+          setAnswers(userAnswers)
+          WsTestClient.withClient { client =>
+            val result = createClientRequestPOST(
+              client, baseUrl + checkRoutePath, Json.obj("value" -> Json.toJson(selectedValue))
+            )
 
-          whenReady(result) { res =>
-            res.status mustBe 400
-            val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + Messages("howManyLitresGlobally" + ".title"))
-            val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
-              .first()
-            errorSummary
-              .select("a")
-              .attr("href") mustBe "#value_0"
-            errorSummary.text() mustBe Messages("howManyLitresGlobally" + ".error.required")
+            whenReady(result) { res =>
+              res.status mustBe 303
+              res.header(HeaderNames.LOCATION) mustBe Some(expectedUrl)
+              val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[HowManyLitresGlobally]](None)(_.get(HowManyLitresGloballyPage))
+              dataStoredForPage.nonEmpty mustBe true
+              dataStoredForPage.get mustBe selectedValue
+            }
           }
         }
       }
