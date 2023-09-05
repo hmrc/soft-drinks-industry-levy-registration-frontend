@@ -2,10 +2,10 @@ package controllers
 
 import models.alf.init.{AppLevelLabels, ConfirmPageConfig, EditPageLabels, JourneyConfig, JourneyLabels, JourneyOptions, LanguageLabels, LookupPageLabels, SelectPageConfig, TimeoutConfig}
 import models.backend.UkAddress
-import models.{NormalMode, Warehouse}
+import models.{CheckMode, NormalMode, Warehouse}
 import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
-import pages.AskSecondaryWarehousesPage
+import pages.{AskSecondaryWarehousesPage, OperatePackagingSitesPage}
 import play.api.http.HeaderNames
 import play.api.i18n.Messages
 import play.api.libs.json.{JsObject, Json}
@@ -145,6 +145,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
             .commonPrecondition
 
           setAnswers(emptyUserAnswers)
+
           WsTestClient.withClient { client =>
             val result = createClientRequestPOST(
               client, baseUrl + normalRoutePath, Json.obj("value" -> radioNo)
@@ -273,6 +274,38 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
           getAnswers(identifier).map(userAnswers => userAnswers.warehouseList).get mustBe warehouseToRemain
 
           ALFTestHelper.requestedBodyMatchesExpected(wireMockServer, journeyConfigToBePosted) mustBe true
+        }
+
+      }
+    }
+
+    "user selects yes where they had previously selected yes and had added some warehouses " +
+      "saves and continues they should be redirected to warehouse details page " in {
+
+      setAnswers(
+        emptyUserAnswers.copy(warehouseList = warehouseListWith1)
+          .set(AskSecondaryWarehousesPage, true).success.value
+      )
+
+      given
+        .commonPrecondition
+
+      val expectedResult: Some[JsObject] = Some(Json.obj("askSecondaryWarehouses" -> true))
+
+      WsTestClient.withClient { client =>
+        val result1 = client.url(baseUrl + normalRoutePath)
+          .addCookies(DefaultWSCookie("mdtp", authAndSessionCookie))
+          .withHttpHeaders("X-Session-ID" -> "XKSDIL000000022",
+            "Csrf-Token" -> "nocheck")
+          .withFollowRedirects(false)
+          .post(Json.obj("value" -> true))
+
+        whenReady(result1) { res =>
+          res.status mustBe 303
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.WarehouseDetailsController.onPageLoad(NormalMode).url)
+          getAnswers(identifier).map(userAnswers => userAnswers.data) mustBe expectedResult
+          getAnswers(identifier).map(userAnswers => userAnswers.warehouseList).get mustBe warehouseListWith1
+
         }
 
       }
@@ -486,6 +519,38 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
           getAnswers(identifier).map(userAnswers => userAnswers.warehouseList).get mustBe warehouseToRemain
 
           ALFTestHelper.requestedBodyMatchesExpected(wireMockServer, journeyConfigToBePosted) mustBe true
+        }
+
+      }
+    }
+
+    "user selects yes where they had previously selected yes and had added some warehouses " +
+      "saves and continues they should be redirected to warehouse details page " in {
+
+      setAnswers(
+        emptyUserAnswers.copy(warehouseList = warehouseListWith1)
+          .set(AskSecondaryWarehousesPage, true).success.value
+      )
+
+      given
+        .commonPrecondition
+
+      val expectedResult: Some[JsObject] = Some(Json.obj("askSecondaryWarehouses" -> true))
+
+      WsTestClient.withClient { client =>
+        val result1 = client.url(baseUrl + checkRoutePath)
+          .addCookies(DefaultWSCookie("mdtp", authAndSessionCookie))
+          .withHttpHeaders("X-Session-ID" -> "XKSDIL000000022",
+            "Csrf-Token" -> "nocheck")
+          .withFollowRedirects(false)
+          .post(Json.obj("value" -> true))
+
+        whenReady(result1) { res =>
+          res.status mustBe 303
+          res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.WarehouseDetailsController.onPageLoad(CheckMode).url)
+          getAnswers(identifier).map(userAnswers => userAnswers.data) mustBe expectedResult
+          getAnswers(identifier).map(userAnswers => userAnswers.warehouseList).get mustBe warehouseListWith1
+
         }
 
       }
