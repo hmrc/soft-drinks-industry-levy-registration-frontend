@@ -37,7 +37,7 @@ class WarehouseDetailsChecker @Inject()(genericLogger: GenericLogger, val sessio
       case _ =>
         val updatedAnswers = userAnswers.remove(AskSecondaryWarehousesPage).get
         sessionService.set(updatedAnswers)
-        genericLogger.logger.warn(s"${getClass.getName} - No warehouse present. Redirecting to as secondary warehouse details page.")
+        genericLogger.logger.warn(s"${getClass.getName} - No warehouse present. Redirecting to ask secondary warehouse details page.")
         Redirect(routes.AskSecondaryWarehousesController.onPageLoad(mode))
     }
   }
