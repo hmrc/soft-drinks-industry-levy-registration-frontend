@@ -28,7 +28,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class DataRetrievalActionImpl @Inject()(val sessionService: SessionService,
                                         errorHandler: ErrorHandler,
-                                        val genericLogger: GenericLogger,
+                                        val genericLogger: GenericLogger
                                        )(implicit val executionContext: ExecutionContext) extends DataRetrievalAction {
 
   override protected def refine[A](request: IdentifierRequest[A]): Future[Either[Result, OptionalDataRequest[A]]] = {
