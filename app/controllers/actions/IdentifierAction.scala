@@ -29,6 +29,7 @@ import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
+import utilities.GenericLogger
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -39,7 +40,8 @@ class AuthenticatedIdentifierAction @Inject()(
                                                config: FrontendAppConfig,
                                                val parser: BodyParsers.Default,
                                                sdilConnector: SoftDrinksIndustryLevyConnector,
-                                               errorHandler: ErrorHandler)
+                                               errorHandler: ErrorHandler,
+                                               val genericLogger: GenericLogger)
                                              (implicit val executionContext: ExecutionContext)
   extends IdentifierAction with AuthorisedFunctions with ActionHelpers {
 
@@ -79,7 +81,9 @@ class AuthenticatedIdentifierAction @Inject()(
         Future.successful(Left(Redirect(config.sdilFrontendBaseUrl)))
       case Right(_) =>
         Future.successful(Right(IdentifierRequest(request, internalId, hasCTEnrolment, Some(utr))))
-      case Left(_) => Future.successful(Left(InternalServerError(errorHandler.internalServerErrorTemplate(request))))
+      case Left(_) =>
+        genericLogger.logger.error(s"${getClass.getName} - failed to handle user with UTR")
+        Future.successful(Left(InternalServerError(errorHandler.internalServerErrorTemplate(request))))
     }
   }
 
@@ -88,7 +92,9 @@ class AuthenticatedIdentifierAction @Inject()(
       sdilConnector.retrieveSubscription(sdil.value, "sdil", internalId).value.map{
         case Right(Some(sub)) if sub.deregDate.isEmpty => Left(Redirect(config.sdilFrontendBaseUrl))
         case Right(_) => Right(IdentifierRequest(request, internalId, hasCTEnrolment, None))
-        case Left(_) => Left(InternalServerError(errorHandler.internalServerErrorTemplate(request)))
+        case Left(_) =>
+          genericLogger.logger.error(s"${getClass.getName} - failed to handle user with no UTR and SDIL enrolment")
+          Left(InternalServerError(errorHandler.internalServerErrorTemplate(request)))
       }
   }
 }

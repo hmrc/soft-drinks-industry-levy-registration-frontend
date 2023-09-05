@@ -27,15 +27,17 @@ import orchestrators.RegistrationOrchestrator
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import utilities.GenericLogger
 
 import scala.concurrent.ExecutionContext
 
 class RegistrationController @Inject()(identify: IdentifierAction,
                                        registrationOrchestrator: RegistrationOrchestrator,
-                                        val controllerComponents: MessagesControllerComponents,
-                                        errorHandler: ErrorHandler,
+                                       val controllerComponents: MessagesControllerComponents,
+                                       errorHandler: ErrorHandler,
+                                       val genericLogger: GenericLogger,
                                        config: FrontendAppConfig
-                                          )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+                                      )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
   def start: Action[AnyContent] = identify.async {
     implicit request =>
@@ -46,7 +48,9 @@ class RegistrationController @Inject()(identify: IdentifierAction,
         case Right(RegisterApplicationAccepted) => Redirect(routes.ApplicationAlreadySubmittedController.onPageLoad)
         case Right(_) => Redirect(routes.VerifyController.onPageLoad(NormalMode))
         case Left(AuthenticationError) => Redirect(config.loginUrl, Map("continue_url" -> Seq(config.sdilHomeUrl), "origin" -> Seq(config.appName)))
-        case Left(_) => InternalServerError(errorHandler.internalServerErrorTemplate)
+        case Left(error) =>
+          genericLogger.logger.error(s"${getClass.getName} - $error while handling registration request")
+          InternalServerError(errorHandler.internalServerErrorTemplate)
       }
   }
 }

@@ -76,7 +76,7 @@ class WarehouseDetailsControllerSpec extends SpecBase with MockitoSugar with Log
           events.collectFirst {
             case event =>
               event.getLevel.levelStr mustEqual ("WARN")
-              event.getMessage mustEqual ("Failed to load the requested page due to no warehouse being present")
+              event.getMessage mustEqual ("controllers.actions.WarehouseDetailsChecker - No warehouse present. Redirecting to as secondary warehouse details page.")
           }.getOrElse(fail("No logging captured"))
         }
       }

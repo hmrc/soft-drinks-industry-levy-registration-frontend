@@ -73,8 +73,11 @@ class EnterBusinessDetailsController @Inject()(
                   .set(EnterBusinessDetailsPage, identify)
                 updateDatabaseAndRedirect(updatedUserAnswersWithPageDataAndState, EnterBusinessDetailsPage, NormalMode)
               case Left(error) if List(NoROSMRegistration, EnteredBusinessDetailsDoNotMatch).contains(error) =>
+                genericLogger.logger.error(s"${getClass.getName} - ${request.userAnswers.id} - no rosm registration or business details don't match")
                 Future.successful(BadRequest(view(form.fill(identify).withError("utr", "enterBusinessDetails.no-record.utr"))))
-              case Left(_) => Future.successful(InternalServerError(errorHandler.internalServerErrorTemplate))
+              case Left(error) =>
+                genericLogger.logger.error(s"${getClass.getName} - ${request.userAnswers.id} - ${error.getClass.getName} error returned")
+                Future.successful(InternalServerError(errorHandler.internalServerErrorTemplate))
             }
           }
         }

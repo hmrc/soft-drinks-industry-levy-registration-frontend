@@ -29,6 +29,7 @@ import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.Retrieval
 import uk.gov.hmrc.http.HeaderCarrier
+import utilities.GenericLogger
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -52,7 +53,7 @@ class AuthActionSpec extends SpecBase {
         val application = applicationBuilder(userAnswers = None, rosmRegistration = rosmRegistration).build()
 
         running(application) {
-          val authAction = new AuthenticatedIdentifierAction(new FakeFailingAuthConnector(new MissingBearerToken), appConfig, bodyParsers, sdilConnector, errorHandler)
+          val authAction = new AuthenticatedIdentifierAction(new FakeFailingAuthConnector(new MissingBearerToken), appConfig, bodyParsers, sdilConnector, errorHandler, logger)
           val controller = new Harness(authAction)
           val result = controller.onPageLoad(FakeRequest())
 
@@ -70,7 +71,7 @@ class AuthActionSpec extends SpecBase {
 
         running(application) {
 
-          val authAction = new AuthenticatedIdentifierAction(new FakeFailingAuthConnector(new BearerTokenExpired), appConfig, bodyParsers, sdilConnector, errorHandler)
+          val authAction = new AuthenticatedIdentifierAction(new FakeFailingAuthConnector(new BearerTokenExpired), appConfig, bodyParsers, sdilConnector, errorHandler, logger)
           val controller = new Harness(authAction)
           val result = controller.onPageLoad(FakeRequest())
 
@@ -88,7 +89,7 @@ class AuthActionSpec extends SpecBase {
 
         running(application) {
 
-          val authAction = new AuthenticatedIdentifierAction(new FakeFailingAuthConnector(new InsufficientEnrolments), appConfig, bodyParsers, sdilConnector, errorHandler)
+          val authAction = new AuthenticatedIdentifierAction(new FakeFailingAuthConnector(new InsufficientEnrolments), appConfig, bodyParsers, sdilConnector, errorHandler, logger)
           val controller = new Harness(authAction)
           val result = controller.onPageLoad(FakeRequest())
 
@@ -106,7 +107,7 @@ class AuthActionSpec extends SpecBase {
 
         running(application) {
 
-          val authAction = new AuthenticatedIdentifierAction(new FakeFailingAuthConnector(new InsufficientConfidenceLevel), appConfig, bodyParsers, sdilConnector, errorHandler)
+          val authAction = new AuthenticatedIdentifierAction(new FakeFailingAuthConnector(new InsufficientConfidenceLevel), appConfig, bodyParsers, sdilConnector, errorHandler, logger)
           val controller = new Harness(authAction)
           val result = controller.onPageLoad(FakeRequest())
 
@@ -124,7 +125,7 @@ class AuthActionSpec extends SpecBase {
 
         running(application) {
 
-          val authAction = new AuthenticatedIdentifierAction(new FakeFailingAuthConnector(new UnsupportedAuthProvider), appConfig, bodyParsers, sdilConnector, errorHandler)
+          val authAction = new AuthenticatedIdentifierAction(new FakeFailingAuthConnector(new UnsupportedAuthProvider), appConfig, bodyParsers, sdilConnector, errorHandler, logger)
           val controller = new Harness(authAction)
           val result = controller.onPageLoad(FakeRequest())
 
@@ -142,7 +143,7 @@ class AuthActionSpec extends SpecBase {
 
         running(application) {
 
-          val authAction = new AuthenticatedIdentifierAction(new FakeFailingAuthConnector(new UnsupportedAffinityGroup), appConfig, bodyParsers, sdilConnector, errorHandler)
+          val authAction = new AuthenticatedIdentifierAction(new FakeFailingAuthConnector(new UnsupportedAffinityGroup), appConfig, bodyParsers, sdilConnector, errorHandler, logger)
           val controller = new Harness(authAction)
           val result = controller.onPageLoad(FakeRequest())
 
@@ -160,7 +161,7 @@ class AuthActionSpec extends SpecBase {
 
         running(application) {
 
-          val authAction = new AuthenticatedIdentifierAction(new FakeFailingAuthConnector(new UnsupportedCredentialRole), appConfig, bodyParsers, sdilConnector, errorHandler)
+          val authAction = new AuthenticatedIdentifierAction(new FakeFailingAuthConnector(new UnsupportedCredentialRole), appConfig, bodyParsers, sdilConnector, errorHandler, logger)
           val controller = new Harness(authAction)
           val result = controller.onPageLoad(FakeRequest())
 

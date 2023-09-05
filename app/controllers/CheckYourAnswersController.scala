@@ -26,6 +26,7 @@ import pages.CheckYourAnswersPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import utilities.GenericLogger
 import views.html.CheckYourAnswersView
 import views.summary.RegistrationSummary
 
@@ -38,7 +39,8 @@ class CheckYourAnswersController @Inject()(
                                             registrationOrchestrator: RegistrationOrchestrator,
                                             val controllerComponents: MessagesControllerComponents,
                                             view: CheckYourAnswersView,
-                                            errorHandler: ErrorHandler
+                                            errorHandler: ErrorHandler,
+                                            val genericLogger: GenericLogger
                                           )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = controllerActions.withUserWhoCanRegister.async {
@@ -59,7 +61,9 @@ class CheckYourAnswersController @Inject()(
         registrationOrchestrator.createSubscriptionAndUpdateUserAnswers.value.map{
           case Right(_) => Redirect(controllers.routes.RegistrationConfirmationController.onPageLoad.url)
           case Left(MissingRequiredUserAnswers) => Redirect(controllers.routes.VerifyController.onPageLoad(NormalMode))
-          case Left(_) => InternalServerError(errorHandler.internalServerErrorTemplate)
+          case Left(_) =>
+            genericLogger.logger.error(s"${getClass.getName} - ${request.userAnswers.id} - failed to create subscription and create user answers")
+            InternalServerError(errorHandler.internalServerErrorTemplate)
         }
     }
   }
