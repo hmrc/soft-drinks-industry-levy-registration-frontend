@@ -77,13 +77,14 @@ class WarehouseDetailsController @Inject()(
           for {
             updatedAnswers <- Future.fromTry(request.userAnswers.set(WarehouseDetailsPage, value))
             _              <- updateDatabaseWithoutRedirect(updatedAnswers, WarehouseDetailsPage)
-            onwardUrl              <- if(value){
-              addressLookupService.initJourneyAndReturnOnRampUrl(WarehouseDetails, mode = mode)
-            }else if(mode == NormalMode){
-              Future.successful(routes.ContactDetailsController.onPageLoad(mode).url)
-            } else {
-              Future.successful(routes.CheckYourAnswersController.onPageLoad.url)
-            }
+            onwardUrl      <-
+              if(value){
+                addressLookupService.initJourneyAndReturnOnRampUrl(WarehouseDetails, mode = mode)
+              }else if(mode == NormalMode){
+                Future.successful(routes.ContactDetailsController.onPageLoad(mode).url)
+              } else {
+                Future.successful(routes.CheckYourAnswersController.onPageLoad.url)
+              }
           } yield Redirect(onwardUrl)
         }
       )
