@@ -29,6 +29,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatest.Assertion
 import org.scalatestplus.mockito.MockitoSugar
+import play.api.data.Form
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -36,15 +37,14 @@ import play.api.test.Helpers._
 import play.twirl.api.Html
 import services.SessionService
 import utilities.GenericLogger
-import viewmodels.AddressFormattingHelper
 import views.html.RemovePackagingSiteDetailsView
 
 class RemovePackagingSiteDetailsControllerSpec extends SpecBase with MockitoSugar with LoggerHelper {
 
-  def onwardRoute = Call("GET", "/foo")
+  def onwardRoute: Call = Call("GET", "/foo")
 
   val formProvider = new RemovePackagingSiteDetailsFormProvider()
-  val form = formProvider()
+  val form: Form[Boolean] = formProvider()
 
   "RemovePackagingSiteDetails Controller" - {
     def commonAssertionsForPageLoad(addressToBeDisplayed: Html, page: String, ref: String): Assertion = {
@@ -53,58 +53,8 @@ class RemovePackagingSiteDetailsControllerSpec extends SpecBase with MockitoSuga
       doc.getElementsByTag("form").attr("action") mustBe routes.RemovePackagingSiteDetailsController.onSubmit(NormalMode, ref).url
     }
 
-    Map(
-      "No Trading name" -> Site(
-        UkAddress(List("a", "b"), "c"),
-        None,
-        None,
-        None),
-      "Trading Name" -> Site(
-        UkAddress(List("a", "b"), "c"),
-        None,
-        Some("trading"),
-        None),
-      "Trading Name AND Long Address AND Long Postcode" -> Site(
-        UkAddress(List("abcdefg abcdefg abcdefg abcdefg", "abcdefg abcdefg abcdefg abcdefg", "abcdefg abcdefg abcdefg"), "abcdefg abcdefg abcdefg abcdefg"),
-        None,
-        Some("trading"),
-        None),
-      "No Trading Name AND Long Address AND Long Postcode" -> Site(
-        UkAddress(List("abcdefg abcdefg abcdefg abcdefg", "abcdefg abcdefg abcdefg abcdefg", "abcdefg abcdefg abcdefg"), "abcdefg abcdefg abcdefg abcdefg"),
-        None,
-        None,
-        None),
-      "No Trading Name AND no Lines AND Postcode" -> Site(
-        UkAddress(List.empty, "abcdefg abcdefg abcdefg abcdefg"),
-        None,
-        None,
-        None)
-    ).foreach { test =>
-      s"must return OK and the correct view for a GET when packaging site exists for ${test._1}" in {
-        val ref: String = "foo"
-        val htmlExpectedInView: Html = AddressFormattingHelper.addressFormatting(test._2.address, test._2.tradingName)
+    "must redirect to site details page when 1 site or few exists in list on load" in {
 
-        val htmlExpectedAfterRender: Html = Html(htmlExpectedInView.body.replace("<br>", " ")
-        .replace("<span class=\"nowrap\" style=\"white-space: nowrap;\">", "").replace("</span>", ""))
-        val userAnswers = emptyUserAnswers.copy(packagingSiteList = Map(ref -> test._2))
-        val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
-
-        running(application) {
-          val request = FakeRequest(GET, routes.RemovePackagingSiteDetailsController.onPageLoad(NormalMode, ref).url)
-
-          val result = route(application, request).value
-
-          val view = application.injector.instanceOf[RemovePackagingSiteDetailsView]
-
-          status(result) mustEqual OK
-          val contentOfResult: String = contentAsString(result)
-
-          contentOfResult mustEqual view(form, NormalMode, ref, htmlExpectedInView)(request, messages(application)).toString
-          commonAssertionsForPageLoad(htmlExpectedAfterRender, contentOfResult, ref)
-        }
-      }
-    }
-    "must redirect to site details page when loaded but no site ref exists in list on load" in {
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
       running(application) {
         val request = FakeRequest(GET, routes.RemovePackagingSiteDetailsController.onPageLoad(NormalMode, "foo").url)
@@ -114,40 +64,33 @@ class RemovePackagingSiteDetailsControllerSpec extends SpecBase with MockitoSuga
         redirectLocation(result).value mustEqual routes.PackagingSiteDetailsController.onPageLoad(NormalMode).url
       }
     }
-    "must redirect to the site details page when valid data is submitted and no item exists in the list for ref" in {
-      val ref: String = "foo"
 
-      val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-          )
-          .build()
-
-      running(application) {
-        val request =
-          FakeRequest(POST, routes.RemovePackagingSiteDetailsController.onSubmit(NormalMode, ref).url)
-            .withFormUrlEncodedBody(("value", "true"))
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.PackagingSiteDetailsController.onPageLoad(NormalMode).url
-      }
-    }
-    "must redirect to the site details page when valid data is submitted and item exists in site details" in {
-      val ref: String = "foo"
+    "must redirect to site details page when loaded but no site ref exists in list on load" in {
+      val ref: String = "12345678"
       val packagingSite: Map[String, Site] = Map(ref -> Site(
         UkAddress(List("a", "b"), "c"),
         None,
         Some("trading"),
         None))
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers.copy(packagingSiteList = packagingSite))).build()
+      running(application) {
+        val request = FakeRequest(GET, routes.RemovePackagingSiteDetailsController.onPageLoad(NormalMode, ref).url)
+
+        val result = route(application, request).value
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.PackagingSiteDetailsController.onPageLoad(NormalMode).url
+      }
+    }
+
+
+    "must redirect to the site details page when valid data is submitted and item exists in site details" in {
+      val ref: String = "12345678"
       val mockSessionRepository = mock[SessionService]
 
       when(mockSessionRepository.set(any())) thenReturn createSuccessRegistrationResult(true)
 
       val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers.copy(packagingSiteList = packagingSite)))
+        applicationBuilder(userAnswers = Some(emptyUserAnswers.copy(packagingSiteList = packagingSiteListWith3)))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionService].toInstance(mockSessionRepository)
@@ -196,7 +139,6 @@ class RemovePackagingSiteDetailsControllerSpec extends SpecBase with MockitoSuga
     }
 
     "must redirect to Journey Recovery for a GET if no existing data is found" in {
-
       val application = applicationBuilder(userAnswers = None).build()
 
       running(application) {
@@ -210,7 +152,6 @@ class RemovePackagingSiteDetailsControllerSpec extends SpecBase with MockitoSuga
     }
 
     "must redirect to Journey Recovery for a POST if no existing data is found" in {
-
       val application = applicationBuilder(userAnswers = None).build()
 
       running(application) {

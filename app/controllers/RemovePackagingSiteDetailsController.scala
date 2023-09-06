@@ -21,7 +21,8 @@ import forms.RemovePackagingSiteDetailsFormProvider
 import handlers.ErrorHandler
 import models.{Mode, UserAnswers}
 import navigation.Navigator
-import pages.RemovePackagingSiteDetailsPage
+import pages.{PackagingSiteDetailsPage, RemovePackagingSiteDetailsPage}
+import play.api.data.Form
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import play.twirl.api.Html
@@ -45,29 +46,34 @@ class RemovePackagingSiteDetailsController @Inject()(
                                        val genericLogger: GenericLogger
                                      )(implicit ec: ExecutionContext) extends ControllerHelper {
 
-  val form = formProvider()
+  val form: Form[Boolean] = formProvider()
+
+  def onPageLoad(mode: Mode, ref: String): Action[AnyContent] = controllerActions.withUserWhoCanRegister {
+    implicit request =>
+      if (request.userAnswers.packagingSiteList.size > 1) {
+        getPackagingSiteAddressBaseOnRef(ref, request.userAnswers) match {
+          case None =>
+            genericLogger.logger.warn(s"user has potentially hit page and ref does not exist for packaging site" +
+              s"$ref ${request.userAnswers.id} amount currently: ${request.userAnswers.packagingSiteList.size}")
+            Redirect(routes.PackagingSiteDetailsController.onPageLoad(mode))
+          case Some(packagingSiteDetails) =>
+            val preparedForm = request.userAnswers.get(RemovePackagingSiteDetailsPage) match {
+              case None => form
+              case Some(value) => form.fill(value)
+            }
+
+            Ok(view(preparedForm, mode, ref, packagingSiteDetails))
+        }
+      } else {
+        genericLogger.logger.info(
+          s"User at ${RemovePackagingSiteDetailsPage.toString} with 1 or less sites in packaging site list. Redirected to PackagingSiteDetails")
+        Redirect(routes.PackagingSiteDetailsController.onPageLoad(mode))}
+  }
 
   private def getPackagingSiteAddressBaseOnRef(ref: String, userAnswers: UserAnswers): Option[Html] = {
     userAnswers.packagingSiteList
       .get(ref)
       .map(packagingSite => AddressFormattingHelper.addressFormatting(packagingSite.address, packagingSite.tradingName))
-  }
-
-  def onPageLoad(mode: Mode, ref: String): Action[AnyContent] = controllerActions.withUserWhoCanRegister {
-    implicit request =>
-      getPackagingSiteAddressBaseOnRef(ref, request.userAnswers) match {
-        case None =>
-          genericLogger.logger.warn(s"user has potentially hit page and ref does not exist for packaging site" +
-            s"$ref ${request.userAnswers.id} amount currently: ${request.userAnswers.packagingSiteList.size}")
-          Redirect(routes.PackagingSiteDetailsController.onPageLoad(mode))
-        case Some(packagingSiteDetails) =>
-          val preparedForm = request.userAnswers.get(RemovePackagingSiteDetailsPage) match {
-            case None => form
-            case Some(value) => form.fill(value)
-          }
-
-          Ok(view(preparedForm, mode, ref, packagingSiteDetails))
-      }
   }
 
   def onSubmit(mode: Mode, ref: String): Action[AnyContent] = controllerActions.withUserWhoCanRegister.async {
