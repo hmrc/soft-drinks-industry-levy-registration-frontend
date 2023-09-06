@@ -342,7 +342,7 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
     }
 
     "the user has not submitted a registration request" - {
-      "should redirect to the check your answers" in {
+      "should redirect to registration start" in {
         given
           .commonPrecondition
 
@@ -355,7 +355,7 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
 
           whenReady(result) { res =>
             res.status mustBe SEE_OTHER
-            res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
+            res.header(HeaderNames.LOCATION) mustBe Some(routes.RegistrationController.start.url)
           }
         }
       }

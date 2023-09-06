@@ -35,7 +35,7 @@ import repositories.{SDILSessionCache, SDILSessionKeys}
 import views.html.RegistrationConfirmationView
 import views.summary.RegistrationSummary
 
-import java.time.{LocalDate, LocalDateTime, ZoneOffset}
+import java.time.{Instant, LocalDate, LocalDateTime, ZoneOffset}
 import scala.concurrent.Future
 
 class RegistrationConfirmationControllerSpec extends SpecBase {
@@ -94,17 +94,40 @@ class RegistrationConfirmationControllerSpec extends SpecBase {
       }
     }
 
-    "must redirect to start of journey if registration request not submitted" in {
+    "must redirect to start of journey" - {
+      "if registration request not submitted" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
-      running(application) {
-        val request = FakeRequest(GET, routes.RegistrationConfirmationController.onPageLoad.url)
+        running(application) {
+          val request = FakeRequest(GET, routes.RegistrationConfirmationController.onPageLoad.url)
 
-        val result = route(application, request).value
+          val result = route(application, request).value
 
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result) mustEqual Some(routes.CheckYourAnswersController.onPageLoad.url)
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result) mustEqual Some(routes.RegistrationController.start.url)
+        }
+      }
+
+
+      "if registration when the cache is empty" in {
+
+        val application = applicationBuilder(userAnswers = Some(emptyUserAnswers.copy(submittedOn = Some(Instant.now))), utr = Some(rosmRegistration.utr))
+          .overrides(
+            bind[SDILSessionCache].toInstance(mockSdilSessionCache),
+            bind[SoftDrinksIndustryLevyConnector].toInstance(mockSdilConnector)
+          ).build()
+
+        running(application) {
+          when(mockSdilConnector.retreiveRosmSubscription(any(), any())(any())).thenReturn(createSuccessRegistrationResult(rosmRegistration))
+          when(mockSdilSessionCache.fetchEntry[CreatedSubscriptionAndAmountProducedGlobally](emptyUserAnswers.id, SDILSessionKeys.CREATED_SUBSCRIPTION_AND_AMOUNT_PRODUCED_GLOBALLY))
+            .thenReturn(Future.successful(None))
+          val request = FakeRequest(GET, routes.RegistrationConfirmationController.onPageLoad.url)
+
+          val result = route(application, request).value
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result) mustEqual Some(routes.RegistrationController.start.url)
+        }
       }
     }
   }

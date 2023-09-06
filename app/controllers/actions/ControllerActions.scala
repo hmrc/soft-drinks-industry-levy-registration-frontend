@@ -120,11 +120,7 @@ class ControllerActions @Inject()(identify: IdentifierAction,
               case Right(rosmWithUtr) => Right(DataRequestForApplicationSubmitted(request, request.internalId, userAnswers, rosmWithUtr, userAnswers.submittedOn.get))
               case Left(result) => Left(result)
             }
-          case Some(userAnswers) if RegisterState.canRegister(userAnswers.registerState) =>
-            Future.successful(Left(Redirect(routes.CheckYourAnswersController.onPageLoad)))
-          case Some(userAnswers) => val call = ActionHelpers.getRouteForRegisterState(userAnswers.registerState)
-            Future.successful(Left(Redirect(call)))
-          case _ => genericLogger.logger.info(s"User has no user answers ${hc.requestId}")
+          case _ => genericLogger.logger.info(s"User has no user answers or no submitted time ${hc.requestId}")
             Future.successful(Left(Redirect(routes.RegistrationController.start)))
         }
       }
