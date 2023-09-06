@@ -1,11 +1,11 @@
 package controllers
 
-import models.alf.init.{AppLevelLabels, ConfirmPageConfig, EditPageLabels, JourneyConfig, JourneyLabels, JourneyOptions, LanguageLabels, LookupPageLabels, SelectPageConfig, TimeoutConfig}
+import models.alf.init._
 import models.backend.UkAddress
 import models.{CheckMode, NormalMode, Warehouse}
 import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
-import pages.{AskSecondaryWarehousesPage, OperatePackagingSitesPage}
+import pages.AskSecondaryWarehousesPage
 import play.api.http.HeaderNames
 import play.api.i18n.Messages
 import play.api.libs.json.{JsObject, Json}
@@ -216,8 +216,8 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
             timeoutUrl = controllers.auth.routes.AuthController.signOut.url,
             timeoutKeepAliveUrl = Some(routes.KeepAliveController.keepAlive.url)
           )),
-          serviceHref = Some(frontendAppConfig.accountFrontendHomeUrl),
-          pageHeadingStyle = Some("govuk-heading-m")
+          serviceHref = Some(frontendAppConfig.sdilHomeUrl),
+          pageHeadingStyle = Some("govuk-heading-l")
         ),
         labels = Some(
           JourneyLabels(
@@ -461,8 +461,8 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
             timeoutUrl = controllers.auth.routes.AuthController.signOut.url,
             timeoutKeepAliveUrl = Some(routes.KeepAliveController.keepAlive.url)
           )),
-          serviceHref = Some(frontendAppConfig.accountFrontendHomeUrl),
-          pageHeadingStyle = Some("govuk-heading-m")
+          serviceHref = Some(frontendAppConfig.sdilHomeUrl),
+          pageHeadingStyle = Some("govuk-heading-l")
         ),
         labels = Some(
           JourneyLabels(

@@ -21,7 +21,7 @@ import forms.RemovePackagingSiteDetailsFormProvider
 import handlers.ErrorHandler
 import models.{Mode, UserAnswers}
 import navigation.Navigator
-import pages.{PackagingSiteDetailsPage, RemovePackagingSiteDetailsPage}
+import pages.RemovePackagingSiteDetailsPage
 import play.api.data.Form
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}

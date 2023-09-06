@@ -40,16 +40,12 @@ class FrontendAppConfig @Inject() (servicesConfig: ServicesConfig, configuration
     s"$contactHost/contact/beta-feedback?service=$contactFormServiceIdentifier&backUrl=${SafeRedirectUrl(registrationBaseUrl + request.uri).encodedUrl}"
 
   val basGatewayBaseUrl: String = servicesConfig.baseUrl("bas-gateway")
-  val sdilFrontendBaseUrl: String = s"${servicesConfig.baseUrl("soft-drinks-industry-levy-frontend")}/soft-drinks-industry-levy"
   val sdilBaseUrl: String = servicesConfig.baseUrl("soft-drinks-industry-levy")
 
-  val loginUrl: String         = s"$basGatewayBaseUrl/bas-gateway/sign-in"
-  val loginContinueUrl: String = s"$sdilFrontendBaseUrl/soft-drinks-industry-levy"
-  val signOutUrl: String       = s"$basGatewayBaseUrl/bas-gateway/sign-out-without-state"
   val sdilHomeUrl: String      = servicesConfig.getString("sdilHomeUrl")
-
-  val sdilAccountFrontendBaseUrl: String = servicesConfig.baseUrl("soft-drinks-industry-levy-account-frontend")
-  val accountFrontendHomeUrl: String = s"$sdilAccountFrontendBaseUrl/soft-drinks-industry-levy-account-frontend/home"
+  val loginUrl: String         = s"$basGatewayBaseUrl/bas-gateway/sign-in"
+  val loginContinueUrl: String = sdilHomeUrl
+  val signOutUrl: String       = s"$basGatewayBaseUrl/bas-gateway/sign-out-without-state"
 
   private val exitSurveyBaseUrl: String = servicesConfig.baseUrl("feedback-frontend")
   val exitSurveyUrl: String             = s"$exitSurveyBaseUrl/feedback/soft-drinks-industry-levy-registration-frontend"

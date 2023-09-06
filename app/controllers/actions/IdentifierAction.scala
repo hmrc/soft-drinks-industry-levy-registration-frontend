@@ -61,7 +61,7 @@ class AuthenticatedIdentifierAction @Inject()(
             case (None, Some(sdil)) => handleUserWithNoUTRAndSDILEnrolment(internalId, sdil, hasCTEnrolment(enrolments))
             case _ if hasValidRoleAndAffinityGroup(role, affinity) =>
               Future.successful(Right(IdentifierRequest(request, internalId, hasCTEnrolment(enrolments), None, isRegistered = false)))
-            case _ => Future.successful(Left(Redirect(config.sdilFrontendBaseUrl)))
+            case _ => Future.successful(Left(Redirect(config.sdilHomeUrl)))
           }
         }
     } recover {
@@ -78,7 +78,7 @@ class AuthenticatedIdentifierAction @Inject()(
       case Right(Some(sub)) if sub.deregDate.isEmpty && optSdilEnrolment.isDefined =>
         Future.successful(Right(IdentifierRequest(request, internalId, hasCTEnrolment, Some(utr), true)))
       case Right(Some(sub)) if sub.deregDate.isEmpty =>
-        Future.successful(Left(Redirect(config.sdilFrontendBaseUrl)))
+        Future.successful(Left(Redirect(config.sdilHomeUrl)))
       case Right(_) =>
         Future.successful(Right(IdentifierRequest(request, internalId, hasCTEnrolment, Some(utr))))
       case Left(_) =>
@@ -90,7 +90,7 @@ class AuthenticatedIdentifierAction @Inject()(
   private def handleUserWithNoUTRAndSDILEnrolment[A](internalId: String, sdil: EnrolmentIdentifier, hasCTEnrolment: Boolean)
                                  (implicit hc: HeaderCarrier, request: Request[A]): Future[Either[Result, IdentifierRequest[A]]] = {
       sdilConnector.retrieveSubscription(sdil.value, "sdil", internalId).value.map{
-        case Right(Some(sub)) if sub.deregDate.isEmpty => Left(Redirect(config.sdilFrontendBaseUrl))
+        case Right(Some(sub)) if sub.deregDate.isEmpty => Left(Redirect(config.sdilHomeUrl))
         case Right(_) => Right(IdentifierRequest(request, internalId, hasCTEnrolment, None))
         case Left(_) =>
           genericLogger.logger.error(s"${getClass.getName} - failed to handle user with no UTR and SDIL enrolment")

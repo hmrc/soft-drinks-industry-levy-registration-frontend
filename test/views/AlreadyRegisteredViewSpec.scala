@@ -57,7 +57,7 @@ class AlreadyRegisteredViewSpec extends ViewSpecHelper with SpecBase {
 
     "should have the expected account link" in {
       document.getElementById("account-redirect").text() mustBe "To view your registration details, go to your Soft Drinks Industry Levy account."
-      document.getElementById("account-link").attr("href") mustBe frontendAppConfig.accountFrontendHomeUrl
+      document.getElementById("account-link").attr("href") mustBe frontendAppConfig.sdilHomeUrl
     }
 
     testBackLink(document)
