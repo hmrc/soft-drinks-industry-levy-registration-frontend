@@ -68,7 +68,7 @@ class OperatePackagingSitesControllerISpec extends ControllerITTestHelper {
     }
     testOtherSuccessUserTypes(baseUrl + normalRoutePath, Messages("operatePackagingSites" + ".title"))
     testUnauthorisedUser(baseUrl + normalRoutePath)
-    testWhoIsUnableToRegisterWithGivenUtr(baseUrl + normalRoutePath)
+    testUserWhoIsUnableToRegister(baseUrl + normalRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)
   }
 
@@ -127,7 +127,7 @@ class OperatePackagingSitesControllerISpec extends ControllerITTestHelper {
 
     testOtherSuccessUserTypes(baseUrl + checkRoutePath, Messages("operatePackagingSites" + ".title"))
     testUnauthorisedUser(baseUrl + checkRoutePath)
-    testWhoIsUnableToRegisterWithGivenUtr(baseUrl + checkRoutePath)
+    testUserWhoIsUnableToRegister(baseUrl + checkRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath)
   }
 
@@ -216,7 +216,7 @@ class OperatePackagingSitesControllerISpec extends ControllerITTestHelper {
       }
     }
     testUnauthorisedUser(baseUrl + normalRoutePath, Some(Json.obj("value" -> "true")))
-    testWhoIsUnableToRegisterWithGivenUtr(baseUrl + normalRoutePath, Some(Json.obj("value" -> "true")))
+    testUserWhoIsUnableToRegister(baseUrl + normalRoutePath, Some(Json.obj("value" -> "true")))
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath, Some(Json.obj("value" -> "true")))
   }
 
@@ -305,7 +305,7 @@ class OperatePackagingSitesControllerISpec extends ControllerITTestHelper {
       }
     }
     testUnauthorisedUser(baseUrl + checkRoutePath, Some(Json.obj("value" -> "true")))
-    testWhoIsUnableToRegisterWithGivenUtr(baseUrl + checkRoutePath, Some(Json.obj("value" -> "true")))
+    testUserWhoIsUnableToRegister(baseUrl + checkRoutePath, Some(Json.obj("value" -> "true")))
     testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath, Some(Json.obj("value" -> "true")))
   }
 

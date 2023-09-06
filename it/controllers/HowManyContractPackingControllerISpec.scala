@@ -66,7 +66,7 @@ class HowManyContractPackingControllerISpec extends LitresISpecHelper {
       }
       testOtherSuccessUserTypes(baseUrl + path, Messages("howManyContractPacking" + ".title"))
       testUnauthorisedUser(baseUrl + path)
-      testWhoIsUnableToRegisterWithGivenUtr(baseUrl + path)
+      testUserWhoIsUnableToRegister(baseUrl + path)
       testAuthenticatedUserButNoUserAnswers(baseUrl + path)
     }
 
@@ -210,7 +210,7 @@ class HowManyContractPackingControllerISpec extends LitresISpecHelper {
       }
 
       testUnauthorisedUser(baseUrl + path, Some(Json.toJson(litresInBandsDiff)))
-      testWhoIsUnableToRegisterWithGivenUtr(baseUrl + path, Some(Json.toJson(litresInBandsDiff)))
+      testUserWhoIsUnableToRegister(baseUrl + path, Some(Json.toJson(litresInBandsDiff)))
       testAuthenticatedUserButNoUserAnswers(baseUrl + path, Some(Json.toJson(litresInBandsDiff)))
     }
   }

@@ -18,11 +18,13 @@ package controllers
 
 import base.SpecBase
 import config.FrontendAppConfig
+import connectors.SoftDrinksIndustryLevyConnector
 import models.HowManyLitresGlobally.Large
 import models.OrganisationType.LimitedCompany
 import models.Verify.YesRegister
 import models._
 import models.backend.Subscription
+import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.mockito.MockitoSugar.mock
 import pages._
@@ -39,6 +41,7 @@ import scala.concurrent.Future
 class RegistrationConfirmationControllerSpec extends SpecBase {
 
   val mockSdilSessionCache = mock[SDILSessionCache]
+  val mockSdilConnector = mock[SoftDrinksIndustryLevyConnector]
 
   "RegistrationConfirmation Controller" - {
 
@@ -67,12 +70,14 @@ class RegistrationConfirmationControllerSpec extends SpecBase {
           .set(ContactDetailsPage, ContactDetails("foo", "bar", "wizz", "bang")).success.value
       }
       val subscription = Subscription.generate(userAnswers, rosmRegistration)
-      val application = applicationBuilder(userAnswers = Some(userAnswers))
+      val application = applicationBuilder(userAnswers = Some(userAnswers), utr = Some(rosmRegistration.utr))
         .overrides(
-          bind[SDILSessionCache].toInstance(mockSdilSessionCache)
+          bind[SDILSessionCache].toInstance(mockSdilSessionCache),
+          bind[SoftDrinksIndustryLevyConnector].toInstance(mockSdilConnector)
         ).build()
 
       running(application) {
+        when(mockSdilConnector.retreiveRosmSubscription(any(), any())(any())).thenReturn(createSuccessRegistrationResult(rosmRegistration))
         when(mockSdilSessionCache.fetchEntry[CreatedSubscriptionAndAmountProducedGlobally](userAnswers.id, SDILSessionKeys.CREATED_SUBSCRIPTION_AND_AMOUNT_PRODUCED_GLOBALLY))
           .thenReturn(Future.successful(Some(CreatedSubscriptionAndAmountProducedGlobally(subscription, Large))))
         val request = FakeRequest(GET, routes.RegistrationConfirmationController.onPageLoad.url)
@@ -99,7 +104,7 @@ class RegistrationConfirmationControllerSpec extends SpecBase {
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result) mustEqual Some(routes.RegistrationController.start.url)
+        redirectLocation(result) mustEqual Some(routes.CheckYourAnswersController.onPageLoad.url)
       }
     }
   }

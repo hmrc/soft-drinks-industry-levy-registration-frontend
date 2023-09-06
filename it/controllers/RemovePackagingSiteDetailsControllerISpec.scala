@@ -47,7 +47,7 @@ class RemovePackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
 
     testOtherSuccessUserTypes(baseUrl + normalRoutePath(ref), Messages("removePackagingSiteDetails" + ".title"), ua = updatedUserAnswers)
     testUnauthorisedUser(baseUrl + normalRoutePath(ref))
-    testWhoIsUnableToRegisterWithGivenUtr(baseUrl + normalRoutePath(ref))
+    testUserWhoIsUnableToRegister(baseUrl + normalRoutePath(ref))
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath(ref))
   }
 
@@ -122,7 +122,7 @@ class RemovePackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
       }
     }
     testUnauthorisedUser(baseUrl + normalRoutePath(ref), Some(Json.obj("value" -> "true")))
-  testWhoIsUnableToRegisterWithGivenUtr(baseUrl + normalRoutePath(ref), Some(Json.obj("value" -> "true")))
+  testUserWhoIsUnableToRegister(baseUrl + normalRoutePath(ref), Some(Json.obj("value" -> "true")))
   testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath(ref), Some(Json.obj("value" -> "true")))
 
 }

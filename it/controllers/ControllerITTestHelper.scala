@@ -10,6 +10,7 @@ import play.api.libs.ws.{DefaultWSCookie, WSClient, WSResponse}
 import play.api.test.WsTestClient
 import testSupport.{ITCoreTestData, Specifications, TestConfiguration}
 
+import java.time.Instant
 import scala.concurrent.Future
 
 trait ControllerITTestHelper extends Specifications with TestConfiguration with ITCoreTestData {
@@ -180,7 +181,24 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
     }
   }
 
-  def testWhoIsUnableToRegisterWithGivenUtr(url: String, optJson: Option[JsValue] = None): Unit = {
+  def testUserWhoIsUnableToRegister(url: String, optJson: Option[JsValue] = None): Unit = {
+    "when the user answers contain a submitted date" - {
+      "should redirect to registration confirmation page" in {
+        given.commonPrecondition
+        setAnswers(emptyUserAnswers.copy(registerState = RegisterState.RegisterWithAuthUTR, submittedOn = Some(Instant.now)))
+        WsTestClient.withClient { client =>
+          val result1 = optJson match {
+            case Some(json) => createClientRequestPOST(client, url, json)
+            case _ => createClientRequestGet(client, url)
+          }
+
+          whenReady(result1) { res =>
+            res.status mustBe 303
+            res.header(HeaderNames.LOCATION).get mustBe routes.RegistrationConfirmationController.onPageLoad.url
+          }
+        }
+      }
+    }
     RegisterState.values.filterNot(state => RegisterState.canRegister(state)).foreach{registerState =>
       val expectedLocation = registerState match {
         case RegisterState.AlreadyRegistered => routes.AlreadyRegisteredController.onPageLoad.url
