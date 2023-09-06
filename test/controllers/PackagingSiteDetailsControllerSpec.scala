@@ -27,7 +27,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.mockito.MockitoSugar.{times, verify}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.PackagingSiteDetailsPage
+import pages.{PackAtBusinessAddressPage, PackagingSiteDetailsPage}
 import play.api.data.Form
 import play.api.inject.bind
 import play.api.mvc.Call
@@ -92,6 +92,18 @@ class PackagingSiteDetailsControllerSpec extends SpecBase with MockitoSugar with
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(form.fill(true), NormalMode, packagingSiteListWith1)(request, messages(application)).toString
+      }
+    }
+
+    s"must redirect on a GET if the packaging site list is empty" in  {
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration).build()
+
+      running(application) {
+        val request = FakeRequest(GET, packagingSiteDetailsRoute)
+        val view = application.injector.instanceOf[PackagingSiteDetailsView]
+        val result = route(application, request).value
+
+        status(result) mustEqual 303
       }
     }
 

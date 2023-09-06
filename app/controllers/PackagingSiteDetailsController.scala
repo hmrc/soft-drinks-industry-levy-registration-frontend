@@ -22,6 +22,7 @@ import handlers.ErrorHandler
 import models.{Mode, NormalMode}
 import navigation.Navigator
 import pages.PackagingSiteDetailsPage
+import play.api.data.Form
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{AddressLookupService, PackingDetails, SessionService}
@@ -44,7 +45,7 @@ class PackagingSiteDetailsController @Inject()(
                                        val genericLogger: GenericLogger
                                      )(implicit ec: ExecutionContext) extends ControllerHelper {
 
-  val form = formProvider()
+  val form: Form[Boolean] = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] = controllerActions.withUserWhoCanRegister {
     implicit request =>
@@ -53,7 +54,12 @@ class PackagingSiteDetailsController @Inject()(
         case None => form
         case Some(value) => form.fill(value)
       }
-      Ok(view(preparedForm, mode, request.userAnswers.packagingSiteList))
+      if (request.userAnswers.packagingSiteList.nonEmpty) {
+        Ok(view(preparedForm, mode, request.userAnswers.packagingSiteList))
+      } else {
+        genericLogger.logger.info(s"User at ${PackagingSiteDetailsPage.toString} with an empty packaging site list.  Redirected to Pack at business address")
+        Redirect(routes.PackAtBusinessAddressController.onPageLoad(mode))
+      }
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = controllerActions.withUserWhoCanRegister.async {

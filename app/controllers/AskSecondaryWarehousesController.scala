@@ -20,14 +20,16 @@ import controllers.actions._
 import forms.AskSecondaryWarehousesFormProvider
 
 import javax.inject.Inject
-import models.{CheckMode, Mode}
+import models.{CheckMode, Mode, NormalMode, UserAnswers}
 import navigation.Navigator
 import pages.AskSecondaryWarehousesPage
-import play.api.i18n.MessagesApi
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{AddressLookupService, SessionService, WarehouseDetails}
 import views.html.AskSecondaryWarehousesView
 import handlers.ErrorHandler
+import models.requests.DataRequest
+import uk.gov.hmrc.http.HeaderCarrier
 
 import scala.concurrent.{ExecutionContext, Future}
 import utilities.GenericLogger
@@ -66,27 +68,33 @@ class AskSecondaryWarehousesController @Inject()(
           Future.successful(BadRequest(view(formWithErrors, mode))),
 
         value => {
-          for {
-            updatedAnswers <- Future.fromTry(request.userAnswers.set(AskSecondaryWarehousesPage, value))
-            onwardUrl <-
-              if (value) {
-                updateDatabaseWithoutRedirect(updatedAnswers, AskSecondaryWarehousesPage).flatMap(_ =>
-                  addressLookupService.initJourneyAndReturnOnRampUrl(WarehouseDetails, mode = mode))
-              } else {
-                mode match {
-                  case CheckMode =>
-                    updateDatabaseWithoutRedirect(updatedAnswers.copy(warehouseList = Map.empty), AskSecondaryWarehousesPage).flatMap(_ =>
-                      Future.successful(routes.CheckYourAnswersController.onPageLoad.url))
-                  case _ =>
-                    updateDatabaseWithoutRedirect(updatedAnswers.copy(warehouseList = Map.empty), AskSecondaryWarehousesPage).flatMap(_ =>
-                      Future.successful(routes.ContactDetailsController.onPageLoad(mode).url))
-                }
-              }
-          } yield {
-            Redirect(onwardUrl)
-          }
-
+            for {
+              updatedAnswers <- Future.fromTry(request.userAnswers.set(AskSecondaryWarehousesPage, value))
+              onwardUrl <- getOnwardUrl(request, value, mode, updatedAnswers)
+            } yield Redirect(onwardUrl)
         }
       )
   }
+
+  def getOnwardUrl(request:DataRequest[AnyContent], userAnsweredYes: Boolean, mode: Mode, updatedAnswers:UserAnswers)
+                  (implicit hc:HeaderCarrier, ec: ExecutionContext, messages:Messages) = {
+
+    val hasPreviousYesAnswer = request.userAnswers.get(AskSecondaryWarehousesPage).contains(true)
+
+    if ((hasPreviousYesAnswer && request.userAnswers.warehouseList.nonEmpty) && userAnsweredYes) {
+      Future.successful(routes.WarehouseDetailsController.onPageLoad(mode).url)
+    } else if (userAnsweredYes) {
+      updateDatabaseWithoutRedirect(updatedAnswers, AskSecondaryWarehousesPage).flatMap(
+        _ => addressLookupService.initJourneyAndReturnOnRampUrl(WarehouseDetails, mode = mode)
+      )
+    } else {
+      updateDatabaseWithoutRedirect(updatedAnswers.copy(warehouseList = Map.empty), AskSecondaryWarehousesPage).flatMap(_ =>
+        mode match {
+          case CheckMode => Future.successful(routes.CheckYourAnswersController.onPageLoad.url)
+          case _ => Future.successful(routes.ContactDetailsController.onPageLoad(mode).url)
+        }
+      )
+    }
+  }
+
 }

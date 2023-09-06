@@ -40,7 +40,8 @@
 
     @govukPanel(Panel(
     title = Text(messages("registrationConfirmation.title")),
-    content = HtmlContent(messages("registrationConfirmation.panel.message", companyName))
+    content = HtmlContent(messages("registrationConfirmation.panel.message", companyName)),
+    classes = "panel-indent"
     ))
 
     @printLinkWithJs(messages("site.print"))

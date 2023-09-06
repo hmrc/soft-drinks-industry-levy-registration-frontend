@@ -40,7 +40,7 @@
         @govukRadios(
             RadiosViewModel.yesNo(
                 field = form("value"),
-                legend = LegendViewModel("removeWarehouseDetails.title").withCssClass("govuk-fieldset__legend--m"),
+                legend = LegendViewModel("removeWarehouseDetails.title").asPageHeading(),
                 hint = Some(Hint(content = HtmlContent(hintContent)))
             )
         )

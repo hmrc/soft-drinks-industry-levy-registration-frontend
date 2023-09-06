@@ -49,6 +49,8 @@ class PackAtBusinessAddressControllerSpec extends SpecBase with MockitoSugar wit
 
   lazy val packAtBusinessAddressRoute = routes.PackAtBusinessAddressController.onPageLoad(NormalMode).url
 
+  val formattedAddress = "Super Lemonade Plc<br/>105B Godfrey Marchant Grove<br/>Guildford<br/><span class=\"nowrap\" style=\"white-space: nowrap;\">GU14 8NL</span>"
+
   "PackAtBusinessAddress Controller" - {
 
     "must return OK and the correct view for a GET" in {
@@ -63,7 +65,7 @@ class PackAtBusinessAddressControllerSpec extends SpecBase with MockitoSugar wit
         val view = application.injector.instanceOf[PackAtBusinessAddressView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, HtmlContent("Super Lemonade Plc<br/>105B Godfrey Marchant Grove<br/>Guildford<br/>GU14 8NL"),  NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, HtmlContent(formattedAddress),  NormalMode)(request, messages(application)).toString
       }
     }
 
@@ -81,7 +83,7 @@ class PackAtBusinessAddressControllerSpec extends SpecBase with MockitoSugar wit
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), HtmlContent("Super Lemonade Plc<br/>105B Godfrey Marchant Grove<br/>Guildford<br/>GU14 8NL"), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(true), HtmlContent(formattedAddress), NormalMode)(request, messages(application)).toString
       }
     }
 
@@ -163,7 +165,7 @@ class PackAtBusinessAddressControllerSpec extends SpecBase with MockitoSugar wit
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, HtmlContent("Super Lemonade Plc<br/>105B Godfrey Marchant Grove<br/>Guildford<br/>GU14 8NL"), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, HtmlContent(formattedAddress), NormalMode)(request, messages(application)).toString
       }
     }
 
