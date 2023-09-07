@@ -47,15 +47,23 @@ class RegistrationOrchestrator @Inject()(sdilConnector: SoftDrinksIndustryLevyCo
                                 hc: HeaderCarrier,
                                 ec: ExecutionContext): RegistrationResult[RegisterState] = {
     val internalId = request.internalId
-    val registerState = request.optUTR match {
-      case Some(utr) if request.isRegistered => determineRegisterStateForRegisteredUsers(utr, internalId).value
-      case Some(utr) => determineRegisterStateForNoneRegisteredUsers(utr, internalId).value
-      case _ => Future(Right(RequiresBusinessDetails))
+    def registerState(optUserAnswers: Option[UserAnswers]): Future[Either[RegistrationErrors, RegisterState]] = {
+      val alreadySubmittedRegistration = optUserAnswers.fold[Option[Instant]](None)(_.submittedOn)
+      if(alreadySubmittedRegistration.isDefined) {
+        Future.successful(Left(RegistrationAlreadySubmitted))
+      } else {
+        request.optUTR match {
+          case Some(utr) if request.isRegistered => determineRegisterStateForRegisteredUsers(utr, internalId).value
+          case Some(utr) => determineRegisterStateForNoneRegisteredUsers(utr, internalId).value
+          case _ => Future(Right(RequiresBusinessDetails))
+        }
+      }
     }
 
     for {
-      regState <- EitherT(registerState)
-      _ <- sessionService.set(UserAnswers(internalId, regState))
+      optUserAnswers <- sessionService.get(internalId)
+      regState <- EitherT(registerState(optUserAnswers))
+      _ <- sessionService.set(optUserAnswers.fold(UserAnswers(internalId, regState))(ua => ua.copy(registerState = regState)))
     } yield regState
 
   }

@@ -38,12 +38,12 @@ class RegistrationConfirmationController @Inject()(
                                        view: RegistrationConfirmationView
                                      )(implicit config: FrontendAppConfig, ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = controllerActions.withUserWhoCanRegister.async {
+  def onPageLoad: Action[AnyContent] = controllerActions.withUserWhoHasSubmittedRegistrationAction.async {
     implicit request => {
       sdilSessionCache.fetchEntry[CreatedSubscriptionAndAmountProducedGlobally](
         request.internalId, SDILSessionKeys.CREATED_SUBSCRIPTION_AND_AMOUNT_PRODUCED_GLOBALLY).map{
-        case Some(createdSubscriptionAndAmountProducedGlobally) if request.userAnswers.submittedOn.isDefined =>
-          val sentDateTime = LocalDateTime.ofInstant(request.userAnswers.submittedOn.get, ZoneId.of("UTC"))
+        case Some(createdSubscriptionAndAmountProducedGlobally) =>
+          val sentDateTime = LocalDateTime.ofInstant(request.submittedDateTime, ZoneId.of("UTC"))
           val summaryList = RegistrationSummary.summaryList(createdSubscriptionAndAmountProducedGlobally, false)
           Ok(view(
             summaryList,

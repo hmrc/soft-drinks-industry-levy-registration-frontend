@@ -5,7 +5,10 @@ import models.RegisterState._
 import models.{NormalMode, RegisterState}
 import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, defined, empty, include}
 import play.api.http.HeaderNames
+import play.api.libs.json.Json
 import play.api.test.WsTestClient
+
+import java.time.Instant
 
 class RegistrationControllerISpec extends ControllerITTestHelper {
 
@@ -57,7 +60,7 @@ class RegistrationControllerISpec extends ControllerITTestHelper {
                     .sdilBackend.retrieveRosm("0000001611")
                     .sdilBackend.checkPendingQueue("0000001611", subscriptionState)
 
-                  setAnswers(emptyUserAnswers.copy(registerState = RegisterWithOtherUTR))
+                  setAnswers(emptyUserAnswers.copy(registerState = RegisterWithOtherUTR, data = Json.obj("test" -> "testing")))
 
                   WsTestClient.withClient { client =>
                     val result1 = createClientRequestGet(client, baseUrl + path)
@@ -67,10 +70,34 @@ class RegistrationControllerISpec extends ControllerITTestHelper {
                       res.header(HeaderNames.LOCATION) mustBe Some(expectedUrl)
                       val userAnswers = getAnswers(identifier)
                       userAnswers mustBe defined
+                      userAnswers.get.data mustBe Json.obj("test" -> "testing")
                       userAnswers.get.registerState mustBe expectedRegisteredStateForSubscriptionStatus(subscriptionState)
                     }
                   }
                 }
+              }
+            }
+          }
+        }
+
+        "has user answers that contains the submittedOn date" - {
+          "should redirect to registration confirmation" in {
+            given
+              .user.isAuthorisedAndEnrolled
+              .sdilBackend.retrieveSubscriptionNone("utr", "0000001611")
+              .sdilBackend.retrieveRosm("0000001611")
+
+            setAnswers(emptyUserAnswers.copy(registerState = RegisterWithOtherUTR, data = Json.obj("test" -> "testing"), submittedOn = Some(Instant.now)))
+
+            WsTestClient.withClient { client =>
+              val result1 = createClientRequestGet(client, baseUrl + path)
+
+              whenReady(result1) { res =>
+                res.status mustBe 303
+                res.header(HeaderNames.LOCATION) mustBe Some(routes.RegistrationConfirmationController.onPageLoad.url)
+                val userAnswers = getAnswers(identifier)
+                userAnswers mustBe defined
+                userAnswers.get.data mustBe Json.obj("test" -> "testing")
               }
             }
           }

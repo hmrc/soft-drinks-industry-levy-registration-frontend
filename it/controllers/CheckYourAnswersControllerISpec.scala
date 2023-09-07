@@ -1082,7 +1082,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
 
     testOtherSuccessUserTypes(baseUrl + route, Messages("checkYourAnswers.title"), fullExampleUserAnswers)
     testUnauthorisedUser(baseUrl + route)
-    testWhoIsUnableToRegisterWithGivenUtr(baseUrl + route)
+    testUserWhoIsUnableToRegister(baseUrl + route)
     testAuthenticatedUserButNoUserAnswers(baseUrl + route)
   }
 
@@ -1176,7 +1176,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
       }
     }
     testUnauthorisedUser(baseUrl + route, optJson = Some(Json.obj()))
-    testWhoIsUnableToRegisterWithGivenUtr(baseUrl + route, optJson = Some(Json.obj()))
+    testUserWhoIsUnableToRegister(baseUrl + route, optJson = Some(Json.obj()))
     testAuthenticatedUserButNoUserAnswers(baseUrl + route, optJson = Some(Json.obj()))
   }
 }

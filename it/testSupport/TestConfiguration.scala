@@ -80,8 +80,6 @@ trait TestConfiguration
     s"microservice.services.auth.port" -> s"$wiremockPort",
     s"microservice.services.bas-gateway.host" -> s"$wiremockHost",
     s"microservice.services.bas-gateway.port" -> s"$wiremockPort",
-    s"microservice.services.soft-drinks-industry-levy-frontend.host" -> s"$wiremockHost",
-    s"microservice.services.soft-drinks-industry-levy-frontend.port" -> s"$wiremockPort",
     s"microservice.services.soft-drinks-industry-levy.host" -> s"$wiremockHost",
     s"microservice.services.soft-drinks-industry-levy.port" -> s"$wiremockPort",
     "play.filters.csrf.header.bypassHeaders.X-Requested-With" -> "*",

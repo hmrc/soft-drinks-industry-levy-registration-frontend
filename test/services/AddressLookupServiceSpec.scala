@@ -367,8 +367,8 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
                 timeoutUrl = controllers.auth.routes.AuthController.signOut.url,
                 timeoutKeepAliveUrl = Some(routes.KeepAliveController.keepAlive.url)
               )),
-              serviceHref = Some(frontendAppConfig.accountFrontendHomeUrl),
-              pageHeadingStyle = Some("govuk-heading-m")
+              serviceHref = Some(frontendAppConfig.sdilHomeUrl),
+              pageHeadingStyle = Some("govuk-heading-l")
             ),
             labels = Some(
               JourneyLabels(
@@ -439,8 +439,8 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
                 timeoutUrl = controllers.auth.routes.AuthController.signOut.url,
                 timeoutKeepAliveUrl = Some(routes.KeepAliveController.keepAlive.url)
               )),
-              serviceHref = Some(frontendAppConfig.accountFrontendHomeUrl),
-              pageHeadingStyle = Some("govuk-heading-m")
+              serviceHref = Some(frontendAppConfig.sdilHomeUrl),
+              pageHeadingStyle = Some("govuk-heading-l")
             ),
             labels = Some(
               JourneyLabels(
@@ -513,8 +513,8 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
                 timeoutUrl = controllers.auth.routes.AuthController.signOut.url,
                 timeoutKeepAliveUrl = Some(routes.KeepAliveController.keepAlive.url)
               )),
-              serviceHref = Some(frontendAppConfig.accountFrontendHomeUrl),
-              pageHeadingStyle = Some("govuk-heading-m")
+              serviceHref = Some(frontendAppConfig.sdilHomeUrl),
+              pageHeadingStyle = Some("govuk-heading-l")
             ),
             labels = Some(
               JourneyLabels(
@@ -597,8 +597,8 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
                 timeoutUrl = controllers.auth.routes.AuthController.signOut.url,
                 timeoutKeepAliveUrl = Some(routes.KeepAliveController.keepAlive.url)
               )),
-              serviceHref = Some(frontendAppConfig.accountFrontendHomeUrl),
-              pageHeadingStyle = Some("govuk-heading-m")
+              serviceHref = Some(frontendAppConfig.sdilHomeUrl),
+              pageHeadingStyle = Some("govuk-heading-l")
             ),
             labels = Some(
               JourneyLabels(
@@ -668,8 +668,8 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
                 timeoutUrl = controllers.auth.routes.AuthController.signOut.url,
                 timeoutKeepAliveUrl = Some(routes.KeepAliveController.keepAlive.url)
               )),
-              serviceHref = Some(frontendAppConfig.accountFrontendHomeUrl),
-              pageHeadingStyle = Some("govuk-heading-m")
+              serviceHref = Some(frontendAppConfig.sdilHomeUrl),
+              pageHeadingStyle = Some("govuk-heading-l")
             ),
             labels = Some(
               JourneyLabels(

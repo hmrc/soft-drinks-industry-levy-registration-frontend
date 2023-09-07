@@ -342,7 +342,7 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
     }
 
     "the user has not submitted a registration request" - {
-      "should redirect to the start" in {
+      "should redirect to registration start" in {
         given
           .commonPrecondition
 

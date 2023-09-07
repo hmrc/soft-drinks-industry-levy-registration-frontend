@@ -18,13 +18,9 @@ package controllers.auth
 
 import base.SpecBase
 import config.FrontendAppConfig
-import org.mockito.ArgumentMatchers.{any, eq => eqTo}
-import org.mockito.Mockito.{times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
-import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.SessionService
 
 import java.net.URLEncoder
 
@@ -32,14 +28,10 @@ class AuthControllerSpec extends SpecBase with MockitoSugar {
 
   "signOut" - {
 
-    "must clear user answers and redirect to sign out, specifying the exit survey as the continue URL" in {
-
-      val mockSessionService = mock[SessionService]
-      when(mockSessionService.clear(any())) thenReturn createSuccessRegistrationResult(true)
+    "redirect to sign out, specifying the exit survey as the continue URL" in {
 
       val application =
         applicationBuilder(rosmRegistration = rosmRegistration)
-          .overrides(bind[SessionService].toInstance(mockSessionService))
           .build()
 
       running(application) {
@@ -54,21 +46,16 @@ class AuthControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual expectedRedirectUrl
-        verify(mockSessionService, times(1)).clear(eqTo("id"))
       }
     }
   }
 
   "signOutNoSurvey" - {
 
-    "must clear users answers and redirect to sign out, specifying SignedOut as the continue URL" in {
-
-      val mockSessionService = mock[SessionService]
-      when(mockSessionService.clear(any())) thenReturn createSuccessRegistrationResult(true)
+    "redirect to sign out, specifying SignedOut as the continue URL" in {
 
       val application =
         applicationBuilder(rosmRegistration = rosmRegistration)
-          .overrides(bind[SessionService].toInstance(mockSessionService))
           .build()
 
       running(application) {
@@ -83,7 +70,6 @@ class AuthControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual expectedRedirectUrl
-        verify(mockSessionService, times(1)).clear(eqTo("id"))
       }
     }
   }

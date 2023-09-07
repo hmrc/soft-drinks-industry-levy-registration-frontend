@@ -41,7 +41,7 @@ class SDILSessionCacheRepositoryISpec extends AnyFreeSpec
           IndexOptions()
             .name("sdil-session-cache-expiry")
             .expireAfter(
-              3600,
+              900,
               TimeUnit.SECONDS
             )
         ),

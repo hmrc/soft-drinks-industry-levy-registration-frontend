@@ -67,32 +67,32 @@ class RemovePackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
 
     testOtherSuccessUserTypes(baseUrl + normalRoutePath(ref), Messages("Are you sure you want to remove this packaging site?"), ua = updatedUserAnswers)
     testUnauthorisedUser(baseUrl + normalRoutePath(ref))
-    testWhoIsUnableToRegisterWithGivenUtr(baseUrl + normalRoutePath(ref))
+    testUserWhoIsUnableToRegister(baseUrl + normalRoutePath(ref))
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath(ref))
   }
 
   s"POST " + normalRoutePath - {
-      "when the user selects true" - {
-        "should remove the packaging site details associated with the ref" in {
-            given
-              .commonPrecondition
+    "when the user selects true" - {
+      "should remove the packaging site details associated with the ref" in {
+        given
+          .commonPrecondition
 
-            setAnswers(updatedUserAnswers)
-            WsTestClient.withClient { client =>
-              val result = createClientRequestPOST(
-                client, baseUrl + normalRoutePath(ref), Json.obj("value" -> "true")
-              )
+        setAnswers(updatedUserAnswers)
+        WsTestClient.withClient { client =>
+          val result = createClientRequestPOST(
+            client, baseUrl + normalRoutePath(ref), Json.obj("value" -> "true")
+          )
 
-              whenReady(result) { res =>
-                res.status mustBe 303
-                res.header(HeaderNames.LOCATION) mustBe Some(routes.PackagingSiteDetailsController.onPageLoad(NormalMode).url)
-                val answersAfterSubmission = getAnswers(updatedUserAnswers.id).get
-                answersAfterSubmission.packagingSiteList.isEmpty mustBe false
-                answersAfterSubmission.data mustBe Json.obj()
-              }
-            }
+          whenReady(result) { res =>
+            res.status mustBe 303
+            res.header(HeaderNames.LOCATION) mustBe Some(routes.PackagingSiteDetailsController.onPageLoad(NormalMode).url)
+            val answersAfterSubmission = getAnswers(updatedUserAnswers.id).get
+            answersAfterSubmission.packagingSiteList.isEmpty mustBe false
+            answersAfterSubmission.data mustBe Json.obj()
           }
         }
+      }
+    }
     "when the user selects false" - {
       "should NOT remove the packaging site details associated with the ref" in {
         given
@@ -145,7 +145,7 @@ class RemovePackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
   }
 
   testUnauthorisedUser(baseUrl + normalRoutePath(ref), Some(Json.obj("value" -> "true")))
-  testWhoIsUnableToRegisterWithGivenUtr(baseUrl + normalRoutePath(ref), Some(Json.obj("value" -> "true")))
+  testUserWhoIsUnableToRegister(baseUrl + normalRoutePath(ref), Some(Json.obj("value" -> "true")))
   testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath(ref), Some(Json.obj("value" -> "true")))
 
 }

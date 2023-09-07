@@ -41,19 +41,21 @@ class DataRequiredActionImpl @Inject()(sdilConnector: SoftDrinksIndustryLevyConn
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
     request.userAnswers match {
-      case Some(data) if RegisterState.canRegister(data.registerState)=>
-        getUtrFromUserAnswers(data, request) match {
+      case Some(useranswers) if useranswers.submittedOn.isDefined =>
+        Future.successful(Left(Redirect(routes.RegistrationConfirmationController.onPageLoad)))
+      case Some(useranswers) if RegisterState.canRegister(useranswers.registerState)=>
+        getUtrFromUserAnswers(useranswers, request) match {
           case Some(utr) =>
             sdilConnector.retreiveRosmSubscription(utr, request.internalId).value.map{
-              case Right(rosmWithUtr) => Right(DataRequest(request, request.internalId, request.hasCTEnrolment, request.authUtr, data, rosmWithUtr))
+              case Right(rosmWithUtr) => Right(DataRequest(request, request.internalId, request.hasCTEnrolment, request.authUtr, useranswers, rosmWithUtr))
               case Left(_) => Left(InternalServerError(errorHandler.internalServerErrorTemplate(request)))
             }
           case None =>
-            genericLogger.logger.error(s"User has no utr when required for register state ${data.registerState}")
+            genericLogger.logger.error(s"User has no utr when required for register state ${useranswers.registerState}")
             Future.successful(Left(InternalServerError(errorHandler.internalServerErrorTemplate(request))))
         }
-      case Some(data) =>
-        val call = ActionHelpers.getRouteForRegisterState(data.registerState)
+      case Some(useranswers) =>
+        val call = ActionHelpers.getRouteForRegisterState(useranswers.registerState)
         Future.successful(Left(Redirect(call)))
       case _ =>
         genericLogger.logger.info(s"User has no user answers ${hc.requestId}")

@@ -1,11 +1,11 @@
 package controllers
 
-import models.alf.init.{AppLevelLabels, ConfirmPageConfig, EditPageLabels, JourneyConfig, JourneyLabels, JourneyOptions, LanguageLabels, LookupPageLabels, SelectPageConfig, TimeoutConfig}
+import models.alf.init._
 import models.backend.UkAddress
 import models.{CheckMode, NormalMode, Warehouse}
 import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
-import pages.{AskSecondaryWarehousesPage, OperatePackagingSitesPage}
+import pages.AskSecondaryWarehousesPage
 import play.api.http.HeaderNames
 import play.api.i18n.Messages
 import play.api.libs.json.{JsObject, Json}
@@ -73,7 +73,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
     testOtherSuccessUserTypes(baseUrl + normalRoutePath, Messages("askSecondaryWarehouses" + ".title"))
     testUnauthorisedUser(baseUrl + normalRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)
-    testWhoIsUnableToRegisterWithGivenUtr(baseUrl + normalRoutePath)
+    testUserWhoIsUnableToRegister(baseUrl + normalRoutePath)
   }
 
   s"GET " + checkRoutePath - {
@@ -132,7 +132,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
     testOtherSuccessUserTypes(baseUrl + checkRoutePath, Messages("askSecondaryWarehouses" + ".title"))
     testUnauthorisedUser(baseUrl + checkRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath)
-    testWhoIsUnableToRegisterWithGivenUtr(baseUrl + checkRoutePath)
+    testUserWhoIsUnableToRegister(baseUrl + checkRoutePath)
 
   }
 
@@ -216,8 +216,8 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
             timeoutUrl = controllers.auth.routes.AuthController.signOut.url,
             timeoutKeepAliveUrl = Some(routes.KeepAliveController.keepAlive.url)
           )),
-          serviceHref = Some(frontendAppConfig.accountFrontendHomeUrl),
-          pageHeadingStyle = Some("govuk-heading-m")
+          serviceHref = Some(frontendAppConfig.sdilHomeUrl),
+          pageHeadingStyle = Some("govuk-heading-l")
         ),
         labels = Some(
           JourneyLabels(
@@ -369,7 +369,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
     }
     testUnauthorisedUser(baseUrl + normalRoutePath, Some(Json.obj("value" -> "true")))
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath, Some(Json.obj("value" -> "true")))
-    testWhoIsUnableToRegisterWithGivenUtr(baseUrl + normalRoutePath, Some(Json.obj("value" -> "true")))
+    testUserWhoIsUnableToRegister(baseUrl + normalRoutePath, Some(Json.obj("value" -> "true")))
 
   }
 
@@ -461,8 +461,8 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
             timeoutUrl = controllers.auth.routes.AuthController.signOut.url,
             timeoutKeepAliveUrl = Some(routes.KeepAliveController.keepAlive.url)
           )),
-          serviceHref = Some(frontendAppConfig.accountFrontendHomeUrl),
-          pageHeadingStyle = Some("govuk-heading-m")
+          serviceHref = Some(frontendAppConfig.sdilHomeUrl),
+          pageHeadingStyle = Some("govuk-heading-l")
         ),
         labels = Some(
           JourneyLabels(
@@ -583,6 +583,6 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
     }
     testUnauthorisedUser(baseUrl + checkRoutePath, Some(Json.obj("value" -> "true")))
     testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath, Some(Json.obj("value" -> "true")))
-    testWhoIsUnableToRegisterWithGivenUtr(baseUrl + checkRoutePath, Some(Json.obj("value" -> "true")))
+    testUserWhoIsUnableToRegister(baseUrl + checkRoutePath, Some(Json.obj("value" -> "true")))
   }
 }

@@ -19,6 +19,8 @@ package models.requests
 import models.{RosmWithUtr, UserAnswers}
 import play.api.mvc.{Request, WrappedRequest}
 
+import java.time.Instant
+
 case class OptionalDataRequest[A] (request: Request[A],
                                    internalId: String,
                                    hasCTEnrolment: Boolean = false,
@@ -38,3 +40,9 @@ case class DataRequestForEnterBusinessDetails[A] (request: Request[A],
                            hasCTEnrolment: Boolean = false,
                            authUtr: Option[String] = None,
                            userAnswers: UserAnswers) extends WrappedRequest[A](request)
+
+case class DataRequestForApplicationSubmitted[A](request: Request[A],
+                                                 internalId: String,
+                                                 userAnswers: UserAnswers,
+                                                 rosmWithUtr: RosmWithUtr,
+                                                 submittedDateTime: Instant) extends WrappedRequest[A](request)

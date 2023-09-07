@@ -72,7 +72,7 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
     }
     testOtherSuccessUserTypes(baseUrl + normalRoutePath, Messages("organisationType.title"))
     testUnauthorisedUser(baseUrl + normalRoutePath)
-    testWhoIsUnableToRegisterWithGivenUtr(baseUrl + normalRoutePath)
+    testUserWhoIsUnableToRegister(baseUrl + normalRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)
   }
 
@@ -135,7 +135,7 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
     }
     testOtherSuccessUserTypes(baseUrl + checkRoutePath, Messages("organisationType.title"))
     testUnauthorisedUser(baseUrl + checkRoutePath)
-    testWhoIsUnableToRegisterWithGivenUtr(baseUrl + checkRoutePath)
+    testUserWhoIsUnableToRegister(baseUrl + checkRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath)
 
   }
@@ -262,7 +262,7 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
       }
     }
     testUnauthorisedUser(baseUrl + normalRoutePath, Some(Json.obj("value" -> "true")))
-    testWhoIsUnableToRegisterWithGivenUtr(baseUrl + normalRoutePath, Some(Json.obj("value" -> "true")))
+    testUserWhoIsUnableToRegister(baseUrl + normalRoutePath, Some(Json.obj("value" -> "true")))
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath, Some(Json.obj("value" -> "true")))
   }
 
@@ -386,7 +386,7 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
       }
     }
     testUnauthorisedUser(baseUrl + checkRoutePath, Some(Json.obj("value" -> "true")))
-    testWhoIsUnableToRegisterWithGivenUtr(baseUrl + checkRoutePath, Some(Json.obj("value" -> "true")))
+    testUserWhoIsUnableToRegister(baseUrl + checkRoutePath, Some(Json.obj("value" -> "true")))
     testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath, Some(Json.obj("value" -> "true")))
   }
 }

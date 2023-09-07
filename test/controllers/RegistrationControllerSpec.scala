@@ -18,7 +18,7 @@ package controllers
 
 import base.SpecBase
 import controllers.actions.{FakeIdentifierAction, IdentifierAction}
-import errors.{SessionDatabaseInsertError, UnexpectedResponseFromSDIL}
+import errors.{RegistrationAlreadySubmitted, SessionDatabaseInsertError, UnexpectedResponseFromSDIL}
 import models.RegisterState._
 import models.{NormalMode, RegisterState}
 import orchestrators.RegistrationOrchestrator
@@ -74,6 +74,22 @@ class RegistrationControllerSpec extends SpecBase with SummaryListFluency with M
               redirectLocation(result) mustEqual Some(expectedLocationForRegState(registerState))
             }
           }
+        }
+      }
+    }
+
+    "should redirect to register confirmation page" - {
+      "when the application has been submitted" in {
+        val application = applicationBuilderForHome().build()
+        when(mockOrchestrator.handleRegistrationRequest(any(), any(), any())) thenReturn createFailureRegistrationResult(RegistrationAlreadySubmitted)
+
+        running(application) {
+          val request = FakeRequest(GET, routes.RegistrationController.start.url)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result) mustEqual Some(routes.RegistrationConfirmationController.onPageLoad.url)
         }
       }
     }

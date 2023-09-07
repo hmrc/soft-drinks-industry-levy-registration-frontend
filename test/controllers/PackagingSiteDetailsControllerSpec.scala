@@ -27,7 +27,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.mockito.MockitoSugar.{times, verify}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{PackAtBusinessAddressPage, PackagingSiteDetailsPage}
+import pages.PackagingSiteDetailsPage
 import play.api.data.Form
 import play.api.inject.bind
 import play.api.mvc.Call
@@ -100,7 +100,6 @@ class PackagingSiteDetailsControllerSpec extends SpecBase with MockitoSugar with
 
       running(application) {
         val request = FakeRequest(GET, packagingSiteDetailsRoute)
-        val view = application.injector.instanceOf[PackagingSiteDetailsView]
         val result = route(application, request).value
 
         status(result) mustEqual 303

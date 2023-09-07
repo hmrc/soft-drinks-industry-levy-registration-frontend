@@ -18,21 +18,20 @@ package controllers
 
 import controllers.actions._
 import forms.AskSecondaryWarehousesFormProvider
-
-import javax.inject.Inject
-import models.{CheckMode, Mode, NormalMode, UserAnswers}
+import handlers.ErrorHandler
+import models.requests.DataRequest
+import models.{CheckMode, Mode, UserAnswers}
 import navigation.Navigator
 import pages.AskSecondaryWarehousesPage
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.{AddressLookupService, SessionService, WarehouseDetails}
-import views.html.AskSecondaryWarehousesView
-import handlers.ErrorHandler
-import models.requests.DataRequest
 import uk.gov.hmrc.http.HeaderCarrier
-
-import scala.concurrent.{ExecutionContext, Future}
 import utilities.GenericLogger
+import views.html.AskSecondaryWarehousesView
+
+import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 class AskSecondaryWarehousesController @Inject()(
                                        override val messagesApi: MessagesApi,
