@@ -55,8 +55,8 @@ class WarehouseDetailsControllerSpec extends SpecBase with MockitoSugar with Log
   lazy val warehouseDetailsRoute = routes.WarehouseDetailsController.onPageLoad(NormalMode).url
 
   val twoWarehouses: Map[String,Warehouse] = Map(
-    "1"-> Warehouse(Some("ABC Ltd"), UkAddress(List("33 Rhes Priordy", "East London","Line 3","Line 4"),"WR53 7CX")),
-    "2" -> Warehouse(Some("Super Cola Ltd"), UkAddress(List("33 Rhes Priordy", "East London","Line 3",""),"SA13 7CE"))
+    "1"-> Warehouse("ABC Ltd", UkAddress(List("33 Rhes Priordy", "East London","Line 3","Line 4"),"WR53 7CX")),
+    "2" -> Warehouse("Super Cola Ltd", UkAddress(List("33 Rhes Priordy", "East London","Line 3",""),"SA13 7CE"))
   )
 
   val userAnswerTwoWarehouses : UserAnswers = UserAnswers(sdilNumber, RegisterState.RegisterWithAuthUTR,Json.obj(), warehouseList = twoWarehouses)
@@ -84,7 +84,7 @@ class WarehouseDetailsControllerSpec extends SpecBase with MockitoSugar with Log
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
       val address = UkAddress(List("29 Station Place", "The Railyard", "Cambridge"), "CB1 2FP")
-      val warehouse = Map("78941132" -> Warehouse(Some("Warehouse One"), address))
+      val warehouse = Map("78941132" -> Warehouse("Warehouse One", address))
       val userAnswers = UserAnswers(identifier, RegisterState.RegisterWithAuthUTR).set(WarehouseDetailsPage, true).success.value
       val uaWithWarehouses = userAnswers.copy(warehouseList = warehouse)
       val warehouseSummary = Some(SummaryListViewModel(rows = WarehouseDetailsSummary.warehouseDetailsRow(warehouse, NormalMode)))
@@ -248,8 +248,8 @@ class WarehouseDetailsControllerSpec extends SpecBase with MockitoSugar with Log
         val result = route(application, request).value
 
         val warehouseMap: Map[String,Warehouse] =
-          Map("1"-> Warehouse(Some("ABC Ltd"), UkAddress(List("33 Rhes Priordy", "East London","Line 3","Line 4"),"WR53 7CX")),
-            "2" -> Warehouse(Some("Super Cola Ltd"), UkAddress(List("33 Rhes Priordy", "East London","Line 3",""),"SA13 7CE")))
+          Map("1"-> Warehouse("ABC Ltd", UkAddress(List("33 Rhes Priordy", "East London","Line 3","Line 4"),"WR53 7CX")),
+            "2" -> Warehouse("Super Cola Ltd", UkAddress(List("33 Rhes Priordy", "East London","Line 3",""),"SA13 7CE")))
 
         val warehouseSummaryList: List[SummaryListRow] =
           WarehouseDetailsSummary.warehouseDetailsRow(warehouseMap, NormalMode)(messages(application))

@@ -52,7 +52,7 @@ trait DataHelper {
   def testSite(
                 address: UkAddress,
                 ref: Option[String] = None,
-                tradingName: Option[String] = None,
+                tradingName: String,
                 closureDate: Option[LocalDate] = None
               ): Site = Site(
     address = address,
@@ -89,7 +89,7 @@ trait DataHelper {
                      tradingName: String = "test trading name",
                      address: UkAddress
                    ): Warehouse = Warehouse(
-    tradingName = Some(tradingName),
+    tradingName = tradingName,
     address = address
   )
 

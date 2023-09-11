@@ -17,6 +17,7 @@
 package views.summary
 
 import base.SpecBase
+import base.SpecBase.aTradingName
 import controllers.routes
 import models.backend.UkAddress
 import models.{CheckMode, NormalMode, Warehouse}
@@ -25,38 +26,38 @@ import uk.gov.hmrc.govukfrontend.views.Aliases.HtmlContent
 class WarehousesSummarySpec extends SpecBase {
 
   val addressWith3AddressLines = Warehouse(
-    tradingName = None,
+    tradingName = aTradingName,
     address = UkAddress(List("The house", "The Road", "ugzhkxcajkcjfrqsgkjruzlmsxytwhg vdg"), "NW88 8II")
   )
 
   val address44Characters = Warehouse(
-    tradingName = None,
+    tradingName = aTradingName,
     address = UkAddress(List("29 Station Rd", "The Railyard", "Cambridge"), "CB1 2FP"))
 
   val address45Characters = Warehouse(
-    tradingName = None,
+    tradingName = aTradingName,
     address = UkAddress(List("29 Station Pl.", "The Railyard", "Cambridge"), "CB1 2FP"))
 
   val address47Characters = Warehouse(
-    tradingName = None,
+    tradingName = aTradingName,
     address = UkAddress(List("29 Station Place", "The Railyard", "Cambridge"), "CB1 2FP"))
 
 
   val address49Characters = Warehouse(
-    tradingName = None,
+    tradingName = aTradingName,
     address = UkAddress(List("29 Station PlaceDr", "The Railyard", "Cambridge"), "CB1 2FP"))
 
   val address50Characters = Warehouse(
-    tradingName = None,
+    tradingName = aTradingName,
     address = UkAddress(List("29 Station Place Dr", "The Railyard", "Cambridge"), "CB1 2FP"))
 
 
   val WarehouseEvenLongerAddressNoTradeName = Warehouse(
-    tradingName = None,
+    tradingName = aTradingName,
     address = UkAddress(List("29 Station Rd", "This address will auto wrap but not in postcode", "it is 4 lines 103 char", "Cambridge"), "CB1 2FP"))
 
   val WarehouseEvenLongerAddressWithTradeName = Warehouse(
-    tradingName = None,
+    tradingName = aTradingName,
     address = UkAddress(List("29 Station Rd", "This address will auto wrap but not in postcode", "it is 4 lines 103 char", "Cambridge"), "CB1 2FP"))
 
   val WarehouseListWith3 = Map(("rieajnldkaljnk13", address45Characters), ("jfkladnlr12", address47Characters), ("jgklaj;ll;e;o", address49Characters))
@@ -79,10 +80,10 @@ class WarehousesSummarySpec extends SpecBase {
         }
         "must include Correct elements in list with 2 elements" in {
           val site1 = Warehouse(
-            None,
+            aTradingName,
             UkAddress(List("foo2", "bar2"), "wizz2"))
           val site2 = Warehouse(
-            None,
+            aTradingName,
             UkAddress(List("foo", "bar"), "wizz"))
           val warehouseSummaryRowList = WarehouseDetailsSummary.warehouseDetailsRow(Map("ref1" -> site1, "ref2" -> site2), mode)
           warehouseSummaryRowList.head.key.content.asHtml.toString() mustBe "foo2, bar2, <span class=\"nowrap\" style=\"white-space: nowrap;\">wizz2</span>"

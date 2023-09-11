@@ -17,6 +17,7 @@
 package views.summary
 
 import base.SpecBase
+import base.SpecBase.aTradingName
 import controllers.routes
 import models.{CheckMode, NormalMode}
 import models.backend.{Site, UkAddress}
@@ -27,7 +28,7 @@ class PackagingSiteDetailsSummarySpec extends SpecBase {
   val PackagingSite1 = Site(
     UkAddress(List("33 Rhes Priordy", "East London"), "E73 2RP"),
     None,
-    Some("Wild Lemonade Group"),
+    aTradingName,
     None)
 
   lazy val packagingSiteListWith1 = Map(("78941132", PackagingSite1))
@@ -36,49 +37,49 @@ class PackagingSiteDetailsSummarySpec extends SpecBase {
   val addressWith3AddressLines = Site(
       UkAddress(List("The house", "The Road", "ugzhkxcajkcjfrqsgkjruzlmsxytwhg vdg"), "NW88 8II"),
       None,
-      Some("Test trading name 1"),
+      "Test trading name 1",
       None)
 
   val address44Characters = Site(
     UkAddress(List("29 Station Rd", "The Railyard", "Cambridge"), "CB1 2FP"),
     Some("10"),
-    None,
+    aTradingName,
     None)
 
   val address45Characters = Site(
     UkAddress(List("29 Station Pl.", "The Railyard", "Cambridge"), "CB1 2FP"),
     None,
-    None,
+    aTradingName,
     None)
 
   val address47Characters = Site(
     UkAddress(List("29 Station Place", "The Railyard", "Cambridge"), "CB1 2FP"),
     Some("10"),
-    None,
+    aTradingName,
     None)
 
   val address49Characters = Site(
     UkAddress(List("29 Station PlaceDr", "The Railyard", "Cambridge"), "CB1 2FP"),
     None,
-    None,
+    aTradingName,
     None)
 
   val address50Characters = Site(
     UkAddress(List("29 Station Place Dr", "The Railyard", "Cambridge"), "CB1 2FP"),
     Some("10"),
-    None,
+    aTradingName,
     None)
 
   val PackagingSiteEvenLongerAddressNoTradeName = Site(
     UkAddress(List("29 Station Rd", "This address will auto wrap but not in postcode", "it is 4 lines 103 char", "Cambridge"), "CB1 2FP"),
     Some("10"),
-    None,
+    aTradingName,
     None)
 
   val PackagingSiteEvenLongerAddressWithTradeName = Site(
     UkAddress(List("29 Station Rd", "This address will auto wrap but not in postcode", "it is 4 lines 103 char", "Cambridge"), "CB1 2FP"),
     Some("10"),
-    Some("Test Trading Name Inc"),
+    "Test Trading Name Inc",
     None)
 
   List(NormalMode, CheckMode).foreach { mode =>
@@ -100,12 +101,12 @@ class PackagingSiteDetailsSummarySpec extends SpecBase {
           val site1 = Site(
             UkAddress(List("foo2", "bar2"), "wizz2"),
             None,
-            Some("trade2"),
+            "trade2",
             None)
           val site2 = Site(
             UkAddress(List("foo", "bar"), "wizz"),
             None,
-            Some("trade"),
+            "trade",
             None)
           val packagingSiteSummaryRowList = PackagingSiteDetailsSummary.row2(Map("ref1" -> site1, "ref2" -> site2), mode)
           packagingSiteSummaryRowList.head.key.content.asHtml.toString() mustBe "trade2<br>foo2, bar2, <span class=\"nowrap\" style=\"white-space: nowrap;\">wizz2</span>"

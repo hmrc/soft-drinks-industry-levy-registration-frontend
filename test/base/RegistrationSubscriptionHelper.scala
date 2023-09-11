@@ -31,11 +31,11 @@ trait RegistrationSubscriptionHelper extends SpecBase {
   val PackagingSite1: Site = Site(
     UkAddress(List("33 Rhes Priordy", "East London"), "E73 2RP"),
     None,
-    Some("Wild Lemonade Group"),
+    "Wild Lemonade Group",
     None)
 
   lazy val packagingSiteListWith1: Map[String, Site] = Map(("78941132", PackagingSite1))
-  val warehouse = Warehouse(Some("ABC Ltd"), UkAddress(List("33 Rhes Priordy", "East London"), "WR53 7CX"))
+  val warehouse = Warehouse("ABC Ltd", UkAddress(List("33 Rhes Priordy", "East London"), "WR53 7CX"))
   val warehouses: Map[String, Warehouse] = Map(
     "1" -> warehouse,
   )

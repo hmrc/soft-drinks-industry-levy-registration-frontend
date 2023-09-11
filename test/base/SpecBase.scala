@@ -16,6 +16,7 @@
 
 package base
 
+import base.SpecBase.aTradingName
 import cats.data.EitherT
 import cats.implicits._
 import config.FrontendAppConfig
@@ -46,6 +47,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Try}
 
 object SpecBase {
+  val aTradingName = "Wild Lemonade Group"
   val aSubscription = RetrievedSubscription(
     utr = "0000000022",
     sdilRef = "XKSDIL000000022",
@@ -57,27 +59,27 @@ object SpecBase {
       Site(
         UkAddress(List("33 Rhes Priordy", "East London"), "E73 2RP"),
         Some("88"),
-        Some("Wild Lemonade Group"),
+        aTradingName,
         Some(LocalDate.of(2018, 2, 26))),
       Site(
         UkAddress(List("117 Jerusalem Court", "St Albans"), "AL10 3UJ"),
         Some("87"),
-        Some("Highly Addictive Drinks Plc"),
+        "Highly Addictive Drinks Plc",
         Some(LocalDate.of(2019, 8, 19))),
       Site(
         UkAddress(List("87B North Liddle Street", "Guildford"), "GU34 7CM"),
         Some("94"),
-        Some("Monster Bottle Ltd"),
+        "Monster Bottle Ltd",
         Some(LocalDate.of(2017, 9, 23))),
       Site(
         UkAddress(List("122 Dinsdale Crescent", "Romford"), "RM95 8FQ"),
         Some("27"),
-        Some("Super Lemonade Group"),
+        "Super Lemonade Group",
         Some(LocalDate.of(2017, 4, 23))),
       Site(
         UkAddress(List("105B Godfrey Marchant Grove", "Guildford"), "GU14 8NL"),
         Some("96"),
-        Some("Star Products Ltd"),
+        "Star Products Ltd",
         Some(LocalDate.of(2017, 2, 11)))
     ),
     warehouseSites = List(),
@@ -145,25 +147,25 @@ trait SpecBase
   val packingSiteAddress45Characters = Site(
     UkAddress(List("29 Station Pl.", "The Railyard", "Cambridge"), "CB1 2FP"),
     None,
-    None,
+    aTradingName,
     None)
 
   val packingSiteAddress47Characters = Site(
     UkAddress(List("29 Station Place", "The Railyard", "Cambridge"), "CB1 2FP"),
     Some("10"),
-    None,
+    aTradingName,
     None)
 
   val packingSiteAddress49Characters = Site(
     UkAddress(List("29 Station PlaceDr", "The Railyard", "Cambridge"), "CB1 2FP"),
     None,
-    None,
+    aTradingName,
     None)
 
   def packagingSiteListWith3 = Map(("12345678", packingSiteAddress45Characters), ("23456789", packingSiteAddress47Characters), ("34567890", packingSiteAddress49Characters))
 
-  def warehouse1 = Warehouse(Some("Warehouse One"), UkAddress(List("29 Station Place", "The Railyard", "Cambridge"), "CB1 2FP"))
-  def warehouse2 = Warehouse(Some("Warehouse Two"), UkAddress(List("42 Hitch Place", "The Railyard", "Cambridge"), "CB1 2FF"))
+  def warehouse1 = Warehouse("Warehouse One", UkAddress(List("29 Station Place", "The Railyard", "Cambridge"), "CB1 2FP"))
+  def warehouse2 = Warehouse("Warehouse Two", UkAddress(List("42 Hitch Place", "The Railyard", "Cambridge"), "CB1 2FF"))
   def warehouseListWith1 = Map("78941132" -> warehouse1)
   def warehouseListWith2 = Map("78941132" -> warehouse1, "11111111" -> warehouse2)
 
@@ -178,27 +180,27 @@ trait SpecBase
       Site(
         UkAddress(List("33 Rhes Priordy", "East London"), "E73 2RP"),
         Some("88"),
-        Some("Wild Lemonade Group"),
+        aTradingName,
         Some(LocalDate.of(2018, 2, 26))),
       Site(
         UkAddress(List("117 Jerusalem Court", "St Albans"), "AL10 3UJ"),
         Some("87"),
-        Some("Highly Addictive Drinks Plc"),
+        "Highly Addictive Drinks Plc",
         Some(LocalDate.of(2019, 8, 19))),
       Site(
         UkAddress(List("87B North Liddle Street", "Guildford"), "GU34 7CM"),
         Some("94"),
-        Some("Monster Bottle Ltd"),
+        "Monster Bottle Ltd",
         Some(LocalDate.of(2017, 9, 23))),
       Site(
         UkAddress(List("122 Dinsdale Crescent", "Romford"), "RM95 8FQ"),
         Some("27"),
-        Some("Super Lemonade Group"),
+        "Super Lemonade Group",
         Some(LocalDate.of(2017, 4, 23))),
       Site(
         UkAddress(List("105B Godfrey Marchant Grove", "Guildford"), "GU14 8NL"),
         Some("96"),
-        Some("Star Products Ltd"),
+        "Star Products Ltd",
         Some(LocalDate.of(2017, 2, 11)))
     ),
     warehouseSites = List(),

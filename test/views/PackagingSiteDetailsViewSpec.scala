@@ -16,6 +16,7 @@
 
 package views
 
+import base.SpecBase.aTradingName
 import controllers.routes
 import forms.PackagingSiteDetailsFormProvider
 import models.backend.{Site, UkAddress}
@@ -36,24 +37,24 @@ class PackagingSiteDetailsViewSpec extends ViewSpecHelper {
   val PackagingSite1: Site = Site(
     UkAddress(List("33 Rhes Priordy", "East London"), "E73 2RP"),
     None,
-    Some("Wild Lemonade Group"),
+    "Wild Lemonade Group",
     None)
   val address45Characters: Site = Site(
     UkAddress(List("29 Station Pl.", "The Railyard", "Cambridge"), "CB1 2FP"),
     None,
-    None,
+    aTradingName,
     None)
 
   val address47Characters: Site = Site(
     UkAddress(List("29 Station Place", "The Railyard", "Cambridge"), "CB1 2FP"),
     Some("10"),
-    None,
+    aTradingName,
     None)
 
   val address49Characters: Site = Site(
     UkAddress(List("29 Station PlaceDr", "The Railyard", "Cambridge"), "CB1 2FP"),
     None,
-    None,
+    aTradingName,
     None)
 
   lazy val packagingSiteListWith1: Map[String, Site] = Map(("78941132", PackagingSite1))

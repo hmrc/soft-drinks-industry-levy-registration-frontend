@@ -24,7 +24,7 @@ import java.time.LocalDate
 case class Site(
                  address: UkAddress,
                  ref: Option[String],
-                 tradingName: Option[String],
+                 tradingName: String,
                  closureDate: Option[LocalDate]
                ) {
 }

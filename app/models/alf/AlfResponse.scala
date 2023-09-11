@@ -20,7 +20,7 @@ import play.api.libs.json.Json
 
 case class AlfResponse(address: AlfAddress)
 
-case class AlfAddress(organisation: Option[String],
+case class AlfAddress(organisation: String,
                       lines: List[String],
                       postcode: Option[String],
                       countryCode: Option[String])
