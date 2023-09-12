@@ -30,7 +30,7 @@ class SessionRepositoryISpec
   val repository: SessionRepository = app.injector.instanceOf[SessionRepository]
   val encryption: Encryption = app.injector.instanceOf[Encryption]
   implicit val cryptEncryptedValueFormats: Format[EncryptedValue]  = CryptoFormats.encryptedValueFormat
-  val alfAddress = AlfResponse(AlfAddress(Some("foo"), List.empty, None, None))
+  val alfAddress = UkAddress(List("foo"), "TF1 3XX", None)
 
 
   override def beforeEach(): Unit = {

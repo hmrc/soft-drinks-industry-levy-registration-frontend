@@ -30,7 +30,7 @@ import java.time.{Instant, LocalDate}
 class ModelEncryptionSpec extends SpecBase {
 
   implicit val encryption: Encryption = application.injector.instanceOf[Encryption]
-  val alfAddress = AlfResponse(AlfAddress(Some("foo"), List.empty, None, None))
+  val alfAddress = UkAddress(List("foo"), "TF1 3XX", None)
 
   "encryptUserAnswers" - {
     "should encrypt userAnswers" in {

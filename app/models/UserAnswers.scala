@@ -16,7 +16,7 @@
 
 package models
 
-import models.alf.{AddressResponseForLookupState, AlfResponse}
+import models.alf.AddressResponseForLookupState
 import models.backend.{Site, UkAddress}
 import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json._
@@ -71,8 +71,8 @@ case class UserAnswers(
     }
   }
 
-  def setAlfResponse(alfResponse: AlfResponse, addressLookupState: AddressLookupState): UserAnswers = {
-    val addressResponseForLookupState = AddressResponseForLookupState(alfResponse, addressLookupState)
+  def setAlfResponse(address: UkAddress, addressLookupState: AddressLookupState): UserAnswers = {
+    val addressResponseForLookupState = AddressResponseForLookupState(address, addressLookupState)
     copy(alfResponseForLookupState = Some(addressResponseForLookupState))
   }
 

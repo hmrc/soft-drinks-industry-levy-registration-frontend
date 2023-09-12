@@ -16,10 +16,11 @@
 
 package models.alf
 
+import models.backend.UkAddress
 import play.api.libs.json.{Json, OFormat}
 import services.AddressLookupState
 
-case class AddressResponseForLookupState(alfResponse: AlfResponse,
+case class AddressResponseForLookupState(address: UkAddress,
                                          addressLookupState: AddressLookupState)
 
 object AddressResponseForLookupState {
