@@ -303,7 +303,7 @@ addressLookupFrontend.packingDetails.editPageLabels.line2Label = Address line 2
 addressLookupFrontend.packingDetails.editPageLabels.line3Label = Address line 3 (optional)
 addressLookupFrontend.packingDetails.editPageLabels.townLabel = Address line 4 (optional)
 addressLookupFrontend.packingDetails.editPageLabels.postcodeLabel = Postcode
-addressLookupFrontend.packingDetails.editPageLabels.organisationLabel = Packaging site name (optional)
+addressLookupFrontend.packingDetails.editPageLabels.organisationLabel = Packaging site name
 
 addressLookupFrontend.businessAddress.lookupPageLabels.title = Find UK contact address
 addressLookupFrontend.businessAddress.lookupPageLabels.postcodeLabel = Postcode

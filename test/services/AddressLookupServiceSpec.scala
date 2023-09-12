@@ -393,7 +393,7 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
                       line3Label = Some("Address line 3 (optional)"),
                       townLabel = Some("Address line 4 (optional)"),
                       postcodeLabel = Some("Postcode"),
-                      organisationLabel = Some("Packaging site name (optional)"))
+                      organisationLabel = Some("Packaging site name"))
                   ),
                   confirmPageLabels = None,
                   countryPickerLabels = None
@@ -694,7 +694,7 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
                       line3Label = Some("Address line 3 (optional)"),
                       townLabel = Some("Address line 4 (optional)"),
                       postcodeLabel = Some("Postcode"),
-                      organisationLabel = Some("Packaging site name (optional)"))
+                      organisationLabel = Some("Packaging site name"))
                   ),
                   confirmPageLabels = None,
                   countryPickerLabels = None
