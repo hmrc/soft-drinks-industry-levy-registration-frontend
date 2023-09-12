@@ -20,7 +20,8 @@ import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierA
 import models.{Mode, NormalMode}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
-import services.{AddressLookupService, BusinessAddress, PackingDetails, WarehouseDetails}
+import services.AddressLookupService
+import services.AddressLookupState._
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.Inject

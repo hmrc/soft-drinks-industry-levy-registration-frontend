@@ -1,5 +1,6 @@
 package repositories
 
+import models.alf.{AddressResponseForLookupState, AlfAddress, AlfResponse}
 import models.backend.{Site, UkAddress}
 import models.{RegisterState, UserAnswers, Warehouse}
 import org.mongodb.scala.bson.BsonDocument
@@ -11,6 +12,7 @@ import org.scalatest.{BeforeAndAfterEach, OptionValues}
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.libs.json.{Format, JsObject, Json, Reads}
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
+import services.AddressLookupState.PackingDetails
 import services.Encryption
 import uk.gov.hmrc.crypto.EncryptedValue
 import uk.gov.hmrc.crypto.json.CryptoFormats
@@ -28,6 +30,8 @@ class SessionRepositoryISpec
   val repository: SessionRepository = app.injector.instanceOf[SessionRepository]
   val encryption: Encryption = app.injector.instanceOf[Encryption]
   implicit val cryptEncryptedValueFormats: Format[EncryptedValue]  = CryptoFormats.encryptedValueFormat
+  val alfAddress = AlfResponse(AlfAddress(Some("foo"), List.empty, None, None))
+
 
   override def beforeEach(): Unit = {
     await(repository.collection.deleteMany(BsonDocument()).toFuture())
@@ -77,6 +81,7 @@ class SessionRepositoryISpec
         Some(UkAddress(List("Line 1", "Line 2", "Line 3", "Line 4"),"aa1 1aa", alfId = Some(alfId))),
         Map("foo" -> Site(UkAddress(List("foo"),"foo", Some("foo")),Some("foo"), "foo",Some(LocalDate.now()))),
         Map("foo" -> Warehouse("foo",UkAddress(List("foo"),"foo", Some("foo")))),
+        Some(AddressResponseForLookupState(alfAddress, PackingDetails)),
         None,
         Instant.ofEpochSecond(1))
       val setResult = await(repository.set(userAnswersBefore))
@@ -98,10 +103,16 @@ class SessionRepositoryISpec
         json.map(warehouse => warehouse._1 -> Json.parse(encryption.crypto.decrypt(warehouse._2, userAnswersBefore.id)).as[Warehouse])
       }
 
+      val addressResponseForLookupStateDecrypted = {
+        val json = (resultParsedToJson \ "alfResponseForLookupState").as[EncryptedValue]
+        Json.parse(encryption.crypto.decrypt(json, userAnswersBefore.id)).as[AddressResponseForLookupState]
+      }
+
       dataDecrypted mustBe userAnswersBefore.data
       businessAddressDecrypted mustBe userAnswersBefore.address
       packagingSiteListDecrypted mustBe userAnswersBefore.packagingSiteList
       warehouseListDecrypted mustBe userAnswersBefore.warehouseList
+      addressResponseForLookupStateDecrypted mustBe userAnswersBefore.alfResponseForLookupState.get
       (resultParsedToJson \ "submittedOn").get.asOpt[Instant] mustBe userAnswersBefore.submittedOn
     }
   }

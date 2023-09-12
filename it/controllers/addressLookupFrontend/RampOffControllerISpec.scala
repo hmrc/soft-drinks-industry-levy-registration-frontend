@@ -7,7 +7,7 @@ import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.http.Status.{INTERNAL_SERVER_ERROR, SEE_OTHER}
 import play.api.test.WsTestClient
 import play.mvc.Http.HeaderNames
-import services.{BusinessAddress, PackingDetails, WarehouseDetails}
+import services.AddressLookupState._
 
 
 class RampOffControllerISpec extends ControllerITTestHelper {

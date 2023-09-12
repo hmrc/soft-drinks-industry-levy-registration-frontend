@@ -25,7 +25,8 @@ import pages.WarehouseDetailsPage
 import play.api.data.Form
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{AddressLookupService, SessionService, WarehouseDetails}
+import services.AddressLookupState.WarehouseDetails
+import services.{AddressLookupService, SessionService}
 import utilities.GenericLogger
 import viewmodels.govuk.SummaryListFluency
 import views.html.WarehouseDetailsView

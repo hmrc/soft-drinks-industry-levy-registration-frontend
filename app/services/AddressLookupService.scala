@@ -26,6 +26,7 @@ import models.backend.{Site, UkAddress}
 import models.{Mode, UserAnswers, Warehouse}
 import play.api.Logger
 import play.api.i18n.Messages
+import services.AddressLookupState._
 import uk.gov.hmrc.http.HeaderCarrier
 import utilities.AddressHelper
 

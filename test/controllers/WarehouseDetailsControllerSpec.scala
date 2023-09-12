@@ -17,33 +17,32 @@
 package controllers
 
 import base.SpecBase
-import helpers.LoggerHelper
-import utilities.GenericLogger
 import forms.WarehouseDetailsFormProvider
+import helpers.LoggerHelper
 import models.backend.UkAddress
 import models.{NormalMode, RegisterState, UserAnswers, Warehouse}
 import navigation.{FakeNavigator, Navigator}
+import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
+import org.mockito.MockitoSugar.{times, verify}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.WarehouseDetailsPage
 import play.api.inject.bind
+import play.api.libs.json.Json
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{AddressLookupService, WarehouseDetails}
-import views.html.WarehouseDetailsView
-
-import scala.concurrent.Future
-import org.mockito.ArgumentMatchers
-import org.mockito.MockitoSugar.{times, verify}
-import play.api.libs.json.Json
 import repositories.SessionRepository
+import services.AddressLookupService
+import services.AddressLookupState.WarehouseDetails
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, SummaryListRow}
+import utilities.GenericLogger
 import viewmodels.govuk.SummaryListFluency
+import views.html.WarehouseDetailsView
 import views.summary.WarehouseDetailsSummary
 
-import scala.collection.immutable.Map
+import scala.concurrent.Future
 
 class WarehouseDetailsControllerSpec extends SpecBase with MockitoSugar with LoggerHelper with SummaryListFluency {
 

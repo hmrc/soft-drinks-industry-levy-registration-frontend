@@ -27,6 +27,7 @@ import models.{CheckMode, NormalMode, Warehouse}
 import org.mockito.ArgumentMatchers
 import org.mockito.MockitoSugar.{mock, when}
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
+import services.AddressLookupState._
 
 import scala.concurrent.Future
 
