@@ -1,0 +1,132 @@
+/*
+ * Copyright 2023 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package views
+
+import controllers.routes
+import forms.WarehousesTradingNameFormProvider
+import models.{CheckMode, NormalMode, WarehousesTradingName}
+import play.api.data.Form
+import play.api.libs.json.{JsObject, JsValue, Json}
+import play.api.mvc.Request
+import play.api.test.FakeRequest
+import views.html.WarehousesTradingNameView
+
+
+
+class WarehousesTradingNameViewSpec extends ViewSpecHelper {
+
+  val view: WarehousesTradingNameView = application.injector.instanceOf[WarehousesTradingNameView]
+  val formProvider = new WarehousesTradingNameFormProvider
+  val form: Form[WarehousesTradingName] = formProvider.apply()
+  implicit val request: Request[_] = FakeRequest()
+
+  object Selectors {
+    val formGroup = "govuk-form-group"
+    val label = "govuk-label"
+    val errorSummaryList = "govuk-list govuk-error-summary__list"
+    val button = "govuk-button"
+    val form = "form"
+  }
+
+  val warehouseTradingName: WarehousesTradingName = WarehousesTradingName("1")
+  val warehouseTradingNameJsObject: collection.Map[String, JsValue] = Json.toJson(warehouseTradingName).as[JsObject].value
+  val warehouseTradingNameMap: collection.Map[String, String] =
+  warehouseTradingNameJsObject.map { case (fName, fValue) => fName -> fValue.toString }
+
+  "View" - {
+    val html = view(form, NormalMode)(request, messages(application))
+    val document = doc(html)
+    val questionItems = document.getElementsByClass(Selectors.formGroup)
+    "should contain the expected title" in {
+      document.title() mustBe "What is your UK warehouse trading name? - Soft Drink Industry Levy - GOV.UK"
+    }
+
+    "should have the expected heading" in {
+      document.getElementsByClass(Selectors.label).text() mustEqual "What is your UK warehouse trading name?"
+    }
+
+    "should contain 1 question" in {
+      questionItems.size() mustBe 1
+    }
+
+    warehouseTradingNameMap.zipWithIndex.foreach { case ((fieldName, fieldValue), index) =>
+
+      "when the form is not prepopulated and has no errors" - {
+        "should include the expected question fields" - {
+
+          "that has the field " + fieldName in {
+            val questionItem1 = questionItems
+              .get(index)
+            questionItem1
+              .getElementsByClass(Selectors.label)
+              .text() mustBe fieldName
+          }
+        }
+      }
+    }
+
+    "contain the correct button" - {
+      document.getElementsByClass(Selectors.button).text() mustBe "Save and continue"
+    }
+
+    "contains a form with the correct action" - {
+      "when in CheckMode" in {
+        val htmlAllSelected = view(form.fill(warehouseTradingName), CheckMode)(request, messages(application))
+        val documentAllSelected = doc(htmlAllSelected)
+
+        documentAllSelected.select(Selectors.form)
+          .attr("action") mustEqual routes.WarehousesTradingNameController.onSubmit(CheckMode).url
+      }
+
+      "when in NormalMode" in {
+        val htmlAllSelected = view(form.fill(warehouseTradingName), NormalMode)(request, messages(application))
+        val documentAllSelected = doc(htmlAllSelected)
+
+        documentAllSelected.select(Selectors.form)
+          .attr("action") mustEqual routes.WarehousesTradingNameController.onSubmit(NormalMode).url
+      }
+    }
+
+
+    warehouseTradingNameMap.foreach { case (fieldName, _) =>
+      val fieldWithError = warehouseTradingNameMap + ((fieldName -> ""))
+      val htmlWithErrors = view(form.bind(fieldWithError.toMap), NormalMode)(request, messages(application))
+      val documentWithErrors = doc(htmlWithErrors)
+
+      "when field is empty" - {
+        "should have a title containing error" in {
+          documentWithErrors.title mustBe "Error: What is your UK warehouse trading name?"
+        }
+
+        "contains a message that links to field with error" in {
+          val errorSummary = documentWithErrors
+            .getElementsByClass(Selectors.errorSummaryList)
+            .first()
+          errorSummary
+            .select("a")
+            .attr("href") mustBe "#" + fieldName
+          errorSummary.text() mustBe "Enter a UK warehouse trading name"
+        }
+      }
+    }
+
+    testBackLink(document)
+    validateTimeoutDialog(document)
+    validateTechnicalHelpLinkPresent(document)
+    validateAccessibilityStatementLinkPresent(document)
+  }
+}

@@ -22,6 +22,20 @@ import org.scalacheck.{Arbitrary, Gen}
 
 trait ModelGenerators {
 
+  implicit lazy val arbitraryWarehousesTradingName: Arbitrary[WarehousesTradingName] =
+    Arbitrary {
+      for {
+        "WarehouseTradingName" <- arbitrary[String]
+      } yield WarehousesTradingName("WarehouseTradingName")
+    }
+
+  implicit lazy val arbitraryPackagingSiteName: Arbitrary[PackagingSiteName] =
+    Arbitrary {
+      for {
+        "PackagingSiteName" <- arbitrary[String]
+      } yield PackagingSiteName("PackagingSiteName")
+    }
+
   implicit lazy val arbitraryVerify: Arbitrary[Verify] =
     Arbitrary {
       Gen.oneOf(Verify.values.toSeq)
