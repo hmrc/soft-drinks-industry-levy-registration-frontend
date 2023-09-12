@@ -109,12 +109,18 @@ class RampOffControllerISpec extends ControllerITTestHelper {
 
           whenReady(result) { res =>
             val updatedUserAnswers = getAnswers(emptyUserAnswers.id).get
+
+            println(Console.YELLOW + updatedUserAnswers.warehouseList + Console.WHITE)
+            println(Console.YELLOW + emptyUserAnswers.warehouseList + Console.WHITE)
+
             updatedUserAnswers.id mustBe emptyUserAnswers.id
             updatedUserAnswers.data mustBe emptyUserAnswers.data
             updatedUserAnswers.packagingSiteList mustBe emptyUserAnswers.packagingSiteList
             updatedUserAnswers.submittedOn mustBe emptyUserAnswers.submittedOn
-            updatedUserAnswers.warehouseList mustBe Map(sdilId -> Warehouse(Some("soft drinks ltd"), UkAddress(List("line 1", "line 2", "line 3", "line 4"), "aa1 1aa", alfId = Some(alfId))))
+            updatedUserAnswers.warehouseList mustBe Map(sdilId -> Warehouse("soft drinks ltd", UkAddress(List("line 1", "line 2", "line 3", "line 4"), "aa1 1aa", alfId = Some(alfId))))
             updatedUserAnswers.address mustBe emptyUserAnswers.address
+
+
 
             res.status mustBe SEE_OTHER
             res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.WarehouseDetailsController.onPageLoad(NormalMode).url)
@@ -125,7 +131,7 @@ class RampOffControllerISpec extends ControllerITTestHelper {
       "an address already exists in DB currently for SDILID provided" in {
         val sdilId: String = "foo"
         val alfId: String = "bar"
-        val userAnswersBefore = emptyUserAnswers.copy(warehouseList = Map(sdilId -> Warehouse(None, UkAddress(List.empty, "foo", Some("wizz")))))
+        val userAnswersBefore = emptyUserAnswers.copy(warehouseList = Map(sdilId -> Warehouse(aTradingName, UkAddress(List.empty, "foo", Some("wizz")))))
         given
           .commonPrecondition
           .alf.getAddress(alfId)
@@ -140,7 +146,7 @@ class RampOffControllerISpec extends ControllerITTestHelper {
             updatedUserAnswers.data mustBe emptyUserAnswers.data
             updatedUserAnswers.packagingSiteList mustBe emptyUserAnswers.packagingSiteList
             updatedUserAnswers.submittedOn mustBe emptyUserAnswers.submittedOn
-            updatedUserAnswers.warehouseList mustBe Map(sdilId -> Warehouse(Some("soft drinks ltd"), UkAddress(List("line 1", "line 2", "line 3", "line 4"), "aa1 1aa", alfId = Some(alfId))))
+            updatedUserAnswers.warehouseList mustBe Map(sdilId -> Warehouse("soft drinks ltd", UkAddress(List("line 1", "line 2", "line 3", "line 4"), "aa1 1aa", alfId = Some(alfId))))
             updatedUserAnswers.address mustBe emptyUserAnswers.address
 
             res.status mustBe SEE_OTHER
@@ -194,7 +200,7 @@ class RampOffControllerISpec extends ControllerITTestHelper {
             updatedUserAnswers.id mustBe emptyUserAnswers.id
             updatedUserAnswers.data mustBe emptyUserAnswers.data
             updatedUserAnswers.packagingSiteList mustBe Map(sdilId ->
-              Site(UkAddress(List("line 1", "line 2", "line 3", "line 4"), "aa1 1aa", alfId = Some(alfId)), None, Some("soft drinks ltd"), None))
+              Site(UkAddress(List("line 1", "line 2", "line 3", "line 4"), "aa1 1aa", alfId = Some(alfId)), None, "soft drinks ltd", None))
             updatedUserAnswers.submittedOn mustBe emptyUserAnswers.submittedOn
             updatedUserAnswers.warehouseList mustBe emptyUserAnswers.warehouseList
             updatedUserAnswers.address mustBe emptyUserAnswers.address
@@ -208,7 +214,7 @@ class RampOffControllerISpec extends ControllerITTestHelper {
       "an address already exists in DB currently for SDILID provided" in {
         val sdilId: String = "foo"
         val alfId: String = "bar"
-        val userAnswersBefore = emptyUserAnswers.copy(packagingSiteList = Map(sdilId -> Site(UkAddress(List.empty, "foo", Some("wizz")), None, None, None)))
+        val userAnswersBefore = emptyUserAnswers.copy(packagingSiteList = Map(sdilId -> Site(UkAddress(List.empty, "foo", Some("wizz")), None, aTradingName, None)))
         given
           .commonPrecondition
           .alf.getAddress(alfId)
@@ -222,7 +228,7 @@ class RampOffControllerISpec extends ControllerITTestHelper {
             updatedUserAnswers.id mustBe emptyUserAnswers.id
             updatedUserAnswers.data mustBe emptyUserAnswers.data
             updatedUserAnswers.packagingSiteList mustBe Map(sdilId ->
-              Site(UkAddress(List("line 1", "line 2", "line 3", "line 4"), "aa1 1aa", alfId = Some(alfId)), None, Some("soft drinks ltd"), None))
+              Site(UkAddress(List("line 1", "line 2", "line 3", "line 4"), "aa1 1aa", alfId = Some(alfId)), None, "soft drinks ltd", None))
             updatedUserAnswers.submittedOn mustBe emptyUserAnswers.submittedOn
             updatedUserAnswers.warehouseList mustBe emptyUserAnswers.warehouseList
             updatedUserAnswers.address mustBe emptyUserAnswers.address

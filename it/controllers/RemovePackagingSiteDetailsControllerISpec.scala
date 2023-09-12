@@ -17,7 +17,7 @@ class RemovePackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
   val packagingSite: Map[String, Site] = Map(ref -> Site(
     UkAddress(List("a", "b"), "c"),
     None,
-    Some("trading"),
+    aTradingName,
     None))
   val updatedUserAnswers = emptyUserAnswers.copy(packagingSiteList = packagingSiteListWith3)
 

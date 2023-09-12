@@ -12,6 +12,7 @@ import java.time.LocalDate
 case class SdilBackendStub()
                           (implicit builder: PreconditionBuilder)
 {
+  val aTradingName = "Bouncy Drinks Ltd"
   val aSubscription = RetrievedSubscription(
     utr = "0000001611",
     sdilRef = "XKSDIL000000022",
@@ -23,27 +24,27 @@ case class SdilBackendStub()
       Site(
         UkAddress(List("33 Rhes Priordy", "East London"), "E73 2RP"),
         Some("88"),
-        Some("Wild Lemonade Group"),
+        aTradingName,
         Some(LocalDate.of(2018, 2, 26))),
       Site(
         UkAddress(List("117 Jerusalem Court", "St Albans"), "AL10 3UJ"),
         Some("87"),
-        Some("Highly Addictive Drinks Plc"),
+        aTradingName,
         Some(LocalDate.of(2019, 8, 19))),
       Site(
         UkAddress(List("87B North Liddle Street", "Guildford"), "GU34 7CM"),
         Some("94"),
-        Some("Monster Bottle Ltd"),
+        aTradingName,
         Some(LocalDate.of(2017, 9, 23))),
       Site(
         UkAddress(List("122 Dinsdale Crescent", "Romford"), "RM95 8FQ"),
         Some("27"),
-        Some("Super Lemonade Group"),
+        aTradingName,
         Some(LocalDate.of(2017, 4, 23))),
       Site(
         UkAddress(List("105B Godfrey Marchant Grove", "Guildford"), "GU14 8NL"),
         Some("96"),
-        Some("Star Products Ltd"),
+        aTradingName,
         Some(LocalDate.of(2017, 2, 11)))
     ),
     warehouseSites = List(),

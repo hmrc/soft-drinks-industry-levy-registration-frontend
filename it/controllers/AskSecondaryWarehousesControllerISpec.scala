@@ -182,7 +182,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
     }
 
     "user selects yes and saves and continues updating the user answers and ramps onto ALF, also NOT wiping the warehouse list" in {
-      val warehouseToRemain = Map("foo" -> Warehouse(None, UkAddress(List.empty, "", None)))
+      val warehouseToRemain = Map("foo" -> Warehouse(aTradingName, UkAddress(List.empty, "", None)))
       setAnswers(emptyUserAnswers.copy(warehouseList = warehouseToRemain))
 
       val journeyConfigToBePosted: JourneyConfig = JourneyConfig(
@@ -312,7 +312,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
     }
 
     "user selects no and saves and continues, user is taken to contact details, also wiping the warehouse list" in {
-      val warehouseToBeWiped = Map("foo" -> Warehouse(None, UkAddress(List.empty, "", None)))
+      val warehouseToBeWiped = Map("foo" -> Warehouse(aTradingName, UkAddress(List.empty, "", None)))
       setAnswers(emptyUserAnswers.copy(warehouseList = warehouseToBeWiped))
 
       given
@@ -376,7 +376,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
   s"POST " + checkRoutePath - {
 
     "user selects no and saves and continues, user is taken to check your answers, also wiping the warehouse list" in {
-      val warehouseToBeWiped = Map("foo" -> Warehouse(None, UkAddress(List.empty, "", None)))
+      val warehouseToBeWiped = Map("foo" -> Warehouse(aTradingName, UkAddress(List.empty, "", None)))
       setAnswers(emptyUserAnswers.copy(warehouseList = warehouseToBeWiped))
 
       given
@@ -427,7 +427,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
     }
 
     "user selects yes and saves and continues updating the user answers and ramps onto ALF, also NOT wiping the warehouse list" in {
-      val warehouseToRemain = Map("foo" -> Warehouse(None, UkAddress(List.empty, "", None)))
+      val warehouseToRemain = Map("foo" -> Warehouse(aTradingName, UkAddress(List.empty, "", None)))
       setAnswers(emptyUserAnswers.copy(warehouseList = warehouseToRemain))
 
       val journeyConfigToBePosted: JourneyConfig = JourneyConfig(

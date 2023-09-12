@@ -54,7 +54,7 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
               radioInputs.get(0).hasAttr("checked") mustBe false
               radioInputs.get(1).attr("value") mustBe "false"
               radioInputs.get(1).hasAttr("checked") mustBe false
-              page.getElementById("warehouseToRemove").text() mustBe "foo, bar, wizz"
+              page.getElementById("warehouseToRemove").text() mustBe s"$aTradingName foo, bar, wizz"
             }
           }
         }
@@ -176,7 +176,7 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
 
         setAnswers(
           emptyUserAnswers
-            .copy(warehouseList = Map(indexOfWarehouseToBeRemoved -> Warehouse(None, ukAddress))))
+            .copy(warehouseList = Map(indexOfWarehouseToBeRemoved -> Warehouse(aTradingName, ukAddress))))
         getAnswers(emptyUserAnswers.id).get.warehouseList.size mustBe 1
         WsTestClient.withClient { client =>
           val result = createClientRequestPOST(
@@ -193,7 +193,7 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
               .select("a")
               .attr("href") mustBe "#value"
             errorSummary.text() mustBe Messages("removeWarehouseDetails" + ".error.required")
-            page.getElementById("warehouseToRemove").text() mustBe "foo, bar, wizz"
+            page.getElementById("warehouseToRemove").text() mustBe s"$aTradingName foo, bar, wizz"
             getAnswers(emptyUserAnswers.id).get.warehouseList.size mustBe 1
           }
         }
@@ -265,7 +265,7 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
 
         setAnswers(
           emptyUserAnswers
-            .copy(warehouseList = Map(indexOfWarehouseToBeRemoved -> Warehouse(None, ukAddress))))
+            .copy(warehouseList = Map(indexOfWarehouseToBeRemoved -> Warehouse(aTradingName, ukAddress))))
         getAnswers(emptyUserAnswers.id).get.warehouseList.size mustBe 1
         WsTestClient.withClient { client =>
           val result = createClientRequestPOST(
@@ -283,7 +283,7 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
               .select("a")
               .attr("href") mustBe "#value"
             errorSummary.text() mustBe Messages("removeWarehouseDetails" + ".error.required")
-            page.getElementById("warehouseToRemove").text() mustBe "foo, bar, wizz"
+            page.getElementById("warehouseToRemove").text() mustBe s"$aTradingName foo, bar, wizz"
           }
         }
       }

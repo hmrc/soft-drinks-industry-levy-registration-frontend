@@ -25,13 +25,15 @@ trait ITCoreTestData extends TryValues {
     Map("yes" -> yesSelected,"no" -> noSelected)
   }
 
+  val aTradingName = "Bold Drinks Ltd"
+
   def userAnswersForUpdateRegisteredDetailsRemoveWarehouseDetailsPage(index: String): Map[String, UserAnswers] = {
     val yesSelected = emptyUserAnswers
-      .copy(warehouseList = Map(index -> Warehouse(None, ukAddress)))
+      .copy(warehouseList = Map(index -> Warehouse(aTradingName, ukAddress)))
       .set(RemoveWarehouseDetailsPage, true).success.value
 
     val noSelected = emptyUserAnswers
-      .copy(warehouseList = Map(index -> Warehouse(None, ukAddress)))
+      .copy(warehouseList = Map(index -> Warehouse(aTradingName, ukAddress)))
       .set(RemoveWarehouseDetailsPage, false).success.value
     Map("yes" -> yesSelected, "no" -> noSelected)
   }
@@ -115,7 +117,7 @@ trait ITCoreTestData extends TryValues {
   def packagingSite1 = Site(
     UkAddress(List("33 Rhes Priordy", "East London"), "E73 2RP"),
     None,
-    Some("Wild Lemonade Group"),
+    aTradingName,
     None)
 
   def packagingSiteListWith1 = Map(("78941132", packagingSite1))
@@ -123,19 +125,19 @@ trait ITCoreTestData extends TryValues {
   val address45Characters = Site(
     UkAddress(List("29 Station Pl.", "The Railyard", "Cambridge"), "CB1 2FP"),
     None,
-    None,
+    aTradingName,
     None)
 
   val address47Characters = Site(
     UkAddress(List("29 Station Place", "The Railyard", "Cambridge"), "CB1 2FP"),
     Some("10"),
-    None,
+    aTradingName,
     None)
 
   val address49Characters = Site(
     UkAddress(List("29 Station PlaceDr", "The Railyard", "Cambridge"), "CB1 2FP"),
     None,
-    None,
+    aTradingName,
     None)
 
   def packagingSiteListWith3 = Map(("12345678", address45Characters), ("23456789", address47Characters), ("34567890", address49Characters))
@@ -143,8 +145,8 @@ trait ITCoreTestData extends TryValues {
   def userAnswersWith1PackingSite = emptyUserAnswers.copy(packagingSiteList = packagingSiteListWith1)
 
 
-  def warehouse1 = Warehouse(Some("Warehouse One"), UkAddress(List("29 Station Place", "The Railyard", "Cambridge"), "CB1 2FP"))
-  def warehouse2 = Warehouse(Some("Warehouse Two"), UkAddress(List("42 Hitch Place", "The Railyard", "Cambridge"), "CB1 2FF"))
+  def warehouse1 = Warehouse("Warehouse One", UkAddress(List("29 Station Place", "The Railyard", "Cambridge"), "CB1 2FP"))
+  def warehouse2 = Warehouse("Warehouse Two", UkAddress(List("42 Hitch Place", "The Railyard", "Cambridge"), "CB1 2FF"))
   def warehouseListWith1 = Map("78941132" -> warehouse1)
   def warehouseListWith2 = Map("78941132" -> warehouse1, "11111111" -> warehouse2)
   def userAnswersWith1Warehouse = emptyUserAnswers.copy(warehouseList = warehouseListWith1)

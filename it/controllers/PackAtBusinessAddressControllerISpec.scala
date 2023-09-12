@@ -1,6 +1,6 @@
 package controllers
 
-import models.CheckMode
+import models.{CheckMode, NormalMode}
 import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
 import pages.PackAtBusinessAddressPage
@@ -131,6 +131,25 @@ class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
   }
 
   s"POST " + normalRoutePath - {
+
+    "when user selects yes with user answers, set trading name to organisation name" in {
+      setAnswers(emptyUserAnswers)
+      given
+        .commonPrecondition
+
+      WsTestClient.withClient { client =>
+        val result = createClientRequestPOST(
+          client, baseUrl + normalRoutePath, Json.obj("value" -> true)
+        )
+
+        whenReady(result) { res =>
+          res.status mustBe 303
+          res.header(HeaderNames.LOCATION) mustBe Some(routes.PackagingSiteDetailsController.onPageLoad(NormalMode).url)
+          val dataStoredForPage = getAnswers(emptyUserAnswers.id).get
+          dataStoredForPage.packagingSiteList.head._2.tradingName mustEqual "Super Lemonade Plc"
+        }
+      }
+    }
 
     "when the user does not select yes or no" - {
       "should return 400 with required error" in {

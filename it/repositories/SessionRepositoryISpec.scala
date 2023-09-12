@@ -75,8 +75,8 @@ class SessionRepositoryISpec
       val userAnswersBefore = UserAnswers("id", RegisterState.RegisterWithAuthUTR,
         Json.obj("foo" -> "bar"),
         Some(UkAddress(List("Line 1", "Line 2", "Line 3", "Line 4"),"aa1 1aa", alfId = Some(alfId))),
-        Map("foo" -> Site(UkAddress(List("foo"),"foo", Some("foo")),Some("foo"), Some("foo"),Some(LocalDate.now()))),
-        Map("foo" -> Warehouse(Some("foo"),UkAddress(List("foo"),"foo", Some("foo")))),
+        Map("foo" -> Site(UkAddress(List("foo"),"foo", Some("foo")),Some("foo"), "foo",Some(LocalDate.now()))),
+        Map("foo" -> Warehouse("foo",UkAddress(List("foo"),"foo", Some("foo")))),
         None,
         Instant.ofEpochSecond(1))
       val setResult = await(repository.set(userAnswersBefore))
