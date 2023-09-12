@@ -27,10 +27,6 @@ case class Site(
                  tradingName: Option[String],
                  closureDate: Option[LocalDate]
                ) {
-  def getLines: List[String] =
-    tradingName.fold(address.lines :+ address.postCode) { x =>
-      (x :: address.lines) :+ address.postCode
-    }
 }
 
 object Site {
