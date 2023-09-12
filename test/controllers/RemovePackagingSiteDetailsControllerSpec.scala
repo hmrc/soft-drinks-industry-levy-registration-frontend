@@ -117,8 +117,8 @@ class RemovePackagingSiteDetailsControllerSpec extends SpecBase with MockitoSuga
         None,
         aTradingName,
         None))
-      val htmlExpectedInView = Html("trading<br>a, b, <span class=\"nowrap\" style=\"white-space: nowrap;\">c</span>")
-      val htmlExpectedAfterRender = Html("trading a, b, c")
+      val htmlExpectedInView = Html(s"$aTradingName<br>a, b, <span class=\"nowrap\" style=\"white-space: nowrap;\">c</span>")
+      val htmlExpectedAfterRender = Html(s"$aTradingName a, b, c")
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers.copy(packagingSiteList = packagingSite))).build()
 
       running(application) {

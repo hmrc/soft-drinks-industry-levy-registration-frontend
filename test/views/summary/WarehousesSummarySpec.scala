@@ -86,11 +86,11 @@ class WarehousesSummarySpec extends SpecBase {
             aTradingName,
             UkAddress(List("foo", "bar"), "wizz"))
           val warehouseSummaryRowList = WarehouseDetailsSummary.warehouseDetailsRow(Map("ref1" -> site1, "ref2" -> site2), mode)
-          warehouseSummaryRowList.head.key.content.asHtml.toString() mustBe "foo2, bar2, <span class=\"nowrap\" style=\"white-space: nowrap;\">wizz2</span>"
+          warehouseSummaryRowList.head.key.content.asHtml.toString() mustBe s"$aTradingName<br>foo2, bar2, <span class=\"nowrap\" style=\"white-space: nowrap;\">wizz2</span>"
           warehouseSummaryRowList.head.actions.toList.head.items.last.content.asHtml.toString() mustBe "Remove"
           warehouseSummaryRowList.head.actions.toList.head.items.last.href mustBe routes.RemoveWarehouseDetailsController.onPageLoad(mode, "ref1").url
 
-          warehouseSummaryRowList.last.key.content.asHtml.toString() mustBe "foo, bar, <span class=\"nowrap\" style=\"white-space: nowrap;\">wizz</span>"
+          warehouseSummaryRowList.last.key.content.asHtml.toString() mustBe s"$aTradingName<br>foo, bar, <span class=\"nowrap\" style=\"white-space: nowrap;\">wizz</span>"
           warehouseSummaryRowList.last.actions.toList.head.items.last.content.asHtml.toString() mustBe "Remove"
           warehouseSummaryRowList.last.actions.toList.head.items.last.href mustBe routes.RemoveWarehouseDetailsController.onPageLoad(mode, "ref2").url
         }
@@ -98,23 +98,23 @@ class WarehousesSummarySpec extends SpecBase {
 
           "should place a break after a trading name if a trading name is used" in {
             val warehouseSummaryRowList = WarehouseDetailsSummary.warehouseDetailsRow(Map(("90831480921", addressWith3AddressLines)), mode)
-            val expectedAddressContent = HtmlContent("The house, The Road, ugzhkxcajkcjfrqsgkjruzlmsxytwhg vdg, <span class=\"nowrap\" style=\"white-space: nowrap;\">NW88 8II</span>")
+            val expectedAddressContent = HtmlContent(s"$aTradingName<br>The house, The Road, ugzhkxcajkcjfrqsgkjruzlmsxytwhg vdg, <span class=\"nowrap\" style=\"white-space: nowrap;\">NW88 8II</span>")
 
             warehouseSummaryRowList.head.key.content mustBe expectedAddressContent
           }
 
           "should not place a break before the post code if the address line and post code length is 44 characters" in {
             val warehouseSummaryRowList = WarehouseDetailsSummary.warehouseDetailsRow(Map(("1208934391", address44Characters)), mode)
-            val expectedAddressContent = HtmlContent("29 Station Rd, The Railyard, Cambridge, <span class=\"nowrap\" style=\"white-space: nowrap;\">CB1 2FP</span>")
+            val expectedAddressContent = HtmlContent(s"$aTradingName<br>29 Station Rd, The Railyard, Cambridge, <span class=\"nowrap\" style=\"white-space: nowrap;\">CB1 2FP</span>")
 
             warehouseSummaryRowList.head.key.content mustBe expectedAddressContent
           }
 
           "should place a break before the post code if the address line and post code length is between 45 and 49 characters" in {
             val warehouseSummaryRowList = WarehouseDetailsSummary.warehouseDetailsRow(WarehouseListWith3, mode)
-            val expectedAddressContent45 = HtmlContent("29 Station Pl., The Railyard, Cambridge, <br><span class=\"nowrap\" style=\"white-space: nowrap;\">CB1 2FP</span>")
-            val expectedAddressContent47 = HtmlContent("29 Station Place, The Railyard, Cambridge, <br><span class=\"nowrap\" style=\"white-space: nowrap;\">CB1 2FP</span>")
-            val expectedAddressContent49 = HtmlContent("29 Station PlaceDr, The Railyard, Cambridge, <br><span class=\"nowrap\" style=\"white-space: nowrap;\">CB1 2FP</span>")
+            val expectedAddressContent45 = HtmlContent(s"$aTradingName<br>29 Station Pl., The Railyard, Cambridge, <br><span class=\"nowrap\" style=\"white-space: nowrap;\">CB1 2FP</span>")
+            val expectedAddressContent47 = HtmlContent(s"$aTradingName<br>29 Station Place, The Railyard, Cambridge, <br><span class=\"nowrap\" style=\"white-space: nowrap;\">CB1 2FP</span>")
+            val expectedAddressContent49 = HtmlContent(s"$aTradingName<br>29 Station PlaceDr, The Railyard, Cambridge, <br><span class=\"nowrap\" style=\"white-space: nowrap;\">CB1 2FP</span>")
 
             warehouseSummaryRowList.head.key.content mustBe expectedAddressContent45
             warehouseSummaryRowList.apply(1).key.content mustBe expectedAddressContent47
@@ -123,13 +123,13 @@ class WarehousesSummarySpec extends SpecBase {
 
           "should not place a break before the post code if the address line and post code length is 50 characters" in {
             val warehouseSummaryRowList = WarehouseDetailsSummary.warehouseDetailsRow(Map(("3489028394r", address50Characters)), mode)
-            val expectedAddressContent = HtmlContent("29 Station Place Dr, The Railyard, Cambridge, <span class=\"nowrap\" style=\"white-space: nowrap;\">CB1 2FP</span>")
+            val expectedAddressContent = HtmlContent(s"$aTradingName<br>29 Station Place Dr, The Railyard, Cambridge, <span class=\"nowrap\" style=\"white-space: nowrap;\">CB1 2FP</span>")
 
             warehouseSummaryRowList.head.key.content mustBe expectedAddressContent
           }
           "should autowrap and place a break before the post code if the address line and post code length is between 98 & 103 characters" in {
             val warehouseSummaryRowList = WarehouseDetailsSummary.warehouseDetailsRow(Map(("45641351", WarehouseEvenLongerAddressNoTradeName)), mode)
-            val expectedAddressContent = HtmlContent("29 Station Rd, This address will auto wrap but not in postcode, it is 4 lines 103 char, Cambridge, <br><span class=\"nowrap\" style=\"white-space: nowrap;\">CB1 2FP</span>")
+            val expectedAddressContent = HtmlContent(s"$aTradingName<br>29 Station Rd, This address will auto wrap but not in postcode, it is 4 lines 103 char, Cambridge, <br><span class=\"nowrap\" style=\"white-space: nowrap;\">CB1 2FP</span>")
 
             warehouseSummaryRowList.head.key.content mustBe expectedAddressContent
           }
@@ -137,7 +137,7 @@ class WarehousesSummarySpec extends SpecBase {
           "should place a break after a trading name AND autowrap and place a break before the post code if the address line " +
             "and post code length is between 98 & 103 characters" in {
             val warehouseSummaryRowList = WarehouseDetailsSummary.warehouseDetailsRow(Map(("56458678", WarehouseEvenLongerAddressWithTradeName)), mode)
-            val expectedAddressContent = HtmlContent("29 Station Rd, This address will auto wrap but not " +
+            val expectedAddressContent = HtmlContent(s"$aTradingName<br>29 Station Rd, This address will auto wrap but not " +
               "in postcode, it is 4 lines 103 char, Cambridge, <br><span class=\"nowrap\" style=\"white-space: nowrap;\">CB1 2FP</span>")
 
             warehouseSummaryRowList.head.key.content mustBe expectedAddressContent
@@ -149,23 +149,23 @@ class WarehousesSummarySpec extends SpecBase {
 
         "should place a break after a trading name if a trading name is used" in {
           val warehouseSummaryRowList = WarehouseDetailsSummary.warehouseDetailsRow(Map(("90831480921", addressWith3AddressLines)), mode)
-          val expectedAddressContent = HtmlContent("The house, The Road, ugzhkxcajkcjfrqsgkjruzlmsxytwhg vdg, <span class=\"nowrap\" style=\"white-space: nowrap;\">NW88 8II</span>")
+          val expectedAddressContent = HtmlContent(s"$aTradingName<br>The house, The Road, ugzhkxcajkcjfrqsgkjruzlmsxytwhg vdg, <span class=\"nowrap\" style=\"white-space: nowrap;\">NW88 8II</span>")
 
           warehouseSummaryRowList.head.key.content mustBe expectedAddressContent
         }
 
         "should not place a break before the post code if the address line and post code length is 44 characters" in {
           val warehouseSummaryRowList = WarehouseDetailsSummary.warehouseDetailsRow(Map(("1208934391", address44Characters)), mode)
-          val expectedAddressContent = HtmlContent("29 Station Rd, The Railyard, Cambridge, <span class=\"nowrap\" style=\"white-space: nowrap;\">CB1 2FP</span>")
+          val expectedAddressContent = HtmlContent(s"$aTradingName<br>29 Station Rd, The Railyard, Cambridge, <span class=\"nowrap\" style=\"white-space: nowrap;\">CB1 2FP</span>")
 
           warehouseSummaryRowList.head.key.content mustBe expectedAddressContent
         }
 
         "should place a break before the post code if the address line and post code length is between 45 and 49 characters" in {
           val warehouseSummaryRowList = WarehouseDetailsSummary.warehouseDetailsRow(WarehouseListWith3, mode)
-          val expectedAddressContent45 = HtmlContent("29 Station Pl., The Railyard, Cambridge, <br><span class=\"nowrap\" style=\"white-space: nowrap;\">CB1 2FP</span>")
-          val expectedAddressContent47 = HtmlContent("29 Station Place, The Railyard, Cambridge, <br><span class=\"nowrap\" style=\"white-space: nowrap;\">CB1 2FP</span>")
-          val expectedAddressContent49 = HtmlContent("29 Station PlaceDr, The Railyard, Cambridge, <br><span class=\"nowrap\" style=\"white-space: nowrap;\">CB1 2FP</span>")
+          val expectedAddressContent45 = HtmlContent(s"$aTradingName<br>29 Station Pl., The Railyard, Cambridge, <br><span class=\"nowrap\" style=\"white-space: nowrap;\">CB1 2FP</span>")
+          val expectedAddressContent47 = HtmlContent(s"$aTradingName<br>29 Station Place, The Railyard, Cambridge, <br><span class=\"nowrap\" style=\"white-space: nowrap;\">CB1 2FP</span>")
+          val expectedAddressContent49 = HtmlContent(s"$aTradingName<br>29 Station PlaceDr, The Railyard, Cambridge, <br><span class=\"nowrap\" style=\"white-space: nowrap;\">CB1 2FP</span>")
 
           warehouseSummaryRowList.head.key.content mustBe expectedAddressContent45
           warehouseSummaryRowList.apply(1).key.content mustBe expectedAddressContent47
@@ -174,13 +174,13 @@ class WarehousesSummarySpec extends SpecBase {
 
         "should not place a break before the post code if the address line and post code length is 50 characters" in {
           val warehouseSummaryRowList = WarehouseDetailsSummary.warehouseDetailsRow(Map(("3489028394r", address50Characters)), mode)
-          val expectedAddressContent = HtmlContent("29 Station Place Dr, The Railyard, Cambridge, <span class=\"nowrap\" style=\"white-space: nowrap;\">CB1 2FP</span>")
+          val expectedAddressContent = HtmlContent(s"$aTradingName<br>29 Station Place Dr, The Railyard, Cambridge, <span class=\"nowrap\" style=\"white-space: nowrap;\">CB1 2FP</span>")
 
           warehouseSummaryRowList.head.key.content mustBe expectedAddressContent
         }
         "should autowrap and place a break before the post code if the address line and post code length is between 98 & 103 characters" in {
           val warehouseSummaryRowList = WarehouseDetailsSummary.warehouseDetailsRow(Map(("45641351", WarehouseEvenLongerAddressNoTradeName)), mode)
-          val expectedAddressContent = HtmlContent("29 Station Rd, This address will auto wrap but not in postcode, it is 4 lines 103 char, Cambridge," +
+          val expectedAddressContent = HtmlContent(s"$aTradingName<br>29 Station Rd, This address will auto wrap but not in postcode, it is 4 lines 103 char, Cambridge," +
             " <br><span class=\"nowrap\" style=\"white-space: nowrap;\">CB1 2FP</span>")
 
           warehouseSummaryRowList.head.key.content mustBe expectedAddressContent
@@ -189,7 +189,7 @@ class WarehousesSummarySpec extends SpecBase {
         "should place a break after a trading name AND autowrap and place a break before the post code if the address line " +
           "and post code length is between 98 & 103 characters" in {
           val warehouseSummaryRowList = WarehouseDetailsSummary.warehouseDetailsRow(Map(("56458678", WarehouseEvenLongerAddressWithTradeName)), mode)
-          val expectedAddressContent = HtmlContent("29 Station Rd, This address will auto wrap but not " +
+          val expectedAddressContent = HtmlContent(s"$aTradingName<br>29 Station Rd, This address will auto wrap but not " +
             "in postcode, it is 4 lines 103 char, Cambridge, <br><span class=\"nowrap\" style=\"white-space: nowrap;\">CB1 2FP</span>")
 
           warehouseSummaryRowList.head.key.content mustBe expectedAddressContent
