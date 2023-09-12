@@ -38,14 +38,14 @@ class AddressLookupHttpParserSpec extends SpecBase {
     val countryCode = "UK"
     val customerAddressMaxJson = Json.toJson(AlfResponse(
       AlfAddress(
-        organisation,
+        Some(organisation),
         List(addressLine1, addressLine2, addressLine3, addressLine4),
         Some(postcode),
         Some(countryCode)
       )))
     val customerAddressMax: AlfResponse = AlfResponse(
       AlfAddress(
-        organisation,
+        Some(organisation),
         List(addressLine1, addressLine2, addressLine3, addressLine4),
         Some(postcode),
         Some(countryCode)

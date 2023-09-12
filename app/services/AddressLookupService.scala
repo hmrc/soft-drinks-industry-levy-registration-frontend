@@ -70,11 +70,11 @@ class AddressLookupService @Inject()(
 
       case PackingDetails =>
         userAnswers.copy(packagingSiteList =
-          userAnswers.packagingSiteList.filterNot(_._1 == sdilId) ++ Map(sdilId -> Site(convertedAddress, None, address.organisation, None)))
+          userAnswers.packagingSiteList.filterNot(_._1 == sdilId) ++ Map(sdilId -> Site(convertedAddress, None, address.organisation.getOrElse("temp-trading-name"), None)))
 
       case WarehouseDetails =>
         userAnswers.copy(warehouseList =
-          userAnswers.warehouseList.filterNot(_._1 == sdilId) ++ Map(sdilId -> Warehouse(address.organisation, convertedAddress)))
+          userAnswers.warehouseList.filterNot(_._1 == sdilId) ++ Map(sdilId -> Warehouse(address.organisation.getOrElse("temp-trading-name"), convertedAddress)))
     }
   }
 

@@ -9,7 +9,7 @@ import play.mvc.Http.HeaderNames
 
 case class ALFStub()(implicit builder: PreconditionBuilder) {
   val aAddress = AlfResponse(address = AlfAddress(
-    organisation = "soft drinks ltd",
+    organisation = Some("soft drinks ltd"),
     List("line 1", "line 2", "line 3", "line 4"),
     postcode = Some("aa1 1aa"),
     countryCode = Some("UK")

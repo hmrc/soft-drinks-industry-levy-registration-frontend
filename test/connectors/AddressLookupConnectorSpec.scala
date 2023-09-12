@@ -45,7 +45,7 @@ class AddressLookupConnectorSpec extends SpecBase with MockitoSugar with MockHtt
   val countryCode = "UK"
   val customerAddressMax: AlfResponse = AlfResponse(
     AlfAddress(
-      organisation,
+      Some(organisation),
       List(addressLine1, addressLine2, addressLine3, addressLine4),
       Some(postcode),
       Some(countryCode)
