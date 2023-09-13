@@ -54,6 +54,8 @@
                 label = LabelViewModel(messages("contactDetails.position"))
             )
             .withWidth(TwoThirds)
+            .withAutocomplete("organization-title")
+            .withSpellcheck(on = false)
         )
 
         @govukInput(
@@ -61,10 +63,10 @@
                 field = form("phoneNumber"),
                 label = LabelViewModel(messages("contactDetails.phoneNumber"))
             )
-                    .withWidth(TwoThirds)
-                    .withInputType("tel")
-                    .withInputMode("tel")
-                    .withAutocomplete("tel")
+            .withWidth(TwoThirds)
+            .withInputType("tel")
+            .withInputMode("tel")
+            .withAutocomplete("tel")
         )
 
         @govukInput(
@@ -72,11 +74,11 @@
                 field = form("email"),
                 label = LabelViewModel(messages("contactDetails.email"))
             )
-                    .withWidth(TwoThirds)
-                    .withInputType("email")
-                    .withInputMode("email")
-                    .withAutocomplete("email")
-                    .withSpellcheck(on = false)
+            .withWidth(TwoThirds)
+            .withInputType("email")
+            .withInputMode("email")
+            .withAutocomplete("email")
+            .withSpellcheck(on = false)
         )
 
         @govukButton(
