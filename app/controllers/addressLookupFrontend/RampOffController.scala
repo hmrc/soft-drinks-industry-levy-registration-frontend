@@ -25,6 +25,7 @@ import services.AddressLookupState._
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
 import javax.inject.Inject
+import scala.annotation.unused
 import scala.concurrent.ExecutionContext
 
 class RampOffController @Inject()(identify: IdentifierAction,
@@ -35,11 +36,12 @@ class RampOffController @Inject()(identify: IdentifierAction,
                                   val controllerComponents: MessagesControllerComponents)
                                  (implicit val ex: ExecutionContext) extends FrontendBaseController {
 
-  def businessAddressOffRamp(sdilId: String, alfId: String, mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
+  def businessAddressOffRamp(@unused sdilId: String, alfId: String, mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
       for {
         alfResponse         <- addressLookupService.getAddress(alfId)
-        updatedUserAnswers = addressLookupService.addAddressUserAnswers(BusinessAddress, alfResponse.address, request.userAnswers, sdilId, alfId)
+        ukAddress           = addressLookupService.addressChecker(alfResponse.address, alfId)
+        updatedUserAnswers = request.userAnswers.setBusinessAddress(ukAddress)
         _                   <- sessionRepository.set(updatedUserAnswers)
       } yield {
         val redirectUrl = if(mode == NormalMode) {
@@ -53,23 +55,45 @@ class RampOffController @Inject()(identify: IdentifierAction,
 
   def wareHouseDetailsOffRamp(sdilId: String, alfId: String, mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
+      val userAnswers = request.userAnswers
       for {
         alfResponse         <- addressLookupService.getAddress(alfId)
-        updatedUserAnswers = addressLookupService.addAddressUserAnswers(WarehouseDetails, alfResponse.address, request.userAnswers, sdilId, alfId)
+        ukAddress           = addressLookupService.addressChecker(alfResponse.address, alfId)
+        optTradingName      = alfResponse.address.organisation
+        updatedUserAnswers = optTradingName match {
+          case Some(tradingName) => userAnswers.addWarehouse(ukAddress, tradingName, sdilId)
+          case None => userAnswers.setAlfResponse(ukAddress, WarehouseDetails)
+        }
         _                   <- sessionRepository.set(updatedUserAnswers)
       } yield {
-        Redirect(controllers.routes.WarehouseDetailsController.onPageLoad(mode))
+        if(optTradingName.nonEmpty) {
+          Redirect(controllers.routes.WarehouseDetailsController.onPageLoad(mode))
+        } else {
+          //ToDo redirect to new page
+          Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+        }
       }
   }
 
   def packingSiteDetailsOffRamp(sdilId: String, alfId: String, mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
+      val userAnswers = request.userAnswers
       for {
-        alfResponse         <- addressLookupService.getAddress(alfId)
-        updatedUserAnswers = addressLookupService.addAddressUserAnswers(PackingDetails, alfResponse.address, request.userAnswers, sdilId, alfId)
-        _                   <- sessionRepository.set(updatedUserAnswers)
+        alfResponse <- addressLookupService.getAddress(alfId)
+        ukAddress = addressLookupService.addressChecker(alfResponse.address, alfId)
+        optTradingName = alfResponse.address.organisation
+        updatedUserAnswers = optTradingName match {
+          case Some(tradingName) => userAnswers.addPackagingSite(ukAddress, tradingName, sdilId)
+          case None => userAnswers.setAlfResponse(ukAddress, PackingDetails)
+        }
+        _ <- sessionRepository.set(updatedUserAnswers)
       } yield {
-        Redirect(controllers.routes.PackagingSiteDetailsController.onPageLoad(mode))
+        if (optTradingName.nonEmpty) {
+          Redirect(controllers.routes.PackagingSiteDetailsController.onPageLoad(mode))
+        } else {
+          //ToDo redirect to new page
+          Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+        }
       }
   }
 }

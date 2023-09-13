@@ -76,6 +76,20 @@ case class UserAnswers(
     copy(alfResponseForLookupState = Some(addressResponseForLookupState))
   }
 
+  def addPackagingSite(packagingSiteAddress: UkAddress, tradingName: String, sdilId: String): UserAnswers = {
+    copy(packagingSiteList =
+      packagingSiteList.filterNot(_._1 == sdilId) ++ Map(sdilId -> Site(packagingSiteAddress, None, tradingName, None)))
+  }
+
+  def addWarehouse(warehouseAddress: UkAddress, tradingName: String, sdilId: String): UserAnswers = {
+    copy(warehouseList =
+      warehouseList.filterNot(_._1 == sdilId) ++ Map(sdilId -> Warehouse(tradingName, warehouseAddress)))
+  }
+
+  def setBusinessAddress(businessAddress: UkAddress): UserAnswers = {
+    copy(address = Some(businessAddress))
+  }
+
   def remove[A](page: Settable[A]): Try[UserAnswers] = {
 
     val updatedData = data.removeObject(page.path) match {

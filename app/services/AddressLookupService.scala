@@ -40,7 +40,7 @@ class AddressLookupService @Inject()(
 
   val logger: Logger = Logger(this.getClass)
 
-  private def addressChecker(address: AlfAddress, alfId: String): UkAddress = {
+  def addressChecker(address: AlfAddress, alfId: String): UkAddress = {
     val ukAddress: UkAddress = UkAddress(address.lines, address.postcode.getOrElse(""), alfId = Some(alfId))
 
     if (ukAddress.lines.isEmpty && ukAddress.postCode == "" && address.organisation.isEmpty) {
@@ -57,27 +57,27 @@ class AddressLookupService @Inject()(
     }
   }
 
-  def addAddressUserAnswers(addressLookupState: AddressLookupState,
-                            address: AlfAddress,
-                            userAnswers: UserAnswers,
-                            sdilId: String,
-                            alfId: String): UserAnswers = {
-
-    val convertedAddress: UkAddress = addressChecker(address, alfId)
-
-    addressLookupState match {
-      case BusinessAddress =>
-        userAnswers.copy(address = Some(convertedAddress))
-
-      case PackingDetails =>
-        userAnswers.copy(packagingSiteList =
-          userAnswers.packagingSiteList.filterNot(_._1 == sdilId) ++ Map(sdilId -> Site(convertedAddress, None, address.organisation.getOrElse("temp-trading-name"), None)))
-
-      case WarehouseDetails =>
-        userAnswers.copy(warehouseList =
-          userAnswers.warehouseList.filterNot(_._1 == sdilId) ++ Map(sdilId -> Warehouse(address.organisation.getOrElse("temp-trading-name"), convertedAddress)))
-    }
-  }
+//  def addAddressUserAnswers(addressLookupState: AddressLookupState,
+//                            address: AlfAddress,
+//                            userAnswers: UserAnswers,
+//                            sdilId: String,
+//                            alfId: String): UserAnswers = {
+//
+//    val convertedAddress: UkAddress = addressChecker(address, alfId)
+//
+//    addressLookupState match {
+//      case BusinessAddress =>
+//        userAnswers.copy(address = Some(convertedAddress))
+//
+//      case PackingDetails =>
+//        userAnswers.copy(packagingSiteList =
+//          userAnswers.packagingSiteList.filterNot(_._1 == sdilId) ++ Map(sdilId -> Site(convertedAddress, None, address.organisation.getOrElse("temp-trading-name"), None)))
+//
+//      case WarehouseDetails =>
+//        userAnswers.copy(warehouseList =
+//          userAnswers.warehouseList.filterNot(_._1 == sdilId) ++ Map(sdilId -> Warehouse(address.organisation.getOrElse("temp-trading-name"), convertedAddress)))
+//    }
+//  }
 
   def initJourney(journeyConfig: JourneyConfig)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResult[String]] = {
     addressLookupConnector.initJourney(journeyConfig)
