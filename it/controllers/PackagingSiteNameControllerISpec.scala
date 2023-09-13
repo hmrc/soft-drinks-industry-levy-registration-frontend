@@ -2,10 +2,9 @@ package controllers
 
 import models.{NormalMode, PackagingSiteName, UserAnswers}
 import org.jsoup.Jsoup
-import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
+import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import pages.PackagingSiteNamePage
 import play.api.http.HeaderNames
-import play.api.i18n.Messages
 import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.test.WsTestClient
 
@@ -35,11 +34,11 @@ class PackagingSiteNameControllerISpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include(Messages("packagingSiteName" + ".title"))
+            page.title mustBe "What is your UK packaging site name? - Soft Drinks Industry Levy - GOV.UK"
             val inputFields = page.getElementsByClass("govuk-form-group")
-            inputFields.size() mustBe 2
+            inputFields.size() mustBe 1
             packagingSiteNameMap.zipWithIndex.foreach { case ((fieldName, _), index) =>
-              inputFields.get(index).text() mustBe fieldName
+              inputFields.get(index).text() mustBe "What is your UK packaging site name?"
               inputFields.get(index).getElementById(fieldName).hasAttr("value") mustBe false
             }
           }
@@ -60,11 +59,11 @@ class PackagingSiteNameControllerISpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include(Messages("packagingSiteName" + ".title"))
+            page.title mustBe "What is your UK packaging site name? - Soft Drinks Industry Levy - GOV.UK"
             val inputFields = page.getElementsByClass("govuk-form-group")
-            inputFields.size() mustBe 2
+            inputFields.size() mustBe 1
             packagingSiteNameMap.zipWithIndex.foreach { case ((fieldName, fieldValue), index) =>
-              inputFields.get(index).text() mustBe fieldName
+              inputFields.get(index).text() mustBe "What is your UK packaging site name?"
               inputFields.get(index).getElementById(fieldName).hasAttr("value") mustBe true
               inputFields.get(index).getElementById(fieldName).attr("value") mustBe fieldValue
             }
@@ -72,8 +71,7 @@ class PackagingSiteNameControllerISpec extends ControllerITTestHelper {
         }
       }
     }
-    testOtherSuccessUserTypes(baseUrl + normalRoutePath, Messages("packagingSiteName" + ".title"
-    ) )
+    testOtherSuccessUserTypes(baseUrl + normalRoutePath, "What is your UK packaging site name?")
     testUnauthorisedUser(baseUrl + normalRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)
   }
@@ -92,11 +90,11 @@ class PackagingSiteNameControllerISpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include(Messages("packagingSiteName" + ".title"))
+            page.title mustBe "What is your UK packaging site name? - Soft Drinks Industry Levy - GOV.UK"
             val inputFields = page.getElementsByClass("govuk-form-group")
             inputFields.size() mustBe 1
             packagingSiteNameMap.zipWithIndex.foreach { case ((fieldName, _), index) =>
-              inputFields.get(index).text() mustBe fieldName
+              inputFields.get(index).text() mustBe "What is your UK packaging site name?"
               inputFields.get(index).getElementById(fieldName).hasAttr("value") mustBe false
             }
           }
@@ -117,11 +115,11 @@ class PackagingSiteNameControllerISpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include(Messages("packagingSiteName" + ".title"))
+            page.title mustBe "What is your UK packaging site name? - Soft Drinks Industry Levy - GOV.UK"
             val inputFields = page.getElementsByClass("govuk-form-group")
             inputFields.size() mustBe 1
             packagingSiteNameMap.zipWithIndex.foreach { case ((fieldName, fieldValue), index) =>
-              inputFields.get(index).text() mustBe fieldName
+              inputFields.get(index).text() mustBe "What is your UK packaging site name?"
               inputFields.get(index).getElementById(fieldName).hasAttr("value") mustBe true
               inputFields.get(index).getElementById(fieldName).attr("value") mustBe fieldValue
             }
@@ -135,7 +133,7 @@ class PackagingSiteNameControllerISpec extends ControllerITTestHelper {
 
   s"POST " + normalRoutePath - {
     "when the user populates answers all questions" - {
-      "should update the session with the new values and redirect to the index controller" - {
+      "should update the session with the new values and redirect to the CYA controller" - {
         "when the session contains no data for page" in {
           given
             .commonPrecondition
@@ -192,7 +190,7 @@ class PackagingSiteNameControllerISpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + Messages("packagingSiteName" + ".title"))
+            page.title mustBe "Error: What is your UK packaging site name? - Soft Drinks Industry Levy - GOV.UK"
             val errorSummaryList = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first().getElementsByTag("li")
             errorSummaryList.size() mustBe packagingSiteNameMap.size
@@ -201,7 +199,7 @@ class PackagingSiteNameControllerISpec extends ControllerITTestHelper {
               errorSummary
                 .select("a")
                 .attr("href") mustBe "#" + fieldName
-              errorSummary.text() mustBe Messages("packagingSiteName.error." + fieldName + ".required")
+              errorSummary.text() mustBe "Enter a packaging site name"
             }
           }
         }
@@ -228,13 +226,13 @@ class PackagingSiteNameControllerISpec extends ControllerITTestHelper {
             whenReady(result) { res =>
               res.status mustBe 400
               val page = Jsoup.parse(res.body)
-              page.title must include("Error: " + Messages("packagingSiteName" + ".title"))
+              page.title mustBe "Error: What is your UK packaging site name? - Soft Drinks Industry Levy - GOV.UK"
               val errorSummaryList = page.getElementsByClass("govuk-list govuk-error-summary__list")
                 .first()
               errorSummaryList
                 .select("a")
                 .attr("href") mustBe "#" + fieldName
-              errorSummaryList.text() mustBe Messages("packagingSiteName.error." + fieldName + ".required")
+              errorSummaryList.text() mustBe "Enter a packaging site name"
             }
           }
         }
@@ -247,7 +245,7 @@ class PackagingSiteNameControllerISpec extends ControllerITTestHelper {
 
   s"POST " + checkRoutePath - {
     "when the user populates answers all questions" - {
-      "should update the session with the new values and redirect to the index controller" - {
+      "should update the session with the new values and redirect to the CYA page" - {
         "when the session contains no data for page" in {
           given
             .commonPrecondition
@@ -260,7 +258,7 @@ class PackagingSiteNameControllerISpec extends ControllerITTestHelper {
 
             whenReady(result) { res =>
               res.status mustBe 303
-              res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad().url)
+              res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
               val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[PackagingSiteName]](None)(_.get(PackagingSiteNamePage))
               dataStoredForPage.nonEmpty mustBe true
               dataStoredForPage.get mustBe packagingSiteNameDiff
@@ -304,7 +302,7 @@ class PackagingSiteNameControllerISpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + Messages("packagingSiteName" + ".title"))
+            page.title mustBe "Error: What is your UK packaging site name? - Soft Drinks Industry Levy - GOV.UK"
             val errorSummaryList = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first().getElementsByTag("li")
             errorSummaryList.size() mustBe packagingSiteNameMap.size
@@ -313,40 +311,7 @@ class PackagingSiteNameControllerISpec extends ControllerITTestHelper {
               errorSummary
                 .select("a")
                 .attr("href") mustBe "#" + fieldName
-              errorSummary.text() mustBe Messages("packagingSiteName.error." + fieldName + ".required")
-            }
-          }
-        }
-      }
-      packagingSiteNameMap.zipWithIndex.foreach { case ((fieldName, _), index) =>
-        "when no answer is given for field" + fieldName in {
-          given
-            .commonPrecondition
-
-          setAnswers(emptyUserAnswers)
-          val invalidJson = packagingSiteNameMap.foldLeft(Json.obj()) { case (current, (fn, fv)) =>
-            val fieldValue = if (fn == fieldName) {
-              ""
-            } else {
-              fv
-            }
-            current ++ Json.obj(fn -> fieldValue)
-          }
-          WsTestClient.withClient { client =>
-            val result = createClientRequestPOST(
-              client, baseUrl + checkRoutePath, invalidJson
-            )
-
-            whenReady(result) { res =>
-              res.status mustBe 400
-              val page = Jsoup.parse(res.body)
-              page.title must include("Error: " + Messages("packagingSiteName" + ".title"))
-              val errorSummaryList = page.getElementsByClass("govuk-list govuk-error-summary__list")
-                .first()
-              errorSummaryList
-                .select("a")
-                .attr("href") mustBe "#" + fieldName
-              errorSummaryList.text() mustBe Messages("packagingSiteName.error." + fieldName + ".required")
+              errorSummary.text() mustBe "Enter a packaging site name"
             }
           }
         }

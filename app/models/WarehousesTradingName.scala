@@ -18,7 +18,7 @@ package models
 
 import play.api.libs.json._
 
-case class WarehousesTradingName (WarehouseTradingName: String)
+case class WarehousesTradingName (warehouseTradingName: String)
 
 object WarehousesTradingName {
   implicit val format = Json.format[WarehousesTradingName]

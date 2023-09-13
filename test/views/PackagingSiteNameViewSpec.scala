@@ -63,18 +63,18 @@ class PackagingSiteNameViewSpec extends ViewSpecHelper {
       questionItems.size() mustBe 1
     }
 
-      "when the form is not prepopulated and has no errors" - {
-        "should include the expected question field" - {
+    "when the form is not prepopulated and has no errors" - {
+      "should include the expected question field" - {
 
-          "that has the name field " in {
-            val questionItem1 = questionItems
-              .get(0)
-            questionItem1
-              .getElementsByClass(Selectors.label)
-              .text() mustBe "What is your UK packaging site name?"
-          }
+        "that has the name field PackagingSiteName " in {
+          val questionItem1 = questionItems
+            .get(0)
+          questionItem1
+            .getElementsByClass(Selectors.label)
+            .text() mustBe "What is your UK packaging site name?"
         }
       }
+    }
 
     "contain the correct button" - {
       document.getElementsByClass(Selectors.button).text() mustBe "Save and continue"
@@ -98,26 +98,22 @@ class PackagingSiteNameViewSpec extends ViewSpecHelper {
       }
     }
 
+    val htmlWithErrors = view(form.bind(Map("packagingSiteName" -> "")), NormalMode)(request, messages(application))
+    val documentWithErrors = doc(htmlWithErrors)
 
-    packagingSiteNameMap.foreach { case (fieldName, _) =>
-      val fieldWithError = packagingSiteNameMap + (fieldName -> "")
-      val htmlWithErrors = view(form.bind(fieldWithError.toMap), NormalMode)(request, messages(application))
-      val documentWithErrors = doc(htmlWithErrors)
+    "when site name is empty" - {
+      "should have a title containing error" in {
+        documentWithErrors.title mustBe "Error: What is your UK packaging site name? - Soft Drinks Industry Levy - GOV.UK"
+      }
 
-      "when site name is empty" - {
-        "should have a title containing error" in {
-          documentWithErrors.title mustBe "Error: What is your UK packaging site name?"
-        }
-
-        "contains a message that links to field with error" in {
-          val errorSummary = documentWithErrors
-            .getElementsByClass(Selectors.errorSummaryList)
-            .first()
-          errorSummary
-            .select("a")
-            .attr("href") mustBe "#" + fieldName
-          errorSummary.text() mustBe "Enter a UK packaging site name"
-        }
+      "contains a message that links to field with error" in {
+        val errorSummary = documentWithErrors
+          .getElementsByClass(Selectors.errorSummaryList)
+          .first()
+        errorSummary
+          .select("a")
+          .attr("href") mustBe "#" + "packagingSiteName"
+        errorSummary.text() mustBe "Enter a packaging site name"
       }
     }
 

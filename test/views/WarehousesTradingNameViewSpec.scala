@@ -52,7 +52,7 @@ class WarehousesTradingNameViewSpec extends ViewSpecHelper {
     val document = doc(html)
     val questionItems = document.getElementsByClass(Selectors.formGroup)
     "should contain the expected title" in {
-      document.title() mustBe "What is your UK warehouse trading name? - Soft Drink Industry Levy - GOV.UK"
+      document.title() mustBe "What is your UK warehouse trading name? - Soft Drinks Industry Levy - GOV.UK"
     }
 
     "should have the expected heading" in {
@@ -63,18 +63,15 @@ class WarehousesTradingNameViewSpec extends ViewSpecHelper {
       questionItems.size() mustBe 1
     }
 
-    warehouseTradingNameMap.zipWithIndex.foreach { case ((fieldName, fieldValue), index) =>
+    "when the form is not prepopulated and has no errors" - {
+      "should include the expected question field" - {
 
-      "when the form is not prepopulated and has no errors" - {
-        "should include the expected question fields" - {
-
-          "that has the field " + fieldName in {
-            val questionItem1 = questionItems
-              .get(index)
-            questionItem1
-              .getElementsByClass(Selectors.label)
-              .text() mustBe fieldName
-          }
+        "that has the field warehouseTradingName "in {
+          val questionItem1 = questionItems
+            .get(0)
+          questionItem1
+            .getElementsByClass(Selectors.label)
+            .text() mustBe "What is your UK warehouse trading name?"
         }
       }
     }
@@ -109,7 +106,7 @@ class WarehousesTradingNameViewSpec extends ViewSpecHelper {
 
       "when field is empty" - {
         "should have a title containing error" in {
-          documentWithErrors.title mustBe "Error: What is your UK warehouse trading name?"
+          documentWithErrors.title mustBe "Error: What is your UK warehouse trading name? - Soft Drinks Industry Levy - GOV.UK"
         }
 
         "contains a message that links to field with error" in {
@@ -119,7 +116,7 @@ class WarehousesTradingNameViewSpec extends ViewSpecHelper {
           errorSummary
             .select("a")
             .attr("href") mustBe "#" + fieldName
-          errorSummary.text() mustBe "Enter a UK warehouse trading name"
+          errorSummary.text() mustBe "Enter a warehouse trading name"
         }
       }
     }

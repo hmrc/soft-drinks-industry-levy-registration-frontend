@@ -32,7 +32,7 @@ object PackagingSiteNameSummary  {
     answers.get(PackagingSiteNamePage).map {
       answer =>
 
-      val value = HtmlFormat.escape(answer.PackagingSiteName).toString
+      val value = HtmlFormat.escape(answer.packagingSiteName).toString
 
         SummaryListRowViewModel(
           key     = "packagingSiteName.checkYourAnswersLabel",

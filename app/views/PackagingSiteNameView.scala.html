@@ -37,10 +37,12 @@
 
         @govukInput(
             InputViewModel(
-                field = form("PackagingSiteName"),
+                field = form("packagingSiteName"),
                 label = LabelViewModel(messages("packagingSiteName.title")).asPageHeading(Large)
             )
             .withWidth(TwoThirds)
+            .withAutocomplete("packagingSiteName")
+            .withSpellcheck(on = false)
         )
 
         @govukButton(

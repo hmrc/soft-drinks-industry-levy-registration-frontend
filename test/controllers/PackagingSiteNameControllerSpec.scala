@@ -50,7 +50,7 @@ class PackagingSiteNameControllerSpec extends SpecBase with MockitoSugar with Lo
     identifier, RegisterWithAuthUTR,
     Json.obj(
       PackagingSiteNamePage.toString -> Json.obj(
-        "Packaging site name" -> "value 1"
+        "packagingSiteName" -> "value 1"
       )
     )
   )
@@ -106,7 +106,7 @@ class PackagingSiteNameControllerSpec extends SpecBase with MockitoSugar with Lo
       running(application) {
         val request =
           FakeRequest(POST, packagingSiteNameRoute)
-        .withFormUrlEncodedBody(("Packaging site name", "value 1"))
+        .withFormUrlEncodedBody(("packagingSiteName", "value 1"))
 
         val result = route(application, request).value
 
@@ -158,7 +158,7 @@ class PackagingSiteNameControllerSpec extends SpecBase with MockitoSugar with Lo
         val request =
           FakeRequest(POST, packagingSiteNameRoute
         )
-        .withFormUrlEncodedBody(("Packaging site name", "value 1"))
+        .withFormUrlEncodedBody(("packagingSiteName", "value 1"))
 
         val result = route(application, request).value
 
@@ -175,7 +175,7 @@ class PackagingSiteNameControllerSpec extends SpecBase with MockitoSugar with Lo
         val request =
           FakeRequest(POST, packagingSiteNameRoute
         )
-        .withFormUrlEncodedBody(("Packaging site name", "value 1"))
+        .withFormUrlEncodedBody(("packagingSiteName", "value 1"))
 
         val result = route(application, request).value
 
@@ -188,7 +188,7 @@ class PackagingSiteNameControllerSpec extends SpecBase with MockitoSugar with Lo
     "should log an error message when internal server error is returned when user answers are not set in session repository" in {
       val mockSessionService = mock[SessionService]
 
-      when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(false)
+      when(mockSessionService.set(any())) thenReturn createFailureRegistrationResult(errors.SessionDatabaseInsertError)
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -203,7 +203,7 @@ class PackagingSiteNameControllerSpec extends SpecBase with MockitoSugar with Lo
           val request =
             FakeRequest(POST, packagingSiteNameRoute
           )
-          .withFormUrlEncodedBody(("PackagingSiteName", "value 1"))
+          .withFormUrlEncodedBody(("packagingSiteName", "value 1"))
 
           await(route(application, request).value)
           events.collectFirst {

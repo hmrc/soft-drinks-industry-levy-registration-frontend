@@ -27,8 +27,8 @@ class PackagingSiteNameFormProvider @Inject() extends Mappings {
 
    def apply(): Form[PackagingSiteName] = Form(
      mapping(
-      "PackagingSiteName" -> text("packagingSiteName.error.required")
-        .verifying(maxLength(100, "packagingSiteName.error.length"))
+      "packagingSiteName" -> text("packagingSiteName.error.required")
+        .verifying(maxLength(160, "packagingSiteName.error.length"))
     )(PackagingSiteName.apply)(PackagingSiteName.unapply)
    )
  }

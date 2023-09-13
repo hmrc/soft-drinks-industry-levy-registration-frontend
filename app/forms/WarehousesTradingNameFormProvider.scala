@@ -27,8 +27,8 @@ class WarehousesTradingNameFormProvider @Inject() extends Mappings {
 
    def apply(): Form[WarehousesTradingName] = Form(
      mapping(
-      "WarehouseTradingName" -> text("warehousesTradingName.error.required")
-        .verifying(maxLength(100, "warehousesTradingName.error.length"))
+      "warehouseTradingName" -> text("warehousesTradingName.error.required")
+        .verifying(maxLength(160, "warehousesTradingName.error.length"))
     )(WarehousesTradingName.apply)(WarehousesTradingName.unapply)
    )
  }

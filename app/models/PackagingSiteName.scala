@@ -18,7 +18,7 @@ package models
 
 import play.api.libs.json._
 
-case class PackagingSiteName (PackagingSiteName: String)
+case class PackagingSiteName (packagingSiteName: String)
 
 object PackagingSiteName {
   implicit val format = Json.format[PackagingSiteName]

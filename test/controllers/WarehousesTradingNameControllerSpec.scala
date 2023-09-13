@@ -50,7 +50,7 @@ class WarehousesTradingNameControllerSpec extends SpecBase with MockitoSugar wit
     identifier, RegisterWithAuthUTR,
     Json.obj(
       WarehousesTradingNamePage.toString -> Json.obj(
-        "WarehouseTradingName" -> "value 1")
+        "warehouseTradingName" -> "value 1")
     )
   )
 
@@ -105,7 +105,7 @@ class WarehousesTradingNameControllerSpec extends SpecBase with MockitoSugar wit
       running(application) {
         val request =
           FakeRequest(POST, warehousesTradingNameRoute)
-        .withFormUrlEncodedBody(("WarehouseTradingName", "value 1"))
+        .withFormUrlEncodedBody(("warehouseTradingName", "value 1"))
 
         val result = route(application, request).value
 
@@ -157,7 +157,7 @@ class WarehousesTradingNameControllerSpec extends SpecBase with MockitoSugar wit
         val request =
           FakeRequest(POST, warehousesTradingNameRoute
         )
-        .withFormUrlEncodedBody(("WarehouseTradingName", "value 1"))
+        .withFormUrlEncodedBody(("warehouseTradingName", "value 1"))
 
         val result = route(application, request).value
 
@@ -174,7 +174,7 @@ class WarehousesTradingNameControllerSpec extends SpecBase with MockitoSugar wit
         val request =
           FakeRequest(POST, warehousesTradingNameRoute
         )
-        .withFormUrlEncodedBody(("WarehouseTradingName", "value 1"))
+        .withFormUrlEncodedBody(("warehouseTradingName", "value 1"))
 
         val result = route(application, request).value
 
@@ -187,8 +187,7 @@ class WarehousesTradingNameControllerSpec extends SpecBase with MockitoSugar wit
     "should log an error message when internal server error is returned when user answers are not set in session repository" in {
       val mockSessionService = mock[SessionService]
 
-      when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(false)
-
+      when(mockSessionService.set(any())) thenReturn createFailureRegistrationResult(errors.SessionDatabaseInsertError)
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
@@ -202,7 +201,7 @@ class WarehousesTradingNameControllerSpec extends SpecBase with MockitoSugar wit
           val request =
             FakeRequest(POST, warehousesTradingNameRoute
           )
-          .withFormUrlEncodedBody(("WarehouseTradingName", "value 1"))
+          .withFormUrlEncodedBody(("warehouseTradingName", "value 1"))
 
           await(route(application, request).value)
           events.collectFirst {

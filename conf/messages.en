@@ -378,6 +378,7 @@ applicationAlreadySubmitted.first.paragraph = An application to register for the
 applicationAlreadySubmitted.second.paragraph.part.one = If you want to submit your return or check the status of your application you need to
 applicationAlreadySubmitted.second.paragraph.part.two = used to submit the application.
 applicationAlreadySubmitted.gg.sign.in = sign in using the same Government Gateway account
+
 packagingSiteName.title = What is your UK packaging site name?
 packagingSiteName.checkYourAnswersLabel = UK packaging site name
 packagingSiteName.error.required = Enter a packaging site name
@@ -385,7 +386,6 @@ packagingSiteName.error.length = Packaging site name must be 160 characters or l
 packagingSiteName.change.hidden = packaging site name
 
 warehousesTradingName.title = What is your UK warehouse trading name?
-warehousesTradingName.checkYourAnswersLabel = UK warehouse trading name
 warehousesTradingName.error.required = Enter a warehouse trading name
 warehousesTradingName.error.length = Warehouse trading name must be 160 characters or less
 warehousesTradingName.checkYourAnswersLabel = UK warehouse trading name

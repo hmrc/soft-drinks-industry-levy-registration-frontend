@@ -25,15 +25,15 @@ trait ModelGenerators {
   implicit lazy val arbitraryWarehousesTradingName: Arbitrary[WarehousesTradingName] =
     Arbitrary {
       for {
-        "WarehouseTradingName" <- arbitrary[String]
-      } yield WarehousesTradingName("WarehouseTradingName")
+        warehouseTradingName <- arbitrary[String]
+      } yield WarehousesTradingName(warehouseTradingName)
     }
 
   implicit lazy val arbitraryPackagingSiteName: Arbitrary[PackagingSiteName] =
     Arbitrary {
       for {
-        "PackagingSiteName" <- arbitrary[String]
-      } yield PackagingSiteName("PackagingSiteName")
+        packagingSiteName <- arbitrary[String]
+      } yield PackagingSiteName(packagingSiteName)
     }
 
   implicit lazy val arbitraryVerify: Arbitrary[Verify] =

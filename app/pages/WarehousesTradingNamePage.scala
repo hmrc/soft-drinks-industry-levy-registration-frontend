@@ -16,7 +16,7 @@
 
 package pages
 
-import models.WarehousesTradingName
+import models.{Mode, WarehousesTradingName}
 import play.api.libs.json.JsPath
 
 case object WarehousesTradingNamePage extends QuestionPage[WarehousesTradingName] {
@@ -24,4 +24,6 @@ case object WarehousesTradingNamePage extends QuestionPage[WarehousesTradingName
   override def path: JsPath = JsPath \ toString
 
   override def toString: String = "warehousesTradingName"
+
+  override val url: Mode => String = mode => controllers.routes.WarehousesTradingNameController.onPageLoad(mode).url
 }

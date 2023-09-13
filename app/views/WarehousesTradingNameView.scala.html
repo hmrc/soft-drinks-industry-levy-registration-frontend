@@ -37,12 +37,13 @@
 
         @govukInput(
             InputViewModel(
-                field = form("WarehouseTradingName"),
+                field = form("warehouseTradingName"),
                 label = LabelViewModel(messages("warehousesTradingName.title")).asPageHeading(Large)
             )
             .withWidth(TwoThirds)
+            .withAutocomplete("warehouseTradingName")
+            .withSpellcheck(on = false)
         )
-
 
         @govukButton(
             ButtonViewModel(messages("site.saveContinue"))

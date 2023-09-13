@@ -32,7 +32,7 @@ object WarehousesTradingNameSummary  {
     answers.get(WarehousesTradingNamePage).map {
       answer =>
 
-      val value = HtmlFormat.escape(answer.WarehouseTradingName).toString
+      val value = HtmlFormat.escape(answer.warehouseTradingName).toString
 
         SummaryListRowViewModel(
           key     = "warehousesTradingName.checkYourAnswersLabel",
