@@ -77,10 +77,10 @@ class AddressLookupConnectorSpec extends SpecBase with MockitoSugar with MockHtt
 
       def getAddressResult: Future[HttpResult[AlfResponse]] = testAddressLookupConnector.getAddress(id)(implicitly,implicitly)
 
-        "return a AlfResponse Model" in {
-          setupMockHttpGet(testAddressLookupConnector.getAddressUrl(id, addressLookupFrontendTestEnabled = true))(Right(customerAddressMax))
-          await(getAddressResult) mustBe Right(customerAddressMax)
-        }
+      "return an AlfResponse Model" in {
+        setupMockHttpGet(testAddressLookupConnector.getAddressUrl(id, addressLookupFrontendTestEnabled = true))(Right(customerAddressMax))
+        await(getAddressResult) mustBe Right(customerAddressMax)
+      }
 
       "given an error should" - {
 

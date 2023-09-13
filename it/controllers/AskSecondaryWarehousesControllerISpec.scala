@@ -241,7 +241,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
                   line3Label = Some("Address line 3 (optional)"),
                   townLabel = Some("Address line 4 (optional)"),
                   postcodeLabel = Some("Postcode"),
-                  organisationLabel = Some("Trading name (optional)"))
+                  organisationLabel = Some("Trading name"))
               ),
               confirmPageLabels = None,
               countryPickerLabels = None
@@ -486,7 +486,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
                   line3Label = Some("Address line 3 (optional)"),
                   townLabel = Some("Address line 4 (optional)"),
                   postcodeLabel = Some("Postcode"),
-                  organisationLabel = Some("Trading name (optional)"))
+                  organisationLabel = Some("Trading name"))
               ),
               confirmPageLabels = None,
               countryPickerLabels = None
