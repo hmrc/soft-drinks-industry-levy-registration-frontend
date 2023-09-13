@@ -263,7 +263,7 @@ class RampOffControllerSpec extends SpecBase with MockitoSugar {
 
               val result = route(app, request).value
               status(result) mustBe SEE_OTHER
-              redirectLocation(result).get mustBe controllers.routes.JourneyRecoveryController.onPageLoad().url
+              redirectLocation(result).get mustBe controllers.routes.WarehousesTradingNameController.onPageLoad(mode).url
             }
           }
         }
@@ -388,7 +388,7 @@ class RampOffControllerSpec extends SpecBase with MockitoSugar {
 
               val result = route(app, request).value
               status(result) mustBe SEE_OTHER
-              redirectLocation(result).get mustBe controllers.routes.JourneyRecoveryController.onPageLoad().url
+              redirectLocation(result).get mustBe controllers.routes.PackagingSiteNameController.onPageLoad(mode).url
             }
           }
         }

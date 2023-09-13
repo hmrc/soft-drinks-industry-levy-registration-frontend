@@ -69,8 +69,7 @@ class RampOffController @Inject()(identify: IdentifierAction,
         if(optTradingName.nonEmpty) {
           Redirect(controllers.routes.WarehouseDetailsController.onPageLoad(mode))
         } else {
-          //ToDo redirect to new page
-          Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+          Redirect(controllers.routes.WarehousesTradingNameController.onPageLoad(mode))
         }
       }
   }
@@ -92,7 +91,7 @@ class RampOffController @Inject()(identify: IdentifierAction,
           Redirect(controllers.routes.PackagingSiteDetailsController.onPageLoad(mode))
         } else {
           //ToDo redirect to new page
-          Redirect(controllers.routes.JourneyRecoveryController.onPageLoad())
+          Redirect(controllers.routes.PackagingSiteNameController.onPageLoad(mode))
         }
       }
   }
