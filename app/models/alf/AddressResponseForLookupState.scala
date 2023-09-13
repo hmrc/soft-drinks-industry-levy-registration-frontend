@@ -21,7 +21,8 @@ import play.api.libs.json.{Json, OFormat}
 import services.AddressLookupState
 
 case class AddressResponseForLookupState(address: UkAddress,
-                                         addressLookupState: AddressLookupState)
+                                         addressLookupState: AddressLookupState,
+                                         sdilId: String)
 
 object AddressResponseForLookupState {
 

@@ -71,8 +71,8 @@ case class UserAnswers(
     }
   }
 
-  def setAlfResponse(address: UkAddress, addressLookupState: AddressLookupState): UserAnswers = {
-    val addressResponseForLookupState = AddressResponseForLookupState(address, addressLookupState)
+  def setAlfResponse(address: UkAddress, addressLookupState: AddressLookupState, sdilId: String): UserAnswers = {
+    val addressResponseForLookupState = AddressResponseForLookupState(address, addressLookupState, sdilId)
     copy(alfResponseForLookupState = Some(addressResponseForLookupState))
   }
 

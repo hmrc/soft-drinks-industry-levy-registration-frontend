@@ -62,7 +62,7 @@ class RampOffController @Inject()(identify: IdentifierAction,
         optTradingName      = alfResponse.address.organisation
         updatedUserAnswers = optTradingName match {
           case Some(tradingName) => userAnswers.addWarehouse(ukAddress, tradingName, sdilId)
-          case None => userAnswers.setAlfResponse(ukAddress, WarehouseDetails)
+          case None => userAnswers.setAlfResponse(ukAddress, WarehouseDetails, sdilId)
         }
         _                   <- sessionRepository.set(updatedUserAnswers)
       } yield {
@@ -84,7 +84,7 @@ class RampOffController @Inject()(identify: IdentifierAction,
         optTradingName = alfResponse.address.organisation
         updatedUserAnswers = optTradingName match {
           case Some(tradingName) => userAnswers.addPackagingSite(ukAddress, tradingName, sdilId)
-          case None => userAnswers.setAlfResponse(ukAddress, PackingDetails)
+          case None => userAnswers.setAlfResponse(ukAddress, PackingDetails, sdilId)
         }
         _ <- sessionRepository.set(updatedUserAnswers)
       } yield {

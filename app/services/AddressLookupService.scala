@@ -20,10 +20,10 @@ import config.FrontendAppConfig
 import connectors.AddressLookupConnector
 import connectors.httpParsers.ResponseHttpParser.HttpResult
 import controllers.routes
+import models.Mode
 import models.alf.init._
 import models.alf.{AlfAddress, AlfResponse}
-import models.backend.{Site, UkAddress}
-import models.{Mode, UserAnswers, Warehouse}
+import models.backend.UkAddress
 import play.api.Logger
 import play.api.i18n.Messages
 import services.AddressLookupState._
