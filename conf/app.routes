@@ -128,3 +128,13 @@ POST       /enter-business-details                          controllers.EnterBus
 GET        /registration-confirmation                        controllers.RegistrationConfirmationController.onPageLoad
 
 GET        /business-already-has-application-submitted      controllers.ApplicationAlreadySubmittedController.onPageLoad
+
+GET        /packaging-site-name                        controllers.PackagingSiteNameController.onPageLoad(mode: Mode = NormalMode)
+POST       /packaging-site-name                        controllers.PackagingSiteNameController.onSubmit(mode: Mode = NormalMode)
+GET        /change-packaging-site-name                  controllers.PackagingSiteNameController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-packaging-site-name                  controllers.PackagingSiteNameController.onSubmit(mode: Mode = CheckMode)
+
+GET        /warehouses-trading-name                        controllers.WarehousesTradingNameController.onPageLoad(mode: Mode = NormalMode)
+POST       /warehouses-trading-name                        controllers.WarehousesTradingNameController.onSubmit(mode: Mode = NormalMode)
+GET        /change-warehouses-trading-name                  controllers.WarehousesTradingNameController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-warehouses-trading-name                  controllers.WarehousesTradingNameController.onSubmit(mode: Mode = CheckMode)

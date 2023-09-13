@@ -37,6 +37,8 @@ class Navigator @Inject()() {
   }
 
   private val normalRoutes: Page => UserAnswers => Call = {
+    case WarehousesTradingNamePage => userAnswers => routes.WarehouseDetailsController.onPageLoad(NormalMode)
+    case PackagingSiteNamePage => userAnswers => routes.PackagingSiteDetailsController.onPageLoad(NormalMode)
     case VerifyPage => _ => routes.OrganisationTypeController.onPageLoad(NormalMode)
     case RemovePackagingSiteDetailsPage => _ => routes.PackagingSiteDetailsController.onPageLoad(NormalMode)
     case EnterBusinessDetailsPage => userAnswers => navigationForEnterBusinessDetails(userAnswers)
