@@ -52,23 +52,23 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
 
   val offRampBaseUrl ="http://localhost:8706/soft-drinks-industry-levy-registration/off-ramp"
 
-//  "getAddress" - {
-//    "return an address when Connector returns success" in {
-//      when(mockALFConnector.getAddress("123456789")(hc, implicitly)).thenReturn(Future.successful(Right(customerAddressMax)))
-//
-//      val res = service.getAddress("123456789")
-//
-//      whenReady(res) { result =>
-//        result mustBe customerAddressMax
-//      }
-//    }
-//    "return an exception when Connector returns error" in {
-//      when(mockALFConnector.getAddress("123456789")(hc, implicitly)).thenReturn(Future.successful(Left(ErrorModel(1, "foo"))))
-//
-//      val res = intercept[Exception](await(service.getAddress("123456789")))
-//      res.getMessage mustBe "Error returned from ALF for 123456789 1 foo for None"
-//    }
-//  }
+  "getAddress" - {
+    "return an address when Connector returns success" in {
+      when(mockALFConnector.getAddress("123456789")(hc, implicitly)).thenReturn(Future.successful(Right(customerAddressMax)))
+
+      val res = service.getAddress("123456789")
+
+      whenReady(res) { result =>
+        result mustBe customerAddressMax
+      }
+    }
+    "return an exception when Connector returns error" in {
+      when(mockALFConnector.getAddress("123456789")(hc, implicitly)).thenReturn(Future.successful(Left(ErrorModel(1, "foo"))))
+
+      val res = intercept[Exception](await(service.getAddress("123456789")))
+      res.getMessage mustBe "Error returned from ALF for 123456789 1 foo for None"
+    }
+  }
 
   "addAddressUserAnswers" - {
 
@@ -320,17 +320,17 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
 
     }
   }
-//  "initJourney" - {
-//    "should return response from connector" in {
-//      val journeyConfig = JourneyConfig(1, JourneyOptions(""), None, None)
-//      when(mockALFConnector.initJourney(ArgumentMatchers.eq(journeyConfig))(ArgumentMatchers.any(), ArgumentMatchers.any()))
-//        .thenReturn(Future.successful(Right("foo")))
-//
-//      whenReady(service.initJourney(journeyConfig)) {
-//        res => res mustBe Right("foo")
-//      }
-//    }
-//  }
+  "initJourney" - {
+    "should return response from connector" in {
+      val journeyConfig = JourneyConfig(1, JourneyOptions(""), None, None)
+      when(mockALFConnector.initJourney(ArgumentMatchers.eq(journeyConfig))(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        .thenReturn(Future.successful(Right("foo")))
+
+      whenReady(service.initJourney(journeyConfig)) {
+        res => res mustBe Right("foo")
+      }
+    }
+  }
 
   List(NormalMode, CheckMode).foreach { mode =>
     s"when in ${mode.toString}" - {
