@@ -1,6 +1,6 @@
 package repositories
 
-import models.alf.{AddressResponseForLookupState, AlfAddress, AlfResponse}
+import models.alf.AddressResponseForLookupState
 import models.backend.{Site, UkAddress}
 import models.{RegisterState, UserAnswers, Warehouse}
 import org.mongodb.scala.bson.BsonDocument
@@ -81,7 +81,7 @@ class SessionRepositoryISpec
         Some(UkAddress(List("Line 1", "Line 2", "Line 3", "Line 4"),"aa1 1aa", alfId = Some(alfId))),
         Map("foo" -> Site(UkAddress(List("foo"),"foo", Some("foo")),Some("foo"), "foo",Some(LocalDate.now()))),
         Map("foo" -> Warehouse("foo",UkAddress(List("foo"),"foo", Some("foo")))),
-        Some(AddressResponseForLookupState(alfAddress, PackingDetails)),
+        Some(AddressResponseForLookupState(alfAddress, PackingDetails, "123456")),
         None,
         Instant.ofEpochSecond(1))
       val setResult = await(repository.set(userAnswersBefore))
