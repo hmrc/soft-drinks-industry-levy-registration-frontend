@@ -16,7 +16,7 @@
 
 package models
 
-import models.backend.{Site, UkAddress}
+import models.backend.UkAddress
 import play.api.libs.json.Json
 
 import java.time.LocalDate

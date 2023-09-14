@@ -33,6 +33,7 @@ class WarehousesTradingNameViewSpec extends ViewSpecHelper {
   val formProvider = new WarehousesTradingNameFormProvider
   val form: Form[WarehousesTradingName] = formProvider.apply()
   implicit val request: Request[_] = FakeRequest()
+  val sdilId = "foo"
 
   object Selectors {
     val formGroup = "govuk-form-group"
@@ -48,7 +49,7 @@ class WarehousesTradingNameViewSpec extends ViewSpecHelper {
   warehouseTradingNameJsObject.map { case (fName, fValue) => fName -> fValue.toString }
 
   "View" - {
-    val html = view(form, NormalMode)(request, messages(application))
+    val html = view(form, NormalMode, sdilId)(request, messages(application))
     val document = doc(html)
     val questionItems = document.getElementsByClass(Selectors.formGroup)
     "should contain the expected title" in {
@@ -82,26 +83,26 @@ class WarehousesTradingNameViewSpec extends ViewSpecHelper {
 
     "contains a form with the correct action" - {
       "when in CheckMode" in {
-        val htmlAllSelected = view(form.fill(warehouseTradingName), CheckMode)(request, messages(application))
+        val htmlAllSelected = view(form.fill(warehouseTradingName), CheckMode, sdilId)(request, messages(application))
         val documentAllSelected = doc(htmlAllSelected)
 
         documentAllSelected.select(Selectors.form)
-          .attr("action") mustEqual routes.WarehousesTradingNameController.onSubmit(CheckMode).url
+          .attr("action") mustEqual routes.WarehousesTradingNameController.onSubmit(CheckMode, sdilId).url
       }
 
       "when in NormalMode" in {
-        val htmlAllSelected = view(form.fill(warehouseTradingName), NormalMode)(request, messages(application))
+        val htmlAllSelected = view(form.fill(warehouseTradingName), NormalMode, sdilId)(request, messages(application))
         val documentAllSelected = doc(htmlAllSelected)
 
         documentAllSelected.select(Selectors.form)
-          .attr("action") mustEqual routes.WarehousesTradingNameController.onSubmit(NormalMode).url
+          .attr("action") mustEqual routes.WarehousesTradingNameController.onSubmit(NormalMode, sdilId).url
       }
     }
 
 
     warehouseTradingNameMap.foreach { case (fieldName, _) =>
-      val fieldWithError = warehouseTradingNameMap + ((fieldName -> ""))
-      val htmlWithErrors = view(form.bind(fieldWithError.toMap), NormalMode)(request, messages(application))
+      val fieldWithError = warehouseTradingNameMap ++ Map(fieldName -> "")
+      val htmlWithErrors = view(form.bind(fieldWithError.toMap), NormalMode, sdilId)(request, messages(application))
       val documentWithErrors = doc(htmlWithErrors)
 
       "when field is empty" - {

@@ -196,7 +196,7 @@ class RampOffControllerISpec extends ControllerITTestHelper {
                   updatedUserAnswers.address mustBe emptyUserAnswers.address
 
                   res.status mustBe SEE_OTHER
-                  res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.WarehousesTradingNameController.onPageLoad(mode).url)
+                  res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.WarehousesTradingNameController.onPageLoad(mode, sdilId).url)
                 }
               }
             }
@@ -223,7 +223,7 @@ class RampOffControllerISpec extends ControllerITTestHelper {
                   updatedUserAnswers.address mustBe emptyUserAnswers.address
 
                   res.status mustBe SEE_OTHER
-                  res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.WarehousesTradingNameController.onPageLoad(mode).url)
+                  res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.WarehousesTradingNameController.onPageLoad(mode, sdilId).url)
                 }
               }
             }
@@ -322,7 +322,7 @@ class RampOffControllerISpec extends ControllerITTestHelper {
 
                 whenReady(result) { res =>
                   res.status mustBe SEE_OTHER
-                  res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.PackagingSiteNameController.onPageLoad(mode).url)
+                  res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.PackagingSiteNameController.onPageLoad(mode, sdilId).url)
                   val updatedUserAnswers = getAnswers(emptyUserAnswers.id).get
 
                   updatedUserAnswers.id mustBe emptyUserAnswers.id
@@ -349,7 +349,7 @@ class RampOffControllerISpec extends ControllerITTestHelper {
 
                 whenReady(result) { res =>
                   res.status mustBe SEE_OTHER
-                  res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.PackagingSiteNameController.onPageLoad(mode).url)
+                  res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.PackagingSiteNameController.onPageLoad(mode, sdilId).url)
                   val updatedUserAnswers = getAnswers(emptyUserAnswers.id).get
                   updatedUserAnswers.id mustBe emptyUserAnswers.id
                   updatedUserAnswers.data mustBe emptyUserAnswers.data

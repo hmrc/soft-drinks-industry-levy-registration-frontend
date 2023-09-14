@@ -19,20 +19,14 @@ package controllers
 import base.SpecBase
 import forms.PackagingSiteNameFormProvider
 import helpers.LoggerHelper
-import models.RegisterState.RegisterWithAuthUTR
 import models.alf.AddressResponseForLookupState
-import models.backend.UkAddress
+import models.backend.{Site, UkAddress}
 import models.{NormalMode, PackagingSiteName, UserAnswers}
-import navigation.{FakeNavigator, Navigator}
-import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.PackagingSiteNamePage
 import play.api.data.Form
 import play.api.inject.bind
-import play.api.libs.json.Json
-import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.AddressLookupState.PackingDetails
@@ -42,93 +36,158 @@ import views.html.PackagingSiteNameView
 
 class PackagingSiteNameControllerSpec extends SpecBase with MockitoSugar with LoggerHelper {
 
-  def onwardRoute: Call = Call("GET", "/foo")
-
   val formProvider = new PackagingSiteNameFormProvider()
   val form: Form[PackagingSiteName] = formProvider()
-
-  lazy val packagingSiteNameRoute: String = routes.PackagingSiteNameController.onPageLoad(NormalMode).url
-  val ukAddress = UkAddress(List("line 1", "line 2", "line 3", "line 4"), "aa1 1aa", alfId = Some("bar"))
   val sdilId = "123456"
+  val tradingName = "Sugary Lemonade"
+
+  lazy val packagingSiteNameRoute: String = routes.PackagingSiteNameController.onPageLoad(NormalMode, sdilId).url
+  val ukAddress = UkAddress(List("line 1", "line 2", "line 3", "line 4"), "aa1 1aa", alfId = Some("bar"))
 
   val alfResponseForLookupState = AddressResponseForLookupState(ukAddress, PackingDetails, sdilId)
 
 
-  val userAnswers: UserAnswers = UserAnswers(
-    identifier,
-    RegisterWithAuthUTR,
+  val userAnswersWithAlfResponseForSdilId: UserAnswers = emptyUserAnswers.copy(
     alfResponseForLookupState = Some(alfResponseForLookupState)
   )
 
-  val userAnswersWithFormData = userAnswers.copy(data = Json.obj(
-    PackagingSiteNamePage.toString -> Json.obj(
-      "packagingSiteName" -> "value 1"
-    )
-  ))
+  val userAnswersWithNoAlfResponseButPackingSiteWithSdilRef = emptyUserAnswers.copy(
+    packagingSiteList = Map(sdilId -> Site(ukAddress, None, tradingName, None))
+  )
+
+  val userAnswersWithPackagingSitesButNotForSdilRef = emptyUserAnswers.copy(
+    packagingSiteList = Map("5432456" -> Site(ukAddress, None, tradingName, None))
+  )
 
   "PackagingSiteName Controller" - {
+    "when the user has entered a packing site address in alf" - {
+      "must render the packagingSiteName page for a GET" in {
+        val application = applicationBuilder(userAnswers = Some(userAnswersWithAlfResponseForSdilId)).build()
 
-    "must return OK and the correct view for a GET" in {
+        running(application) {
+          val request = FakeRequest(GET, packagingSiteNameRoute)
 
-      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+          val result = route(application, request).value
 
-      running(application) {
-        val request = FakeRequest(GET, packagingSiteNameRoute)
+          val view = application.injector.instanceOf[PackagingSiteNameView]
 
-        val result = route(application, request).value
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(form, NormalMode, sdilId)(request, messages(application)).toString
+        }
+      }
 
-        val view = application.injector.instanceOf[PackagingSiteNameView]
+      "must redirect to packagingSiteDetails when valid data is submitted" in {
 
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        val mockSessionService = mock[SessionService]
+
+        when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(true)
+
+        val application =
+          applicationBuilder(userAnswers = Some(userAnswersWithAlfResponseForSdilId))
+            .overrides(
+              bind[SessionService].toInstance(mockSessionService)
+            )
+            .build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, packagingSiteNameRoute)
+              .withFormUrlEncodedBody(("packagingSiteName", "value 1"))
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.PackagingSiteDetailsController.onPageLoad(NormalMode).url
+        }
       }
     }
 
-    "must not prepopulate the view on a GET when the question has previously been answered" in {
+    "when the user has a packing site for the sdilRef but no alfAddress" - {
+      "must render the packagingSiteName page for a GET with trading name populated" in {
+        val application = applicationBuilder(userAnswers = Some(userAnswersWithNoAlfResponseButPackingSiteWithSdilRef)).build()
 
-      val application = applicationBuilder(userAnswers = Some(userAnswersWithFormData)).build()
+        running(application) {
+          val request = FakeRequest(GET, packagingSiteNameRoute)
 
-      running(application) {
-        val request = FakeRequest(GET, packagingSiteNameRoute)
+          val result = route(application, request).value
 
-        val view = application.injector.instanceOf[PackagingSiteNameView]
+          val view = application.injector.instanceOf[PackagingSiteNameView]
 
-        val result = route(application, request).value
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(form.fill(PackagingSiteName(tradingName)), NormalMode, sdilId)(request, messages(application)).toString
+        }
+      }
 
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(PackagingSiteName("value 1")), NormalMode)(request, messages(application)).toString
+      "must redirect to packagingSiteDetails when valid data is submitted" in {
+
+        val mockSessionService = mock[SessionService]
+
+        when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(true)
+
+        val application =
+          applicationBuilder(userAnswers = Some(userAnswersWithNoAlfResponseButPackingSiteWithSdilRef))
+            .overrides(
+              bind[SessionService].toInstance(mockSessionService)
+            )
+            .build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, packagingSiteNameRoute)
+              .withFormUrlEncodedBody(("packagingSiteName", "value 1"))
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.PackagingSiteDetailsController.onPageLoad(NormalMode).url
+        }
       }
     }
 
-    "must redirect to the next page when valid data is submitted" in {
+    "when the user answers contains no alfAddress and has packaging sites with none for the sdilId" - {
+      "must not render the page and redirect to packagingSiteDetails for GET" in {
+        val application =
+          applicationBuilder(userAnswers = Some(userAnswersWithPackagingSitesButNotForSdilRef))
+            .overrides(
+            )
+            .build()
 
-      val mockSessionService = mock[SessionService]
+        running(application) {
+          val request =
+            FakeRequest(GET, packagingSiteNameRoute)
 
-      when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(true)
+          val result = route(application, request).value
 
-      val application =
-        applicationBuilder(userAnswers = Some(userAnswers))
-          .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionService].toInstance(mockSessionService)
-          )
-          .build()
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.PackagingSiteDetailsController.onPageLoad(NormalMode).url
+        }
+      }
+    }
 
-      running(application) {
-        val request =
-          FakeRequest(POST, packagingSiteNameRoute)
-        .withFormUrlEncodedBody(("packagingSiteName", "value 1"))
 
-        val result = route(application, request).value
+    "when the user answers contains no alfAddress or packaging sites" - {
+      "must not render the page and redirect to packagingAtBusinessAddress for GET" in {
+        val application =
+          applicationBuilder(userAnswers = Some(emptyUserAnswers))
+            .overrides(
+            )
+            .build()
 
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual onwardRoute.url
+        running(application) {
+          val request =
+            FakeRequest(GET, packagingSiteNameRoute)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.PackAtBusinessAddressController.onPageLoad(NormalMode).url
+        }
       }
     }
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(userAnswersWithAlfResponseForSdilId)).build()
 
       running(application) {
         val request =
@@ -143,7 +202,7 @@ class PackagingSiteNameControllerSpec extends SpecBase with MockitoSugar with Lo
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, sdilId)(request, messages(application)).toString
       }
     }
 
@@ -184,9 +243,8 @@ class PackagingSiteNameControllerSpec extends SpecBase with MockitoSugar with Lo
       when(mockSessionService.set(any())) thenReturn createFailureRegistrationResult(errors.SessionDatabaseInsertError)
 
       val application =
-        applicationBuilder(userAnswers = Some(userAnswers))
+        applicationBuilder(userAnswers = Some(userAnswersWithAlfResponseForSdilId))
           .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionService].toInstance(mockSessionService)
           )
           .build()

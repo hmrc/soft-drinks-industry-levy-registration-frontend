@@ -20,7 +20,7 @@ import base.SpecBase
 import models.alf.AddressResponseForLookupState
 import models.backend.{Site, UkAddress}
 import services.AddressLookupState
-import services.AddressLookupState.{PackingDetails, WarehouseDetails}
+import services.AddressLookupState.PackingDetails
 
 class UserAnswersSpec extends SpecBase {
 

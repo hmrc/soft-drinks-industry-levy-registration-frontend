@@ -35,7 +35,7 @@ package controllers.addressLookupFrontend
 import base.SpecBase
 import models.alf.{AddressResponseForLookupState, AlfAddress, AlfResponse}
 import models.backend.{Site, UkAddress}
-import models.{CheckMode, NormalMode, UserAnswers, Warehouse}
+import models.{CheckMode, NormalMode, Warehouse}
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
@@ -47,7 +47,6 @@ import repositories.SessionRepository
 import services.AddressLookupService
 import services.AddressLookupState._
 
-import scala.collection.immutable.List
 import scala.concurrent.Future
 
 class RampOffControllerSpec extends SpecBase with MockitoSugar {
@@ -263,7 +262,7 @@ class RampOffControllerSpec extends SpecBase with MockitoSugar {
 
               val result = route(app, request).value
               status(result) mustBe SEE_OTHER
-              redirectLocation(result).get mustBe controllers.routes.WarehousesTradingNameController.onPageLoad(mode).url
+              redirectLocation(result).get mustBe controllers.routes.WarehousesTradingNameController.onPageLoad(mode, sdilId).url
             }
           }
         }
@@ -313,8 +312,6 @@ class RampOffControllerSpec extends SpecBase with MockitoSugar {
               bind[SessionRepository].toInstance(mockSessionRepository)
             )
             .build()
-          val responseFromGetAddress: AlfResponse = AlfResponse(AlfAddress(Some("foo"), List.empty, None, None))
-          val updatedUserAnswers: UserAnswers = emptyUserAnswers.copy(id = "foobarwizz")
 
           when(mockAddressLookupService.getAddress(ArgumentMatchers.eq(alfId))(ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(alfResponseWithNoTradingName))
@@ -388,7 +385,7 @@ class RampOffControllerSpec extends SpecBase with MockitoSugar {
 
               val result = route(app, request).value
               status(result) mustBe SEE_OTHER
-              redirectLocation(result).get mustBe controllers.routes.PackagingSiteNameController.onPageLoad(mode).url
+              redirectLocation(result).get mustBe controllers.routes.PackagingSiteNameController.onPageLoad(mode, sdilId).url
             }
           }
         }
