@@ -28,8 +28,6 @@ case class RetrievedSubscription(
                                   address: UkAddress,
                                   activity: RetrievedActivity,
                                   liabilityDate: LocalDate,
-                                  productionSites: List[Site],
-                                  warehouseSites: List[Site],
                                   contact: Contact,
                                   deregDate: Option[LocalDate] = None)
 

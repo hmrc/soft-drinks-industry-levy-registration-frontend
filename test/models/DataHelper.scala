@@ -101,8 +101,6 @@ trait DataHelper {
                                  address: UkAddress,
                                  activity: RetrievedActivity,
                                  liabilityDate: LocalDate,
-                                 productionSites: List[Site],
-                                 warehouseSites: List[Site],
                                  contact: Contact,
                                  deregDate: Option[LocalDate] = None
                                ): RetrievedSubscription = RetrievedSubscription(
@@ -112,8 +110,6 @@ trait DataHelper {
     address = address,
     activity = activity,
     liabilityDate = liabilityDate,
-    productionSites = productionSites,
-    warehouseSites = warehouseSites,
     contact = contact,
     deregDate = deregDate
   )
