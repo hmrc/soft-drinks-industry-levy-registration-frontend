@@ -20,6 +20,8 @@ import base.SpecBase
 import forms.PackagingSiteNameFormProvider
 import helpers.LoggerHelper
 import models.RegisterState.RegisterWithAuthUTR
+import models.alf.AddressResponseForLookupState
+import models.backend.UkAddress
 import models.{NormalMode, PackagingSiteName, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.jsoup.Jsoup
@@ -33,6 +35,7 @@ import play.api.libs.json.Json
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import services.AddressLookupState.PackingDetails
 import services.SessionService
 import utilities.GenericLogger
 import views.html.PackagingSiteNameView
@@ -45,21 +48,29 @@ class PackagingSiteNameControllerSpec extends SpecBase with MockitoSugar with Lo
   val form: Form[PackagingSiteName] = formProvider()
 
   lazy val packagingSiteNameRoute: String = routes.PackagingSiteNameController.onPageLoad(NormalMode).url
+  val ukAddress = UkAddress(List("line 1", "line 2", "line 3", "line 4"), "aa1 1aa", alfId = Some("bar"))
+  val sdilId = "123456"
+
+  val alfResponseForLookupState = AddressResponseForLookupState(ukAddress, PackingDetails, sdilId)
+
 
   val userAnswers: UserAnswers = UserAnswers(
-    identifier, RegisterWithAuthUTR,
-    Json.obj(
-      PackagingSiteNamePage.toString -> Json.obj(
-        "packagingSiteName" -> "value 1"
-      )
-    )
+    identifier,
+    RegisterWithAuthUTR,
+    alfResponseForLookupState = Some(alfResponseForLookupState)
   )
+
+  val userAnswersWithFormData = userAnswers.copy(data = Json.obj(
+    PackagingSiteNamePage.toString -> Json.obj(
+      "packagingSiteName" -> "value 1"
+    )
+  ))
 
   "PackagingSiteName Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
       running(application) {
         val request = FakeRequest(GET, packagingSiteNameRoute)
@@ -73,9 +84,9 @@ class PackagingSiteNameControllerSpec extends SpecBase with MockitoSugar with Lo
       }
     }
 
-    "must populate the view correctly on a GET when the question has previously been answered" in {
+    "must not prepopulate the view on a GET when the question has previously been answered" in {
 
-      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(userAnswersWithFormData)).build()
 
       running(application) {
         val request = FakeRequest(GET, packagingSiteNameRoute)
@@ -96,7 +107,7 @@ class PackagingSiteNameControllerSpec extends SpecBase with MockitoSugar with Lo
       when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(true)
 
       val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        applicationBuilder(userAnswers = Some(userAnswers))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionService].toInstance(mockSessionService)
@@ -117,7 +128,7 @@ class PackagingSiteNameControllerSpec extends SpecBase with MockitoSugar with Lo
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
       running(application) {
         val request =
@@ -167,31 +178,13 @@ class PackagingSiteNameControllerSpec extends SpecBase with MockitoSugar with Lo
       }
     }
 
-    "must fail if the setting of userAnswers fails" in {
-
-      val application = applicationBuilder(userAnswers = Some(userDetailsWithSetMethodsReturningFailure)).build()
-
-      running(application) {
-        val request =
-          FakeRequest(POST, packagingSiteNameRoute
-        )
-        .withFormUrlEncodedBody(("packagingSiteName", "value 1"))
-
-        val result = route(application, request).value
-
-        status(result) mustEqual INTERNAL_SERVER_ERROR
-        val page = Jsoup.parse(contentAsString(result))
-        page.title() mustBe "Sorry, we are experiencing technical difficulties - 500 - Soft Drinks Industry Levy - GOV.UK"
-      }
-    }
-
     "should log an error message when internal server error is returned when user answers are not set in session repository" in {
       val mockSessionService = mock[SessionService]
 
       when(mockSessionService.set(any())) thenReturn createFailureRegistrationResult(errors.SessionDatabaseInsertError)
 
       val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        applicationBuilder(userAnswers = Some(userAnswers))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionService].toInstance(mockSessionService)

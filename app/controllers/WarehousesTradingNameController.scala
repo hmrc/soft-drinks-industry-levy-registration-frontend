@@ -29,6 +29,7 @@ import services.SessionService
 import views.html.WarehousesTradingNameView
 import handlers.ErrorHandler
 import play.api.data.Form
+import services.AddressLookupState.WarehouseDetails
 
 import scala.concurrent.{ExecutionContext, Future}
 import utilities.GenericLogger
@@ -37,9 +38,7 @@ class WarehousesTradingNameController @Inject()(
                                        override val messagesApi: MessagesApi,
                                        val sessionService: SessionService,
                                        val navigator: Navigator,
-                                       identify: IdentifierAction,
-                                       getData: DataRetrievalAction,
-                                       requireData: DataRequiredAction,
+                                       controllerActions: ControllerActions,
                                        formProvider: WarehousesTradingNameFormProvider,
                                        val controllerComponents: MessagesControllerComponents,
                                        view: WarehousesTradingNameView,
@@ -49,26 +48,25 @@ class WarehousesTradingNameController @Inject()(
 
   val form: Form[WarehousesTradingName] = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) {
-    implicit request =>
-
-      val preparedForm = request.userAnswers.get(WarehousesTradingNamePage) match {
+  def onPageLoad(mode: Mode, ref: String): Action[AnyContent] = controllerActions
+    .withUserWhoCanEnterTradingName(WarehouseDetails, ref, mode) { implicit request =>
+      val preparedForm = request.tradingName match {
         case None => form
-        case Some(value) => form.fill(value)
+        case Some(value) => form.fill(WarehousesTradingName(value))
       }
 
-      Ok(view(preparedForm, mode))
+      Ok(view(preparedForm, mode, ref))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
-    implicit request =>
-
+  def onSubmit(mode: Mode, ref: String): Action[AnyContent] = controllerActions
+    .withUserWhoCanEnterTradingName(WarehouseDetails, ref, mode).async { implicit request =>
       form.bindFromRequest().fold(
         formWithErrors =>
-          Future.successful(BadRequest(view(formWithErrors, mode))),
+          Future.successful(BadRequest(view(formWithErrors, mode, ref))),
 
         value => {
-          val updatedAnswers = request.userAnswers.set(WarehousesTradingNamePage, value)
+          val updatedAnswers = request.userAnswers
+            .addWarehouse(request.aflAddress, value.warehouseTradingName, ref)
           updateDatabaseAndRedirect(updatedAnswers, WarehousesTradingNamePage, mode)
         }
       )

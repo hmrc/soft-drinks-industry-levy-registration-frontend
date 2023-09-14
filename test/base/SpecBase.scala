@@ -23,6 +23,7 @@ import config.FrontendAppConfig
 import controllers.actions._
 import controllers.routes
 import errors.RegistrationErrors
+import models.alf.AddressResponseForLookupState
 import models.backend.{Site, UkAddress}
 import models.{Contact, IndividualDetails, LitresInBands, OrganisationDetails, RegisterState, RetrievedActivity, RetrievedSubscription, RosmRegistration, RosmWithUtr, UserAnswers, Warehouse}
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}

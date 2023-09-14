@@ -77,13 +77,17 @@ case class UserAnswers(
   }
 
   def addPackagingSite(packagingSiteAddress: UkAddress, tradingName: String, sdilId: String): UserAnswers = {
-    copy(packagingSiteList =
-      packagingSiteList.filterNot(_._1 == sdilId) ++ Map(sdilId -> Site(packagingSiteAddress, None, tradingName, None)))
+    copy(
+      alfResponseForLookupState = None,
+      packagingSiteList = packagingSiteList.filterNot(_._1 == sdilId) ++ Map(sdilId -> Site(packagingSiteAddress, None, tradingName, None))
+    )
   }
 
   def addWarehouse(warehouseAddress: UkAddress, tradingName: String, sdilId: String): UserAnswers = {
-    copy(warehouseList =
-      warehouseList.filterNot(_._1 == sdilId) ++ Map(sdilId -> Warehouse(tradingName, warehouseAddress)))
+    copy(
+      alfResponseForLookupState = None,
+      warehouseList = warehouseList.filterNot(_._1 == sdilId) ++ Map(sdilId -> Warehouse(tradingName, warehouseAddress))
+    )
   }
 
   def setBusinessAddress(businessAddress: UkAddress): UserAnswers = {

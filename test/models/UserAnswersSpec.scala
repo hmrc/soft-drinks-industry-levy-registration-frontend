@@ -20,6 +20,7 @@ import base.SpecBase
 import models.alf.AddressResponseForLookupState
 import models.backend.{Site, UkAddress}
 import services.AddressLookupState
+import services.AddressLookupState.{PackingDetails, WarehouseDetails}
 
 class UserAnswersSpec extends SpecBase {
 
@@ -28,6 +29,8 @@ class UserAnswersSpec extends SpecBase {
   val diffAddress = UkAddress(List("29 Station Pl.", "The Railyard", "Cambridge"), "CB1 2FP")
   val sdilId = "123456"
   val tradingName = "Sugary Lemonade"
+  val alfResponseForLookupState = AddressResponseForLookupState(ukAddress, PackingDetails, sdilId)
+  val userAnswersWithALFState = userAnswers.copy(alfResponseForLookupState = Some(alfResponseForLookupState))
 
   "setAlfResponse" - {
     AddressLookupState.values.foreach { addressLookupState =>
@@ -49,53 +52,115 @@ class UserAnswersSpec extends SpecBase {
   }
 
   "addPackagingSite" - {
-    "should create a packaging site from the ukAddress" - {
-      "and add it to the packagingSites" - {
-        "when no packaging sites currently exist" in {
-          val expectedUserAnswers = userAnswers.copy(packagingSiteList = Map(sdilId -> Site(ukAddress, None, tradingName, None)))
-          val res = userAnswers.addPackagingSite(ukAddress, tradingName, sdilId)
-          res mustBe expectedUserAnswers
+    "when there is no alfResponseWithState in the userAnswers" - {
+      "should create a packaging site from the ukAddress" - {
+        "and add it to the packagingSites" - {
+          "when no packaging sites currently exist" in {
+            val expectedUserAnswers = userAnswers.copy(packagingSiteList = Map(sdilId -> Site(ukAddress, None, tradingName, None)))
+            val res = userAnswers.addPackagingSite(ukAddress, tradingName, sdilId)
+            res mustBe expectedUserAnswers
+          }
+
+          "when packaging sites currently exist but the sdilRef is different" in {
+            val userAnswersWithPackingSitesDiffSdilRef = userAnswers.copy(packagingSiteList = Map("234567" -> packingSiteAddress45Characters))
+            val expectedUserAnswers = userAnswers.copy(packagingSiteList = Map("234567" -> packingSiteAddress45Characters, sdilId -> Site(ukAddress, None, tradingName, None)))
+            val res = userAnswersWithPackingSitesDiffSdilRef.addPackagingSite(ukAddress, tradingName, sdilId)
+            res mustBe expectedUserAnswers
+          }
         }
 
-        "when packaging sites currently exist but the sdilRef is different" in {
-          val userAnswersWithPackingSitesDiffSdilRef = userAnswers.copy(packagingSiteList = Map("234567" -> packingSiteAddress45Characters))
-          val expectedUserAnswers = userAnswers.copy(packagingSiteList = Map("234567" -> packingSiteAddress45Characters, sdilId -> Site(ukAddress, None, tradingName, None)))
-          val res = userAnswersWithPackingSitesDiffSdilRef.addPackagingSite(ukAddress, tradingName, sdilId)
+        "and replace the packaging site that has the same sdilRef" in {
+          val userAnswersWithPackingSitesSameSdilRef = userAnswers.copy(packagingSiteList = Map(sdilId -> packingSiteAddress45Characters))
+          val expectedUserAnswers = userAnswers.copy(packagingSiteList = Map(sdilId -> Site(ukAddress, None, tradingName, None)))
+          val res = userAnswersWithPackingSitesSameSdilRef.addPackagingSite(ukAddress, tradingName, sdilId)
           res mustBe expectedUserAnswers
         }
       }
+    }
 
-      "and replace the packaging site that has the same sdilRef" in {
-        val userAnswersWithPackingSitesSameSdilRef = userAnswers.copy(packagingSiteList = Map(sdilId -> packingSiteAddress45Characters))
-        val expectedUserAnswers = userAnswers.copy(packagingSiteList = Map(sdilId -> Site(ukAddress, None, tradingName, None)))
-        val res = userAnswersWithPackingSitesSameSdilRef.addPackagingSite(ukAddress, tradingName, sdilId)
-        res mustBe expectedUserAnswers
+    "when there is a alfResponseForLookupState in the userAnswers" - {
+      "should remove the alfResponseForLookupState, create a packaging site from the ukAddress" - {
+        "and add it to the packagingSites" - {
+          "when no packaging sites currently exist" in {
+            val expectedUserAnswers = userAnswers.copy(
+              packagingSiteList = Map(sdilId -> Site(ukAddress, None, tradingName, None)))
+            val res = userAnswersWithALFState.addPackagingSite(ukAddress, tradingName, sdilId)
+            res mustBe expectedUserAnswers
+          }
+
+          "when packaging sites currently exist but the sdilRef is different" in {
+            val userAnswersWithPackingSitesDiffSdilRef = userAnswersWithALFState.copy(
+              packagingSiteList = Map("234567" -> packingSiteAddress45Characters))
+            val expectedUserAnswers = userAnswers.copy(packagingSiteList = Map("234567" -> packingSiteAddress45Characters, sdilId -> Site(ukAddress, None, tradingName, None)))
+            val res = userAnswersWithPackingSitesDiffSdilRef.addPackagingSite(ukAddress, tradingName, sdilId)
+            res mustBe expectedUserAnswers
+          }
+        }
+
+        "and replace the packaging site that has the same sdilRef" in {
+          val userAnswersWithPackingSitesSameSdilRef = userAnswersWithALFState.copy(
+            packagingSiteList = Map(sdilId -> packingSiteAddress45Characters))
+          val expectedUserAnswers = userAnswers.copy(packagingSiteList = Map(sdilId -> Site(ukAddress, None, tradingName, None)))
+          val res = userAnswersWithPackingSitesSameSdilRef.addPackagingSite(ukAddress, tradingName, sdilId)
+          res mustBe expectedUserAnswers
+        }
       }
     }
   }
 
   "addWarehouse" - {
-    "should create a warehouse from the ukAddress" - {
-      "and add it to the warehouses" - {
-        "when no warehouses currently exist" in {
-          val expectedUserAnswers = userAnswers.copy(warehouseList = Map(sdilId -> Warehouse(tradingName, ukAddress)))
-          val res = userAnswers.addWarehouse(ukAddress, tradingName, sdilId)
-          res mustBe expectedUserAnswers
+    "when there is no alfResponseForLookupState in the userAnswers" - {
+      "should create a warehouse from the ukAddress" - {
+        "and add it to the warehouses" - {
+          "when no warehouses currently exist" in {
+            val expectedUserAnswers = userAnswers.copy(warehouseList = Map(sdilId -> Warehouse(tradingName, ukAddress)))
+            val res = userAnswers.addWarehouse(ukAddress, tradingName, sdilId)
+            res mustBe expectedUserAnswers
+          }
+
+          "when warehouses currently exist but the sdilId is different" in {
+            val userAnswersWithWarehouseDiffSdilRef = userAnswers.copy(warehouseList = Map("234567" -> warehouse1))
+            val expectedUserAnswers = userAnswers.copy(warehouseList = Map("234567" -> warehouse1, sdilId -> Warehouse(tradingName, ukAddress)))
+            val res = userAnswersWithWarehouseDiffSdilRef.addWarehouse(ukAddress, tradingName, sdilId)
+            res mustBe expectedUserAnswers
+          }
         }
 
-        "when warehouses currently exist but the sdilId is different" in {
-          val userAnswersWithWarehouseDiffSdilRef = userAnswers.copy(warehouseList = Map("234567" -> warehouse1))
-          val expectedUserAnswers = userAnswers.copy(warehouseList = Map("234567" -> warehouse1, sdilId -> Warehouse(tradingName, ukAddress)))
-          val res = userAnswersWithWarehouseDiffSdilRef.addWarehouse(ukAddress, tradingName, sdilId)
+        "and replace the warehouse that has the same sdilId" in {
+          val userAnswersWithWarehouseSameSdilRef = userAnswers.copy(warehouseList = Map(sdilId -> warehouse1))
+          val expectedUserAnswers = userAnswers.copy(warehouseList = Map(sdilId -> Warehouse(tradingName, ukAddress)))
+          val res = userAnswersWithWarehouseSameSdilRef.addWarehouse(ukAddress, tradingName, sdilId)
           res mustBe expectedUserAnswers
         }
       }
+    }
 
-      "and replace the warehouse that has the same sdilId" in {
-        val userAnswersWithWarehouseSameSdilRef = userAnswers.copy(warehouseList = Map(sdilId -> warehouse1))
-        val expectedUserAnswers = userAnswers.copy(warehouseList = Map(sdilId -> Warehouse(tradingName, ukAddress)))
-        val res = userAnswersWithWarehouseSameSdilRef.addWarehouse(ukAddress, tradingName, sdilId)
-        res mustBe expectedUserAnswers
+    "when there is alfResponseForLookupState in the userAnswers" - {
+      "should remove the alfResponseForLookupState, create a warehouse from the ukAddress" - {
+        "and add it to the warehouses" - {
+          "when no warehouses currently exist" in {
+            val expectedUserAnswers = userAnswers.copy(
+              warehouseList = Map(sdilId -> Warehouse(tradingName, ukAddress)))
+            val res = userAnswersWithALFState.addWarehouse(ukAddress, tradingName, sdilId)
+            res mustBe expectedUserAnswers
+          }
+
+          "when warehouses currently exist but the sdilId is different" in {
+            val userAnswersWithWarehouseDiffSdilRef = userAnswersWithALFState.copy(
+              warehouseList = Map("234567" -> warehouse1))
+            val expectedUserAnswers = userAnswers.copy(warehouseList = Map("234567" -> warehouse1, sdilId -> Warehouse(tradingName, ukAddress)))
+            val res = userAnswersWithWarehouseDiffSdilRef.addWarehouse(ukAddress, tradingName, sdilId)
+            res mustBe expectedUserAnswers
+          }
+        }
+
+        "and replace the warehouse that has the same sdilId" in {
+          val userAnswersWithWarehouseSameSdilRef = userAnswersWithALFState.copy(
+            warehouseList = Map(sdilId -> warehouse1))
+          val expectedUserAnswers = userAnswers.copy(warehouseList = Map(sdilId -> Warehouse(tradingName, ukAddress)))
+          val res = userAnswersWithWarehouseSameSdilRef.addWarehouse(ukAddress, tradingName, sdilId)
+          res mustBe expectedUserAnswers
+        }
       }
     }
   }
