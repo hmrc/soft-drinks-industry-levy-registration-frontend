@@ -21,8 +21,8 @@ import connectors.SoftDrinksIndustryLevyConnector
 import handlers.ErrorHandler
 import models.Mode
 import models.RegisterState._
-import models.requests.{DataRequest, DataRequestForApplicationSubmitted, DataRequestForEnterBusinessDetails, DataRequestForEnterTradingName, DataRequiredForPackagingSites}
-import play.api.mvc.{ActionBuilder, ActionRefiner, AnyContent}
+import models.requests.{DataRequest, DataRequestForApplicationSubmitted, DataRequestForEnterBusinessDetails, DataRequestForEnterTradingName}
+import play.api.mvc.{ActionBuilder, AnyContent}
 import services.AddressLookupState
 import utilities.GenericLogger
 
@@ -62,10 +62,6 @@ class ControllerActions @Inject()(identify: IdentifierAction,
 
   def withRequiresBusinessDetailsAction: ActionBuilder[DataRequestForEnterBusinessDetails, AnyContent] = {
     identify andThen getData andThen dataRequiredForRequiresBusinessDetailsAction
-  }
-
-  def withUserWhoRequiresTradingName(mode: Mode): ActionBuilder[DataRequiredForPackagingSites, AnyContent] = {
-    identify andThen getData andThen dataRequiredForSites(mode)
   }
 
 }

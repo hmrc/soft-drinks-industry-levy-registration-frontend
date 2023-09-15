@@ -21,12 +21,12 @@ import controllers.routes
 import handlers.ErrorHandler
 import models.RegisterState.canAccessEnterBusinessDetails
 import models.requests._
-import models.{Mode, NormalMode, RegisterState, RosmWithUtr, UserAnswers}
+import models.{Mode, RegisterState, RosmWithUtr, UserAnswers}
 import pages.EnterBusinessDetailsPage
 import play.api.mvc.Results.{InternalServerError, Redirect}
 import play.api.mvc.{ActionRefiner, Result}
 import services.AddressLookupState
-import services.AddressLookupState.{PackingDetails, WarehouseDetails}
+import services.AddressLookupState.WarehouseDetails
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import utilities.GenericLogger
@@ -133,34 +133,6 @@ trait ControllerActionHelper {
         }
       }
 
-      override protected def executionContext: ExecutionContext = ec
-    }
-  }
-
-  def dataRequiredForSites(mode: Mode)(implicit ec: ExecutionContext): ActionRefiner[OptionalDataRequest, DataRequiredForPackagingSites] = {
-    new ActionRefiner[OptionalDataRequest, DataRequiredForPackagingSites] {
-      override protected def refine[A](request: OptionalDataRequest[A]): Future[Either[Result, DataRequiredForPackagingSites[A]]] = {
-        Future.successful {
-          request.userAnswers match {
-            case Some(answers) =>
-              answers.alfResponseForLookupState match {
-                case Some(alfResponseForLookupState) =>
-                  alfResponseForLookupState.addressLookupState match {
-                    case PackingDetails =>
-                      Left(Redirect(routes.PackagingSiteNameController.onPageLoad(mode, answers.alfResponseForLookupState.get.sdilId)))
-                    case _ =>
-                      genericLogger.logger.error(s"Unrecognised address lookup state type")
-                      Left(InternalServerError(errorHandler.internalServerErrorTemplate(request)))
-                  }
-                case _ =>
-                  Right(DataRequiredForPackagingSites(request, request.internalId, answers))
-              }
-            case _ =>
-              genericLogger.logger.info(s"User has no user answers")
-              Left(Redirect(routes.RegistrationController.start))
-          }
-        }
-      }
       override protected def executionContext: ExecutionContext = ec
     }
   }

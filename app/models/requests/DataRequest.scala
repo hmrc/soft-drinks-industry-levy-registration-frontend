@@ -55,7 +55,3 @@ case class DataRequestForEnterTradingName[A](request: Request[A],
                                              userAnswers: UserAnswers,
                                              aflAddress: UkAddress,
                                              tradingName: Option[String]) extends WrappedRequest[A](request)
-
-case class DataRequiredForPackagingSites[A](request: Request[A],
-                                            internalId: String,
-                                            userAnswers: UserAnswers) extends WrappedRequest[A](request)
