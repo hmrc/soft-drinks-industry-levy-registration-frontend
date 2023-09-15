@@ -20,6 +20,7 @@ import base.SpecBase
 import base.SpecBase.aTradingName
 import forms.PackagingSiteDetailsFormProvider
 import helpers.LoggerHelper
+import models.alf.AddressResponseForLookupState
 import models.backend.{Site, UkAddress}
 import models.{NormalMode, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
@@ -49,16 +50,18 @@ class PackagingSiteDetailsControllerSpec extends SpecBase with MockitoSugar with
   val formProvider = new PackagingSiteDetailsFormProvider()
   val form: Form[Boolean] = formProvider()
 
-  val PackagingSite1: Site = Site(
+  val packagingSite1: Site = Site(
     UkAddress(List("33 Rhes Priordy", "East London"), "E73 2RP"),
     None,
     aTradingName,
     None)
 
-  lazy val packagingSiteListWith1: Map[String, Site] = Map(("78941132", PackagingSite1))
+  lazy val packagingSiteListWith1: Map[String, Site] = Map(("78941132", packagingSite1))
 
   lazy val packagingSiteDetailsRoute: String = routes.PackagingSiteDetailsController.onPageLoad(NormalMode).url
 
+  val alfResponseState = new AddressResponseForLookupState(packagingSite1.address,PackingDetails,"1")
+//  val userAnswersWithPackagingSite: UserAnswers = emptyUserAnswers.copy(packagingSiteList = packagingSiteListWith1, alfResponseForLookupState = Some(alfResponseState))
   val userAnswersWithPackagingSite: UserAnswers = emptyUserAnswers.copy(packagingSiteList = packagingSiteListWith1)
 
   "PackagingSiteDetails Controller" - {
@@ -200,7 +203,7 @@ class PackagingSiteDetailsControllerSpec extends SpecBase with MockitoSugar with
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        redirectLocation(result).value mustEqual routes.RegistrationController.start.url
       }
     }
 
