@@ -104,7 +104,8 @@ trait ControllerActionHelper {
     }
   }
 
-  def dataRequiredForEnterTradingNameAction(addressLookupState: AddressLookupState, ref: String, mode: Mode)(implicit ec: ExecutionContext): ActionRefiner[DataRequest, DataRequestForEnterTradingName] = {
+  def dataRequiredForEnterTradingNameAction(addressLookupState: AddressLookupState, ref: String, mode: Mode)
+                                           (implicit ec: ExecutionContext): ActionRefiner[DataRequest, DataRequestForEnterTradingName] = {
     new ActionRefiner[DataRequest, DataRequestForEnterTradingName] {
       override protected def refine[A](request: DataRequest[A]): Future[Either[Result, DataRequestForEnterTradingName[A]]] = {
         Future.successful {
