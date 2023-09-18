@@ -57,28 +57,6 @@ class AddressLookupService @Inject()(
     }
   }
 
-//  def addAddressUserAnswers(addressLookupState: AddressLookupState,
-//                            address: AlfAddress,
-//                            userAnswers: UserAnswers,
-//                            sdilId: String,
-//                            alfId: String): UserAnswers = {
-//
-//    val convertedAddress: UkAddress = addressChecker(address, alfId)
-//
-//    addressLookupState match {
-//      case BusinessAddress =>
-//        userAnswers.copy(address = Some(convertedAddress))
-//
-//      case PackingDetails =>
-//        userAnswers.copy(packagingSiteList =
-//          userAnswers.packagingSiteList.filterNot(_._1 == sdilId) ++ Map(sdilId -> Site(convertedAddress, None, address.organisation.getOrElse("temp-trading-name"), None)))
-//
-//      case WarehouseDetails =>
-//        userAnswers.copy(warehouseList =
-//          userAnswers.warehouseList.filterNot(_._1 == sdilId) ++ Map(sdilId -> Warehouse(address.organisation.getOrElse("temp-trading-name"), convertedAddress)))
-//    }
-//  }
-
   def initJourney(journeyConfig: JourneyConfig)(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[HttpResult[String]] = {
     addressLookupConnector.initJourney(journeyConfig)
   }
