@@ -115,20 +115,30 @@ trait ControllerActionHelper {
               Right(DataRequestForEnterTradingName(request.request, request.internalId, request.hasCTEnrolment,
                 request.authUtr, request.userAnswers, alfResponseForLookupState.address, None))
             case _ if addressLookupState == WarehouseDetails =>
-              userAnswers.warehouseList.get(ref) match {
-                case Some(warehouse) => Right(DataRequestForEnterTradingName(request.request, request.internalId, request.hasCTEnrolment,
-                  request.authUtr, request.userAnswers, warehouse.address, Some(warehouse.tradingName)))
-                case None if userAnswers.warehouseList.nonEmpty => Left(Redirect(routes.WarehouseDetailsController.onPageLoad(mode)))
-                case None => Left(Redirect(routes.AskSecondaryWarehousesController.onPageLoad(mode)))
-              }
+              handleUserWhoCannotEnterTradingNameForWarehouse(userAnswers, request)
             case _ =>
-              userAnswers.packagingSiteList.get(ref) match {
-                case Some(packagingSite) => Right(DataRequestForEnterTradingName(request.request, request.internalId, request.hasCTEnrolment,
-                  request.authUtr, request.userAnswers, packagingSite.address, Some(packagingSite.tradingName)))
-                case None if userAnswers.packagingSiteList.nonEmpty => Left(Redirect(routes.PackagingSiteDetailsController.onPageLoad(mode)))
-                case None => Left(Redirect(routes.PackAtBusinessAddressController.onPageLoad(mode)))
-              }
+              handleUserWhoCannotEnterTradingNameForPackagingSite(userAnswers, request)
           }
+        }
+      }
+
+      private def handleUserWhoCannotEnterTradingNameForWarehouse[A](userAnswers: UserAnswers,
+                                                                     request: DataRequest[A]): Either[Result, DataRequestForEnterTradingName[A]] = {
+        userAnswers.warehouseList.get(ref) match {
+          case Some(warehouse) => Right(DataRequestForEnterTradingName(request.request, request.internalId, request.hasCTEnrolment,
+            request.authUtr, request.userAnswers, warehouse.address, Some(warehouse.tradingName)))
+          case None if userAnswers.warehouseList.nonEmpty => Left(Redirect(routes.WarehouseDetailsController.onPageLoad(mode)))
+          case None => Left(Redirect(routes.AskSecondaryWarehousesController.onPageLoad(mode)))
+        }
+      }
+
+      private def handleUserWhoCannotEnterTradingNameForPackagingSite[A](userAnswers: UserAnswers,
+                                                                         request: DataRequest[A]): Either[Result, DataRequestForEnterTradingName[A]] = {
+        userAnswers.packagingSiteList.get(ref) match {
+          case Some(packagingSite) => Right(DataRequestForEnterTradingName(request.request, request.internalId, request.hasCTEnrolment,
+            request.authUtr, request.userAnswers, packagingSite.address, Some(packagingSite.tradingName)))
+          case None if userAnswers.packagingSiteList.nonEmpty => Left(Redirect(routes.PackagingSiteDetailsController.onPageLoad(mode)))
+          case None => Left(Redirect(routes.PackAtBusinessAddressController.onPageLoad(mode)))
         }
       }
 
