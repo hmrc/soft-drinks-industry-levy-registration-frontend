@@ -25,7 +25,8 @@ import pages.PackagingSiteDetailsPage
 import play.api.data.Form
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{AddressLookupService, PackingDetails, SessionService}
+import services.AddressLookupState.PackingDetails
+import services.{AddressLookupService, SessionService}
 import utilities.GenericLogger
 import views.html.PackagingSiteDetailsView
 

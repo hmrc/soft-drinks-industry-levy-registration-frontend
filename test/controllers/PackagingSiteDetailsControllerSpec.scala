@@ -17,6 +17,7 @@
 package controllers
 
 import base.SpecBase
+import base.SpecBase.aTradingName
 import forms.PackagingSiteDetailsFormProvider
 import helpers.LoggerHelper
 import models.backend.{Site, UkAddress}
@@ -34,7 +35,8 @@ import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
-import services.{AddressLookupService, PackingDetails, SessionService}
+import services.AddressLookupState.PackingDetails
+import services.{AddressLookupService, SessionService}
 import viewmodels.govuk.SummaryListFluency
 import views.html.PackagingSiteDetailsView
 
@@ -50,7 +52,7 @@ class PackagingSiteDetailsControllerSpec extends SpecBase with MockitoSugar with
   val PackagingSite1: Site = Site(
     UkAddress(List("33 Rhes Priordy", "East London"), "E73 2RP"),
     None,
-    Some("Wild Lemonade Group"),
+    aTradingName,
     None)
 
   lazy val packagingSiteListWith1: Map[String, Site] = Map(("78941132", PackagingSite1))

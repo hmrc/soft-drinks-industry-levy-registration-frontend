@@ -28,13 +28,12 @@ object AddressFormattingHelper {
       s"""<span class="nowrap" style="white-space: nowrap;">${ukAddress.postCode}</span>""")
   }
 
-  def addressFormatting(address: UkAddress, tradingName: Option[String]): Html = {
-    val addressFormat = determineAddressFormat(address, tradingName)
-
+  def addressFormatting(address: UkAddress, tradingName: String): Html = {
+    val addressFormat = determineAddressFormat(address)
     val commaFormattedSiteAddress = address.lines.map(line => { if (line.isEmpty) "" else line + ", " })
     val htmlSiteAddress = HtmlFormat.escape(commaFormattedSiteAddress.mkString(""))
     val htmlPostcode = Html(s"""<span class="nowrap" style="white-space: nowrap;">${address.postCode}</span>""")
-    val htmlTradingName = HtmlFormat.escape(tradingName.getOrElse(""))
+    val htmlTradingName = HtmlFormat.escape(tradingName)
     val breakLine = Html("<br>")
 
     addressFormat match {
@@ -63,22 +62,12 @@ object AddressFormattingHelper {
     }
   }
 
-  private def determineAddressFormat(address: UkAddress, tradingName: Option[String]): AddressMatching = {
-
+  private def determineAddressFormat(address: UkAddress): AddressMatching = {
     val addressLength = address.lines.toString().length
-
-    if (tradingName.getOrElse("") == "") {
-      if ((addressLength > 44 && addressLength < 50) || (addressLength > 97 && addressLength < 104)) {
-        SeparatePostCodeAddressNoTradingName
-      } else {
-        AddressNoTradingName
-      }
+    if ((addressLength > 44 && addressLength < 50) || (addressLength > 97 && addressLength < 104)) {
+      SeparatePostCodeAddressWithTradingName
     } else {
-      if ((addressLength > 44 && addressLength < 50) || (addressLength > 97 && addressLength < 104)) {
-        SeparatePostCodeAddressWithTradingName
-      } else {
-        AddressWithTradingName
-      }
+      AddressWithTradingName
     }
   }
 }

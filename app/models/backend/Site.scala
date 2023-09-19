@@ -24,13 +24,9 @@ import java.time.LocalDate
 case class Site(
                  address: UkAddress,
                  ref: Option[String],
-                 tradingName: Option[String],
+                 tradingName: String,
                  closureDate: Option[LocalDate]
                ) {
-  def getLines: List[String] =
-    tradingName.fold(address.lines :+ address.postCode) { x =>
-      (x :: address.lines) :+ address.postCode
-    }
 }
 
 object Site {

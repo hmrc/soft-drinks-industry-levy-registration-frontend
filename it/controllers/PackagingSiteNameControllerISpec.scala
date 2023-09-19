@@ -1,226 +1,211 @@
 package controllers
 
-import models.{NormalMode, PackagingSiteName, UserAnswers}
+import models.alf.AddressResponseForLookupState
+import models.backend.Site
+import models.{CheckMode, NormalMode, PackagingSiteName, UserAnswers}
 import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
-import pages.PackagingSiteNamePage
 import play.api.http.HeaderNames
 import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.test.WsTestClient
+import services.AddressLookupState.PackingDetails
 
 class PackagingSiteNameControllerISpec extends ControllerITTestHelper {
 
-  val normalRoutePath = "/packaging-site-name"
-  val checkRoutePath = "/change-packaging-site-name"
+  val ref = "1234567890"
+  val normalRoutePath = s"/packaging-site-name/$ref"
+  val checkRoutePath = s"/change-packaging-site-name/$ref"
 
   val packagingSiteNameJsObject: collection.Map[String, JsValue] = Json.toJson(packagingSiteName).as[JsObject].value
   val packagingSiteNameMap: collection.Map[String, String] = {
     packagingSiteNameJsObject.map { case (fName, fValue) => fName -> fValue.as[String] }
   }
+  val alfResponseForLookupState = AddressResponseForLookupState(ukAddress, PackingDetails, ref)
+  val userAnswersWithAlfResponseForSdilId: UserAnswers = emptyUserAnswers.copy(
+    alfResponseForLookupState = Some(alfResponseForLookupState))
+  val userAnswersWithNoAlfResponseButPackingSiteWithSdilRef = emptyUserAnswers.copy(
+    packagingSiteList = Map(ref -> Site(ukAddress, None, packagingSiteName.packagingSiteName, None)))
+  val userAnswersWithPackagingSitesButNotForSdilRef = emptyUserAnswers.copy(
+    packagingSiteList = Map("5432456" -> Site(ukAddress, None, packagingSiteName.packagingSiteName, None)))
+  val modeWithPaths = Map(NormalMode -> normalRoutePath,
+    CheckMode -> checkRoutePath)
 
-  val userAnswers: UserAnswers = emptyUserAnswers.set(PackagingSiteNamePage, packagingSiteName).success.value
+  modeWithPaths.foreach { case (mode, path) =>
+    "GET " + path - {
+      "when the userAnswers contains alfResponseWithLookupState for the reference number" - {
+        "should return OK and render the PackagingSiteName page with no data populated" in {
+          given
+            .commonPrecondition
 
-  "GET " + normalRoutePath - {
-    "when the userAnswers contains no data" - {
-      "should return OK and render the PackagingSiteName page with no data populated" in {
-        given
-          .commonPrecondition
+          setAnswers(userAnswersWithAlfResponseForSdilId)
 
-        setAnswers(emptyUserAnswers)
+          WsTestClient.withClient { client =>
+            val result1 = createClientRequestGet(client, baseUrl + path)
 
-        WsTestClient.withClient { client =>
-          val result1 = createClientRequestGet(client, baseUrl + normalRoutePath)
-
-          whenReady(result1) { res =>
-            res.status mustBe 200
-            val page = Jsoup.parse(res.body)
-            page.title mustBe "What is your UK packaging site name? - Soft Drinks Industry Levy - GOV.UK"
-            val inputFields = page.getElementsByClass("govuk-form-group")
-            inputFields.size() mustBe 1
-            packagingSiteNameMap.zipWithIndex.foreach { case ((fieldName, _), index) =>
-              inputFields.get(index).text() mustBe "What is your UK packaging site name?"
-              inputFields.get(index).getElementById(fieldName).hasAttr("value") mustBe false
+            whenReady(result1) { res =>
+              res.status mustBe 200
+              val page = Jsoup.parse(res.body)
+              page.title mustBe "What is your UK packaging site name? - Soft Drinks Industry Levy - GOV.UK"
+              val inputFields = page.getElementsByClass("govuk-form-group")
+              inputFields.size() mustBe 1
+              inputFields.get(0).text() mustBe "What is your UK packaging site name?"
+              inputFields.get(0).getElementById("packagingSiteName").hasAttr("value") mustBe false
             }
           }
         }
       }
-    }
 
-    s"when the userAnswers contains data for the page" - {
-      s"should return OK and render the page with fields populated" in {
-        given
-          .commonPrecondition
+      "when the userAnswers contains no alfResponseWithLookupState but contains a packaging site for the reference number" - {
+        "should return OK and render the PackagingSiteName page with data populated" in {
+          given
+            .commonPrecondition
 
-        setAnswers(userAnswers)
+          setAnswers(userAnswersWithNoAlfResponseButPackingSiteWithSdilRef)
 
-        WsTestClient.withClient { client =>
-          val result1 = createClientRequestGet(client, baseUrl + normalRoutePath)
+          WsTestClient.withClient { client =>
+            val result1 = createClientRequestGet(client, baseUrl + path)
 
-          whenReady(result1) { res =>
-            res.status mustBe 200
-            val page = Jsoup.parse(res.body)
-            page.title mustBe "What is your UK packaging site name? - Soft Drinks Industry Levy - GOV.UK"
-            val inputFields = page.getElementsByClass("govuk-form-group")
-            inputFields.size() mustBe 1
-            packagingSiteNameMap.zipWithIndex.foreach { case ((fieldName, fieldValue), index) =>
-              inputFields.get(index).text() mustBe "What is your UK packaging site name?"
-              inputFields.get(index).getElementById(fieldName).hasAttr("value") mustBe true
-              inputFields.get(index).getElementById(fieldName).attr("value") mustBe fieldValue
+            whenReady(result1) { res =>
+              res.status mustBe 200
+              val page = Jsoup.parse(res.body)
+              page.title mustBe "What is your UK packaging site name? - Soft Drinks Industry Levy - GOV.UK"
+              val inputFields = page.getElementsByClass("govuk-form-group")
+              inputFields.size() mustBe 1
+              inputFields.get(0).text() mustBe "What is your UK packaging site name?"
+              inputFields.get(0).getElementById("packagingSiteName").hasAttr("value") mustBe true
+              inputFields.get(0).getElementById("packagingSiteName").attr("value") mustBe packagingSiteName.packagingSiteName
             }
           }
         }
       }
-    }
-    testOtherSuccessUserTypes(baseUrl + normalRoutePath, "What is your UK packaging site name?")
-    testUnauthorisedUser(baseUrl + normalRoutePath)
-    testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)
-  }
 
-  "GET " + checkRoutePath - {
-    "when the userAnswers contains no data" - {
-      "should return OK and render the PackagingSiteName page with no data populated" in {
-        given
-          .commonPrecondition
+      "when the useranswers contains packaging sites but none with sdilId and has no alfAddres" - {
+        "must redirect to packagingSiteDetails" in {
+          given
+            .commonPrecondition
 
-        setAnswers(emptyUserAnswers)
+          setAnswers(userAnswersWithPackagingSitesButNotForSdilRef)
 
-        WsTestClient.withClient { client =>
-          val result1 = createClientRequestGet(client, baseUrl + checkRoutePath)
+          WsTestClient.withClient { client =>
+            val result1 = createClientRequestGet(client, baseUrl + path)
 
-          whenReady(result1) { res =>
-            res.status mustBe 200
-            val page = Jsoup.parse(res.body)
-            page.title mustBe "What is your UK packaging site name? - Soft Drinks Industry Levy - GOV.UK"
-            val inputFields = page.getElementsByClass("govuk-form-group")
-            inputFields.size() mustBe 1
-            packagingSiteNameMap.zipWithIndex.foreach { case ((fieldName, _), index) =>
-              inputFields.get(index).text() mustBe "What is your UK packaging site name?"
-              inputFields.get(index).getElementById(fieldName).hasAttr("value") mustBe false
+            whenReady(result1) { res =>
+              res.status mustBe 303
+              res.header(HeaderNames.LOCATION) mustBe Some(routes.PackagingSiteDetailsController.onPageLoad(mode).url)
             }
           }
         }
       }
-    }
 
-    s"when the userAnswers contains data for the page" - {
-      s"should return OK and render the page with fields populated" in {
-        given
-          .commonPrecondition
-
-        setAnswers(userAnswers)
-
-        WsTestClient.withClient { client =>
-          val result1 = createClientRequestGet(client, baseUrl + checkRoutePath)
-
-          whenReady(result1) { res =>
-            res.status mustBe 200
-            val page = Jsoup.parse(res.body)
-            page.title mustBe "What is your UK packaging site name? - Soft Drinks Industry Levy - GOV.UK"
-            val inputFields = page.getElementsByClass("govuk-form-group")
-            inputFields.size() mustBe 1
-            packagingSiteNameMap.zipWithIndex.foreach { case ((fieldName, fieldValue), index) =>
-              inputFields.get(index).text() mustBe "What is your UK packaging site name?"
-              inputFields.get(index).getElementById(fieldName).hasAttr("value") mustBe true
-              inputFields.get(index).getElementById(fieldName).attr("value") mustBe fieldValue
-            }
-          }
-        }
-      }
-    }
-    testUnauthorisedUser(baseUrl + checkRoutePath)
-    testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath)
-  }
-
-  s"POST " + normalRoutePath - {
-    "when the user populates answers all questions" - {
-      "should update the session with the new values and redirect to the CYA controller" - {
-        "when the session contains no data for page" in {
+      "when the useranswers contains no packaging sites or alfAddres" - {
+        "must redirect to packAtBusinessAddress" in {
           given
             .commonPrecondition
 
           setAnswers(emptyUserAnswers)
-          WsTestClient.withClient { client =>
-            val result = createClientRequestPOST(
-              client, baseUrl + normalRoutePath, Json.toJson(packagingSiteNameDiff)
-            )
 
-            whenReady(result) { res =>
+          WsTestClient.withClient { client =>
+            val result1 = createClientRequestGet(client, baseUrl + path)
+
+            whenReady(result1) { res =>
               res.status mustBe 303
-              res.header(HeaderNames.LOCATION) mustBe Some(routes.PackagingSiteDetailsController.onPageLoad(NormalMode).url)
-              val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[PackagingSiteName]](None)(_.get(PackagingSiteNamePage))
-              dataStoredForPage.nonEmpty mustBe true
-              dataStoredForPage.get mustBe packagingSiteNameDiff
+              res.header(HeaderNames.LOCATION) mustBe Some(routes.PackAtBusinessAddressController.onPageLoad(mode).url)
             }
           }
         }
+      }
+      testUnauthorisedUser(baseUrl + path)
+      testAuthenticatedUserButNoUserAnswers(baseUrl + path)
+    }
 
-        "when the session already contains data for page" in {
+    "POST " + path - {
+      "should add the packaging site and remove alfResponse from user answers if present and redirect to packaging site details" - {
+        "when the user populates the trading name field with a valid value" - {
+          "and the userAnswers contains alfResponseWithLookupState for the reference number" in {
+            given
+              .commonPrecondition
+
+            setAnswers(userAnswersWithAlfResponseForSdilId)
+
+            WsTestClient.withClient { client =>
+              val result1 = createClientRequestPOST(client, baseUrl + path, Json.toJson(packagingSiteNameDiff))
+
+              whenReady(result1) { res =>
+                res.status mustBe 303
+                res.header(HeaderNames.LOCATION) mustBe Some(routes.PackagingSiteDetailsController.onPageLoad(mode).url)
+                val updatedUserAnswer = getAnswers(identifier).get
+                updatedUserAnswer.alfResponseForLookupState mustBe None
+                updatedUserAnswer.packagingSiteList mustBe Map(ref -> Site(ukAddress, None, packagingSiteNameDiff.packagingSiteName, None))
+              }
+            }
+          }
+
+          "and the userAnswers contains no alfResponseWithLookupState but has a packaging site for the reference number" in {
+            given
+              .commonPrecondition
+
+            setAnswers(userAnswersWithNoAlfResponseButPackingSiteWithSdilRef)
+
+            WsTestClient.withClient { client =>
+              val result1 = createClientRequestPOST(client, baseUrl + path, Json.toJson(packagingSiteNameDiff))
+
+              whenReady(result1) { res =>
+                res.status mustBe 303
+                res.header(HeaderNames.LOCATION) mustBe Some(routes.PackagingSiteDetailsController.onPageLoad(mode).url)
+                val updatedUserAnswer = getAnswers(identifier).get
+                updatedUserAnswer.alfResponseForLookupState mustBe None
+                updatedUserAnswer.packagingSiteList mustBe Map(ref -> Site(ukAddress, None, packagingSiteNameDiff.packagingSiteName, None))
+              }
+            }
+          }
+        }
+      }
+
+      "should not update the database and redirect to packaging site details" - {
+        "when the useranswers contains packaging sites but none with sdilId and has no alfAddress" in {
           given
             .commonPrecondition
 
-          setAnswers(userAnswers)
+          setAnswers(userAnswersWithPackagingSitesButNotForSdilRef)
+
           WsTestClient.withClient { client =>
-            val result = createClientRequestPOST(
-              client, baseUrl + normalRoutePath, Json.toJson(packagingSiteNameDiff)
-            )
+            val result1 = createClientRequestPOST(client, baseUrl + path, Json.toJson(packagingSiteNameDiff))
 
-            whenReady(result) { res =>
+            whenReady(result1) { res =>
               res.status mustBe 303
-              res.header(HeaderNames.LOCATION) mustBe Some(routes.PackagingSiteDetailsController.onPageLoad(NormalMode).url)
-              val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[PackagingSiteName]](None)(_.get(PackagingSiteNamePage))
-              dataStoredForPage.nonEmpty mustBe true
-              dataStoredForPage.get mustBe packagingSiteNameDiff
+              res.header(HeaderNames.LOCATION) mustBe Some(routes.PackagingSiteDetailsController.onPageLoad(mode).url)
             }
           }
         }
       }
-    }
 
-    "should return 400 with required error" - {
-      "when no questions are answered" in {
-        given
-          .commonPrecondition
-
-        setAnswers(emptyUserAnswers)
-        WsTestClient.withClient { client =>
-          val result = createClientRequestPOST(
-            client, baseUrl + normalRoutePath, Json.toJson(PackagingSiteName(""))
-          )
-
-          whenReady(result) { res =>
-            res.status mustBe 400
-            val page = Jsoup.parse(res.body)
-            page.title mustBe "Error: What is your UK packaging site name? - Soft Drinks Industry Levy - GOV.UK"
-            val errorSummaryList = page.getElementsByClass("govuk-list govuk-error-summary__list")
-              .first().getElementsByTag("li")
-            errorSummaryList.size() mustBe packagingSiteNameMap.size
-            packagingSiteNameMap.zipWithIndex.foreach { case ((fieldName, _), index) =>
-              val errorSummary = errorSummaryList.get(index)
-              errorSummary
-                .select("a")
-                .attr("href") mustBe "#" + fieldName
-              errorSummary.text() mustBe "Enter a packaging site name"
-            }
-          }
-        }
-      }
-      packagingSiteNameMap.zipWithIndex.foreach { case ((fieldName, _), index) =>
-        "when no answer is given for field" + fieldName in {
+      "should not update the database and redirect to pack at business address" - {
+        "when the useranswers contains no packaging sites or alfAddress" in {
           given
             .commonPrecondition
 
           setAnswers(emptyUserAnswers)
-          val invalidJson = packagingSiteNameMap.foldLeft(Json.obj()) { case (current, (fn, fv)) =>
-            val fieldValue = if (fn == fieldName) {
-              ""
-            } else {
-              fv
+
+          WsTestClient.withClient { client =>
+            val result1 = createClientRequestPOST(client, baseUrl + path, Json.toJson(packagingSiteNameDiff))
+
+            whenReady(result1) { res =>
+              res.status mustBe 303
+              res.header(HeaderNames.LOCATION) mustBe Some(routes.PackAtBusinessAddressController.onPageLoad(mode).url)
             }
-            current ++ Json.obj(fn -> fieldValue)
           }
+        }
+      }
+
+      "should return 400 with required error" - {
+        "when no questions are answered" in {
+          given
+            .commonPrecondition
+
+          setAnswers(userAnswersWithAlfResponseForSdilId)
           WsTestClient.withClient { client =>
             val result = createClientRequestPOST(
-              client, baseUrl + normalRoutePath, invalidJson
+              client, baseUrl + path, Json.toJson(PackagingSiteName(""))
             )
 
             whenReady(result) { res =>
@@ -228,96 +213,55 @@ class PackagingSiteNameControllerISpec extends ControllerITTestHelper {
               val page = Jsoup.parse(res.body)
               page.title mustBe "Error: What is your UK packaging site name? - Soft Drinks Industry Levy - GOV.UK"
               val errorSummaryList = page.getElementsByClass("govuk-list govuk-error-summary__list")
-                .first()
-              errorSummaryList
-                .select("a")
-                .attr("href") mustBe "#" + fieldName
-              errorSummaryList.text() mustBe "Enter a packaging site name"
+                .first().getElementsByTag("li")
+              errorSummaryList.size() mustBe packagingSiteNameMap.size
+              packagingSiteNameMap.zipWithIndex.foreach { case ((fieldName, _), index) =>
+                val errorSummary = errorSummaryList.get(index)
+                errorSummary
+                  .select("a")
+                  .attr("href") mustBe "#" + fieldName
+                errorSummary.text() mustBe "Enter a packaging site name"
+              }
+            }
+          }
+        }
+        packagingSiteNameMap.zipWithIndex.foreach { case ((fieldName, _), index) =>
+          "when no answer is given for field" + fieldName in {
+            given
+              .commonPrecondition
+
+            setAnswers(userAnswersWithAlfResponseForSdilId)
+            val invalidJson = packagingSiteNameMap.foldLeft(Json.obj()) { case (current, (fn, fv)) =>
+              val fieldValue = if (fn == fieldName) {
+                ""
+              } else {
+                fv
+              }
+              current ++ Json.obj(fn -> fieldValue)
+            }
+            WsTestClient.withClient { client =>
+              val result = createClientRequestPOST(
+                client, baseUrl + path, invalidJson
+              )
+
+              whenReady(result) { res =>
+                res.status mustBe 400
+                val page = Jsoup.parse(res.body)
+                page.title mustBe "Error: What is your UK packaging site name? - Soft Drinks Industry Levy - GOV.UK"
+                val errorSummaryList = page.getElementsByClass("govuk-list govuk-error-summary__list")
+                  .first()
+                errorSummaryList
+                  .select("a")
+                  .attr("href") mustBe "#" + fieldName
+                errorSummaryList.text() mustBe "Enter a packaging site name"
+              }
             }
           }
         }
       }
-    }
 
-    testUnauthorisedUser(baseUrl + normalRoutePath, Some(Json.obj("value" -> "true")))
-    testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath, Some(Json.obj("value" -> "true")))
+      testUnauthorisedUser(baseUrl + path, Some(Json.obj("value" -> "true")))
+      testAuthenticatedUserButNoUserAnswers(baseUrl + path, Some(Json.obj("value" -> "true")))
+    }
   }
-
-  s"POST " + checkRoutePath - {
-    "when the user populates answers all questions" - {
-      "should update the session with the new values and redirect to the CYA page" - {
-        "when the session contains no data for page" in {
-          given
-            .commonPrecondition
-
-          setAnswers(emptyUserAnswers)
-          WsTestClient.withClient { client =>
-            val result = createClientRequestPOST(
-              client, baseUrl + checkRoutePath, Json.toJson(packagingSiteNameDiff)
-            )
-
-            whenReady(result) { res =>
-              res.status mustBe 303
-              res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
-              val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[PackagingSiteName]](None)(_.get(PackagingSiteNamePage))
-              dataStoredForPage.nonEmpty mustBe true
-              dataStoredForPage.get mustBe packagingSiteNameDiff
-            }
-          }
-        }
-
-        "when the session already contains data for page" in {
-          given
-            .commonPrecondition
-
-          setAnswers(userAnswers)
-          WsTestClient.withClient { client =>
-            val result = createClientRequestPOST(
-              client, baseUrl + checkRoutePath, Json.toJson(packagingSiteNameDiff)
-            )
-
-            whenReady(result) { res =>
-              res.status mustBe 303
-              res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
-              val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[PackagingSiteName]](None)(_.get(PackagingSiteNamePage))
-              dataStoredForPage.nonEmpty mustBe true
-              dataStoredForPage.get mustBe packagingSiteNameDiff
-            }
-          }
-        }
-      }
-    }
-
-    "should return 400 with required error" - {
-      "when no questions are answered" in {
-        given
-          .commonPrecondition
-
-        setAnswers(emptyUserAnswers)
-        WsTestClient.withClient { client =>
-          val result = createClientRequestPOST(
-            client, baseUrl + checkRoutePath, Json.toJson(PackagingSiteName(""))
-          )
-
-          whenReady(result) { res =>
-            res.status mustBe 400
-            val page = Jsoup.parse(res.body)
-            page.title mustBe "Error: What is your UK packaging site name? - Soft Drinks Industry Levy - GOV.UK"
-            val errorSummaryList = page.getElementsByClass("govuk-list govuk-error-summary__list")
-              .first().getElementsByTag("li")
-            errorSummaryList.size() mustBe packagingSiteNameMap.size
-            packagingSiteNameMap.zipWithIndex.foreach { case ((fieldName, _), index) =>
-              val errorSummary = errorSummaryList.get(index)
-              errorSummary
-                .select("a")
-                .attr("href") mustBe "#" + fieldName
-              errorSummary.text() mustBe "Enter a packaging site name"
-            }
-          }
-        }
-      }
-    }
-
-    testUnauthorisedUser(baseUrl + checkRoutePath, Some(Json.obj("value" -> "true")))
-    testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath, Some(Json.obj("value" -> "true")))  }
 }

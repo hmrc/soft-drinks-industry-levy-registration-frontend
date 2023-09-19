@@ -18,27 +18,27 @@ package controllers.actions
 
 import com.google.inject.{Inject, Singleton}
 import connectors.SoftDrinksIndustryLevyConnector
-import controllers.routes
 import handlers.ErrorHandler
+import models.Mode
 import models.RegisterState._
-import models.requests.{DataRequest, DataRequestForApplicationSubmitted, DataRequestForEnterBusinessDetails, OptionalDataRequest}
-import models.{RegisterState, RosmWithUtr, UserAnswers}
-import pages.EnterBusinessDetailsPage
-import play.api.mvc.Results.{InternalServerError, Redirect}
-import play.api.mvc.{ActionBuilder, ActionRefiner, AnyContent, Result}
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.http.HeaderCarrierConverter
+import models.requests.{DataRequest, DataRequestForApplicationSubmitted, DataRequestForEnterBusinessDetails, DataRequestForEnterTradingName}
+import play.api.mvc.{ActionBuilder, AnyContent}
+import services.AddressLookupState
 import utilities.GenericLogger
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class ControllerActions @Inject()(identify: IdentifierAction,
                                   getData: DataRetrievalAction,
                                   dataRequired: DataRequiredAction,
-                                  sdilConnector: SoftDrinksIndustryLevyConnector,
-                                  genericLogger: GenericLogger,
-                                  errorHandler: ErrorHandler)(implicit ec: ExecutionContext) {
+                                  val sdilConnector: SoftDrinksIndustryLevyConnector,
+                                  val genericLogger: GenericLogger,
+                                  val errorHandler: ErrorHandler)(implicit ec: ExecutionContext) extends ControllerActionHelper {
+
+  def withUserWhoCanEnterTradingName(addressLookupState: AddressLookupState, ref: String, mode: Mode): ActionBuilder[DataRequestForEnterTradingName, AnyContent] = {
+    withUserWhoCanRegister andThen dataRequiredForEnterTradingNameAction(addressLookupState, ref, mode)
+  }
 
   def withUserWhoCanRegister: ActionBuilder[DataRequest, AnyContent] = {
     identify andThen getData andThen dataRequired
@@ -62,89 +62,6 @@ class ControllerActions @Inject()(identify: IdentifierAction,
 
   def withRequiresBusinessDetailsAction: ActionBuilder[DataRequestForEnterBusinessDetails, AnyContent] = {
     identify andThen getData andThen dataRequiredForRequiresBusinessDetailsAction
-  }
-
-  private def dataRequiredForRequiresBusinessDetailsAction: ActionRefiner[OptionalDataRequest, DataRequestForEnterBusinessDetails] = {
-    new ActionRefiner[OptionalDataRequest, DataRequestForEnterBusinessDetails] {
-      override protected def refine[A](request: OptionalDataRequest[A]): Future[Either[Result, DataRequestForEnterBusinessDetails[A]]] = {
-        implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
-        request.userAnswers match {
-          case Some(userAnswers) if userAnswers.submittedOn.isDefined => Future.successful(Left(Redirect(routes.RegistrationConfirmationController.onPageLoad)))
-          case Some(userAnswers) if canAccessEnterBusinessDetails(userAnswers) =>
-            Future.successful(Right(DataRequestForEnterBusinessDetails(request = request.request, internalId = request.internalId,
-              hasCTEnrolment = request.hasCTEnrolment, authUtr = request.authUtr, userAnswers = userAnswers)))
-          case Some(userAnswers) =>
-            val call = ActionHelpers.getRouteForRegisterState(userAnswers.registerState)
-            Future.successful(Left(Redirect(call)))
-          case _ =>
-            genericLogger.logger.info(s"User has no user answers ${hc.requestId}")
-            Future.successful(Left(Redirect(routes.RegistrationController.start)))
-        }
-      }
-
-      override protected def executionContext: ExecutionContext = ec
-    }
-  }
-
-  private def dataRequiredForUserWhoCannotRegisterAction(registerState: RegisterState): ActionRefiner[OptionalDataRequest, DataRequest] = {
-    new ActionRefiner[OptionalDataRequest, DataRequest] {
-      override protected def refine[A](request: OptionalDataRequest[A]): Future[Either[Result, DataRequest[A]]] = {
-        implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
-        request.userAnswers match {
-          case Some(userAnswers) if userAnswers.submittedOn.isDefined => Future.successful(Left(Redirect(routes.RegistrationConfirmationController.onPageLoad)))
-          case Some(userAnswers) if userAnswers.registerState.toString == registerState.toString =>
-            getRosmData(userAnswers, request).map{
-              case Right(rosmWithUtr) => Right(DataRequest(request, request.internalId, request.hasCTEnrolment, request.authUtr, userAnswers, rosmWithUtr))
-              case Left(result) => Left(result)
-            }
-          case Some(userAnswers) =>
-            val call = ActionHelpers.getRouteForRegisterState(userAnswers.registerState)
-            Future.successful(Left(Redirect(call)))
-          case _ =>
-            genericLogger.logger.info(s"User has no user answers ${hc.requestId}")
-            Future.successful(Left(Redirect(routes.RegistrationController.start)))
-        }
-      }
-
-      override protected def executionContext: ExecutionContext = ec
-    }
-  }
-
-  private def dataRequiredForUserWhoHasSubmittedApplicationAction: ActionRefiner[OptionalDataRequest, DataRequestForApplicationSubmitted] = {
-    new ActionRefiner[OptionalDataRequest, DataRequestForApplicationSubmitted] {
-      override protected def refine[A](request: OptionalDataRequest[A]): Future[Either[Result, DataRequestForApplicationSubmitted[A]]] = {
-        implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
-        request.userAnswers match {
-          case Some(userAnswers) if userAnswers.submittedOn.isDefined =>
-            getRosmData(userAnswers, request).map {
-              case Right(rosmWithUtr) => Right(DataRequestForApplicationSubmitted(request, request.internalId, userAnswers, rosmWithUtr, userAnswers.submittedOn.get))
-              case Left(result) => Left(result)
-            }
-          case _ => genericLogger.logger.info(s"User has no user answers or no submitted time ${hc.requestId}")
-            Future.successful(Left(Redirect(routes.RegistrationController.start)))
-        }
-      }
-
-      override protected def executionContext: ExecutionContext = ec
-    }
-  }
-
-  private def getUtr[A](userAnswers: UserAnswers, request: OptionalDataRequest[A]): Option[String] = {
-      userAnswers.get(EnterBusinessDetailsPage).map(_.utr).orElse(request.authUtr)
-  }
-
-  private def getRosmData[A](userAnswers: UserAnswers, request: OptionalDataRequest[A])
-                            (implicit hc: HeaderCarrier): Future[Either[Result, RosmWithUtr]] = {
-    getUtr(userAnswers, request) match {
-      case Some(utr) =>
-        sdilConnector.retreiveRosmSubscription(utr, request.internalId).value.map {
-          case Right(rosmWithUtr) => Right(rosmWithUtr)
-          case Left(_) => Left(InternalServerError(errorHandler.internalServerErrorTemplate(request)))
-        }
-      case None =>
-        genericLogger.logger.error(s"User has no utr when required for register state ${userAnswers.registerState}")
-        Future.successful(Left(InternalServerError(errorHandler.internalServerErrorTemplate(request))))
-    }
   }
 
 }

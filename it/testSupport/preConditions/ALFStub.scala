@@ -15,17 +15,29 @@ case class ALFStub()(implicit builder: PreconditionBuilder) {
     countryCode = Some("UK")
   ))
 
+  val aAddressNoOrg = AlfResponse(address = AlfAddress(
+    organisation = None,
+    List("line 1", "line 2", "line 3", "line 4"),
+    postcode = Some("aa1 1aa"),
+    countryCode = Some("UK")
+  ))
+
   val BadAddress = (
     "Failed Address"
   )
 
-  def getAddress(id : String) ={
+  def getAddress(id : String, hasTradingName: Boolean = true) ={
+    val address = if(hasTradingName) {
+      aAddress
+    } else {
+      aAddressNoOrg
+    }
     stubFor(
       get(
         urlPathMatching(s"/api/confirmed")
       ).withQueryParam("id",equalTo(id))
         .willReturn(
-        ok(Json.toJson(aAddress).toString())))
+        ok(Json.toJson(address).toString())))
     builder
   }
 

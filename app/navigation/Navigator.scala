@@ -37,8 +37,8 @@ class Navigator @Inject()() {
   }
 
   private val normalRoutes: Page => UserAnswers => Call = {
-    case WarehousesTradingNamePage => userAnswers => routes.WarehouseDetailsController.onPageLoad(NormalMode)
-    case PackagingSiteNamePage => userAnswers => routes.PackagingSiteDetailsController.onPageLoad(NormalMode)
+    case WarehousesTradingNamePage => _ => routes.WarehouseDetailsController.onPageLoad(NormalMode)
+    case PackagingSiteNamePage => _ => routes.PackagingSiteDetailsController.onPageLoad(NormalMode)
     case VerifyPage => _ => routes.OrganisationTypeController.onPageLoad(NormalMode)
     case RemovePackagingSiteDetailsPage => _ => routes.PackagingSiteDetailsController.onPageLoad(NormalMode)
     case EnterBusinessDetailsPage => userAnswers => navigationForEnterBusinessDetails(userAnswers)
@@ -58,6 +58,8 @@ class Navigator @Inject()() {
   }
 
   private val checkRouteMap: Page => UserAnswers => Option[String] => Call = {
+    case WarehousesTradingNamePage => _  => _ => routes.WarehouseDetailsController.onPageLoad(CheckMode)
+    case PackagingSiteNamePage => _ => _ => routes.PackagingSiteDetailsController.onPageLoad(CheckMode)
     case EnterBusinessDetailsPage => _ =>_ => routes.VerifyController.onPageLoad(NormalMode)
     case RemovePackagingSiteDetailsPage => _ => _ => routes.PackagingSiteDetailsController.onPageLoad(CheckMode)
     case RemoveWarehouseDetailsPage => _ => _ => routes.WarehouseDetailsController.onPageLoad(CheckMode)

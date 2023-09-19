@@ -19,20 +19,18 @@ package controllers
 import base.SpecBase
 import forms.WarehousesTradingNameFormProvider
 import helpers.LoggerHelper
-import models.RegisterState.RegisterWithAuthUTR
-import models.{NormalMode, UserAnswers, WarehousesTradingName}
-import navigation.{FakeNavigator, Navigator}
-import org.jsoup.Jsoup
+import models.alf.AddressResponseForLookupState
+import models.backend.UkAddress
+import models.{NormalMode, UserAnswers, Warehouse, WarehousesTradingName}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.WarehousesTradingNamePage
 import play.api.data.Form
 import play.api.inject.bind
-import play.api.libs.json.Json
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import services.AddressLookupState.WarehouseDetails
 import services.SessionService
 import utilities.GenericLogger
 import views.html.WarehousesTradingNameView
@@ -43,86 +41,162 @@ class WarehousesTradingNameControllerSpec extends SpecBase with MockitoSugar wit
 
   val formProvider = new WarehousesTradingNameFormProvider()
   val form: Form[WarehousesTradingName] = formProvider()
+  val sdilId = "123456"
+  val tradingName = "Sugary Lemonade"
 
-  lazy val warehousesTradingNameRoute = routes.WarehousesTradingNameController.onPageLoad(NormalMode).url
+  lazy val warehouseSiteNameRoute: String = routes.WarehousesTradingNameController.onPageLoad(NormalMode, sdilId).url
+  val ukAddress = UkAddress(List("line 1", "line 2", "line 3", "line 4"), "aa1 1aa", alfId = Some("bar"))
 
-  val userAnswers: UserAnswers = UserAnswers(
-    identifier, RegisterWithAuthUTR,
-    Json.obj(
-      WarehousesTradingNamePage.toString -> Json.obj(
-        "warehouseTradingName" -> "value 1")
-    )
+  val alfResponseForLookupState = AddressResponseForLookupState(ukAddress, WarehouseDetails, sdilId)
+
+
+  val userAnswersWithAlfResponseForSdilId: UserAnswers = emptyUserAnswers.copy(
+    alfResponseForLookupState = Some(alfResponseForLookupState)
+  )
+
+  val userAnswersWithNoAlfResponseButWarehouseWithSdilRef = emptyUserAnswers.copy(
+    warehouseList = Map(sdilId -> Warehouse(tradingName, ukAddress))
+  )
+
+  val userAnswersWithWarehouseButNotForSdilRef = emptyUserAnswers.copy(
+    warehouseList = Map("5432456" -> Warehouse(tradingName, ukAddress))
   )
 
   "WarehousesTradingName Controller" - {
+    "when the user has entered a warehouse address in alf" - {
+      "must render the warehouseTradingName page for a GET" in {
+        val application = applicationBuilder(userAnswers = Some(userAnswersWithAlfResponseForSdilId)).build()
 
-    "must return OK and the correct view for a GET" in {
+        running(application) {
+          val request = FakeRequest(GET, warehouseSiteNameRoute)
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+          val result = route(application, request).value
 
-      running(application) {
-        val request = FakeRequest(GET, warehousesTradingNameRoute)
+          val view = application.injector.instanceOf[WarehousesTradingNameView]
 
-        val result = route(application, request).value
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(form, NormalMode, sdilId)(request, messages(application)).toString
+        }
+      }
 
-        val view = application.injector.instanceOf[WarehousesTradingNameView]
+      "must redirect to warehouseDetails when valid data is submitted" in {
 
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        val mockSessionService = mock[SessionService]
+
+        when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(true)
+
+        val application =
+          applicationBuilder(userAnswers = Some(userAnswersWithAlfResponseForSdilId))
+            .overrides(
+              bind[SessionService].toInstance(mockSessionService)
+            )
+            .build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, warehouseSiteNameRoute)
+              .withFormUrlEncodedBody(("warehouseTradingName", "value 1"))
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.WarehouseDetailsController.onPageLoad(NormalMode).url
+        }
       }
     }
 
-    "must populate the view correctly on a GET when the question has previously been answered" in {
+    "when the user has a warehouse for the sdilRef but no alfAddress" - {
+      "must render the warehouseTradingName page for a GET with trading name populated" in {
+        val application = applicationBuilder(userAnswers = Some(userAnswersWithNoAlfResponseButWarehouseWithSdilRef)).build()
 
-      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+        running(application) {
+          val request = FakeRequest(GET, warehouseSiteNameRoute)
 
-      running(application) {
-        val request = FakeRequest(GET, warehousesTradingNameRoute)
+          val result = route(application, request).value
 
-        val view = application.injector.instanceOf[WarehousesTradingNameView]
+          val view = application.injector.instanceOf[WarehousesTradingNameView]
 
-        val result = route(application, request).value
+          status(result) mustEqual OK
+          contentAsString(result) mustEqual view(form.fill(WarehousesTradingName(tradingName)), NormalMode, sdilId)(request, messages(application)).toString
+        }
+      }
 
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(WarehousesTradingName("value 1")), NormalMode)(request, messages(application)).toString
+      "must redirect to warehouseDetails when valid data is submitted" in {
+
+        val mockSessionService = mock[SessionService]
+
+        when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(true)
+
+        val application =
+          applicationBuilder(userAnswers = Some(userAnswersWithNoAlfResponseButWarehouseWithSdilRef))
+            .overrides(
+              bind[SessionService].toInstance(mockSessionService)
+            )
+            .build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, warehouseSiteNameRoute)
+              .withFormUrlEncodedBody(("warehouseTradingName", "value 1"))
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.WarehouseDetailsController.onPageLoad(NormalMode).url
+        }
       }
     }
 
-    "must redirect to the next page when valid data is submitted" in {
+    "when the user answers contains no alfAddress and has warehouse with none for the sdilId" - {
+      "must not render the page and redirect to packagingSiteDetails for GET" in {
+        val application =
+          applicationBuilder(userAnswers = Some(userAnswersWithWarehouseButNotForSdilRef))
+            .overrides(
+            )
+            .build()
 
-      val mockSessionService = mock[SessionService]
+        running(application) {
+          val request =
+            FakeRequest(GET, warehouseSiteNameRoute)
 
-      when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(true)
+          val result = route(application, request).value
 
-      val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
-          .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionService].toInstance(mockSessionService)
-          )
-          .build()
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.WarehouseDetailsController.onPageLoad(NormalMode).url
+        }
+      }
+    }
 
-      running(application) {
-        val request =
-          FakeRequest(POST, warehousesTradingNameRoute)
-        .withFormUrlEncodedBody(("warehouseTradingName", "value 1"))
 
-        val result = route(application, request).value
+    "when the user answers contains no alfAddress and has no warehouse sites" - {
+      "must not render the page and redirect to askSecondaryWarehouse page for GET" in {
+        val application =
+          applicationBuilder(userAnswers = Some(emptyUserAnswers))
+            .overrides(
+            )
+            .build()
 
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual onwardRoute.url
+        running(application) {
+          val request =
+            FakeRequest(GET, warehouseSiteNameRoute)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.AskSecondaryWarehousesController.onPageLoad(NormalMode).url
+        }
       }
     }
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(userAnswersWithAlfResponseForSdilId)).build()
 
       running(application) {
         val request =
-          FakeRequest(POST, warehousesTradingNameRoute
-        )
-        .withFormUrlEncodedBody(("value", "invalid value"))
+          FakeRequest(POST, warehouseSiteNameRoute
+          )
+            .withFormUrlEncodedBody(("value", "invalid value"))
 
         val boundForm = form.bind(Map("value" -> "invalid value"))
 
@@ -131,7 +205,7 @@ class WarehousesTradingNameControllerSpec extends SpecBase with MockitoSugar wit
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, sdilId)(request, messages(application)).toString
       }
     }
 
@@ -140,7 +214,7 @@ class WarehousesTradingNameControllerSpec extends SpecBase with MockitoSugar wit
       val application = applicationBuilder(userAnswers = None).build()
 
       running(application) {
-        val request = FakeRequest(GET, warehousesTradingNameRoute)
+        val request = FakeRequest(GET, warehouseSiteNameRoute)
 
         val result = route(application, request).value
 
@@ -155,9 +229,9 @@ class WarehousesTradingNameControllerSpec extends SpecBase with MockitoSugar wit
 
       running(application) {
         val request =
-          FakeRequest(POST, warehousesTradingNameRoute
-        )
-        .withFormUrlEncodedBody(("warehouseTradingName", "value 1"))
+          FakeRequest(POST, warehouseSiteNameRoute
+          )
+            .withFormUrlEncodedBody(("warehouseTradingName", "value 1"))
 
         val result = route(application, request).value
 
@@ -166,32 +240,14 @@ class WarehousesTradingNameControllerSpec extends SpecBase with MockitoSugar wit
       }
     }
 
-    "must fail if the setting of userAnswers fails" in {
-
-      val application = applicationBuilder(userAnswers = Some(userDetailsWithSetMethodsReturningFailure)).build()
-
-      running(application) {
-        val request =
-          FakeRequest(POST, warehousesTradingNameRoute
-        )
-        .withFormUrlEncodedBody(("warehouseTradingName", "value 1"))
-
-        val result = route(application, request).value
-
-        status(result) mustEqual INTERNAL_SERVER_ERROR
-        val page = Jsoup.parse(contentAsString(result))
-        page.title() mustBe "Sorry, we are experiencing technical difficulties - 500 - Soft Drinks Industry Levy - GOV.UK"
-      }
-    }
-
     "should log an error message when internal server error is returned when user answers are not set in session repository" in {
       val mockSessionService = mock[SessionService]
 
       when(mockSessionService.set(any())) thenReturn createFailureRegistrationResult(errors.SessionDatabaseInsertError)
+
       val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        applicationBuilder(userAnswers = Some(userAnswersWithAlfResponseForSdilId))
           .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionService].toInstance(mockSessionService)
           )
           .build()
@@ -199,9 +255,9 @@ class WarehousesTradingNameControllerSpec extends SpecBase with MockitoSugar wit
       running(application) {
         withCaptureOfLoggingFrom(application.injector.instanceOf[GenericLogger].logger) { events =>
           val request =
-            FakeRequest(POST, warehousesTradingNameRoute
-          )
-          .withFormUrlEncodedBody(("warehouseTradingName", "value 1"))
+            FakeRequest(POST, warehouseSiteNameRoute
+            )
+              .withFormUrlEncodedBody(("warehouseTradingName", "value 1"))
 
           await(route(application, request).value)
           events.collectFirst {

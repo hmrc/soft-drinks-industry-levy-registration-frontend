@@ -1,305 +1,210 @@
 package controllers
 
-import models.{NormalMode, UserAnswers, WarehousesTradingName}
+import models.alf.AddressResponseForLookupState
+import models.{CheckMode, NormalMode, UserAnswers, Warehouse, WarehousesTradingName}
 import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
-import pages.WarehousesTradingNamePage
 import play.api.http.HeaderNames
 import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.test.WsTestClient
+import services.AddressLookupState.WarehouseDetails
 
 class WarehousesTradingNameControllerISpec extends ControllerITTestHelper {
 
-  val normalRoutePath = "/warehouses-trading-name"
-  val checkRoutePath = "/change-warehouses-trading-name"
+  val ref = "1234567890"
+  val normalRoutePath = s"/warehouses-trading-name/$ref"
+  val checkRoutePath = s"/change-warehouses-trading-name/$ref"
 
   val warehousesTradingNameJsObject: collection.Map[String, JsValue] = Json.toJson(warehousesTradingName).as[JsObject].value
   val warehousesTradingNameMap: collection.Map[String, String] = {
     warehousesTradingNameJsObject.map { case (fName, fValue) => fName -> fValue.as[String] }
   }
+  val alfResponseForLookupState = AddressResponseForLookupState(ukAddress, WarehouseDetails, ref)
+  val userAnswersWithAlfResponseForSdilId: UserAnswers = emptyUserAnswers.copy(
+    alfResponseForLookupState = Some(alfResponseForLookupState))
+  val userAnswersWithNoAlfResponseButWarehouseWithSdilRef = emptyUserAnswers.copy(
+    warehouseList = Map(ref -> Warehouse(warehousesTradingName.warehouseTradingName, ukAddress)))
+  val userAnswersWithWarehousesButNotForSdilRef = emptyUserAnswers.copy(
+    warehouseList = Map("5432456" -> Warehouse(warehousesTradingName.warehouseTradingName, ukAddress)))
+  val modeWithPaths = Map(NormalMode -> normalRoutePath,
+    CheckMode -> checkRoutePath)
 
-  val userAnswers: UserAnswers = emptyUserAnswers.set(WarehousesTradingNamePage, warehousesTradingName).success.value
+  modeWithPaths.foreach { case (mode, path) =>
+    "GET " + path - {
+      "when the userAnswers contains alfResponseWithLookupState for the reference number" - {
+        "should return OK and render the WarehouseTradingName page with no data populated" in {
+          given
+            .commonPrecondition
 
-  "GET " + normalRoutePath - {
-    "when the userAnswers contains no data" - {
-      "should return OK and render the WarehousesTradingName page with no data populated" in {
-        given
-          .commonPrecondition
+          setAnswers(userAnswersWithAlfResponseForSdilId)
 
-        setAnswers(emptyUserAnswers)
+          WsTestClient.withClient { client =>
+            val result1 = createClientRequestGet(client, baseUrl + path)
 
-        WsTestClient.withClient { client =>
-          val result1 = createClientRequestGet(client, baseUrl + normalRoutePath)
-
-          whenReady(result1) { res =>
-            res.status mustBe 200
-            val page = Jsoup.parse(res.body)
-            page.title mustBe "What is your UK warehouse trading name? - Soft Drinks Industry Levy - GOV.UK"
-            val inputFields = page.getElementsByClass("govuk-form-group")
-            inputFields.size() mustBe 1
-            warehousesTradingNameMap.zipWithIndex.foreach { case ((fieldName, _), index) =>
-              inputFields.get(index).text() mustBe "What is your UK warehouse trading name?"
-              inputFields.get(index).getElementById(fieldName).hasAttr("value") mustBe false
+            whenReady(result1) { res =>
+              res.status mustBe 200
+              val page = Jsoup.parse(res.body)
+              page.title mustBe "What is your UK warehouse trading name? - Soft Drinks Industry Levy - GOV.UK"
+              val inputFields = page.getElementsByClass("govuk-form-group")
+              inputFields.size() mustBe 1
+              inputFields.get(0).text() mustBe "What is your UK warehouse trading name?"
+              inputFields.get(0).getElementById("warehouseTradingName").hasAttr("value") mustBe false
             }
           }
         }
       }
-    }
 
-    s"when the userAnswers contains data for the page" - {
-      s"should return OK and render the page with fields populated" in {
-        given
-          .commonPrecondition
+      "when the userAnswers contains no alfResponseWithLookupState but contains a packaging site for the reference number" - {
+        "should return OK and render the WarehouseTradingName page with data populated" in {
+          given
+            .commonPrecondition
 
-        setAnswers(userAnswers)
+          setAnswers(userAnswersWithNoAlfResponseButWarehouseWithSdilRef)
 
-        WsTestClient.withClient { client =>
-          val result1 = createClientRequestGet(client, baseUrl + normalRoutePath)
+          WsTestClient.withClient { client =>
+            val result1 = createClientRequestGet(client, baseUrl + path)
 
-          whenReady(result1) { res =>
-            res.status mustBe 200
-            val page = Jsoup.parse(res.body)
-            page.title mustBe "What is your UK warehouse trading name? - Soft Drinks Industry Levy - GOV.UK"
-            val inputFields = page.getElementsByClass("govuk-form-group")
-            inputFields.size() mustBe 1
-            warehousesTradingNameMap.zipWithIndex.foreach { case ((fieldName, fieldValue), index) =>
-              inputFields.get(index).text() mustBe "What is your UK warehouse trading name?"
-              inputFields.get(index).getElementById(fieldName).hasAttr("value") mustBe true
-              inputFields.get(index).getElementById(fieldName).attr("value") mustBe fieldValue
+            whenReady(result1) { res =>
+              res.status mustBe 200
+              val page = Jsoup.parse(res.body)
+              page.title mustBe "What is your UK warehouse trading name? - Soft Drinks Industry Levy - GOV.UK"
+              val inputFields = page.getElementsByClass("govuk-form-group")
+              inputFields.size() mustBe 1
+              inputFields.get(0).text() mustBe "What is your UK warehouse trading name?"
+              inputFields.get(0).getElementById("warehouseTradingName").hasAttr("value") mustBe true
+              inputFields.get(0).getElementById("warehouseTradingName").attr("value") mustBe warehousesTradingName.warehouseTradingName
             }
           }
         }
       }
-    }
-    testOtherSuccessUserTypes(baseUrl + normalRoutePath, "What is your UK warehouse trading name?")
-    testUnauthorisedUser(baseUrl + normalRoutePath)
-    testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)
-  }
 
-  "GET " + checkRoutePath - {
-    "when the userAnswers contains no data" - {
-      "should return OK and render the WarehousesTradingName page with no data populated" in {
-        given
-          .commonPrecondition
+      "when the useranswers contains warehouses but none with sdilId and has no alfAddres" - {
+        "must redirect to warehouseDetails" in {
+          given
+            .commonPrecondition
 
-        setAnswers(emptyUserAnswers)
+          setAnswers(userAnswersWithWarehousesButNotForSdilRef)
 
-        WsTestClient.withClient { client =>
-          val result1 = createClientRequestGet(client, baseUrl + checkRoutePath)
+          WsTestClient.withClient { client =>
+            val result1 = createClientRequestGet(client, baseUrl + path)
 
-          whenReady(result1) { res =>
-            res.status mustBe 200
-            val page = Jsoup.parse(res.body)
-            page.title mustBe "What is your UK warehouse trading name? - Soft Drinks Industry Levy - GOV.UK"
-            val inputFields = page.getElementsByClass("govuk-form-group")
-            inputFields.size() mustBe 1
-            warehousesTradingNameMap.zipWithIndex.foreach { case ((fieldName, _), index) =>
-              inputFields.get(index).text() mustBe "What is your UK warehouse trading name?"
-              inputFields.get(index).getElementById(fieldName).hasAttr("value") mustBe false
+            whenReady(result1) { res =>
+              res.status mustBe 303
+              res.header(HeaderNames.LOCATION) mustBe Some(routes.WarehouseDetailsController.onPageLoad(mode).url)
             }
           }
         }
       }
-    }
 
-    s"when the userAnswers contains data for the page" - {
-      s"should return OK and render the page with fields populated" in {
-        given
-          .commonPrecondition
-
-        setAnswers(userAnswers)
-
-        WsTestClient.withClient { client =>
-          val result1 = createClientRequestGet(client, baseUrl + checkRoutePath)
-
-          whenReady(result1) { res =>
-            res.status mustBe 200
-            val page = Jsoup.parse(res.body)
-            page.title mustBe "What is your UK warehouse trading name? - Soft Drinks Industry Levy - GOV.UK"
-            val inputFields = page.getElementsByClass("govuk-form-group")
-            inputFields.size() mustBe 1
-            warehousesTradingNameMap.zipWithIndex.foreach { case ((fieldName, fieldValue), index) =>
-              inputFields.get(index).text() mustBe "What is your UK warehouse trading name?"
-              inputFields.get(index).getElementById(fieldName).hasAttr("value") mustBe true
-              inputFields.get(index).getElementById(fieldName).attr("value") mustBe fieldValue
-            }
-          }
-        }
-      }
-    }
-    testUnauthorisedUser(baseUrl + checkRoutePath)
-    testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath)
-  }
-
-  s"POST " + normalRoutePath - {
-    "when the user populates answers all questions" - {
-      "should update the session with the new values and redirect to the warehouse details controller" - {
-        "when the session contains no data for page" in {
+      "when the useranswers contains no warehouses or alfAddres" - {
+        "must redirect to AskSecondaryWarehouse" in {
           given
             .commonPrecondition
 
           setAnswers(emptyUserAnswers)
-          WsTestClient.withClient { client =>
-            val result = createClientRequestPOST(
-              client, baseUrl + normalRoutePath, Json.toJson(warehousesTradingNameDiff)
-            )
 
-            whenReady(result) { res =>
+          WsTestClient.withClient { client =>
+            val result1 = createClientRequestGet(client, baseUrl + path)
+
+            whenReady(result1) { res =>
               res.status mustBe 303
-              res.header(HeaderNames.LOCATION) mustBe Some(routes.WarehouseDetailsController.onPageLoad(NormalMode).url)
-              val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[WarehousesTradingName]](None)(_.get(WarehousesTradingNamePage))
-              dataStoredForPage.nonEmpty mustBe true
-              dataStoredForPage.get mustBe warehousesTradingNameDiff
+              res.header(HeaderNames.LOCATION) mustBe Some(routes.AskSecondaryWarehousesController.onPageLoad(mode).url)
             }
           }
         }
+      }
+      testUnauthorisedUser(baseUrl + path)
+      testAuthenticatedUserButNoUserAnswers(baseUrl + path)
+    }
 
-        "when the session already contains data for page" in {
+    "POST " + path - {
+      "should add the warehouse and remove alfResponse from user answers if present and redirect to warehouse details" - {
+        "when the user populates the trading name field with a valid value" - {
+          "and the userAnswers contains alfResponseWithLookupState for the reference number" in {
+            given
+              .commonPrecondition
+
+            setAnswers(userAnswersWithAlfResponseForSdilId)
+
+            WsTestClient.withClient { client =>
+              val result1 = createClientRequestPOST(client, baseUrl + path, Json.toJson(warehousesTradingNameDiff))
+
+              whenReady(result1) { res =>
+                res.status mustBe 303
+                res.header(HeaderNames.LOCATION) mustBe Some(routes.WarehouseDetailsController.onPageLoad(mode).url)
+                val updatedUserAnswer = getAnswers(identifier).get
+                updatedUserAnswer.alfResponseForLookupState mustBe None
+                updatedUserAnswer.warehouseList mustBe Map(ref -> Warehouse(warehousesTradingNameDiff.warehouseTradingName, ukAddress))
+              }
+            }
+          }
+
+          "and the userAnswers contains no alfResponseWithLookupState but has a warehouse for the reference number" in {
+            given
+              .commonPrecondition
+
+            setAnswers(userAnswersWithNoAlfResponseButWarehouseWithSdilRef)
+
+            WsTestClient.withClient { client =>
+              val result1 = createClientRequestPOST(client, baseUrl + path, Json.toJson(warehousesTradingNameDiff))
+
+              whenReady(result1) { res =>
+                res.status mustBe 303
+                res.header(HeaderNames.LOCATION) mustBe Some(routes.WarehouseDetailsController.onPageLoad(mode).url)
+                val updatedUserAnswer = getAnswers(identifier).get
+                updatedUserAnswer.alfResponseForLookupState mustBe None
+                updatedUserAnswer.warehouseList mustBe Map(ref -> Warehouse(warehousesTradingNameDiff.warehouseTradingName, ukAddress))
+              }
+            }
+          }
+        }
+      }
+
+      "should not update the database and redirect to warehouse details" - {
+        "when the useranswers contains waehouses but none with sdilId and has no alfAddress" in {
           given
             .commonPrecondition
 
-          setAnswers(userAnswers)
+          setAnswers(userAnswersWithWarehousesButNotForSdilRef)
+
           WsTestClient.withClient { client =>
-            val result = createClientRequestPOST(
-              client, baseUrl + normalRoutePath, Json.toJson(warehousesTradingNameDiff)
-            )
+            val result1 = createClientRequestPOST(client, baseUrl + path, Json.toJson(warehousesTradingNameDiff))
 
-            whenReady(result) { res =>
+            whenReady(result1) { res =>
               res.status mustBe 303
-              res.header(HeaderNames.LOCATION) mustBe Some(routes.WarehouseDetailsController.onPageLoad(NormalMode).url)
-              val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[WarehousesTradingName]](None)(_.get(WarehousesTradingNamePage))
-              dataStoredForPage.nonEmpty mustBe true
-              dataStoredForPage.get mustBe warehousesTradingNameDiff
+              res.header(HeaderNames.LOCATION) mustBe Some(routes.WarehouseDetailsController.onPageLoad(mode).url)
             }
           }
         }
       }
-    }
 
-    "should return 400 with required error" - {
-      "when no questions are answered" in {
-        given
-          .commonPrecondition
-
-        setAnswers(emptyUserAnswers)
-        WsTestClient.withClient { client =>
-          val result = createClientRequestPOST(
-            client, baseUrl + normalRoutePath, Json.toJson(WarehousesTradingName(""))
-          )
-
-          whenReady(result) { res =>
-            res.status mustBe 400
-            val page = Jsoup.parse(res.body)
-            page.title mustBe "Error: What is your UK warehouse trading name? - Soft Drinks Industry Levy - GOV.UK"
-            val errorSummaryList = page.getElementsByClass("govuk-list govuk-error-summary__list")
-              .first().getElementsByTag("li")
-            errorSummaryList.size() mustBe warehousesTradingNameMap.size
-            warehousesTradingNameMap.zipWithIndex.foreach { case ((fieldName, _), index) =>
-              val errorSummary = errorSummaryList.get(index)
-              errorSummary
-                .select("a")
-                .attr("href") mustBe "#" + fieldName
-              errorSummary.text() mustBe "Enter a warehouse trading name"
-            }
-          }
-        }
-      }
-    }
-
-    testUnauthorisedUser(baseUrl + normalRoutePath, Some(Json.obj("value" -> "true")))
-    testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath, Some(Json.obj("value" -> "true")))
-  }
-
-  s"POST " + checkRoutePath - {
-    "when the user populates answers all questions" - {
-      "should update the session with the new values and redirect to the index controller" - {
-        "when the session contains no data for page" in {
+      "should not update the database and redirect to ask secondary warehouse" - {
+        "when the useranswers contains no warehouses or alfAddress" in {
           given
             .commonPrecondition
 
           setAnswers(emptyUserAnswers)
+
           WsTestClient.withClient { client =>
-            val result = createClientRequestPOST(
-              client, baseUrl + checkRoutePath, Json.toJson(warehousesTradingNameDiff)
-            )
+            val result1 = createClientRequestPOST(client, baseUrl + path, Json.toJson(warehousesTradingNameDiff))
 
-            whenReady(result) { res =>
+            whenReady(result1) { res =>
               res.status mustBe 303
-              res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
-              val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[WarehousesTradingName]](None)(_.get(WarehousesTradingNamePage))
-              dataStoredForPage.nonEmpty mustBe true
-              dataStoredForPage.get mustBe warehousesTradingNameDiff
-            }
-          }
-        }
-
-        "when the session already contains data for page" in {
-          given
-            .commonPrecondition
-
-          setAnswers(userAnswers)
-          WsTestClient.withClient { client =>
-            val result = createClientRequestPOST(
-              client, baseUrl + checkRoutePath, Json.toJson(warehousesTradingNameDiff)
-            )
-
-            whenReady(result) { res =>
-              res.status mustBe 303
-              res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
-              val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[WarehousesTradingName]](None)(_.get(WarehousesTradingNamePage))
-              dataStoredForPage.nonEmpty mustBe true
-              dataStoredForPage.get mustBe warehousesTradingNameDiff
+              res.header(HeaderNames.LOCATION) mustBe Some(routes.AskSecondaryWarehousesController.onPageLoad(mode).url)
             }
           }
         }
       }
-    }
 
-    "should return 400 with required error" - {
-      "when no questions are answered" in {
-        given
-          .commonPrecondition
-
-        setAnswers(emptyUserAnswers)
-        WsTestClient.withClient { client =>
-          val result = createClientRequestPOST(
-            client, baseUrl + checkRoutePath, Json.toJson(WarehousesTradingName(""))
-          )
-
-          whenReady(result) { res =>
-            res.status mustBe 400
-            val page = Jsoup.parse(res.body)
-            page.title mustBe "Error: What is your UK warehouse trading name? - Soft Drinks Industry Levy - GOV.UK"
-            val errorSummaryList = page.getElementsByClass("govuk-list govuk-error-summary__list")
-              .first().getElementsByTag("li")
-            errorSummaryList.size() mustBe warehousesTradingNameMap.size
-            warehousesTradingNameMap.zipWithIndex.foreach { case ((fieldName, _), index) =>
-              val errorSummary = errorSummaryList.get(index)
-              errorSummary
-                .select("a")
-                .attr("href") mustBe "#" + fieldName
-              errorSummary.text() mustBe "Enter a warehouse trading name"
-            }
-          }
-        }
-      }
-      warehousesTradingNameMap.zipWithIndex.foreach { case ((fieldName, _), index) =>
-        "when no answer is given for field" + fieldName in {
+      "should return 400 with required error" - {
+        "when no questions are answered" in {
           given
             .commonPrecondition
 
-          setAnswers(emptyUserAnswers)
-          val invalidJson = warehousesTradingNameMap.foldLeft(Json.obj()) { case (current, (fn, fv)) =>
-            val fieldValue = if (fn == fieldName) {
-              ""
-            } else {
-              fv
-            }
-            current ++ Json.obj(fn -> fieldValue)
-          }
+          setAnswers(userAnswersWithAlfResponseForSdilId)
           WsTestClient.withClient { client =>
             val result = createClientRequestPOST(
-              client, baseUrl + checkRoutePath, invalidJson
+              client, baseUrl + path, Json.toJson(WarehousesTradingName(""))
             )
 
             whenReady(result) { res =>
@@ -307,17 +212,55 @@ class WarehousesTradingNameControllerISpec extends ControllerITTestHelper {
               val page = Jsoup.parse(res.body)
               page.title mustBe "Error: What is your UK warehouse trading name? - Soft Drinks Industry Levy - GOV.UK"
               val errorSummaryList = page.getElementsByClass("govuk-list govuk-error-summary__list")
-                .first()
-              errorSummaryList
-                .select("a")
-                .attr("href") mustBe "#" + fieldName
-              errorSummaryList.text() mustBe "Enter a warehouse trading name"
+                .first().getElementsByTag("li")
+              errorSummaryList.size() mustBe warehousesTradingNameMap.size
+              warehousesTradingNameMap.zipWithIndex.foreach { case ((fieldName, _), index) =>
+                val errorSummary = errorSummaryList.get(index)
+                errorSummary
+                  .select("a")
+                  .attr("href") mustBe "#" + fieldName
+                errorSummary.text() mustBe "Enter a warehouse trading name"
+              }
+            }
+          }
+        }
+        warehousesTradingNameMap.zipWithIndex.foreach { case ((fieldName, _), index) =>
+          "when no answer is given for field" + fieldName in {
+            given
+              .commonPrecondition
+
+            setAnswers(userAnswersWithAlfResponseForSdilId)
+            val invalidJson = warehousesTradingNameMap.foldLeft(Json.obj()) { case (current, (fn, fv)) =>
+              val fieldValue = if (fn == fieldName) {
+                ""
+              } else {
+                fv
+              }
+              current ++ Json.obj(fn -> fieldValue)
+            }
+            WsTestClient.withClient { client =>
+              val result = createClientRequestPOST(
+                client, baseUrl + path, invalidJson
+              )
+
+              whenReady(result) { res =>
+                res.status mustBe 400
+                val page = Jsoup.parse(res.body)
+                page.title mustBe "Error: What is your UK warehouse trading name? - Soft Drinks Industry Levy - GOV.UK"
+                val errorSummaryList = page.getElementsByClass("govuk-list govuk-error-summary__list")
+                  .first()
+                errorSummaryList
+                  .select("a")
+                  .attr("href") mustBe "#" + fieldName
+                errorSummaryList.text() mustBe "Enter a warehouse trading name"
+              }
             }
           }
         }
       }
-    }
 
-    testUnauthorisedUser(baseUrl + checkRoutePath, Some(Json.obj("value" -> "true")))
-    testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath, Some(Json.obj("value" -> "true")))  }
+      testUnauthorisedUser(baseUrl + path, Some(Json.obj("value" -> "true")))
+      testAuthenticatedUserButNoUserAnswers(baseUrl + path, Some(Json.obj("value" -> "true")))
+    }
+  }
 }

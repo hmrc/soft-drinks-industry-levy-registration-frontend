@@ -17,6 +17,7 @@
 package controllers
 
 import base.SpecBase
+import base.SpecBase.aTradingName
 import errors.SessionDatabaseInsertError
 import forms.RemovePackagingSiteDetailsFormProvider
 import helpers.LoggerHelper
@@ -70,7 +71,7 @@ class RemovePackagingSiteDetailsControllerSpec extends SpecBase with MockitoSuga
       val packagingSite: Map[String, Site] = Map(ref -> Site(
         UkAddress(List("a", "b"), "c"),
         None,
-        Some("trading"),
+        aTradingName,
         None))
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers.copy(packagingSiteList = packagingSite))).build()
       running(application) {
@@ -114,10 +115,10 @@ class RemovePackagingSiteDetailsControllerSpec extends SpecBase with MockitoSuga
       val packagingSite: Map[String, Site] = Map(ref -> Site(
         UkAddress(List("a", "b"), "c"),
         None,
-        Some("trading"),
+        aTradingName,
         None))
-      val htmlExpectedInView = Html("trading<br>a, b, <span class=\"nowrap\" style=\"white-space: nowrap;\">c</span>")
-      val htmlExpectedAfterRender = Html("trading a, b, c")
+      val htmlExpectedInView = Html(s"$aTradingName<br>a, b, <span class=\"nowrap\" style=\"white-space: nowrap;\">c</span>")
+      val htmlExpectedAfterRender = Html(s"$aTradingName a, b, c")
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers.copy(packagingSiteList = packagingSite))).build()
 
       running(application) {
@@ -171,7 +172,7 @@ class RemovePackagingSiteDetailsControllerSpec extends SpecBase with MockitoSuga
       val packagingSite: Map[String, Site] = Map(ref -> Site(
         UkAddress(List("a", "b"), "c"),
         None,
-        Some("trading"),
+        aTradingName,
         None))
       val mockSessionService = mock[SessionService]
 

@@ -40,7 +40,7 @@ object WarehouseDetailsSummary  {
             Some(Actions("", Seq(
               ActionItemViewModel("site.remove", routes.RemoveWarehouseDetailsController.onPageLoad(mode, warehouse._1).url)
                 .withCssClass("remove-link")
-                .withVisuallyHiddenText(messages("warehouseDetails.remove.hidden", warehouse._2.tradingName.getOrElse(""), warehouse._2.address.lines.head)))
+                .withVisuallyHiddenText(messages("warehouseDetails.remove.hidden", warehouse._2.tradingName, warehouse._2.address.lines.head)))
             ))
         )
     }.toList

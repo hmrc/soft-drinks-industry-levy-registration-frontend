@@ -103,8 +103,8 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
                     .copy(
                       registerState = RegisterState.RequiresBusinessDetails,
                       address = Some(UkAddress(List.empty, "")),
-                      packagingSiteList = Map("" -> Site(UkAddress(List.empty, ""), None, None, None)),
-                      warehouseList = Map("" -> Warehouse(None, UkAddress(List.empty, ""))),
+                      packagingSiteList = Map("" -> Site(UkAddress(List.empty, ""), None, aTradingName, None)),
+                      warehouseList = Map("" -> Warehouse(aTradingName, UkAddress(List.empty, ""))),
                       submittedOn = None
                     )
                 }
@@ -145,8 +145,8 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
             .copy(
               registerState = RegisterState.RegisterWithOtherUTR,
               address = Some(UkAddress(List.empty, "")),
-              packagingSiteList = Map("" -> Site(UkAddress(List.empty, ""), None, None, None)),
-              warehouseList = Map("" -> Warehouse(None, UkAddress(List.empty, ""))),
+              packagingSiteList = Map("" -> Site(UkAddress(List.empty, ""), None, aTradingName, None)),
+              warehouseList = Map("" -> Warehouse(aTradingName, UkAddress(List.empty, ""))),
               submittedOn = None
             )
         }

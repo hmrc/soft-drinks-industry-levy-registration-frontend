@@ -293,7 +293,7 @@ addressLookupFrontend.warehouseDetails.editPageLabels.line2Label = Address line 
 addressLookupFrontend.warehouseDetails.editPageLabels.line3Label = Address line 3 (optional)
 addressLookupFrontend.warehouseDetails.editPageLabels.townLabel = Address line 4 (optional)
 addressLookupFrontend.warehouseDetails.editPageLabels.postcodeLabel = Postcode
-addressLookupFrontend.warehouseDetails.editPageLabels.organisationLabel = Trading name (optional)
+addressLookupFrontend.warehouseDetails.editPageLabels.organisationLabel = Trading name
 
 addressLookupFrontend.packingDetails.lookupPageLabels.title = Find UK packaging site address
 addressLookupFrontend.packingDetails.lookupPageLabels.postcodeLabel = Postcode
@@ -303,7 +303,7 @@ addressLookupFrontend.packingDetails.editPageLabels.line2Label = Address line 2
 addressLookupFrontend.packingDetails.editPageLabels.line3Label = Address line 3 (optional)
 addressLookupFrontend.packingDetails.editPageLabels.townLabel = Address line 4 (optional)
 addressLookupFrontend.packingDetails.editPageLabels.postcodeLabel = Postcode
-addressLookupFrontend.packingDetails.editPageLabels.organisationLabel = Packaging site name (optional)
+addressLookupFrontend.packingDetails.editPageLabels.organisationLabel = Packaging site name
 
 addressLookupFrontend.businessAddress.lookupPageLabels.title = Find UK contact address
 addressLookupFrontend.businessAddress.lookupPageLabels.postcodeLabel = Postcode

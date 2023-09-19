@@ -17,6 +17,7 @@
 package controllers
 
 import base.SpecBase
+import base.SpecBase.aTradingName
 import errors.SessionDatabaseInsertError
 import forms.RemoveWarehouseDetailsFormProvider
 import helpers.LoggerHelper
@@ -45,9 +46,8 @@ class RemoveWarehouseDetailsControllerSpec extends SpecBase with MockitoSugar wi
   val indexOfWarehouseToBeRemoved: String = "foobar"
   lazy val removeWarehouseDetailsRoute = routes.RemoveWarehouseDetailsController.onPageLoad(NormalMode, indexOfWarehouseToBeRemoved).url
   val addressOfWarehouse: UkAddress = UkAddress(List("foo"),"bar", None)
-  val warehouseTradingName: String = "a name for a warehouse here"
   val userAnswersWithWarehouse: UserAnswers = emptyUserAnswers
-    .copy(warehouseList = Map(indexOfWarehouseToBeRemoved -> Warehouse(Some(warehouseTradingName), addressOfWarehouse)))
+    .copy(warehouseList = Map(indexOfWarehouseToBeRemoved -> Warehouse(aTradingName, addressOfWarehouse)))
 
   "RemoveWarehouseDetails Controller" - {
 
@@ -64,7 +64,7 @@ class RemoveWarehouseDetailsControllerSpec extends SpecBase with MockitoSugar wi
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual
-          view(form, NormalMode, AddressFormattingHelper.addressFormatting(addressOfWarehouse, Some(warehouseTradingName)), indexOfWarehouseToBeRemoved)(request, messages(application)).toString
+          view(form, NormalMode, AddressFormattingHelper.addressFormatting(addressOfWarehouse, aTradingName), indexOfWarehouseToBeRemoved)(request, messages(application)).toString
       }
     }
 
@@ -111,7 +111,7 @@ class RemoveWarehouseDetailsControllerSpec extends SpecBase with MockitoSugar wi
 
         status(result) mustEqual BAD_REQUEST
         contentAsString(result) mustEqual
-          view(boundForm, NormalMode, AddressFormattingHelper.addressFormatting(addressOfWarehouse, Some(warehouseTradingName)), indexOfWarehouseToBeRemoved)(request, messages(application)).toString
+          view(boundForm, NormalMode, AddressFormattingHelper.addressFormatting(addressOfWarehouse, aTradingName), indexOfWarehouseToBeRemoved)(request, messages(application)).toString
       }
     }
 

@@ -16,6 +16,7 @@
 
 package models.requests
 
+import models.backend.UkAddress
 import models.{RosmWithUtr, UserAnswers}
 import play.api.mvc.{Request, WrappedRequest}
 
@@ -46,3 +47,11 @@ case class DataRequestForApplicationSubmitted[A](request: Request[A],
                                                  userAnswers: UserAnswers,
                                                  rosmWithUtr: RosmWithUtr,
                                                  submittedDateTime: Instant) extends WrappedRequest[A](request)
+
+case class DataRequestForEnterTradingName[A](request: Request[A],
+                                             internalId: String,
+                                             hasCTEnrolment: Boolean = false,
+                                             authUtr: Option[String] = None,
+                                             userAnswers: UserAnswers,
+                                             aflAddress: UkAddress,
+                                             tradingName: Option[String]) extends WrappedRequest[A](request)

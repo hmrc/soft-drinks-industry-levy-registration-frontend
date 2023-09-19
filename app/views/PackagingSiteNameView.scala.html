@@ -25,11 +25,11 @@
     govukButton: GovukButton
 )
 
-@(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, ref: String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("packagingSiteName.title"))) {
 
-    @formHelper(action = routes.PackagingSiteNameController.onSubmit(mode), Symbol("autoComplete") -> "off") {
+    @formHelper(action = routes.PackagingSiteNameController.onSubmit(mode, ref), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))

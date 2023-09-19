@@ -33,7 +33,8 @@ import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
-import services.{AddressLookupService, PackingDetails, SessionService}
+import services.AddressLookupState.PackingDetails
+import services.{AddressLookupService, SessionService}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import utilities.GenericLogger
 import views.html.PackAtBusinessAddressView

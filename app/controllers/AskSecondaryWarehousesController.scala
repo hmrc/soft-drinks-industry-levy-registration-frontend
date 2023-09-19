@@ -25,7 +25,8 @@ import navigation.Navigator
 import pages.AskSecondaryWarehousesPage
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{AddressLookupService, SessionService, WarehouseDetails}
+import services.AddressLookupState.WarehouseDetails
+import services.{AddressLookupService, SessionService}
 import uk.gov.hmrc.http.HeaderCarrier
 import utilities.GenericLogger
 import views.html.AskSecondaryWarehousesView

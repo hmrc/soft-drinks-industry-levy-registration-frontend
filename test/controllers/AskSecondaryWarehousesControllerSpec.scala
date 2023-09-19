@@ -32,7 +32,8 @@ import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
-import services.{AddressLookupService, WarehouseDetails}
+import services.AddressLookupService
+import services.AddressLookupState.WarehouseDetails
 import views.html.AskSecondaryWarehousesView
 
 import scala.concurrent.Future

@@ -25,7 +25,8 @@ import navigation.Navigator
 import pages.VerifyPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{AddressLookupService, BusinessAddress, SessionService}
+import services.AddressLookupState.BusinessAddress
+import services.{AddressLookupService, SessionService}
 import utilities.GenericLogger
 import viewmodels.AddressFormattingHelper
 import views.html.VerifyView

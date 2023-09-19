@@ -17,33 +17,32 @@
 package controllers
 
 import base.SpecBase
-import helpers.LoggerHelper
-import utilities.GenericLogger
 import forms.WarehouseDetailsFormProvider
+import helpers.LoggerHelper
 import models.backend.UkAddress
 import models.{NormalMode, RegisterState, UserAnswers, Warehouse}
 import navigation.{FakeNavigator, Navigator}
+import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
+import org.mockito.MockitoSugar.{times, verify}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.WarehouseDetailsPage
 import play.api.inject.bind
+import play.api.libs.json.Json
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{AddressLookupService, WarehouseDetails}
-import views.html.WarehouseDetailsView
-
-import scala.concurrent.Future
-import org.mockito.ArgumentMatchers
-import org.mockito.MockitoSugar.{times, verify}
-import play.api.libs.json.Json
 import repositories.SessionRepository
+import services.AddressLookupService
+import services.AddressLookupState.WarehouseDetails
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, SummaryListRow}
+import utilities.GenericLogger
 import viewmodels.govuk.SummaryListFluency
+import views.html.WarehouseDetailsView
 import views.summary.WarehouseDetailsSummary
 
-import scala.collection.immutable.Map
+import scala.concurrent.Future
 
 class WarehouseDetailsControllerSpec extends SpecBase with MockitoSugar with LoggerHelper with SummaryListFluency {
 
@@ -55,8 +54,8 @@ class WarehouseDetailsControllerSpec extends SpecBase with MockitoSugar with Log
   lazy val warehouseDetailsRoute = routes.WarehouseDetailsController.onPageLoad(NormalMode).url
 
   val twoWarehouses: Map[String,Warehouse] = Map(
-    "1"-> Warehouse(Some("ABC Ltd"), UkAddress(List("33 Rhes Priordy", "East London","Line 3","Line 4"),"WR53 7CX")),
-    "2" -> Warehouse(Some("Super Cola Ltd"), UkAddress(List("33 Rhes Priordy", "East London","Line 3",""),"SA13 7CE"))
+    "1"-> Warehouse("ABC Ltd", UkAddress(List("33 Rhes Priordy", "East London","Line 3","Line 4"),"WR53 7CX")),
+    "2" -> Warehouse("Super Cola Ltd", UkAddress(List("33 Rhes Priordy", "East London","Line 3",""),"SA13 7CE"))
   )
 
   val userAnswerTwoWarehouses : UserAnswers = UserAnswers(sdilNumber, RegisterState.RegisterWithAuthUTR,Json.obj(), warehouseList = twoWarehouses)
@@ -84,7 +83,7 @@ class WarehouseDetailsControllerSpec extends SpecBase with MockitoSugar with Log
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
       val address = UkAddress(List("29 Station Place", "The Railyard", "Cambridge"), "CB1 2FP")
-      val warehouse = Map("78941132" -> Warehouse(Some("Warehouse One"), address))
+      val warehouse = Map("78941132" -> Warehouse("Warehouse One", address))
       val userAnswers = UserAnswers(identifier, RegisterState.RegisterWithAuthUTR).set(WarehouseDetailsPage, true).success.value
       val uaWithWarehouses = userAnswers.copy(warehouseList = warehouse)
       val warehouseSummary = Some(SummaryListViewModel(rows = WarehouseDetailsSummary.warehouseDetailsRow(warehouse, NormalMode)))
@@ -248,8 +247,8 @@ class WarehouseDetailsControllerSpec extends SpecBase with MockitoSugar with Log
         val result = route(application, request).value
 
         val warehouseMap: Map[String,Warehouse] =
-          Map("1"-> Warehouse(Some("ABC Ltd"), UkAddress(List("33 Rhes Priordy", "East London","Line 3","Line 4"),"WR53 7CX")),
-            "2" -> Warehouse(Some("Super Cola Ltd"), UkAddress(List("33 Rhes Priordy", "East London","Line 3",""),"SA13 7CE")))
+          Map("1"-> Warehouse("ABC Ltd", UkAddress(List("33 Rhes Priordy", "East London","Line 3","Line 4"),"WR53 7CX")),
+            "2" -> Warehouse("Super Cola Ltd", UkAddress(List("33 Rhes Priordy", "East London","Line 3",""),"SA13 7CE")))
 
         val warehouseSummaryList: List[SummaryListRow] =
           WarehouseDetailsSummary.warehouseDetailsRow(warehouseMap, NormalMode)(messages(application))

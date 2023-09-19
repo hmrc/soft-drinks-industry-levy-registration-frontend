@@ -16,11 +16,12 @@
 
 package models
 
+import models.alf.AddressResponseForLookupState
 import models.backend.{Site, UkAddress}
 import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json._
 import queries.{Gettable, Settable}
-import services.Encryption
+import services.{AddressLookupState, Encryption}
 import uk.gov.hmrc.crypto.EncryptedValue
 import uk.gov.hmrc.crypto.json.CryptoFormats
 
@@ -34,6 +35,7 @@ case class UserAnswers(
                         address: Option[UkAddress] = None,
                         packagingSiteList: Map[String, Site] = Map.empty,
                         warehouseList: Map[String, Warehouse] = Map.empty,
+                        alfResponseForLookupState: Option[AddressResponseForLookupState] = None,
                         submittedOn: Option[Instant] = None,
                         lastUpdated: Instant = Instant.now
                             ) {
@@ -67,6 +69,29 @@ case class UserAnswers(
         removeLitres(litresPage, updatedAnswers.data)
       }
     }
+  }
+
+  def setAlfResponse(address: UkAddress, addressLookupState: AddressLookupState, sdilId: String): UserAnswers = {
+    val addressResponseForLookupState = AddressResponseForLookupState(address, addressLookupState, sdilId)
+    copy(alfResponseForLookupState = Some(addressResponseForLookupState))
+  }
+
+  def addPackagingSite(packagingSiteAddress: UkAddress, tradingName: String, sdilId: String): UserAnswers = {
+    copy(
+      alfResponseForLookupState = None,
+      packagingSiteList = packagingSiteList.filterNot(_._1 == sdilId) ++ Map(sdilId -> Site(packagingSiteAddress, None, tradingName, None))
+    )
+  }
+
+  def addWarehouse(warehouseAddress: UkAddress, tradingName: String, sdilId: String): UserAnswers = {
+    copy(
+      alfResponseForLookupState = None,
+      warehouseList = warehouseList.filterNot(_._1 == sdilId) ++ Map(sdilId -> Warehouse(tradingName, warehouseAddress))
+    )
+  }
+
+  def setBusinessAddress(businessAddress: UkAddress): UserAnswers = {
+    copy(address = Some(businessAddress))
   }
 
   def remove[A](page: Settable[A]): Try[UserAnswers] = {
@@ -113,6 +138,7 @@ object UserAnswers {
             (__ \ "address").read[EncryptedValue] and
             (__ \ "packagingSiteList").read[Map[String, EncryptedValue]] and
             (__ \ "warehouseList").read[Map[String, EncryptedValue]] and
+            (__ \ "alfResponseForLookupState").readNullable[EncryptedValue] and
             (__ \ "submittedOn").readNullable[Instant] and
             (__ \ "lastUpdated").read[Instant]
           )(ModelEncryption.decryptUserAnswers _)
@@ -120,7 +146,8 @@ object UserAnswers {
 
       def writes(implicit encryption: Encryption): OWrites[UserAnswers] = new OWrites[UserAnswers] {
         override def writes(userAnswers: UserAnswers): JsObject = {
-          val encryptedValue: (String, RegisterState, EncryptedValue, EncryptedValue, Map[String, EncryptedValue], Map[String, EncryptedValue], Option[Instant], Instant) = {
+          val encryptedValue: (String, RegisterState, EncryptedValue, EncryptedValue, Map[String, EncryptedValue],
+            Map[String, EncryptedValue], Option[EncryptedValue], Option[Instant], Instant) = {
             ModelEncryption.encryptUserAnswers(userAnswers)
           }
           Json.obj(
@@ -130,8 +157,9 @@ object UserAnswers {
             "address" -> encryptedValue._4,
             "packagingSiteList" -> encryptedValue._5,
             "warehouseList" -> encryptedValue._6,
-            "submittedOn" -> encryptedValue._7,
-            "lastUpdated" -> encryptedValue._8
+            "alfResponseForLookupState" -> encryptedValue._7,
+            "submittedOn" -> encryptedValue._8,
+            "lastUpdated" -> encryptedValue._9
           )
         }
       }

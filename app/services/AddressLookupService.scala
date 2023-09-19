@@ -20,12 +20,13 @@ import config.FrontendAppConfig
 import connectors.AddressLookupConnector
 import connectors.httpParsers.ResponseHttpParser.HttpResult
 import controllers.routes
+import models.Mode
 import models.alf.init._
 import models.alf.{AlfAddress, AlfResponse}
-import models.backend.{Site, UkAddress}
-import models.{Mode, UserAnswers, Warehouse}
+import models.backend.UkAddress
 import play.api.Logger
 import play.api.i18n.Messages
+import services.AddressLookupState._
 import uk.gov.hmrc.http.HeaderCarrier
 import utilities.AddressHelper
 
@@ -39,7 +40,7 @@ class AddressLookupService @Inject()(
 
   val logger: Logger = Logger(this.getClass)
 
-  private def addressChecker(address: AlfAddress, alfId: String): UkAddress = {
+  def addressChecker(address: AlfAddress, alfId: String): UkAddress = {
     val ukAddress: UkAddress = UkAddress(address.lines, address.postcode.getOrElse(""), alfId = Some(alfId))
 
     if (ukAddress.lines.isEmpty && ukAddress.postCode == "" && address.organisation.isEmpty) {
@@ -53,28 +54,6 @@ class AddressLookupService @Inject()(
     addressLookupConnector.getAddress(id).map {
       case Right(addressResponse) => addressResponse
       case Left(error) => throw new Exception(s"Error returned from ALF for $id ${error.status} ${error.message} for ${hc.requestId}")
-    }
-  }
-
-  def addAddressUserAnswers(addressLookupState: AddressLookupState,
-                            address: AlfAddress,
-                            userAnswers: UserAnswers,
-                            sdilId: String,
-                            alfId: String): UserAnswers = {
-
-    val convertedAddress: UkAddress = addressChecker(address, alfId)
-
-    addressLookupState match {
-      case BusinessAddress =>
-        userAnswers.copy(address = Some(convertedAddress))
-
-      case PackingDetails =>
-        userAnswers.copy(packagingSiteList =
-          userAnswers.packagingSiteList.filterNot(_._1 == sdilId) ++ Map(sdilId -> Site(convertedAddress, None, address.organisation, None)))
-
-      case WarehouseDetails =>
-        userAnswers.copy(warehouseList =
-          userAnswers.warehouseList.filterNot(_._1 == sdilId) ++ Map(sdilId -> Warehouse(address.organisation, convertedAddress)))
     }
   }
 

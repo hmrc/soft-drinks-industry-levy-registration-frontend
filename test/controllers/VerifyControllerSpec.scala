@@ -33,7 +33,8 @@ import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import services.{AddressLookupService, BusinessAddress, SessionService}
+import services.AddressLookupState.BusinessAddress
+import services.{AddressLookupService, SessionService}
 import utilities.GenericLogger
 import viewmodels.AddressFormattingHelper
 import views.html.VerifyView

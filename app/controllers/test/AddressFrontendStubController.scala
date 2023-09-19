@@ -28,7 +28,6 @@ class AddressFrontendStubController @Inject()
 
   val exampleId: String = "foobarwizzbang"
   lazy val address = Json.obj(
-    ("organisation", JsString("Some Trading Name")),
     ("lines", Json.toJson(List(
       "10 Other Place",
       "Some District",

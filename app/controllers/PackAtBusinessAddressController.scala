@@ -25,7 +25,8 @@ import navigation.Navigator
 import pages.PackAtBusinessAddressPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import services.{AddressLookupService, PackingDetails, SessionService}
+import services.AddressLookupState.PackingDetails
+import services.{AddressLookupService, SessionService}
 import utilities.GenericLogger
 import viewmodels.AddressFormattingHelper
 import views.html.PackAtBusinessAddressView
@@ -80,7 +81,7 @@ class PackAtBusinessAddressController @Inject()(
                 Site(
                   address = rosmReg.address,
                   ref = None,
-                  tradingName = None,
+                  tradingName = rosmReg.organisationName,
                   closureDate = None
                 )
               )), PackAtBusinessAddressPage).flatMap(_ =>

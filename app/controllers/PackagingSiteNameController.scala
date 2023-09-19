@@ -29,6 +29,7 @@ import services.SessionService
 import views.html.PackagingSiteNameView
 import handlers.ErrorHandler
 import play.api.data.Form
+import services.AddressLookupState.PackingDetails
 
 import scala.concurrent.{ExecutionContext, Future}
 import utilities.GenericLogger
@@ -37,9 +38,7 @@ class PackagingSiteNameController @Inject()(
                                        override val messagesApi: MessagesApi,
                                        val sessionService: SessionService,
                                        val navigator: Navigator,
-                                       identify: IdentifierAction,
-                                       getData: DataRetrievalAction,
-                                       requireData: DataRequiredAction,
+                                       controllerActions: ControllerActions,
                                        formProvider: PackagingSiteNameFormProvider,
                                        val controllerComponents: MessagesControllerComponents,
                                        view: PackagingSiteNameView,
@@ -49,26 +48,25 @@ class PackagingSiteNameController @Inject()(
 
   val form: Form[PackagingSiteName] = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData) {
-    implicit request =>
-
-      val preparedForm = request.userAnswers.get(PackagingSiteNamePage) match {
+  def onPageLoad(mode: Mode, ref: String): Action[AnyContent] = controllerActions
+    .withUserWhoCanEnterTradingName(PackingDetails, ref, mode) { implicit request =>
+      val preparedForm = request.tradingName match {
         case None => form
-        case Some(value) => form.fill(value)
+        case Some(value) => form.fill(PackagingSiteName(value))
       }
 
-      Ok(view(preparedForm, mode))
+      Ok(view(preparedForm, mode, ref))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
-    implicit request =>
-
+  def onSubmit(mode: Mode, ref: String): Action[AnyContent] = controllerActions
+    .withUserWhoCanEnterTradingName(PackingDetails, ref, mode).async { implicit request =>
       form.bindFromRequest().fold(
         formWithErrors =>
-          Future.successful(BadRequest(view(formWithErrors, mode))),
+          Future.successful(BadRequest(view(formWithErrors, mode, ref))),
 
         value => {
-          val updatedAnswers = request.userAnswers.set(PackagingSiteNamePage, value)
+          val updatedAnswers = request.userAnswers
+            .addPackagingSite(request.aflAddress, value.packagingSiteName, ref)
           updateDatabaseAndRedirect(updatedAnswers, PackagingSiteNamePage, mode)
         }
       )

@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-package pages
+package models.alf
 
-import models.WarehousesTradingName
-import play.api.libs.json.JsPath
+import models.backend.UkAddress
+import play.api.libs.json.{Json, OFormat}
+import services.AddressLookupState
 
-case object WarehousesTradingNamePage extends QuestionPage[WarehousesTradingName] {
+case class AddressResponseForLookupState(address: UkAddress,
+                                         addressLookupState: AddressLookupState,
+                                         sdilId: String)
 
-  override def path: JsPath = JsPath \ toString
+object AddressResponseForLookupState {
 
-  override def toString: String = "warehousesTradingName"
-
+  implicit val format: OFormat[AddressResponseForLookupState] = Json.format[AddressResponseForLookupState]
 }
