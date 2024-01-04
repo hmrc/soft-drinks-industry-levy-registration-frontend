@@ -17,11 +17,11 @@
 package connectors.httpParsers
 
 import base.SpecBase
-import connectors.httpParsers.AddressLookupHttpParser.{AddressLookupGetAddressReads, AddressLookupInitJourneyReads}
-import models.alf.{AlfAddress, AlfResponse}
+import connectors.httpParsers.AddressLookupHttpParser.{ AddressLookupGetAddressReads, AddressLookupInitJourneyReads }
+import models.alf.{ AlfAddress, AlfResponse }
 import models.core.ErrorModel
 import play.api.http.Status
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json.{ JsObject, Json }
 import play.mvc.Http.HeaderNames
 import uk.gov.hmrc.http.HttpResponse
 
@@ -29,34 +29,30 @@ class AddressLookupHttpParserSpec extends SpecBase {
 
   val errorModel: ErrorModel = ErrorModel(Status.BAD_REQUEST, "Error Message")
 
-    val organisation = "soft drinks ltd"
-    val addressLine1 = "line 1"
-    val addressLine2 = "line 2"
-    val addressLine3 = "line 3"
-    val addressLine4 = "line 4"
-    val postcode = "aa1 1aa"
-    val countryCode = "UK"
-    val customerAddressMaxJson = Json.toJson(AlfResponse(
-      AlfAddress(
-        Some(organisation),
-        List(addressLine1, addressLine2, addressLine3, addressLine4),
-        Some(postcode),
-        Some(countryCode)
-      )))
-    val customerAddressMax: AlfResponse = AlfResponse(
-      AlfAddress(
-        Some(organisation),
-        List(addressLine1, addressLine2, addressLine3, addressLine4),
-        Some(postcode),
-        Some(countryCode)
-      ))
-    val customerAddressJsonError: JsObject = Json.obj(
-      "address" -> Json.obj(
-        "lines" -> 4
-      )
-    )
+  val organisation = "soft drinks ltd"
+  val addressLine1 = "line 1"
+  val addressLine2 = "line 2"
+  val addressLine3 = "line 3"
+  val addressLine4 = "line 4"
+  val postcode = "aa1 1aa"
+  val countryCode = "UK"
+  val customerAddressMaxJson = Json.toJson(AlfResponse(
+    AlfAddress(
+      Some(organisation),
+      List(addressLine1, addressLine2, addressLine3, addressLine4),
+      Some(postcode),
+      Some(countryCode))))
+  val customerAddressMax: AlfResponse = AlfResponse(
+    AlfAddress(
+      Some(organisation),
+      List(addressLine1, addressLine2, addressLine3, addressLine4),
+      Some(postcode),
+      Some(countryCode)))
+  val customerAddressJsonError: JsObject = Json.obj(
+    "address" -> Json.obj(
+      "lines" -> 4))
 
-    "The AddressLookupGetAddressReads" - {
+  "The AddressLookupGetAddressReads" - {
 
     "the http response status is OK with valid Json" - {
 
@@ -71,7 +67,7 @@ class AddressLookupHttpParserSpec extends SpecBase {
       "return an ErrorModel" in {
         AddressLookupGetAddressReads.read("", "",
           HttpResponse(Status.OK, customerAddressJsonError, Map.empty[String, Seq[String]])) mustBe
-          Left(ErrorModel(Status.INTERNAL_SERVER_ERROR,"Invalid Json returned from Address Lookup"))
+          Left(ErrorModel(Status.INTERNAL_SERVER_ERROR, "Invalid Json returned from Address Lookup"))
       }
     }
 
@@ -80,7 +76,7 @@ class AddressLookupHttpParserSpec extends SpecBase {
       "return an ErrorModel" in {
         AddressLookupGetAddressReads.read("", "",
           HttpResponse(Status.BAD_REQUEST, "")) mustBe
-          Left(ErrorModel(Status.BAD_REQUEST,"Downstream error returned when retrieving CustomerAddressModel from AddressLookup"))
+          Left(ErrorModel(Status.BAD_REQUEST, "Downstream error returned when retrieving CustomerAddressModel from AddressLookup"))
       }
     }
 
@@ -89,7 +85,7 @@ class AddressLookupHttpParserSpec extends SpecBase {
       "return an ErrorModel" in {
         AddressLookupGetAddressReads.read("", "",
           HttpResponse(Status.SEE_OTHER, "")) mustBe
-          Left(ErrorModel(Status.SEE_OTHER,"Downstream error returned when retrieving CustomerAddressModel from AddressLookup"))
+          Left(ErrorModel(Status.SEE_OTHER, "Downstream error returned when retrieving CustomerAddressModel from AddressLookup"))
       }
     }
   }

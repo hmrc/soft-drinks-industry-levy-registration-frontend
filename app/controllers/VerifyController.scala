@@ -19,33 +19,32 @@ package controllers
 import controllers.actions._
 import forms.VerifyFormProvider
 import handlers.ErrorHandler
-import models.Verify.{No, YesNewAddress}
-import models.{Mode, RosmRegistration}
+import models.Verify.{ No, YesNewAddress }
+import models.{ Mode, RosmRegistration }
 import navigation.Navigator
 import pages.VerifyPage
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{ Action, AnyContent, MessagesControllerComponents }
 import services.AddressLookupState.BusinessAddress
-import services.{AddressLookupService, SessionService}
+import services.{ AddressLookupService, SessionService }
 import utilities.GenericLogger
 import viewmodels.AddressFormattingHelper
 import views.html.VerifyView
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
-class VerifyController @Inject()(
-                                       override val messagesApi: MessagesApi,
-                                       val sessionService: SessionService,
-                                       val navigator: Navigator,
-                                       controllerActions: ControllerActions,
-                                       formProvider: VerifyFormProvider,
-                                       val controllerComponents: MessagesControllerComponents,
-                                       view: VerifyView,
-                                       val errorHandler: ErrorHandler,
-                                       val genericLogger: GenericLogger,
-                                       addressLookupService: AddressLookupService
-                                     )(implicit ec: ExecutionContext) extends ControllerHelper {
+class VerifyController @Inject() (
+  override val messagesApi: MessagesApi,
+  val sessionService: SessionService,
+  val navigator: Navigator,
+  controllerActions: ControllerActions,
+  formProvider: VerifyFormProvider,
+  val controllerComponents: MessagesControllerComponents,
+  view: VerifyView,
+  val errorHandler: ErrorHandler,
+  val genericLogger: GenericLogger,
+  addressLookupService: AddressLookupService)(implicit ec: ExecutionContext) extends ControllerHelper {
 
   val form = formProvider()
 
@@ -74,11 +73,10 @@ class VerifyController @Inject()(
             case YesNewAddress =>
               updateDatabaseWithoutRedirect(updatedAnswers, VerifyPage)(
                 addressLookupService.initJourneyAndReturnOnRampUrl(BusinessAddress, mode = mode)
-                .map(alfOnRamp => Redirect(alfOnRamp)))
+                  .map(alfOnRamp => Redirect(alfOnRamp)))
             case No => Future.successful(Redirect(auth.routes.AuthController.signOutNoSurvey))
-            case _ => updateDatabaseAndRedirect (updatedAnswers.map(_.copy(address = Some(request.rosmWithUtr.rosmRegistration.address))), VerifyPage, mode)
+            case _ => updateDatabaseAndRedirect(updatedAnswers.map(_.copy(address = Some(request.rosmWithUtr.rosmRegistration.address))), VerifyPage, mode)
           }
-        }
-      )
+        })
   }
 }

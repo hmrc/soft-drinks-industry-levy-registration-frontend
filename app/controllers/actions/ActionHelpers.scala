@@ -18,7 +18,7 @@ package controllers.actions
 
 import controllers.routes._
 import models.RegisterState._
-import models.{NormalMode, RegisterState}
+import models.{ NormalMode, RegisterState }
 import uk.gov.hmrc.auth.core.AffinityGroup.Agent
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals._
 import uk.gov.hmrc.auth.core._
@@ -31,7 +31,7 @@ trait ActionHelpers {
   protected def getSdilEnrolment(enrolments: Enrolments): Option[EnrolmentIdentifier] = {
     val sdil = for {
       enrolment <- enrolments.enrolments if enrolment.key.equalsIgnoreCase("HMRC-OBTDS-ORG")
-      sdil      <- enrolment.getIdentifier("EtmpRegistrationNumber") if sdil.value.slice(TWO, FOUR) == "SD"
+      sdil <- enrolment.getIdentifier("EtmpRegistrationNumber") if sdil.value.slice(TWO, FOUR) == "SD"
     } yield {
       sdil
     }

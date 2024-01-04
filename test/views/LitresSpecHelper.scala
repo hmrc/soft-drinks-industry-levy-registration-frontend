@@ -24,7 +24,6 @@ import play.api.i18n.Messages
 
 trait LitresSpecHelper extends ViewSpecHelper {
 
-
   val lowBandValue: Long = 1000
   val highBandValue: Long = 2000
   val litresInBands: LitresInBands = LitresInBands(lowBandValue, highBandValue)
@@ -50,7 +49,6 @@ trait LitresSpecHelper extends ViewSpecHelper {
     val button = "govuk-button"
     val form = "form"
   }
-
 
   def testLitresInBandsWithPrepopulatedData(document: Document): Unit = {
     "should include form groups for litres" - {

@@ -26,6 +26,5 @@ class OrganisationTypeFormProvider @Inject() extends Mappings {
 
   def apply(): Form[OrganisationType] =
     Form(
-      "value" -> enumerable[OrganisationType]("organisationType.error.required")
-    )
+      "value" -> enumerable[OrganisationType]("organisationType.error.required"))
 }

@@ -23,28 +23,28 @@ import config.FrontendAppConfig
 import controllers.actions._
 import controllers.routes
 import errors.RegistrationErrors
-import models.backend.{Site, UkAddress}
-import models.{Contact, IndividualDetails, LitresInBands, OrganisationDetails, RegisterState, RetrievedActivity, RetrievedSubscription, RosmRegistration, RosmWithUtr, UserAnswers, Warehouse}
-import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
+import models.backend.{ Site, UkAddress }
+import models.{ Contact, IndividualDetails, LitresInBands, OrganisationDetails, RegisterState, RetrievedActivity, RetrievedSubscription, RosmRegistration, RosmWithUtr, UserAnswers, Warehouse }
+import org.scalatest.concurrent.{ IntegrationPatience, ScalaFutures }
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
-import org.scalatest.{BeforeAndAfterEach, OptionValues, TryValues}
-import play.api.i18n.{Lang, Messages, MessagesApi, MessagesImpl}
+import org.scalatest.{ BeforeAndAfterEach, OptionValues, TryValues }
+import play.api.i18n.{ Lang, Messages, MessagesApi, MessagesImpl }
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Writes
-import play.api.mvc.{Call, MessagesControllerComponents}
+import play.api.mvc.{ Call, MessagesControllerComponents }
 import play.api.test.FakeRequest
 import play.api.test.Helpers.stubControllerComponents
-import play.api.{Application, Play}
+import play.api.{ Application, Play }
 import queries.Settable
 import service.RegistrationResult
 import uk.gov.hmrc.http.HeaderCarrier
 import utilities.GenericLogger
 
 import java.time.LocalDate
-import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Failure, Try}
+import scala.concurrent.{ ExecutionContext, Future }
+import scala.util.{ Failure, Try }
 
 object SpecBase {
   val aTradingName = "Wild Lemonade Group"
@@ -56,19 +56,18 @@ object SpecBase {
     activity = RetrievedActivity(smallProducer = false, largeProducer = true, contractPacker = false, importer = false, voluntaryRegistration = false),
     liabilityDate = LocalDate.of(2018, 4, 19),
     contact = Contact(Some("Ava Adams"), Some("Chief Infrastructure Agent"), "04495 206189", "Adeline.Greene@gmail.com"),
-    deregDate = None
-  )
+    deregDate = None)
 
 }
 
 trait SpecBase
   extends AnyFreeSpec
-    with Matchers
-    with TryValues
-    with OptionValues
-    with ScalaFutures
-    with IntegrationPatience
-    with BeforeAndAfterEach {
+  with Matchers
+  with TryValues
+  with OptionValues
+  with ScalaFutures
+  with IntegrationPatience
+  with BeforeAndAfterEach {
 
   def createSuccessRegistrationResult[T](result: T): RegistrationResult[T] =
     EitherT.right[RegistrationErrors](Future.successful(result))
@@ -90,24 +89,21 @@ trait SpecBase
   val rosmRegistration = RosmWithUtr(utr, RosmRegistration(
     safeId = "safeid",
     organisation = Some(OrganisationDetails(organisationName = "Super Lemonade Plc")),
-    individual = Some(IndividualDetails(firstName = "Ava" , lastName = "Adams")),
-    address = UkAddress(List("105B Godfrey Marchant Grove", "Guildford"), "GU14 8NL")
-  ))
+    individual = Some(IndividualDetails(firstName = "Ava", lastName = "Adams")),
+    address = UkAddress(List("105B Godfrey Marchant Grove", "Guildford"), "GU14 8NL")))
   lazy val logger = application.injector.instanceOf[GenericLogger]
   implicit lazy val ec: ExecutionContext = application.injector.instanceOf[ExecutionContext]
   implicit val hc = HeaderCarrier()
-
 
   override def afterEach(): Unit = {
     Play.stop(application)
     super.afterEach()
   }
-  val emptyUserAnswers : UserAnswers = UserAnswers(identifier, RegisterState.RegisterWithAuthUTR)
+  val emptyUserAnswers: UserAnswers = UserAnswers(identifier, RegisterState.RegisterWithAuthUTR)
 
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 
-  protected def applicationBuilder(hasCTEnrolment: Boolean = false, utr: Option[String] = None, userAnswers: Option[UserAnswers] = None, rosmRegistration: RosmWithUtr = rosmRegistration):
-  GuiceApplicationBuilder = {
+  protected def applicationBuilder(hasCTEnrolment: Boolean = false, utr: Option[String] = None, userAnswers: Option[UserAnswers] = None, rosmRegistration: RosmWithUtr = rosmRegistration): GuiceApplicationBuilder = {
     val bodyParsers = stubControllerComponents().parsers.defaultBodyParser
     new GuiceApplicationBuilder()
       .overrides(
@@ -149,8 +145,7 @@ trait SpecBase
     activity = RetrievedActivity(smallProducer = false, largeProducer = true, contractPacker = false, importer = false, voluntaryRegistration = false),
     liabilityDate = LocalDate.of(2018, 4, 19),
     contact = Contact(Some("Ava Adams"), Some("Chief Infrastructure Agent"), "04495 206189", "Adeline.Greene@gmail.com"),
-    deregDate = None
-  )
+    deregDate = None)
 
   val userDetailsWithSetMethodsReturningFailure: UserAnswers = new UserAnswers("sdilId", RegisterState.RegisterWithAuthUTR) {
     override def set[A](page: Settable[A], value: A)(implicit writes: Writes[A]): Try[UserAnswers] = Failure[UserAnswers](new Exception(""))

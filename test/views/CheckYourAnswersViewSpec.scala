@@ -16,11 +16,11 @@
 
 package views
 
-import play.api.mvc.{Call, Request}
+import play.api.mvc.{ Call, Request }
 import play.api.test.FakeRequest
 import uk.gov.hmrc.govukfrontend.views.Aliases.Value
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, SummaryListRow}
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{ SummaryList, SummaryListRow }
 import views.html.CheckYourAnswersView
 
 class CheckYourAnswersViewSpec extends ViewSpecHelper {
@@ -41,10 +41,9 @@ class CheckYourAnswersViewSpec extends ViewSpecHelper {
     val summaryList: Seq[(String, SummaryList)] = {
       Seq(
         "foo" -> SummaryList(Seq(SummaryListRow(value = Value(content = HtmlContent("bar"))))),
-        "wizz" -> SummaryList(Seq(SummaryListRow(value = Value(content = HtmlContent("bang")))))
-      )
+        "wizz" -> SummaryList(Seq(SummaryListRow(value = Value(content = HtmlContent("bang"))))))
     }
-    val call = Call("GET","/foo")
+    val call = Call("GET", "/foo")
     val html = view(summaryList, call)(request, messages(application))
     val document = doc(html)
     "should have the expected heading" in {
@@ -73,7 +72,7 @@ class CheckYourAnswersViewSpec extends ViewSpecHelper {
 
     testBackLink(document)
     validateTimeoutDialog(document)
-    validateTechnicalHelpLinkPresent(document)
+
     validateAccessibilityStatementLinkPresent(document)
 
   }

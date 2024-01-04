@@ -17,14 +17,14 @@
 package viewmodels
 
 import models.backend.UkAddress
-import play.twirl.api.{Html, HtmlFormat}
+import play.twirl.api.{ Html, HtmlFormat }
 import uk.gov.hmrc.govukfrontend.views.Aliases.HtmlContent
 
 object AddressFormattingHelper {
 
   def formatBusinessAddress(ukAddress: UkAddress, tradingName: Option[String]): HtmlContent = {
-    HtmlContent( tradingName.fold("")(tradingName => tradingName + "<br/>") +
-      ukAddress.lines.map(line  => if(line.isEmpty){""}else{HtmlFormat.escape(line).toString() + "<br/>"}).mkString +
+    HtmlContent(tradingName.fold("")(tradingName => tradingName + "<br/>") +
+      ukAddress.lines.map(line => if (line.isEmpty) { "" } else { HtmlFormat.escape(line).toString() + "<br/>" }).mkString +
       s"""<span class="nowrap" style="white-space: nowrap;">${ukAddress.postCode}</span>""")
   }
 
@@ -37,28 +37,24 @@ object AddressFormattingHelper {
     val breakLine = Html("<br>")
 
     addressFormat match {
-      case SeparatePostCodeAddressNoTradingName =>  HtmlFormat.fill(Seq(
+      case SeparatePostCodeAddressNoTradingName => HtmlFormat.fill(Seq(
         htmlSiteAddress,
         breakLine,
-        htmlPostcode
-      ))
-      case AddressNoTradingName =>  HtmlFormat.fill(Seq(
+        htmlPostcode))
+      case AddressNoTradingName => HtmlFormat.fill(Seq(
         htmlSiteAddress,
-        htmlPostcode
-      ))
+        htmlPostcode))
       case AddressWithTradingName => HtmlFormat.fill(Seq(
         htmlTradingName,
         breakLine,
         htmlSiteAddress,
-        htmlPostcode
-      ))
+        htmlPostcode))
       case SeparatePostCodeAddressWithTradingName => HtmlFormat.fill(Seq(
         htmlTradingName,
         breakLine,
         htmlSiteAddress,
         breakLine,
-        htmlPostcode
-      ))
+        htmlPostcode))
     }
   }
 

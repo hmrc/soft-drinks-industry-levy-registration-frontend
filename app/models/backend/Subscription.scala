@@ -16,9 +16,9 @@
 
 package models.backend
 
-import models.{Contact, HowManyLitresGlobally, RosmWithUtr, UserAnswers}
-import pages.{ContactDetailsPage, HowManyLitresGloballyPage, OrganisationTypePage, StartDatePage}
-import play.api.libs.json.{Format, Json}
+import models.{ Contact, HowManyLitresGlobally, RosmWithUtr, UserAnswers }
+import pages.{ ContactDetailsPage, HowManyLitresGloballyPage, OrganisationTypePage, StartDatePage }
+import play.api.libs.json.{ Format, Json }
 
 import java.time.LocalDate
 
@@ -49,8 +49,7 @@ object Subscription {
       liabilityDate = getLiabilityDate(userAnswers),
       productionSites = getProductionSites(userAnswers),
       warehouseSites = getWarehouses(userAnswers),
-      contact = getContact(userAnswers)
-    )
+      contact = getContact(userAnswers))
   }
 
   private def getOrganisationType(answers: UserAnswers) = {
@@ -66,7 +65,7 @@ object Subscription {
   }
 
   private def getProductionSites(answers: UserAnswers) = {
-    if(requiresPackagingSite(answers))
+    if (requiresPackagingSite(answers))
       answers.packagingSiteList.values.toSeq
     else List.empty[Site]
   }
@@ -74,17 +73,16 @@ object Subscription {
   private def requiresPackagingSite(answers: UserAnswers) = {
     val activity = getActivity(answers)
     if (largeProducerRequiringPackingSite(activity) ||
-        smallProducerRequiringPackingSite(activity, answers) ||
-        noneProducerRequiringPackingSite(activity, answers)
-    ) true else false
+      smallProducerRequiringPackingSite(activity, answers) ||
+      noneProducerRequiringPackingSite(activity, answers)) true else false
   }
 
   private def largeProducerRequiringPackingSite(activity: Activity) = {
-    if(activity.isLarge && (activity.ProducedOwnBrand.isDefined || activity.CopackerAll.isDefined)) true else false
+    if (activity.isLarge && (activity.ProducedOwnBrand.isDefined || activity.CopackerAll.isDefined)) true else false
   }
 
   private def smallProducerRequiringPackingSite(activity: Activity, answers: UserAnswers) = {
-    if(answers.get(HowManyLitresGloballyPage).exists(_ == HowManyLitresGlobally.Small)
+    if (answers.get(HowManyLitresGloballyPage).exists(_ == HowManyLitresGlobally.Small)
       && activity.CopackerAll.isDefined) true else false
   }
 
@@ -105,8 +103,7 @@ object Subscription {
     val activity = getActivity(answers)
     if (activity.isLarge ||
       smallProducerRequiringWarehouse(activity, answers) ||
-      noneProducerRequiringWarehouse(activity, answers)
-    ) true else false
+      noneProducerRequiringWarehouse(activity, answers)) true else false
   }
 
   private def smallProducerRequiringWarehouse(activity: Activity, answers: UserAnswers) = {

@@ -19,12 +19,12 @@ package controllers
 import base.SpecBase
 import forms.AskSecondaryWarehousesFormProvider
 import helpers.LoggerHelper
-import models.{NormalMode, RegisterState, UserAnswers}
-import navigation.{FakeNavigator, Navigator}
+import models.{ NormalMode, RegisterState, UserAnswers }
+import navigation.{ FakeNavigator, Navigator }
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import org.mockito.MockitoSugar.{times, verify}
+import org.mockito.MockitoSugar.{ times, verify }
 import org.scalatestplus.mockito.MockitoSugar
 import pages.AskSecondaryWarehousesPage
 import play.api.inject.bind
@@ -92,7 +92,7 @@ class AskSecondaryWarehousesControllerSpec extends SpecBase with MockitoSugar wi
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
       when(mockAddressLookupService.initJourneyAndReturnOnRampUrl(
         ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any(), ArgumentMatchers.any())(
-        ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+          ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(onwardUrlForALF))
 
       val application =
@@ -100,8 +100,7 @@ class AskSecondaryWarehousesControllerSpec extends SpecBase with MockitoSugar wi
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository),
-            bind[AddressLookupService].toInstance(mockAddressLookupService)
-          )
+            bind[AddressLookupService].toInstance(mockAddressLookupService))
           .build()
 
       running(application) {
@@ -116,7 +115,7 @@ class AskSecondaryWarehousesControllerSpec extends SpecBase with MockitoSugar wi
 
         verify(mockAddressLookupService, times(1)).initJourneyAndReturnOnRampUrl(
           ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any(), ArgumentMatchers.any())(
-          ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+            ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
       }
     }
     "must redirect to contact details when valid data is submitted (false), verifying ALF is not called" in {
@@ -128,7 +127,7 @@ class AskSecondaryWarehousesControllerSpec extends SpecBase with MockitoSugar wi
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
       when(mockAddressLookupService.initJourneyAndReturnOnRampUrl(
         ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any(), ArgumentMatchers.any())(
-        ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+          ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(onwardUrlForALF))
 
       val application =
@@ -136,9 +135,7 @@ class AskSecondaryWarehousesControllerSpec extends SpecBase with MockitoSugar wi
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository),
-            bind[AddressLookupService].toInstance(mockAddressLookupService)
-
-          )
+            bind[AddressLookupService].toInstance(mockAddressLookupService))
           .build()
 
       running(application) {
@@ -153,7 +150,7 @@ class AskSecondaryWarehousesControllerSpec extends SpecBase with MockitoSugar wi
 
         verify(mockAddressLookupService, times(0)).initJourneyAndReturnOnRampUrl(
           ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any(), ArgumentMatchers.any())(
-          ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+            ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
       }
     }
     "must return error if ALF on ramp call returns error" in {
@@ -162,7 +159,7 @@ class AskSecondaryWarehousesControllerSpec extends SpecBase with MockitoSugar wi
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
       when(mockAddressLookupService.initJourneyAndReturnOnRampUrl(
         ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any(), ArgumentMatchers.any())(
-        ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+          ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.failed(new Exception("uh oh spaghetio")))
 
       val application =
@@ -170,8 +167,7 @@ class AskSecondaryWarehousesControllerSpec extends SpecBase with MockitoSugar wi
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository),
-            bind[AddressLookupService].toInstance(mockAddressLookupService)
-          )
+            bind[AddressLookupService].toInstance(mockAddressLookupService))
           .build()
 
       running(application) {
@@ -181,10 +177,9 @@ class AskSecondaryWarehousesControllerSpec extends SpecBase with MockitoSugar wi
 
         intercept[Exception](await(route(application, request).value))
 
-
         verify(mockAddressLookupService, times(1)).initJourneyAndReturnOnRampUrl(
           ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any(), ArgumentMatchers.any())(
-          ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+            ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
       }
     }
 
@@ -195,7 +190,7 @@ class AskSecondaryWarehousesControllerSpec extends SpecBase with MockitoSugar wi
       running(application) {
         val request =
           FakeRequest(POST, askSecondaryWarehousesRoute)
-        .withFormUrlEncodedBody(("value", ""))
+            .withFormUrlEncodedBody(("value", ""))
 
         val boundForm = form.bind(Map("value" -> ""))
 
@@ -229,7 +224,7 @@ class AskSecondaryWarehousesControllerSpec extends SpecBase with MockitoSugar wi
       running(application) {
         val request =
           FakeRequest(POST, askSecondaryWarehousesRoute)
-        .withFormUrlEncodedBody(("value", "true"))
+            .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
 

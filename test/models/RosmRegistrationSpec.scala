@@ -24,23 +24,19 @@ class RosmRegistrationSpec extends SpecBase {
 
   "model should read correctly from JSON" in {
     Json.fromJson[RosmRegistration](Json.parse(
-      """{"safeId":"foo","organisation":{"organisationName":"wizzbang"},"individual":{"firstName":"bar","lastName":"wizz"},"address":{"addressLine1":"1","addressLine2":"2","addressLine3":"3","addressLine4":"4","postalCode":"posty"}}"""
-    )).get mustBe RosmRegistration(
+      """{"safeId":"foo","organisation":{"organisationName":"wizzbang"},"individual":{"firstName":"bar","lastName":"wizz"},"address":{"addressLine1":"1","addressLine2":"2","addressLine3":"3","addressLine4":"4","postalCode":"posty"}}""")).get mustBe RosmRegistration(
       "foo",
       Some(OrganisationDetails("wizzbang")),
       Some(IndividualDetails("bar", "wizz")),
-      UkAddress(List("1","2","3","4"),"posty", None)
-    )
+      UkAddress(List("1", "2", "3", "4"), "posty", None))
   }
   "model should write to JSON correctly" in {
     Json.toJson(RosmRegistration(
       "foo",
       Some(OrganisationDetails("wizzbang")),
       Some(IndividualDetails("bar", "wizz")),
-      UkAddress(List("1","2","3","4"),"posty", Some("alf"))
-    )) mustBe Json.parse(
-    """{"safeId":"foo","organisation":{"organisationName":"wizzbang"},"individual":{"firstName":"bar","lastName":"wizz"},"address":{"addressLine1":"1","addressLine2":"2","addressLine3":"3","addressLine4":"4","postalCode":"posty"}}"""
-    )
+      UkAddress(List("1", "2", "3", "4"), "posty", Some("alf")))) mustBe Json.parse(
+      """{"safeId":"foo","organisation":{"organisationName":"wizzbang"},"individual":{"firstName":"bar","lastName":"wizz"},"address":{"addressLine1":"1","addressLine2":"2","addressLine3":"3","addressLine4":"4","postalCode":"posty"}}""")
   }
 
   "convertToUsableUkAddress" - {
@@ -49,24 +45,24 @@ class RosmRegistrationSpec extends SpecBase {
         "foo",
         Some(OrganisationDetails("wizzbang")),
         Some(IndividualDetails("bar", "wizz")),
-        UkAddress(List("1","2","3","4"),"posty", Some("alf")))
-      RosmRegistration.convertToUsableUkAddress(rosmRegistration) mustBe UkAddress(List("wizzbang","1","2","3","4"),"posty", Some("alf"))
+        UkAddress(List("1", "2", "3", "4"), "posty", Some("alf")))
+      RosmRegistration.convertToUsableUkAddress(rosmRegistration) mustBe UkAddress(List("wizzbang", "1", "2", "3", "4"), "posty", Some("alf"))
     }
     "return a UK address with individual details added to lines" in {
       val rosmRegistration = RosmRegistration(
         "foo",
         None,
         Some(IndividualDetails("bar", "wizz")),
-        UkAddress(List("1","2","3","4"),"posty", Some("alf")))
-      RosmRegistration.convertToUsableUkAddress(rosmRegistration) mustBe UkAddress(List("bar wizz","1","2","3","4"),"posty", Some("alf"))
+        UkAddress(List("1", "2", "3", "4"), "posty", Some("alf")))
+      RosmRegistration.convertToUsableUkAddress(rosmRegistration) mustBe UkAddress(List("bar wizz", "1", "2", "3", "4"), "posty", Some("alf"))
     }
     "return a UK address with nothing additional added to lines" in {
       val rosmRegistration = RosmRegistration(
         "foo",
         None,
         None,
-        UkAddress(List("1","2","3","4"),"posty", Some("alf")))
-      RosmRegistration.convertToUsableUkAddress(rosmRegistration) mustBe UkAddress(List("1","2","3","4"),"posty", Some("alf"))
+        UkAddress(List("1", "2", "3", "4"), "posty", Some("alf")))
+      RosmRegistration.convertToUsableUkAddress(rosmRegistration) mustBe UkAddress(List("1", "2", "3", "4"), "posty", Some("alf"))
     }
   }
 

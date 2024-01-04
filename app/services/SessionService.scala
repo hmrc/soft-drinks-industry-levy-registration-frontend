@@ -17,7 +17,7 @@
 package services
 
 import cats.data.EitherT
-import com.google.inject.{Inject, Singleton}
+import com.google.inject.{ Inject, Singleton }
 import errors._
 import models.UserAnswers
 import repositories.SessionRepository
@@ -26,9 +26,9 @@ import service.RegistrationResult
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class SessionService @Inject()(sessionRepository: SessionRepository)(implicit ec: ExecutionContext) {
+class SessionService @Inject() (sessionRepository: SessionRepository)(implicit ec: ExecutionContext) {
 
-  def keepAlive(id: String): RegistrationResult[Boolean] = EitherT{
+  def keepAlive(id: String): RegistrationResult[Boolean] = EitherT {
     sessionRepository.keepAlive(id)
       .map(Right(_))
       .recover {
@@ -46,7 +46,7 @@ class SessionService @Inject()(sessionRepository: SessionRepository)(implicit ec
 
   def set(answers: UserAnswers): RegistrationResult[Boolean] = EitherT {
     sessionRepository.set(answers)
-    .map(Right(_))
+      .map(Right(_))
       .recover {
         case _ => Left(SessionDatabaseInsertError)
       }

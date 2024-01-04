@@ -18,7 +18,7 @@ package views
 
 import config.FrontendAppConfig
 import controllers.routes
-import models.{CheckMode, NormalMode}
+import models.{ CheckMode, NormalMode }
 import play.api.i18n.Messages
 import play.api.mvc.Request
 import play.api.test.FakeRequest
@@ -34,7 +34,7 @@ class HowManyOperatePackagingSitesViewSpec extends LitresSpecHelper {
 
   "HowManyOperatePackagingSitesView" - {
     List(NormalMode, CheckMode).foreach { mode =>
-      "when in " + mode +" mode" - {
+      "when in " + mode + " mode" - {
         val html: HtmlFormat.Appendable = howManyOperatePackagingSitesView(form, mode)
         val document = doc(html)
         val htmlWithValidData: HtmlFormat.Appendable = howManyOperatePackagingSitesView(formWithHighAndLowBands, mode)

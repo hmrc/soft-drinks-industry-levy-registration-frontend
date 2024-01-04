@@ -20,31 +20,30 @@ import controllers.actions._
 import forms.WarehousesTradingNameFormProvider
 
 import javax.inject.Inject
-import models.{Mode, WarehousesTradingName}
+import models.{ Mode, WarehousesTradingName }
 import navigation.Navigator
 import pages.WarehousesTradingNamePage
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{ Action, AnyContent, MessagesControllerComponents }
 import services.SessionService
 import views.html.WarehousesTradingNameView
 import handlers.ErrorHandler
 import play.api.data.Form
 import services.AddressLookupState.WarehouseDetails
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 import utilities.GenericLogger
 
-class WarehousesTradingNameController @Inject()(
-                                       override val messagesApi: MessagesApi,
-                                       val sessionService: SessionService,
-                                       val navigator: Navigator,
-                                       controllerActions: ControllerActions,
-                                       formProvider: WarehousesTradingNameFormProvider,
-                                       val controllerComponents: MessagesControllerComponents,
-                                       view: WarehousesTradingNameView,
-                                       val errorHandler: ErrorHandler,
-                                       val genericLogger: GenericLogger
-                                     )(implicit ec: ExecutionContext) extends ControllerHelper {
+class WarehousesTradingNameController @Inject() (
+  override val messagesApi: MessagesApi,
+  val sessionService: SessionService,
+  val navigator: Navigator,
+  controllerActions: ControllerActions,
+  formProvider: WarehousesTradingNameFormProvider,
+  val controllerComponents: MessagesControllerComponents,
+  view: WarehousesTradingNameView,
+  val errorHandler: ErrorHandler,
+  val genericLogger: GenericLogger)(implicit ec: ExecutionContext) extends ControllerHelper {
 
   val form: Form[WarehousesTradingName] = formProvider()
 
@@ -56,7 +55,7 @@ class WarehousesTradingNameController @Inject()(
       }
 
       Ok(view(preparedForm, mode, ref))
-  }
+    }
 
   def onSubmit(mode: Mode, ref: String): Action[AnyContent] = controllerActions
     .withUserWhoCanEnterTradingName(WarehouseDetails, ref, mode).async { implicit request =>
@@ -68,7 +67,6 @@ class WarehousesTradingNameController @Inject()(
           val updatedAnswers = request.userAnswers
             .addWarehouse(request.aflAddress, value.warehouseTradingName, ref)
           updateDatabaseAndRedirect(updatedAnswers, WarehousesTradingNamePage, mode)
-        }
-      )
-  }
+        })
+    }
 }

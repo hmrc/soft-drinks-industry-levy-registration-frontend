@@ -16,7 +16,6 @@
 
 package pages
 
-
 import models.Mode
 
 import scala.language.implicitConversions

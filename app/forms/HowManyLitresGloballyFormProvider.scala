@@ -26,6 +26,5 @@ class HowManyLitresGloballyFormProvider @Inject() extends Mappings {
 
   def apply(): Form[HowManyLitresGlobally] =
     Form(
-      "value" -> enumerable[HowManyLitresGlobally]("howManyLitresGlobally.error.required")
-    )
+      "value" -> enumerable[HowManyLitresGlobally]("howManyLitresGlobally.error.required"))
 }

@@ -16,7 +16,7 @@
 
 package pages
 
-import models.{HowManyLitresGlobally, Mode}
+import models.{ HowManyLitresGlobally, Mode }
 import play.api.libs.json.JsPath
 
 case object HowManyLitresGloballyPage extends QuestionPage[HowManyLitresGlobally] {

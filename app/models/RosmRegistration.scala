@@ -23,10 +23,10 @@ import scala.util.Try
 
 case class RosmWithUtr(utr: String, rosmRegistration: RosmRegistration)
 case class RosmRegistration(
-                             safeId: String,
-                             organisation: Option[OrganisationDetails],
-                             individual: Option[IndividualDetails],
-                             address: UkAddress) {
+  safeId: String,
+  organisation: Option[OrganisationDetails],
+  individual: Option[IndividualDetails],
+  address: UkAddress) {
 
   lazy val organisationName: String = {
     organisation.map(_.organisationName).orElse(individual.map(i => s"${i.firstName} ${i.lastName}")).getOrElse("")
@@ -55,7 +55,7 @@ object RosmRegistration {
         line4 <- (jsObject \ "addressLine4").validateOpt[String]
         postCode <- (jsObject \ "postalCode").validate[String]
       } yield {
-        val optlines: List[String] = List(line2, line3, line4).collect{case Some(l) if l.nonEmpty => l}
+        val optlines: List[String] = List(line2, line3, line4).collect { case Some(l) if l.nonEmpty => l }
         UkAddress(List(line1) ++ optlines, postCode, None)
       }
     }

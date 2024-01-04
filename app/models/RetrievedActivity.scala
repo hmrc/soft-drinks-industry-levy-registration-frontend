@@ -19,12 +19,11 @@ package models
 import play.api.libs.json.Json
 
 case class RetrievedActivity(
-                              smallProducer: Boolean,
-                              largeProducer: Boolean,
-                              contractPacker: Boolean,
-                              importer: Boolean,
-                              voluntaryRegistration: Boolean
-                            ) {
+  smallProducer: Boolean,
+  largeProducer: Boolean,
+  contractPacker: Boolean,
+  importer: Boolean,
+  voluntaryRegistration: Boolean) {
 
   def isLiable: Boolean =
     !smallProducer && (largeProducer || contractPacker || importer)

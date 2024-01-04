@@ -61,7 +61,7 @@ class OperatePackagingSitesSummarySpec extends RegistrationSubscriptionHelper {
                 rows(1).key.classes mustBe ""
                 rows(1).value.content.asHtml mustBe Html("1,000")
                 rows(1).value.classes.trim mustBe "sdil-right-align--desktop"
-                rows(1).actions.head.items.head.href  must include("/change-how-many-own-brands-next-12-months")
+                rows(1).actions.head.items.head.href must include("/change-how-many-own-brands-next-12-months")
                 rows(1).actions.head.items.head.attributes mustBe Map("id" -> "change-litresInLowBand-litreage-operatePackagingSites")
                 rows(1).actions.head.items.head.content.asHtml mustBe Html("Change")
 

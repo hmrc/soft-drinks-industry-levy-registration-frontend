@@ -20,31 +20,30 @@ import controllers.actions._
 import forms.PackagingSiteNameFormProvider
 
 import javax.inject.Inject
-import models.{Mode, PackagingSiteName}
+import models.{ Mode, PackagingSiteName }
 import navigation.Navigator
 import pages.PackagingSiteNamePage
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{ Action, AnyContent, MessagesControllerComponents }
 import services.SessionService
 import views.html.PackagingSiteNameView
 import handlers.ErrorHandler
 import play.api.data.Form
 import services.AddressLookupState.PackingDetails
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 import utilities.GenericLogger
 
-class PackagingSiteNameController @Inject()(
-                                       override val messagesApi: MessagesApi,
-                                       val sessionService: SessionService,
-                                       val navigator: Navigator,
-                                       controllerActions: ControllerActions,
-                                       formProvider: PackagingSiteNameFormProvider,
-                                       val controllerComponents: MessagesControllerComponents,
-                                       view: PackagingSiteNameView,
-                                       val errorHandler: ErrorHandler,
-                                       val genericLogger: GenericLogger
-                                     )(implicit ec: ExecutionContext) extends ControllerHelper {
+class PackagingSiteNameController @Inject() (
+  override val messagesApi: MessagesApi,
+  val sessionService: SessionService,
+  val navigator: Navigator,
+  controllerActions: ControllerActions,
+  formProvider: PackagingSiteNameFormProvider,
+  val controllerComponents: MessagesControllerComponents,
+  view: PackagingSiteNameView,
+  val errorHandler: ErrorHandler,
+  val genericLogger: GenericLogger)(implicit ec: ExecutionContext) extends ControllerHelper {
 
   val form: Form[PackagingSiteName] = formProvider()
 
@@ -56,7 +55,7 @@ class PackagingSiteNameController @Inject()(
       }
 
       Ok(view(preparedForm, mode, ref))
-  }
+    }
 
   def onSubmit(mode: Mode, ref: String): Action[AnyContent] = controllerActions
     .withUserWhoCanEnterTradingName(PackingDetails, ref, mode).async { implicit request =>
@@ -68,7 +67,6 @@ class PackagingSiteNameController @Inject()(
           val updatedAnswers = request.userAnswers
             .addPackagingSite(request.aflAddress, value.packagingSiteName, ref)
           updateDatabaseAndRedirect(updatedAnswers, PackagingSiteNamePage, mode)
-        }
-      )
-  }
+        })
+    }
 }

@@ -17,7 +17,7 @@
 package pages
 
 import play.api.libs.json.JsPath
-import models.{LitresInBands, Mode}
+import models.{ LitresInBands, Mode }
 
 case object HowManyOperatePackagingSitesPage extends QuestionPage[LitresInBands] {
 

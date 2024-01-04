@@ -31,11 +31,11 @@ import pages._
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import repositories.{SDILSessionCache, SDILSessionKeys}
+import repositories.{ SDILSessionCache, SDILSessionKeys }
 import views.html.RegistrationConfirmationView
 import views.summary.RegistrationSummary
 
-import java.time.{Instant, LocalDate, LocalDateTime, ZoneOffset}
+import java.time.{ Instant, LocalDate, LocalDateTime, ZoneOffset }
 import scala.concurrent.Future
 
 class RegistrationConfirmationControllerSpec extends SpecBase {
@@ -73,8 +73,7 @@ class RegistrationConfirmationControllerSpec extends SpecBase {
       val application = applicationBuilder(userAnswers = Some(userAnswers), utr = Some(rosmRegistration.utr))
         .overrides(
           bind[SDILSessionCache].toInstance(mockSdilSessionCache),
-          bind[SoftDrinksIndustryLevyConnector].toInstance(mockSdilConnector)
-        ).build()
+          bind[SoftDrinksIndustryLevyConnector].toInstance(mockSdilConnector)).build()
 
       running(application) {
         when(mockSdilConnector.retreiveRosmSubscription(any(), any())(any())).thenReturn(createSuccessRegistrationResult(rosmRegistration))
@@ -109,14 +108,12 @@ class RegistrationConfirmationControllerSpec extends SpecBase {
         }
       }
 
-
       "if registration when the cache is empty" in {
 
         val application = applicationBuilder(userAnswers = Some(emptyUserAnswers.copy(submittedOn = Some(Instant.now))), utr = Some(rosmRegistration.utr))
           .overrides(
             bind[SDILSessionCache].toInstance(mockSdilSessionCache),
-            bind[SoftDrinksIndustryLevyConnector].toInstance(mockSdilConnector)
-          ).build()
+            bind[SoftDrinksIndustryLevyConnector].toInstance(mockSdilConnector)).build()
 
         running(application) {
           when(mockSdilConnector.retreiveRosmSubscription(any(), any())(any())).thenReturn(createSuccessRegistrationResult(rosmRegistration))

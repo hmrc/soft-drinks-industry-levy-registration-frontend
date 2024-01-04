@@ -20,9 +20,9 @@ import base.SpecBase
 import errors.SessionDatabaseInsertError
 import forms.VerifyFormProvider
 import helpers.LoggerHelper
-import models.Verify.{No, YesNewAddress, YesRegister}
-import models.{NormalMode, RegisterState, UserAnswers, Verify}
-import navigation.{FakeNavigator, Navigator}
+import models.Verify.{ No, YesNewAddress, YesRegister }
+import models.{ NormalMode, RegisterState, UserAnswers, Verify }
+import navigation.{ FakeNavigator, Navigator }
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
@@ -34,7 +34,7 @@ import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.AddressLookupState.BusinessAddress
-import services.{AddressLookupService, SessionService}
+import services.{ AddressLookupService, SessionService }
 import utilities.GenericLogger
 import viewmodels.AddressFormattingHelper
 import views.html.VerifyView
@@ -65,7 +65,7 @@ class VerifyControllerSpec extends SpecBase with MockitoSugar with LoggerHelper 
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual
-          view(form, NormalMode, rosmRegistration.utr,  AddressFormattingHelper.formatBusinessAddress(rosmRegistration.rosmRegistration.address, Some(rosmRegistration.rosmRegistration.organisationName)))(request, messages(application)).toString
+          view(form, NormalMode, rosmRegistration.utr, AddressFormattingHelper.formatBusinessAddress(rosmRegistration.rosmRegistration.address, Some(rosmRegistration.rosmRegistration.organisationName)))(request, messages(application)).toString
       }
     }
 
@@ -98,14 +98,13 @@ class VerifyControllerSpec extends SpecBase with MockitoSugar with LoggerHelper 
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionService].toInstance(mockSessionService)
-          )
+            bind[SessionService].toInstance(mockSessionService))
           .build()
 
       running(application) {
         val request =
           FakeRequest(POST, verifyRoute)
-        .withFormUrlEncodedBody(("value", YesRegister.toString))
+            .withFormUrlEncodedBody(("value", YesRegister.toString))
 
         val result = route(application, request).value
 
@@ -120,7 +119,7 @@ class VerifyControllerSpec extends SpecBase with MockitoSugar with LoggerHelper 
 
       when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(true)
       when(mockAlfService
-        .initJourneyAndReturnOnRampUrl(ArgumentMatchers.eq(BusinessAddress),any(),any())(any(),any(), any()))
+        .initJourneyAndReturnOnRampUrl(ArgumentMatchers.eq(BusinessAddress), any(), any())(any(), any(), any()))
         .thenReturn(Future.successful("alfOnRamp"))
 
       val application =
@@ -128,8 +127,7 @@ class VerifyControllerSpec extends SpecBase with MockitoSugar with LoggerHelper 
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionService].toInstance(mockSessionService),
-            bind[AddressLookupService].toInstance(mockAlfService)
-          )
+            bind[AddressLookupService].toInstance(mockAlfService))
           .build()
 
       running(application) {
@@ -154,8 +152,7 @@ class VerifyControllerSpec extends SpecBase with MockitoSugar with LoggerHelper 
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionService].toInstance(mockSessionService)
-          )
+            bind[SessionService].toInstance(mockSessionService))
           .build()
 
       running(application) {
@@ -177,7 +174,7 @@ class VerifyControllerSpec extends SpecBase with MockitoSugar with LoggerHelper 
       running(application) {
         val request =
           FakeRequest(POST, verifyRoute)
-        .withFormUrlEncodedBody(("value", "invalid value"))
+            .withFormUrlEncodedBody(("value", "invalid value"))
 
         val boundForm = form.bind(Map("value" -> "invalid value"))
 
@@ -187,7 +184,7 @@ class VerifyControllerSpec extends SpecBase with MockitoSugar with LoggerHelper 
 
         status(result) mustEqual BAD_REQUEST
         contentAsString(result) mustEqual
-          view(boundForm, NormalMode, rosmRegistration.utr,  AddressFormattingHelper.formatBusinessAddress(rosmRegistration.rosmRegistration.address, Some(rosmRegistration.rosmRegistration.organisationName)))(request, messages(application)).toString
+          view(boundForm, NormalMode, rosmRegistration.utr, AddressFormattingHelper.formatBusinessAddress(rosmRegistration.rosmRegistration.address, Some(rosmRegistration.rosmRegistration.organisationName)))(request, messages(application)).toString
       }
     }
 
@@ -212,7 +209,7 @@ class VerifyControllerSpec extends SpecBase with MockitoSugar with LoggerHelper 
       running(application) {
         val request =
           FakeRequest(POST, verifyRoute)
-        .withFormUrlEncodedBody(("value", Verify.values.head.toString))
+            .withFormUrlEncodedBody(("value", Verify.values.head.toString))
 
         val result = route(application, request).value
 
@@ -228,7 +225,7 @@ class VerifyControllerSpec extends SpecBase with MockitoSugar with LoggerHelper 
       running(application) {
         val request =
           FakeRequest(POST, verifyRoute)
-        .withFormUrlEncodedBody(("value", YesRegister.toString))
+            .withFormUrlEncodedBody(("value", YesRegister.toString))
 
         val result = route(application, request).value
 
@@ -263,15 +260,14 @@ class VerifyControllerSpec extends SpecBase with MockitoSugar with LoggerHelper 
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionService].toInstance(mockSessionService)
-          )
+            bind[SessionService].toInstance(mockSessionService))
           .build()
 
       running(application) {
         withCaptureOfLoggingFrom(application.injector.instanceOf[GenericLogger].logger) { events =>
           val request =
             FakeRequest(POST, verifyRoute)
-          .withFormUrlEncodedBody(("value", Verify.values.head.toString))
+              .withFormUrlEncodedBody(("value", Verify.values.head.toString))
 
           await(route(application, request).value)
           events.collectFirst {

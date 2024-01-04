@@ -17,19 +17,19 @@
 package controllers.actions
 
 import handlers.ErrorHandler
-import models.requests.{IdentifierRequest, OptionalDataRequest}
+import models.requests.{ IdentifierRequest, OptionalDataRequest }
 import play.api.mvc.Results.InternalServerError
-import play.api.mvc.{ActionRefiner, Result}
+import play.api.mvc.{ ActionRefiner, Result }
 import services.SessionService
 import utilities.GenericLogger
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
-class DataRetrievalActionImpl @Inject()(val sessionService: SessionService,
-                                        errorHandler: ErrorHandler,
-                                        val genericLogger: GenericLogger
-                                       )(implicit val executionContext: ExecutionContext) extends DataRetrievalAction {
+class DataRetrievalActionImpl @Inject() (
+  val sessionService: SessionService,
+  errorHandler: ErrorHandler,
+  val genericLogger: GenericLogger)(implicit val executionContext: ExecutionContext) extends DataRetrievalAction {
 
   override protected def refine[A](request: IdentifierRequest[A]): Future[Either[Result, OptionalDataRequest[A]]] = {
     sessionService.get(request.internalId).value.map {

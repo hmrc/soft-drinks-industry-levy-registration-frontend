@@ -20,8 +20,8 @@ import base.SpecBase
 import errors.SessionDatabaseInsertError
 import forms.HowManyLitresFormProvider
 import helpers.LoggerHelper
-import models.{LitresInBands, NormalMode, RegisterState, UserAnswers}
-import navigation.{FakeNavigator, Navigator}
+import models.{ LitresInBands, NormalMode, RegisterState, UserAnswers }
+import navigation.{ FakeNavigator, Navigator }
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -35,7 +35,7 @@ import services.SessionService
 import utilities.GenericLogger
 import views.html.HowManyOperatePackagingSitesView
 
-class HowManyOperatePackagingSitesControllerSpec extends SpecBase with MockitoSugar with LoggerHelper{
+class HowManyOperatePackagingSitesControllerSpec extends SpecBase with MockitoSugar with LoggerHelper {
 
   def onwardRoute = Call("GET", "/foo")
 
@@ -90,8 +90,7 @@ class HowManyOperatePackagingSitesControllerSpec extends SpecBase with MockitoSu
         applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration)
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionService].toInstance(mockSessionService)
-          )
+            bind[SessionService].toInstance(mockSessionService))
           .build()
 
       running(application) {
@@ -163,7 +162,7 @@ class HowManyOperatePackagingSitesControllerSpec extends SpecBase with MockitoSu
       running(application) {
         val request =
           FakeRequest(POST, howManyOperatePackagingSitesRoute)
-        .withFormUrlEncodedBody(("lowBand", "1000"), ("highBand", "2000"))
+            .withFormUrlEncodedBody(("lowBand", "1000"), ("highBand", "2000"))
 
         val result = route(application, request).value
 
@@ -182,15 +181,14 @@ class HowManyOperatePackagingSitesControllerSpec extends SpecBase with MockitoSu
         applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration)
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionService].toInstance(mockSessionService)
-          )
+            bind[SessionService].toInstance(mockSessionService))
           .build()
 
       running(application) {
         withCaptureOfLoggingFrom(application.injector.instanceOf[GenericLogger].logger) { events =>
           val request =
             FakeRequest(POST, howManyOperatePackagingSitesRoute)
-          .withFormUrlEncodedBody(("lowBand", "1000"), ("highBand", "2000"))
+              .withFormUrlEncodedBody(("lowBand", "1000"), ("highBand", "2000"))
 
           await(route(application, request).value)
           events.collectFirst {

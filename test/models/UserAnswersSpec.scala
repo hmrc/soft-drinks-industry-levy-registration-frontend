@@ -18,7 +18,7 @@ package models
 
 import base.SpecBase
 import models.alf.AddressResponseForLookupState
-import models.backend.{Site, UkAddress}
+import models.backend.{ Site, UkAddress }
 import services.AddressLookupState
 import services.AddressLookupState.PackingDetails
 

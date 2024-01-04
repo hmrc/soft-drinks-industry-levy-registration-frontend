@@ -23,25 +23,24 @@ import models.Mode
 import navigation.Navigator
 import pages.StartDatePage
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{ Action, AnyContent, MessagesControllerComponents }
 import services.SessionService
 import utilities.GenericLogger
 import views.html.StartDateView
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
-class StartDateController @Inject()(
-                                       override val messagesApi: MessagesApi,
-                                       val sessionService: SessionService,
-                                       val navigator: Navigator,
-                                       controllerActions: ControllerActions,
-                                       formProvider: StartDateFormProvider,
-                                       val controllerComponents: MessagesControllerComponents,
-                                       view: StartDateView,
-                                       val errorHandler: ErrorHandler,
-                                       val genericLogger: GenericLogger
-                                     )(implicit ec: ExecutionContext) extends ControllerHelper {
+class StartDateController @Inject() (
+  override val messagesApi: MessagesApi,
+  val sessionService: SessionService,
+  val navigator: Navigator,
+  controllerActions: ControllerActions,
+  formProvider: StartDateFormProvider,
+  val controllerComponents: MessagesControllerComponents,
+  view: StartDateView,
+  val errorHandler: ErrorHandler,
+  val genericLogger: GenericLogger)(implicit ec: ExecutionContext) extends ControllerHelper {
 
   val form = formProvider()
 
@@ -66,7 +65,6 @@ class StartDateController @Inject()(
         value => {
           val updatedAnswers = request.userAnswers.set(StartDatePage, value)
           updateDatabaseAndRedirect(updatedAnswers, StartDatePage, mode)
-        }
-      )
+        })
   }
 }

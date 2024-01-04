@@ -40,12 +40,10 @@ trait RegisterDetailsSummaryListWithLitres extends RegisterDetailsSummaryRowHelp
     val litresDetails: Seq[SummaryListRow] = optLiterage.fold(Seq.empty[SummaryListRow])(getLitresDetails(_, isCheckAnswers))
 
     SummaryListViewModel(rows =
-      row(optLiterage, isCheckAnswers) ++ litresDetails
-    )
+      row(optLiterage, isCheckAnswers) ++ litresDetails)
   }
 
-  private def getLitresDetails(literage: Litreage, isCheckAnswers: Boolean)
-                              (implicit messages: Messages): Seq[SummaryListRow] = {
+  private def getLitresDetails(literage: Litreage, isCheckAnswers: Boolean)(implicit messages: Messages): Seq[SummaryListRow] = {
     summaryLitres.rows(literage, isCheckAnswers)
   }
 

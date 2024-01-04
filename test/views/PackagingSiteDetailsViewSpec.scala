@@ -314,7 +314,6 @@ class PackagingSiteDetailsViewSpec extends ViewSpecHelper {
 
             testBackLink(document1PackagingSite)
             validateTimeoutDialog(document1PackagingSite)
-            validateTechnicalHelpLinkPresent(document1PackagingSite)
             validateAccessibilityStatementLinkPresent(document1PackagingSite)
 
           }

@@ -20,32 +20,31 @@ import controllers.actions._
 import forms.AskSecondaryWarehousesFormProvider
 import handlers.ErrorHandler
 import models.requests.DataRequest
-import models.{CheckMode, Mode, UserAnswers}
+import models.{ CheckMode, Mode, UserAnswers }
 import navigation.Navigator
 import pages.AskSecondaryWarehousesPage
-import play.api.i18n.{Messages, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.i18n.{ Messages, MessagesApi }
+import play.api.mvc.{ Action, AnyContent, MessagesControllerComponents }
 import services.AddressLookupState.WarehouseDetails
-import services.{AddressLookupService, SessionService}
+import services.{ AddressLookupService, SessionService }
 import uk.gov.hmrc.http.HeaderCarrier
 import utilities.GenericLogger
 import views.html.AskSecondaryWarehousesView
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
-class AskSecondaryWarehousesController @Inject()(
-                                       override val messagesApi: MessagesApi,
-                                       val sessionService: SessionService,
-                                       val navigator: Navigator,
-                                       controllerActions: ControllerActions,
-                                       formProvider: AskSecondaryWarehousesFormProvider,
-                                       addressLookupService: AddressLookupService,
-                                       val controllerComponents: MessagesControllerComponents,
-                                       view: AskSecondaryWarehousesView,
-                                       val errorHandler: ErrorHandler,
-                                       val genericLogger: GenericLogger
-                                     )(implicit ec: ExecutionContext) extends ControllerHelper {
+class AskSecondaryWarehousesController @Inject() (
+  override val messagesApi: MessagesApi,
+  val sessionService: SessionService,
+  val navigator: Navigator,
+  controllerActions: ControllerActions,
+  formProvider: AskSecondaryWarehousesFormProvider,
+  addressLookupService: AddressLookupService,
+  val controllerComponents: MessagesControllerComponents,
+  view: AskSecondaryWarehousesView,
+  val errorHandler: ErrorHandler,
+  val genericLogger: GenericLogger)(implicit ec: ExecutionContext) extends ControllerHelper {
 
   val form = formProvider()
 
@@ -68,16 +67,14 @@ class AskSecondaryWarehousesController @Inject()(
           Future.successful(BadRequest(view(formWithErrors, mode))),
 
         value => {
-            for {
-              updatedAnswers <- Future.fromTry(request.userAnswers.set(AskSecondaryWarehousesPage, value))
-              onwardUrl <- getOnwardUrl(request, value, mode, updatedAnswers)
-            } yield Redirect(onwardUrl)
-        }
-      )
+          for {
+            updatedAnswers <- Future.fromTry(request.userAnswers.set(AskSecondaryWarehousesPage, value))
+            onwardUrl <- getOnwardUrl(request, value, mode, updatedAnswers)
+          } yield Redirect(onwardUrl)
+        })
   }
 
-  def getOnwardUrl(request:DataRequest[AnyContent], userAnsweredYes: Boolean, mode: Mode, updatedAnswers:UserAnswers)
-                  (implicit hc:HeaderCarrier, ec: ExecutionContext, messages:Messages) = {
+  def getOnwardUrl(request: DataRequest[AnyContent], userAnsweredYes: Boolean, mode: Mode, updatedAnswers: UserAnswers)(implicit hc: HeaderCarrier, ec: ExecutionContext, messages: Messages) = {
 
     val hasPreviousYesAnswer = request.userAnswers.get(AskSecondaryWarehousesPage).contains(true)
 
@@ -85,15 +82,13 @@ class AskSecondaryWarehousesController @Inject()(
       Future.successful(routes.WarehouseDetailsController.onPageLoad(mode).url)
     } else if (userAnsweredYes) {
       updateDatabaseWithoutRedirect(updatedAnswers, AskSecondaryWarehousesPage).flatMap(
-        _ => addressLookupService.initJourneyAndReturnOnRampUrl(WarehouseDetails, mode = mode)
-      )
+        _ => addressLookupService.initJourneyAndReturnOnRampUrl(WarehouseDetails, mode = mode))
     } else {
       updateDatabaseWithoutRedirect(updatedAnswers.copy(warehouseList = Map.empty), AskSecondaryWarehousesPage).flatMap(_ =>
         mode match {
           case CheckMode => Future.successful(routes.CheckYourAnswersController.onPageLoad.url)
           case _ => Future.successful(routes.ContactDetailsController.onPageLoad(mode).url)
-        }
-      )
+        })
     }
   }
 

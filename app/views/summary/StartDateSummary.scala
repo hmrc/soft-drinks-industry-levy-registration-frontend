@@ -17,7 +17,7 @@
 package views.summary
 
 import controllers.routes
-import models.{CheckMode, HowManyLitresGlobally}
+import models.{ CheckMode, HowManyLitresGlobally }
 import models.backend.Subscription
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
@@ -27,7 +27,6 @@ import viewmodels.implicits._
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-
 
 object StartDateSummary {
 
@@ -42,19 +41,15 @@ object StartDateSummary {
           Seq(
             ActionItemViewModel("site.change", action)
               .withAttribute(("id", actionId))
-              .withVisuallyHiddenText(messages(s"$hiddenText.change.hidden"))
-          )
+              .withVisuallyHiddenText(messages(s"$hiddenText.change.hidden")))
         } else {
           Seq.empty
-        }
-      )
-    )
+        }))
   }
 
   def summaryList(startDate: LocalDate, isCheckAnswers: Boolean)(implicit messages: Messages): SummaryList = {
     SummaryListViewModel(rows =
-      row(startDate, isCheckAnswers)
-    )
+      row(startDate, isCheckAnswers))
   }
 
   val key: String = "startDate.checkYourAnswersKey"

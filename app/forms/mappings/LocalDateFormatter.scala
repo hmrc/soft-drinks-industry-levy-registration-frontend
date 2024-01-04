@@ -20,21 +20,20 @@ import play.api.data.FormError
 import play.api.data.format.Formatter
 
 import java.time.LocalDate
-import scala.util.{Failure, Success, Try}
+import scala.util.{ Failure, Success, Try }
 
 private[mappings] class LocalDateFormatter(
-                                            invalidKey: String,
-                                            allRequiredKey: String,
-                                            twoRequiredKey: String,
-                                            requiredKey: String,
-                                            invalidDay: String,
-                                            invalidDayLength :String,
-                                            invalidMonth: String,
-                                            invalidMonthLength: String,
-                                            invalidYear: String,
-                                            invalidYearLength: String,
-                                            args: Seq[String] = Seq.empty
-                                          ) extends Formatter[LocalDate] with Formatters {
+  invalidKey: String,
+  allRequiredKey: String,
+  twoRequiredKey: String,
+  requiredKey: String,
+  invalidDay: String,
+  invalidDayLength: String,
+  invalidMonth: String,
+  invalidMonthLength: String,
+  invalidYear: String,
+  invalidYearLength: String,
+  args: Seq[String] = Seq.empty) extends Formatter[LocalDate] with Formatters {
 
   private val fieldKeys: List[String] = List("day", "month", "year")
 
@@ -53,39 +52,35 @@ private[mappings] class LocalDateFormatter(
       wholeNumberKey = invalidDay,
       nonNumericKey = invalidDay,
       invalidLength = invalidDayLength,
-      args
-    )
+      args)
 
     val intMonth = intFormatter(
       requiredKey = invalidMonth,
       wholeNumberKey = invalidMonth,
       nonNumericKey = invalidMonth,
       invalidLength = invalidMonthLength,
-      args
-    )
+      args)
 
     val intYear = intFormatter(
       requiredKey = invalidYear,
       wholeNumberKey = invalidYear,
       nonNumericKey = invalidYear,
       invalidLength = invalidYearLength,
-      args
-    )
+      args)
 
-
-    val bindedDay: Either[Seq[FormError],Int] = intDay.bind(s"$key.day", data)
-    val bindedMonth: Either[Seq[FormError],Int] = intMonth.bind(s"$key.month", data)
-    val bindedYear: Either[Seq[FormError],Int] = intYear.bind(s"$key.year", data)
+    val bindedDay: Either[Seq[FormError], Int] = intDay.bind(s"$key.day", data)
+    val bindedMonth: Either[Seq[FormError], Int] = intMonth.bind(s"$key.month", data)
+    val bindedYear: Either[Seq[FormError], Int] = intYear.bind(s"$key.year", data)
 
     (bindedDay, bindedMonth, bindedYear) match {
       case (Left(dayError), Left(monthError), Left(yearError)) => Left(Seq(FormError(key, s"$key.error.invalid", args)))
       case (Left(dayError), Left(monthError), Right(_)) => Left(Seq(FormError(key, s"$key.error.dayMonth.invalid", args)))
       case (Right(_), Left(monthError), Left(yearError)) => Left(Seq(FormError(key, s"$key.error.monthYear.invalid", args)))
-      case (Left(dayError), Right(_), Left(yearError)) =>  Left(Seq(FormError(key, s"$key.error.dayYear.invalid", args)))
-      case (Left(dayError), Right(_) , Right(_)) => Left(dayError)
+      case (Left(dayError), Right(_), Left(yearError)) => Left(Seq(FormError(key, s"$key.error.dayYear.invalid", args)))
+      case (Left(dayError), Right(_), Right(_)) => Left(dayError)
       case (Right(_), Left(monthError), Right(_)) => Left(monthError)
       case (Right(_), Right(_), Left(yearError)) => Left(yearError)
-      case (Right(day), Right(month), Right(year)) => toDate(key, day,month,year)
+      case (Right(day), Right(month), Right(year)) => toDate(key, day, month, year)
     }
   }
 
@@ -119,6 +114,5 @@ private[mappings] class LocalDateFormatter(
     Map(
       s"$key.day" -> value.getDayOfMonth.toString,
       s"$key.month" -> value.getMonthValue.toString,
-      s"$key.year" -> value.getYear.toString
-    )
+      s"$key.year" -> value.getYear.toString)
 }

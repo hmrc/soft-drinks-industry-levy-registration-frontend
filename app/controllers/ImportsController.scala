@@ -21,27 +21,26 @@ import forms.ImportsFormProvider
 import handlers.ErrorHandler
 import models.Mode
 import navigation.Navigator
-import pages.{HowManyImportsPage, ImportsPage}
+import pages.{ HowManyImportsPage, ImportsPage }
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{ Action, AnyContent, MessagesControllerComponents }
 import services.SessionService
 import utilities.GenericLogger
 import views.html.ImportsView
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
-class ImportsController @Inject()(
-                                         override val messagesApi: MessagesApi,
-                                         val sessionService: SessionService,
-                                         val navigator: Navigator,
-                                         controllerActions: ControllerActions,
-                                         formProvider: ImportsFormProvider,
-                                         val controllerComponents: MessagesControllerComponents,
-                                         view: ImportsView,
-                                         val errorHandler: ErrorHandler,
-                                         val genericLogger: GenericLogger
-                                 )(implicit ec: ExecutionContext) extends ControllerHelper {
+class ImportsController @Inject() (
+  override val messagesApi: MessagesApi,
+  val sessionService: SessionService,
+  val navigator: Navigator,
+  controllerActions: ControllerActions,
+  formProvider: ImportsFormProvider,
+  val controllerComponents: MessagesControllerComponents,
+  view: ImportsView,
+  val errorHandler: ErrorHandler,
+  val genericLogger: GenericLogger)(implicit ec: ExecutionContext) extends ControllerHelper {
 
   val form = formProvider()
 
@@ -66,7 +65,6 @@ class ImportsController @Inject()(
         value => {
           val updatedAnswers = request.userAnswers.setAndRemoveLitresIfReq(ImportsPage, HowManyImportsPage, value)
           updateDatabaseAndRedirect(updatedAnswers, ImportsPage, mode)
-          }
-      )
+        })
   }
 }

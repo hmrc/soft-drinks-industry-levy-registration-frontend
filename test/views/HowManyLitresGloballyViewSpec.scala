@@ -204,7 +204,7 @@ class HowManyLitresGloballyViewSpec extends ViewSpecHelper {
 
     testBackLink(document)
     validateTimeoutDialog(document)
-    validateTechnicalHelpLinkPresent(document)
+
     validateAccessibilityStatementLinkPresent(document)
   }
 

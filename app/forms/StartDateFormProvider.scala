@@ -24,27 +24,23 @@ import forms.mappings.Mappings
 import javax.inject.Inject
 import play.api.data.Form
 
-class StartDateFormProvider @Inject()(config:FrontendAppConfig) extends Mappings {
+class StartDateFormProvider @Inject() (config: FrontendAppConfig) extends Mappings {
 
   def today: LocalDate = LocalDate.now()
-
 
   def apply(): Form[LocalDate] =
     Form(
       "startDate" -> localDate(
-        invalidKey     = "startDate.error.invalid",
+        invalidKey = "startDate.error.invalid",
         allRequiredKey = "startDate.error.required.all",
         twoRequiredKey = "startDate.error.required.two",
-        requiredKey    = "startDate.error.required",
+        requiredKey = "startDate.error.required",
         invalidDay = "startDate.day.nan",
         invalidDayLength = "startDate.day.length",
         invalidMonth = "startDate.month.nan",
         invalidMonthLength = "startDate.month.length",
         invalidYear = "startDate.year.nan",
-        invalidYearLength = "startDate.year.length"
-      ).verifying(
+        invalidYearLength = "startDate.year.length").verifying(
         minDate(config.sdilFoundingDate, "startDate.minimumDate"),
-        maxDate(today, "startDate.error.maximumDate")
-      )
-    )
+        maxDate(today, "startDate.error.maximumDate")))
 }

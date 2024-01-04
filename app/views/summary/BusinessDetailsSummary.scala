@@ -18,67 +18,57 @@ package viewmodels.summary
 
 import controllers.routes
 import models.backend.Subscription
-import models.{CheckMode, HowManyLitresGlobally}
+import models.{ CheckMode, HowManyLitresGlobally }
 import play.api.i18n.Messages
-import uk.gov.hmrc.govukfrontend.views.Aliases.{SummaryList, Text}
+import uk.gov.hmrc.govukfrontend.views.Aliases.{ SummaryList, Text }
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.Content
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Actions, SummaryListRow}
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{ Actions, SummaryListRow }
 import viewmodels.AddressFormattingHelper
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
 
-object BusinessDetailsSummary  {
+object BusinessDetailsSummary {
 
-  def headingAndSummary(howManyLitresGlobally: HowManyLitresGlobally, subscription: Subscription, isCheckAnswers: Boolean = true)
-                       (implicit messages: Messages): (String, SummaryList) = {
+  def headingAndSummary(howManyLitresGlobally: HowManyLitresGlobally, subscription: Subscription, isCheckAnswers: Boolean = true)(implicit messages: Messages): (String, SummaryList) = {
     val heading = messages("checkYourAnswers.businessDetails.subHeader")
     val formattedAddress = AddressFormattingHelper.formatBusinessAddress(subscription.address, None)
-    val rows = if(isCheckAnswers) {
+    val rows = if (isCheckAnswers) {
       rowsWithActions(subscription, formattedAddress, howManyLitresGlobally)
     } else {
       rowsWithNoActions(subscription, formattedAddress, howManyLitresGlobally)
     }
     val summaryList = SummaryListViewModel(
-      rows
-    )
+      rows)
     heading -> summaryList
   }
 
-  private def rowsWithActions(subscription: Subscription, formattedAddress: Content, numberOfLitres: HowManyLitresGlobally)
-                  (implicit messages: Messages): Seq[SummaryListRow] = {
+  private def rowsWithActions(subscription: Subscription, formattedAddress: Content, numberOfLitres: HowManyLitresGlobally)(implicit messages: Messages): Seq[SummaryListRow] = {
     val businessAddressAction = getAction("businessAddress", routes.VerifyController.onPageLoad(CheckMode).url)
     val litresGloballyAction = getAction("howManyLitresGlobally", routes.HowManyLitresGloballyController.onPageLoad(CheckMode).url)
     Seq(
       createSummaryListItem("utr", Text(subscription.utr)),
       createSummaryListItem("name", Text(subscription.orgName)),
       createSummaryListItem("address", formattedAddress, Some(businessAddressAction)),
-      createSummaryListItem("litresGlobally", Text(messages(s"howManyLitresGlobally.${numberOfLitres.toString}")), Some(litresGloballyAction))
-    )
+      createSummaryListItem("litresGlobally", Text(messages(s"howManyLitresGlobally.${numberOfLitres.toString}")), Some(litresGloballyAction)))
   }
 
-  private def rowsWithNoActions(subscription: Subscription, formattedAddress: Content, numberOfLitres: HowManyLitresGlobally)
-                             (implicit messages: Messages): Seq[SummaryListRow] = {
+  private def rowsWithNoActions(subscription: Subscription, formattedAddress: Content, numberOfLitres: HowManyLitresGlobally)(implicit messages: Messages): Seq[SummaryListRow] = {
     Seq(
       createSummaryListItem("utr", Text(subscription.utr)),
       createSummaryListItem("name", Text(subscription.orgName)),
       createSummaryListItem("address", formattedAddress),
-      createSummaryListItem("litresGlobally", Text(messages(s"howManyLitresGlobally.${numberOfLitres.toString}")))
-    )
+      createSummaryListItem("litresGlobally", Text(messages(s"howManyLitresGlobally.${numberOfLitres.toString}"))))
   }
 
-
-  private def createSummaryListItem(fieldName: String, content: Content, actions: Option[Actions] = None)
-                                   (implicit messages: Messages): SummaryListRow = {
+  private def createSummaryListItem(fieldName: String, content: Content, actions: Option[Actions] = None)(implicit messages: Messages): SummaryListRow = {
     SummaryListRow(
       key = s"checkYourAnswers.businessDetails.$fieldName",
       value = ValueViewModel(content).withCssClass("sdil-right-align--desktop"),
       classes = "govuk-summary-list__row",
-      actions = actions.headOption
-    )
+      actions = actions.headOption)
   }
 
-  private def getAction(fieldName: String, url: String)
-                       (implicit messages: Messages): Actions = {
+  private def getAction(fieldName: String, url: String)(implicit messages: Messages): Actions = {
     val actionItems = Seq(ActionItemViewModel("site.change", url)
       .withAttribute(("id", s"change-$fieldName"))
       .withVisuallyHiddenText(messages(s"businessDetails.$fieldName.change.hidden")))

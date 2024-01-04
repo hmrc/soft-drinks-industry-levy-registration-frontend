@@ -20,8 +20,8 @@ import base.SpecBase
 import errors.SessionDatabaseInsertError
 import forms.HowManyLitresFormProvider
 import helpers.LoggerHelper
-import models.{LitresInBands, NormalMode, RegisterState, UserAnswers}
-import navigation.{FakeNavigator, Navigator}
+import models.{ LitresInBands, NormalMode, RegisterState, UserAnswers }
+import navigation.{ FakeNavigator, Navigator }
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -35,7 +35,7 @@ import services.SessionService
 import utilities.GenericLogger
 import views.html.HowManyImportsView
 
-class HowManyImportsControllerSpec extends SpecBase with MockitoSugar with LoggerHelper{
+class HowManyImportsControllerSpec extends SpecBase with MockitoSugar with LoggerHelper {
 
   def onwardRoute = Call("GET", "/foo")
 
@@ -90,8 +90,7 @@ class HowManyImportsControllerSpec extends SpecBase with MockitoSugar with Logge
         applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration)
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionService].toInstance(mockSessionService)
-          )
+            bind[SessionService].toInstance(mockSessionService))
           .build()
 
       running(application) {
@@ -182,8 +181,7 @@ class HowManyImportsControllerSpec extends SpecBase with MockitoSugar with Logge
         applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration)
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionService].toInstance(mockSessionService)
-          )
+            bind[SessionService].toInstance(mockSessionService))
           .build()
 
       running(application) {

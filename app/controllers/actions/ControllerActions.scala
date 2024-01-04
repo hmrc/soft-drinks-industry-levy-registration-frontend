@@ -16,25 +16,26 @@
 
 package controllers.actions
 
-import com.google.inject.{Inject, Singleton}
+import com.google.inject.{ Inject, Singleton }
 import connectors.SoftDrinksIndustryLevyConnector
 import handlers.ErrorHandler
 import models.Mode
 import models.RegisterState._
-import models.requests.{DataRequest, DataRequestForApplicationSubmitted, DataRequestForEnterBusinessDetails, DataRequestForEnterTradingName}
-import play.api.mvc.{ActionBuilder, AnyContent}
+import models.requests.{ DataRequest, DataRequestForApplicationSubmitted, DataRequestForEnterBusinessDetails, DataRequestForEnterTradingName }
+import play.api.mvc.{ ActionBuilder, AnyContent }
 import services.AddressLookupState
 import utilities.GenericLogger
 
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class ControllerActions @Inject()(identify: IdentifierAction,
-                                  getData: DataRetrievalAction,
-                                  dataRequired: DataRequiredAction,
-                                  val sdilConnector: SoftDrinksIndustryLevyConnector,
-                                  val genericLogger: GenericLogger,
-                                  val errorHandler: ErrorHandler)(implicit ec: ExecutionContext) extends ControllerActionHelper {
+class ControllerActions @Inject() (
+  identify: IdentifierAction,
+  getData: DataRetrievalAction,
+  dataRequired: DataRequiredAction,
+  val sdilConnector: SoftDrinksIndustryLevyConnector,
+  val genericLogger: GenericLogger,
+  val errorHandler: ErrorHandler)(implicit ec: ExecutionContext) extends ControllerActionHelper {
 
   def withUserWhoCanEnterTradingName(addressLookupState: AddressLookupState, ref: String, mode: Mode): ActionBuilder[DataRequestForEnterTradingName, AnyContent] = {
     withUserWhoCanRegister andThen dataRequiredForEnterTradingNameAction(addressLookupState, ref, mode)

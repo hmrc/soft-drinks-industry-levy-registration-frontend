@@ -16,7 +16,7 @@
 
 package pages
 
-import models.{CheckMode, LitresInBands, NormalMode}
+import models.{ CheckMode, LitresInBands, NormalMode }
 import pages.behaviours.PageBehaviours
 
 class HowManyOperatePackagingSitesPageSpec extends PageBehaviours {

@@ -21,22 +21,22 @@ import config.FrontendAppConfig
 import errors.SessionDatabaseInsertError
 import forms.StartDateFormProvider
 import helpers.LoggerHelper
-import models.{NormalMode, RegisterState, UserAnswers}
-import navigation.{FakeNavigator, Navigator}
+import models.{ NormalMode, RegisterState, UserAnswers }
+import navigation.{ FakeNavigator, Navigator }
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.StartDatePage
 import play.api.inject.bind
-import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Call}
+import play.api.mvc.{ AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Call }
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.SessionService
 import utilities.GenericLogger
 import views.html.StartDateView
 
-import java.time.{LocalDate, ZoneOffset}
+import java.time.{ LocalDate, ZoneOffset }
 
 class StartDateControllerSpec extends SpecBase with MockitoSugar with LoggerHelper {
 
@@ -50,16 +50,14 @@ class StartDateControllerSpec extends SpecBase with MockitoSugar with LoggerHelp
   val form = formProvider()
 
   def getRequest: FakeRequest[AnyContentAsEmpty.type] =
-    FakeRequest(GET, startDateRoute
-  )
+    FakeRequest(GET, startDateRoute)
 
   def postRequest: FakeRequest[AnyContentAsFormUrlEncoded] =
     FakeRequest(POST, startDateRoute)
-  .withFormUrlEncodedBody(
-    "startDate.day" -> validAnswer.getDayOfMonth.toString,
-    "startDate.month" -> validAnswer.getMonthValue.toString,
-    "startDate.year" -> validAnswer.getYear.toString
-  )
+      .withFormUrlEncodedBody(
+        "startDate.day" -> validAnswer.getDayOfMonth.toString,
+        "startDate.month" -> validAnswer.getMonthValue.toString,
+        "startDate.year" -> validAnswer.getYear.toString)
 
   lazy val startDateRoute = routes.StartDateController.onPageLoad(NormalMode).url
 
@@ -107,8 +105,7 @@ class StartDateControllerSpec extends SpecBase with MockitoSugar with LoggerHelp
         applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration)
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionService].toInstance(mockSessionService)
-          )
+            bind[SessionService].toInstance(mockSessionService))
           .build()
 
       running(application) {
@@ -126,9 +123,8 @@ class StartDateControllerSpec extends SpecBase with MockitoSugar with LoggerHelp
 
       running(application) {
         val request =
-          FakeRequest(POST, startDateRoute
-        )
-        .withFormUrlEncodedBody(("value", "invalid value"))
+          FakeRequest(POST, startDateRoute)
+            .withFormUrlEncodedBody(("value", "invalid value"))
 
         running(application) {
           val boundForm = form.bind(Map("value" -> "invalid value"))
@@ -176,8 +172,7 @@ class StartDateControllerSpec extends SpecBase with MockitoSugar with LoggerHelp
         applicationBuilder(userAnswers = Some(userDetailsWithSetMethodsReturningFailure), rosmRegistration = rosmRegistration)
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionService].toInstance(mockSessionService)
-          )
+            bind[SessionService].toInstance(mockSessionService))
           .build()
 
       running(application) {
@@ -198,8 +193,7 @@ class StartDateControllerSpec extends SpecBase with MockitoSugar with LoggerHelp
         applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration)
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionService].toInstance(mockSessionService)
-          )
+            bind[SessionService].toInstance(mockSessionService))
           .build()
 
       running(application) {

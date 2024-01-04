@@ -21,17 +21,17 @@ import controllers.routes
 import handlers.ErrorHandler
 import models.RegisterState.canAccessEnterBusinessDetails
 import models.requests._
-import models.{Mode, RegisterState, RosmWithUtr, UserAnswers}
+import models.{ Mode, RegisterState, RosmWithUtr, UserAnswers }
 import pages.EnterBusinessDetailsPage
-import play.api.mvc.Results.{InternalServerError, Redirect}
-import play.api.mvc.{ActionRefiner, Result}
+import play.api.mvc.Results.{ InternalServerError, Redirect }
+import play.api.mvc.{ ActionRefiner, Result }
 import services.AddressLookupState
 import services.AddressLookupState.WarehouseDetails
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import utilities.GenericLogger
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
 trait ControllerActionHelper {
 
@@ -95,7 +95,8 @@ trait ControllerActionHelper {
               case Right(rosmWithUtr) => Right(DataRequestForApplicationSubmitted(request, request.internalId, userAnswers, rosmWithUtr, userAnswers.submittedOn.get))
               case Left(result) => Left(result)
             }
-          case _ => genericLogger.logger.info(s"User has no user answers or no submitted time ${hc.requestId}")
+          case _ =>
+            genericLogger.logger.info(s"User has no user answers or no submitted time ${hc.requestId}")
             Future.successful(Left(Redirect(routes.RegistrationController.start)))
         }
       }
@@ -104,15 +105,13 @@ trait ControllerActionHelper {
     }
   }
 
-  def dataRequiredForEnterTradingNameAction(addressLookupState: AddressLookupState, ref: String, mode: Mode)
-                                           (implicit ec: ExecutionContext): ActionRefiner[DataRequest, DataRequestForEnterTradingName] = {
+  def dataRequiredForEnterTradingNameAction(addressLookupState: AddressLookupState, ref: String, mode: Mode)(implicit ec: ExecutionContext): ActionRefiner[DataRequest, DataRequestForEnterTradingName] = {
     new ActionRefiner[DataRequest, DataRequestForEnterTradingName] {
       override protected def refine[A](request: DataRequest[A]): Future[Either[Result, DataRequestForEnterTradingName[A]]] = {
         Future.successful {
           val userAnswers = request.userAnswers
           userAnswers.alfResponseForLookupState match {
-            case Some(alfResponseForLookupState)
-              if alfResponseForLookupState.addressLookupState == addressLookupState && alfResponseForLookupState.sdilId == ref =>
+            case Some(alfResponseForLookupState) if alfResponseForLookupState.addressLookupState == addressLookupState && alfResponseForLookupState.sdilId == ref =>
               Right(DataRequestForEnterTradingName(request.request, request.internalId, request.hasCTEnrolment,
                 request.authUtr, request.userAnswers, alfResponseForLookupState.address, None))
             case _ if addressLookupState == WarehouseDetails =>
@@ -123,8 +122,9 @@ trait ControllerActionHelper {
         }
       }
 
-      private def handleUserWhoCannotEnterTradingNameForWarehouse[A](userAnswers: UserAnswers,
-                                                                     request: DataRequest[A]): Either[Result, DataRequestForEnterTradingName[A]] = {
+      private def handleUserWhoCannotEnterTradingNameForWarehouse[A](
+        userAnswers: UserAnswers,
+        request: DataRequest[A]): Either[Result, DataRequestForEnterTradingName[A]] = {
         userAnswers.warehouseList.get(ref) match {
           case Some(warehouse) => Right(DataRequestForEnterTradingName(request.request, request.internalId, request.hasCTEnrolment,
             request.authUtr, request.userAnswers, warehouse.address, Some(warehouse.tradingName)))
@@ -133,8 +133,9 @@ trait ControllerActionHelper {
         }
       }
 
-      private def handleUserWhoCannotEnterTradingNameForPackagingSite[A](userAnswers: UserAnswers,
-                                                                         request: DataRequest[A]): Either[Result, DataRequestForEnterTradingName[A]] = {
+      private def handleUserWhoCannotEnterTradingNameForPackagingSite[A](
+        userAnswers: UserAnswers,
+        request: DataRequest[A]): Either[Result, DataRequestForEnterTradingName[A]] = {
         userAnswers.packagingSiteList.get(ref) match {
           case Some(packagingSite) => Right(DataRequestForEnterTradingName(request.request, request.internalId, request.hasCTEnrolment,
             request.authUtr, request.userAnswers, packagingSite.address, Some(packagingSite.tradingName)))
@@ -151,8 +152,7 @@ trait ControllerActionHelper {
     userAnswers.get(EnterBusinessDetailsPage).map(_.utr).orElse(request.authUtr)
   }
 
-  def getRosmData[A](userAnswers: UserAnswers, request: OptionalDataRequest[A])
-                            (implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[Result, RosmWithUtr]] = {
+  def getRosmData[A](userAnswers: UserAnswers, request: OptionalDataRequest[A])(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[Result, RosmWithUtr]] = {
     getUtr(userAnswers, request) match {
       case Some(utr) =>
         sdilConnector.retreiveRosmSubscription(utr, request.internalId).value.map {

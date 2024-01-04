@@ -19,35 +19,34 @@ package controllers
 import controllers.actions._
 import forms.WarehouseDetailsFormProvider
 import handlers.ErrorHandler
-import models.{Mode, NormalMode, Warehouse}
+import models.{ Mode, NormalMode, Warehouse }
 import navigation.Navigator
 import pages.WarehouseDetailsPage
 import play.api.data.Form
-import play.api.i18n.{Messages, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.i18n.{ Messages, MessagesApi }
+import play.api.mvc.{ Action, AnyContent, MessagesControllerComponents }
 import services.AddressLookupState.WarehouseDetails
-import services.{AddressLookupService, SessionService}
+import services.{ AddressLookupService, SessionService }
 import utilities.GenericLogger
 import viewmodels.govuk.SummaryListFluency
 import views.html.WarehouseDetailsView
 import views.summary.WarehouseDetailsSummary
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
-class WarehouseDetailsController @Inject()(
-                                       override val messagesApi: MessagesApi,
-                                       val sessionService: SessionService,
-                                       val navigator: Navigator,
-                                       controllerActions: ControllerActions,
-                                       warehouseDetailsChecker: WarehouseDetailsChecker,
-                                       formProvider: WarehouseDetailsFormProvider,
-                                       addressLookupService: AddressLookupService,
-                                       val controllerComponents: MessagesControllerComponents,
-                                       view: WarehouseDetailsView,
-                                       val errorHandler: ErrorHandler,
-                                       val genericLogger: GenericLogger
-                                     )(implicit ec: ExecutionContext) extends ControllerHelper with SummaryListFluency {
+class WarehouseDetailsController @Inject() (
+  override val messagesApi: MessagesApi,
+  val sessionService: SessionService,
+  val navigator: Navigator,
+  controllerActions: ControllerActions,
+  warehouseDetailsChecker: WarehouseDetailsChecker,
+  formProvider: WarehouseDetailsFormProvider,
+  addressLookupService: AddressLookupService,
+  val controllerComponents: MessagesControllerComponents,
+  view: WarehouseDetailsView,
+  val errorHandler: ErrorHandler,
+  val genericLogger: GenericLogger)(implicit ec: ExecutionContext) extends ControllerHelper with SummaryListFluency {
 
   val form: Form[Boolean] = formProvider()
 
@@ -77,21 +76,19 @@ class WarehouseDetailsController @Inject()(
         value => {
           for {
             updatedAnswers <- Future.fromTry(request.userAnswers.set(WarehouseDetailsPage, value))
-            _              <- updateDatabaseWithoutRedirect(updatedAnswers, WarehouseDetailsPage)
-            onwardUrl      <-
-              if(value){
-                addressLookupService.initJourneyAndReturnOnRampUrl(WarehouseDetails, mode = mode)
-              }else if(mode == NormalMode){
-                Future.successful(routes.ContactDetailsController.onPageLoad(mode).url)
-              } else {
-                Future.successful(routes.CheckYourAnswersController.onPageLoad.url)
-              }
+            _ <- updateDatabaseWithoutRedirect(updatedAnswers, WarehouseDetailsPage)
+            onwardUrl <- if (value) {
+              addressLookupService.initJourneyAndReturnOnRampUrl(WarehouseDetails, mode = mode)
+            } else if (mode == NormalMode) {
+              Future.successful(routes.ContactDetailsController.onPageLoad(mode).url)
+            } else {
+              Future.successful(routes.CheckYourAnswersController.onPageLoad.url)
+            }
           } yield Redirect(onwardUrl)
-        }
-      )
+        })
   }
 
-  private def createWarehouseSummary(warehouses: Map[String, Warehouse], mode: Mode)(implicit messages:Messages) = {
+  private def createWarehouseSummary(warehouses: Map[String, Warehouse], mode: Mode)(implicit messages: Messages) = {
     Some(SummaryListViewModel(rows = WarehouseDetailsSummary.warehouseDetailsRow(warehouses, mode)))
   }
 }

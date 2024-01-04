@@ -18,38 +18,40 @@ package orchestrators
 
 import cats.data.EitherT
 import cats.implicits._
-import com.google.inject.{Inject, Singleton}
+import com.google.inject.{ Inject, Singleton }
 import connectors._
 import errors._
 import models.RegisterState._
 import models._
-import models.backend.{Subscription, UkAddress}
-import models.requests.{DataRequest, IdentifierRequest}
+import models.backend.{ Subscription, UkAddress }
+import models.requests.{ DataRequest, IdentifierRequest }
 import pages.HowManyLitresGloballyPage
 import play.api.mvc.AnyContent
-import repositories.{SDILSessionCache, SDILSessionKeys}
+import repositories.{ SDILSessionCache, SDILSessionKeys }
 import service.RegistrationResult
 import services.SessionService
 import uk.gov.hmrc.http.HeaderCarrier
 import utilities.GenericLogger
 
 import java.time.Instant
-import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Failure, Success, Try}
+import scala.concurrent.{ ExecutionContext, Future }
+import scala.util.{ Failure, Success, Try }
 
 @Singleton
-class RegistrationOrchestrator @Inject()(sdilConnector: SoftDrinksIndustryLevyConnector,
-                                         sessionService: SessionService,
-                                         sdilSessionCache: SDILSessionCache,
-                                         genericLogger: GenericLogger) {
+class RegistrationOrchestrator @Inject() (
+  sdilConnector: SoftDrinksIndustryLevyConnector,
+  sessionService: SessionService,
+  sdilSessionCache: SDILSessionCache,
+  genericLogger: GenericLogger) {
 
-  def handleRegistrationRequest(implicit request: IdentifierRequest[AnyContent],
-                                hc: HeaderCarrier,
-                                ec: ExecutionContext): RegistrationResult[RegisterState] = {
+  def handleRegistrationRequest(implicit
+    request: IdentifierRequest[AnyContent],
+    hc: HeaderCarrier,
+    ec: ExecutionContext): RegistrationResult[RegisterState] = {
     val internalId = request.internalId
     def registerState(optUserAnswers: Option[UserAnswers]): Future[Either[RegistrationErrors, RegisterState]] = {
       val alreadySubmittedRegistration = optUserAnswers.fold[Option[Instant]](None)(_.submittedOn)
-      if(alreadySubmittedRegistration.isDefined) {
+      if (alreadySubmittedRegistration.isDefined) {
         Future.successful(Left(RegistrationAlreadySubmitted))
       } else {
         request.optUTR match {
@@ -67,9 +69,9 @@ class RegistrationOrchestrator @Inject()(sdilConnector: SoftDrinksIndustryLevyCo
     } yield regState
 
   }
-  def checkEnteredBusinessDetailsAreValidAndUpdateUserAnswers(identify: Identify, internalId: String)
-                                                             (implicit hc: HeaderCarrier,
-                                                              ec: ExecutionContext): RegistrationResult[RegisterState] = {
+  def checkEnteredBusinessDetailsAreValidAndUpdateUserAnswers(identify: Identify, internalId: String)(implicit
+    hc: HeaderCarrier,
+    ec: ExecutionContext): RegistrationResult[RegisterState] = {
 
     for {
       rosmData <- sdilConnector.retreiveRosmSubscription(identify.utr, internalId)
@@ -79,24 +81,24 @@ class RegistrationOrchestrator @Inject()(sdilConnector: SoftDrinksIndustryLevyCo
 
   }
 
-  private def determineRegisterStateForNoneRegisteredUsers(utr: String, internalId: String)
-                                                      (implicit hc: HeaderCarrier,
-                                                       ec: ExecutionContext): RegistrationResult[RegisterState] = EitherT {
+  private def determineRegisterStateForNoneRegisteredUsers(utr: String, internalId: String)(implicit
+    hc: HeaderCarrier,
+    ec: ExecutionContext): RegistrationResult[RegisterState] = EitherT {
     val subStatus = for {
       _ <- sdilConnector.retreiveRosmSubscription(utr, internalId)
       subscriptionStatus <- sdilConnector.checkPendingQueue(utr)
     } yield getRegistrationStateFromSubscriptionStatus(subscriptionStatus)
 
-    subStatus.value.map{
+    subStatus.value.map {
       case Right(status) => Right(status)
       case Left(NoROSMRegistration) => Right(RequiresBusinessDetails)
       case Left(error) => Left(error)
     }
   }
 
-  private def determineRegisterStateForRegisteredUsers(utr: String, internalId: String)
-                                                            (implicit hc: HeaderCarrier,
-                                                             ec: ExecutionContext): RegistrationResult[RegisterState] = EitherT {
+  private def determineRegisterStateForRegisteredUsers(utr: String, internalId: String)(implicit
+    hc: HeaderCarrier,
+    ec: ExecutionContext): RegistrationResult[RegisterState] = EitherT {
     sdilConnector.retreiveRosmSubscription(utr, internalId).value.map {
       case Right(_) => Right(AlreadyRegistered)
       case Left(NoROSMRegistration) => Left(AuthenticationError)
@@ -117,21 +119,22 @@ class RegistrationOrchestrator @Inject()(sdilConnector: SoftDrinksIndustryLevyCo
     } yield created
   }
 
-  def getSubscriptionAndHowManyLitresGlobally(userAnswers: UserAnswers,
-                                              rosmWithUtr: RosmWithUtr): Either[RegistrationErrors, CreatedSubscriptionAndAmountProducedGlobally] = {
+  def getSubscriptionAndHowManyLitresGlobally(
+    userAnswers: UserAnswers,
+    rosmWithUtr: RosmWithUtr): Either[RegistrationErrors, CreatedSubscriptionAndAmountProducedGlobally] = {
     userAnswers.get(HowManyLitresGloballyPage)
       .fold[Either[RegistrationErrors, CreatedSubscriptionAndAmountProducedGlobally]](
         Left(MissingRequiredUserAnswers)) {
-        howManyProducedGlobally =>
-          Try {
-            Subscription.generate(userAnswers, rosmWithUtr)
-          } match {
-            case Success(sub) => Right(CreatedSubscriptionAndAmountProducedGlobally(sub, howManyProducedGlobally))
-            case Failure(ex) =>
-              genericLogger.logger.error(s"unable to create subscription as ${ex.getMessage}")
-              Left(MissingRequiredUserAnswers)
-          }
-      }
+          howManyProducedGlobally =>
+            Try {
+              Subscription.generate(userAnswers, rosmWithUtr)
+            } match {
+              case Success(sub) => Right(CreatedSubscriptionAndAmountProducedGlobally(sub, howManyProducedGlobally))
+              case Failure(ex) =>
+                genericLogger.logger.error(s"unable to create subscription as ${ex.getMessage}")
+                Left(MissingRequiredUserAnswers)
+            }
+        }
   }
 
   private def postcodesMatch(rosmAddress: UkAddress, identify: Identify): RegistrationResult[Boolean] = EitherT {

@@ -19,7 +19,7 @@ package forms
 import forms.behaviours.LongFieldBehaviour
 import models.LitresInBands
 import org.scalatest.matchers.must.Matchers
-import play.api.data.{Form, FormError}
+import play.api.data.{ Form, FormError }
 
 class HowManyLitresFormProviderSpec extends LongFieldBehaviour with Matchers {
 
@@ -39,29 +39,25 @@ class HowManyLitresFormProviderSpec extends LongFieldBehaviour with Matchers {
     behave like fieldThatBindsValidData(
       form,
       fieldName,
-      validDataGenerator
-    )
+      validDataGenerator)
 
     behave like longField(
       form,
       fieldName,
       nonNumericError = FormError(fieldName, numberKey),
       negativeNumberError = FormError(fieldName, negativeNumberKey),
-      wholeNumberError = FormError(fieldName, wholeNumberKey)
-    )
+      wholeNumberError = FormError(fieldName, wholeNumberKey))
 
     behave like longFieldWithMaximum(
       form,
       fieldName,
       maxValue,
-      FormError(fieldName, maxValueKey, Seq(maxValue))
-    )
+      FormError(fieldName, maxValueKey, Seq(maxValue)))
 
     behave like mandatoryField(
       form,
       fieldName,
-      requiredError = FormError(fieldName, requiredKey)
-    )
+      requiredError = FormError(fieldName, requiredKey))
   }
 
   ".highBand" - {
@@ -78,35 +74,31 @@ class HowManyLitresFormProviderSpec extends LongFieldBehaviour with Matchers {
     behave like fieldThatBindsValidData(
       form,
       fieldName,
-      validDataGenerator
-    )
+      validDataGenerator)
 
     behave like longField(
       form,
       fieldName,
       nonNumericError = FormError(fieldName, numberKey),
       negativeNumberError = FormError(fieldName, negativeNumberKey),
-      wholeNumberError = FormError(fieldName, wholeNumberKey)
-    )
+      wholeNumberError = FormError(fieldName, wholeNumberKey))
 
     behave like longFieldWithMaximum(
       form,
       fieldName,
       maxValue,
-      FormError(fieldName, maxValueKey, Seq(maxValue))
-    )
+      FormError(fieldName, maxValueKey, Seq(maxValue)))
 
     behave like mandatoryField(
       form,
       fieldName,
-      requiredError = FormError(fieldName, requiredKey)
-    )
+      requiredError = FormError(fieldName, requiredKey))
   }
 
   "must return total litres less than 1" in {
     val result = form.bind(Map("lowBand" -> "0", "highBand" -> "0"))
-    assert(result.errors.contains(FormError("lowBand",List("litres.error.minimum.total"))))
-    assert(result.errors.contains(FormError("highBand",List("litres.error.minimum.total"))))
+    assert(result.errors.contains(FormError("lowBand", List("litres.error.minimum.total"))))
+    assert(result.errors.contains(FormError("highBand", List("litres.error.minimum.total"))))
   }
 
   "must return not contain total less than 1 error if low band value is 0 and the high band is non-numeric" in {
@@ -120,5 +112,5 @@ class HowManyLitresFormProviderSpec extends LongFieldBehaviour with Matchers {
     result.errors must not contain FormError("highBand", List("litres.error.minimum.total"))
     assert(result.errors.contains(FormError("lowBand", List("litres.error.lowBand.nonNumeric"))))
   }
-  
+
 }

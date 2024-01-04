@@ -17,16 +17,16 @@
 package views.summary
 
 import controllers.routes
-import models.{Mode, Warehouse}
+import models.{ Mode, Warehouse }
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.Actions
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Key, SummaryListRow}
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{ Key, SummaryListRow }
 import viewmodels.AddressFormattingHelper
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
 
-object WarehouseDetailsSummary  {
+object WarehouseDetailsSummary {
 
   def warehouseDetailsRow(warehouseList: Map[String, Warehouse], mode: Mode)(implicit messages: Messages): List[SummaryListRow] = {
     warehouseList.map {
@@ -34,15 +34,12 @@ object WarehouseDetailsSummary  {
         SummaryListRow(
           key = Key(
             content = HtmlContent(AddressFormattingHelper.addressFormatting(warehouse._2.address, warehouse._2.tradingName)),
-            classes = "govuk-!-font-weight-regular govuk-!-width-full"
-          ),
+            classes = "govuk-!-font-weight-regular govuk-!-width-full"),
           actions =
             Some(Actions("", Seq(
               ActionItemViewModel("site.remove", routes.RemoveWarehouseDetailsController.onPageLoad(mode, warehouse._1).url)
                 .withCssClass("remove-link")
-                .withVisuallyHiddenText(messages("warehouseDetails.remove.hidden", warehouse._2.tradingName, warehouse._2.address.lines.head)))
-            ))
-        )
+                .withVisuallyHiddenText(messages("warehouseDetails.remove.hidden", warehouse._2.tradingName, warehouse._2.address.lines.head))))))
     }.toList
   }
 }

@@ -17,12 +17,11 @@
 package models
 
 import models.backend.Subscription
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.{ Format, Json }
 
 case class CreatedSubscriptionAndAmountProducedGlobally(
-                                                       subscription: Subscription,
-                                                       howManyLitresGlobally: HowManyLitresGlobally
-                                                       )
+  subscription: Subscription,
+  howManyLitresGlobally: HowManyLitresGlobally)
 
 object CreatedSubscriptionAndAmountProducedGlobally {
   implicit val format: Format[CreatedSubscriptionAndAmountProducedGlobally] = Json.format[CreatedSubscriptionAndAmountProducedGlobally]

@@ -20,8 +20,8 @@ import base.SpecBase
 import errors.SessionDatabaseInsertError
 import forms.OperatePackagingSitesFormProvider
 import helpers.LoggerHelper
-import models.{NormalMode, RegisterState, UserAnswers}
-import navigation.{FakeNavigator, Navigator}
+import models.{ NormalMode, RegisterState, UserAnswers }
+import navigation.{ FakeNavigator, Navigator }
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -90,14 +90,13 @@ class OperatePackagingSitesControllerSpec extends SpecBase with MockitoSugar wit
         applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration)
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionService].toInstance(mockSessionService)
-          )
+            bind[SessionService].toInstance(mockSessionService))
           .build()
 
       running(application) {
         val request =
           FakeRequest(POST, operatePackagingSitesRoute)
-        .withFormUrlEncodedBody(("value", "true"))
+            .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
 
@@ -113,7 +112,7 @@ class OperatePackagingSitesControllerSpec extends SpecBase with MockitoSugar wit
       running(application) {
         val request =
           FakeRequest(POST, operatePackagingSitesRoute)
-        .withFormUrlEncodedBody(("value", ""))
+            .withFormUrlEncodedBody(("value", ""))
 
         val boundForm = form.bind(Map("value" -> ""))
 
@@ -147,7 +146,7 @@ class OperatePackagingSitesControllerSpec extends SpecBase with MockitoSugar wit
       running(application) {
         val request =
           FakeRequest(POST, operatePackagingSitesRoute)
-        .withFormUrlEncodedBody(("value", "true"))
+            .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
 
@@ -162,9 +161,8 @@ class OperatePackagingSitesControllerSpec extends SpecBase with MockitoSugar wit
 
       running(application) {
         val request =
-          FakeRequest(POST, operatePackagingSitesRoute
-        )
-        .withFormUrlEncodedBody(("value", "true"))
+          FakeRequest(POST, operatePackagingSitesRoute)
+            .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
 
@@ -183,15 +181,14 @@ class OperatePackagingSitesControllerSpec extends SpecBase with MockitoSugar wit
         applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration)
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionService].toInstance(mockSessionService)
-          )
+            bind[SessionService].toInstance(mockSessionService))
           .build()
 
       running(application) {
         withCaptureOfLoggingFrom(application.injector.instanceOf[GenericLogger].logger) { events =>
           val request =
             FakeRequest(POST, operatePackagingSitesRoute)
-          .withFormUrlEncodedBody(("value", "true"))
+              .withFormUrlEncodedBody(("value", "true"))
 
           await(route(application, request).value)
           events.collectFirst {

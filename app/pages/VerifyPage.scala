@@ -16,7 +16,7 @@
 
 package pages
 
-import models.{Mode, Verify}
+import models.{ Mode, Verify }
 import play.api.libs.json.JsPath
 
 case object VerifyPage extends QuestionPage[Verify] {

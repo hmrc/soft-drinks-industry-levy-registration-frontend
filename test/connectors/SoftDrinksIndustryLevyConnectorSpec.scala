@@ -18,13 +18,13 @@ package connectors
 
 import base.SpecBase
 import errors.NoROSMRegistration
-import models.{OptRetrievedSubscription, RetrievedSubscription, RosmRegistration, RosmWithUtr}
+import models.{ OptRetrievedSubscription, RetrievedSubscription, RosmRegistration, RosmWithUtr }
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Json
-import repositories.{CacheMap, SDILSessionCache}
+import repositories.{ CacheMap, SDILSessionCache }
 import uk.gov.hmrc.http.HttpClient
 import utilities.GenericLogger
 
@@ -42,111 +42,106 @@ class SoftDrinksIndustryLevyConnectorSpec extends SpecBase with MockitoSugar wit
 
   "SoftDrinksIndustryLevyConnector" - {
 
-    s"should not call the backend and return the rosm registration" in{
+    s"should not call the backend and return the rosm registration" in {
       when(mockSDILSessionCache.fetchEntry[RosmWithUtr](any(), any())(any()))
-      .thenReturn(Future.successful(Some(rosmRegistration)))
+        .thenReturn(Future.successful(Some(rosmRegistration)))
 
       val res = softDrinksIndustryLevyConnector.retreiveRosmSubscription(utr = utr, "foo")
       whenReady(
-        res.value
-      ) {
-        response =>
-          response mustEqual Right(rosmRegistration)
-      }
+        res.value) {
+          response =>
+            response mustEqual Right(rosmRegistration)
+        }
     }
 
-    s"should call the backend and return NoRosmRegistration if no rosm for utr" in{
+    s"should call the backend and return NoRosmRegistration if no rosm for utr" in {
       when(mockSDILSessionCache.fetchEntry[RosmRegistration](any(), any())(any()))
         .thenReturn(Future.successful(None))
-      when(mockHttp.GET[Option[RosmRegistration]](any(),any(), any())(any(), any(), any())).thenReturn(Future.successful(None))
+      when(mockHttp.GET[Option[RosmRegistration]](any(), any(), any())(any(), any(), any())).thenReturn(Future.successful(None))
       val res = softDrinksIndustryLevyConnector.retreiveRosmSubscription("utr here", "foo")
       whenReady(
-        res.value
-      ) {
-        response =>
-          response mustEqual Left(NoROSMRegistration)
-      }
+        res.value) {
+          response =>
+            response mustEqual Left(NoROSMRegistration)
+        }
     }
 
     "should call the backend, update the cache" - {
       "and return the rosm when one is returned" in {
         when(mockSDILSessionCache.fetchEntry[RosmRegistration](any(), any())(any())).thenReturn(Future.successful(None))
-        when(mockHttp.GET[Option[RosmRegistration]](any(),any(), any())(any(), any(), any())).thenReturn(Future.successful(Some(rosmRegistration.rosmRegistration)))
+        when(mockHttp.GET[Option[RosmRegistration]](any(), any(), any())(any(), any(), any())).thenReturn(Future.successful(Some(rosmRegistration.rosmRegistration)))
         when(mockSDILSessionCache.save[RosmRegistration](any, any, any)(any())).thenReturn(Future.successful(CacheMap("test", Map("ROSM_REGISTRATION" -> Json.toJson(rosmRegistration)))))
         val res = softDrinksIndustryLevyConnector.retreiveRosmSubscription(utr = utr, "foo")
         whenReady(
           res.value) {
-          response =>
-            response mustEqual Right(rosmRegistration)
-        }
+            response =>
+              response mustEqual Right(rosmRegistration)
+          }
       }
     }
 
-    identifierMap.foreach { case (identifierType, identiferValue) =>
-      s"when the identifier type is $identifierType" - {
-        "and the cache contains an entry for subscription" - {
-          "that includes a retrievedSubscription" - {
-            "should not call the backend and return the subscription" in {
-              when(mockSDILSessionCache.fetchEntry[OptRetrievedSubscription](any(), any())(any()))
-                .thenReturn(Future.successful(Some(OptRetrievedSubscription(Some(aSubscription)))))
+    identifierMap.foreach {
+      case (identifierType, identiferValue) =>
+        s"when the identifier type is $identifierType" - {
+          "and the cache contains an entry for subscription" - {
+            "that includes a retrievedSubscription" - {
+              "should not call the backend and return the subscription" in {
+                when(mockSDILSessionCache.fetchEntry[OptRetrievedSubscription](any(), any())(any()))
+                  .thenReturn(Future.successful(Some(OptRetrievedSubscription(Some(aSubscription)))))
 
-              val res = softDrinksIndustryLevyConnector.retrieveSubscription(identiferValue, identifierType, "id")
-
-              whenReady(
-                res.value
-              ) {
-                response =>
-                  response mustEqual Right(Some(aSubscription))
-              }
-            }
-          }
-          "that does not include a retrievedSubscription" - {
-            "should not call the backend and return None" in {
-              when(mockSDILSessionCache.fetchEntry[OptRetrievedSubscription](any(), any())(any()))
-                .thenReturn(Future.successful(Some(OptRetrievedSubscription(None))))
-
-              val res = softDrinksIndustryLevyConnector.retrieveSubscription(identiferValue, identifierType, "id")
-
-              whenReady(
-                res.value
-              ) {
-                response =>
-                  response mustEqual Right(None)
-              }
-            }
-          }
-          "and the cache contains no entry for subscription" - {
-            "should call the backend, update the cache" - {
-              "and return the subscription when one is returned" in {
-                when(mockSDILSessionCache.fetchEntry[OptRetrievedSubscription](any(), any())(any())).thenReturn(Future.successful(None))
-                when(mockHttp.GET[Option[RetrievedSubscription]](any(), any(), any())(any(), any(), any())).thenReturn(Future.successful(Some(aSubscription)))
-                when(mockSDILSessionCache.save[OptRetrievedSubscription](any, any, any)(any())).thenReturn(Future.successful(CacheMap("test", Map("SUBSCRIPTION" -> Json.toJson(OptRetrievedSubscription(Some(aSubscription)))))))
-                val res = softDrinksIndustryLevyConnector.retrieveSubscription(sdilNumber, identifierType, "id")
+                val res = softDrinksIndustryLevyConnector.retrieveSubscription(identiferValue, identifierType, "id")
 
                 whenReady(
-                  res.value
-                ) {
-                  response =>
-                    response mustEqual Right(Some(aSubscription))
+                  res.value) {
+                    response =>
+                      response mustEqual Right(Some(aSubscription))
+                  }
+              }
+            }
+            "that does not include a retrievedSubscription" - {
+              "should not call the backend and return None" in {
+                when(mockSDILSessionCache.fetchEntry[OptRetrievedSubscription](any(), any())(any()))
+                  .thenReturn(Future.successful(Some(OptRetrievedSubscription(None))))
+
+                val res = softDrinksIndustryLevyConnector.retrieveSubscription(identiferValue, identifierType, "id")
+
+                whenReady(
+                  res.value) {
+                    response =>
+                      response mustEqual Right(None)
+                  }
+              }
+            }
+            "and the cache contains no entry for subscription" - {
+              "should call the backend, update the cache" - {
+                "and return the subscription when one is returned" in {
+                  when(mockSDILSessionCache.fetchEntry[OptRetrievedSubscription](any(), any())(any())).thenReturn(Future.successful(None))
+                  when(mockHttp.GET[Option[RetrievedSubscription]](any(), any(), any())(any(), any(), any())).thenReturn(Future.successful(Some(aSubscription)))
+                  when(mockSDILSessionCache.save[OptRetrievedSubscription](any, any, any)(any())).thenReturn(Future.successful(CacheMap("test", Map("SUBSCRIPTION" -> Json.toJson(OptRetrievedSubscription(Some(aSubscription)))))))
+                  val res = softDrinksIndustryLevyConnector.retrieveSubscription(sdilNumber, identifierType, "id")
+
+                  whenReady(
+                    res.value) {
+                      response =>
+                        response mustEqual Right(Some(aSubscription))
+                    }
                 }
-              }
-              "and return None when no subscription returned" in {
-                when(mockSDILSessionCache.fetchEntry[OptRetrievedSubscription](any(), any())(any())).thenReturn(Future.successful(None))
-                when(mockHttp.GET[Option[RetrievedSubscription]](any(), any(), any())(any(), any(), any())).thenReturn(Future.successful(None))
-                when(mockSDILSessionCache.save[OptRetrievedSubscription](any, any, any)(any())).thenReturn(Future.successful(CacheMap("test", Map("SUBSCRIPTION" -> Json.toJson(OptRetrievedSubscription(None))))))
-                val res = softDrinksIndustryLevyConnector.retrieveSubscription(sdilNumber, identifierType, "id")
+                "and return None when no subscription returned" in {
+                  when(mockSDILSessionCache.fetchEntry[OptRetrievedSubscription](any(), any())(any())).thenReturn(Future.successful(None))
+                  when(mockHttp.GET[Option[RetrievedSubscription]](any(), any(), any())(any(), any(), any())).thenReturn(Future.successful(None))
+                  when(mockSDILSessionCache.save[OptRetrievedSubscription](any, any, any)(any())).thenReturn(Future.successful(CacheMap("test", Map("SUBSCRIPTION" -> Json.toJson(OptRetrievedSubscription(None))))))
+                  val res = softDrinksIndustryLevyConnector.retrieveSubscription(sdilNumber, identifierType, "id")
 
-                whenReady(
-                  res.value
-                ) {
-                  response =>
-                    response mustEqual Right(None)
+                  whenReady(
+                    res.value) {
+                      response =>
+                        response mustEqual Right(None)
+                    }
                 }
               }
             }
           }
         }
-      }
     }
   }
 }

@@ -16,7 +16,7 @@
 
 package pages
 
-import models.{Identify, Mode}
+import models.{ Identify, Mode }
 import play.api.libs.json.JsPath
 
 case object EnterBusinessDetailsPage extends QuestionPage[Identify] {
