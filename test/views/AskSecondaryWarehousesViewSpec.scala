@@ -226,7 +226,7 @@ class AskSecondaryWarehousesViewSpec extends ViewSpecHelper {
 
     testBackLink(document)
     validateTimeoutDialog(document)
-
+    validateTechnicalHelpLinkPresent(document)
     validateAccessibilityStatementLinkPresent(document)
   }
 
