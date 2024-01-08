@@ -72,7 +72,7 @@ class CheckYourAnswersViewSpec extends ViewSpecHelper {
 
     testBackLink(document)
     validateTimeoutDialog(document)
-
+    validateTechnicalHelpLinkPresent(document)
     validateAccessibilityStatementLinkPresent(document)
 
   }

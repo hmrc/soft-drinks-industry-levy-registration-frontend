@@ -62,6 +62,7 @@ class AlreadyRegisteredViewSpec extends ViewSpecHelper with SpecBase {
 
     testBackLink(document)
     validateTimeoutDialog(document)
+    validateTechnicalHelpLinkPresent(document)
     validateAccessibilityStatementLinkPresent(document)
   }
 
