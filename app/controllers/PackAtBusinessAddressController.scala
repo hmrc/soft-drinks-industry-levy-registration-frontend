@@ -20,32 +20,31 @@ import controllers.actions._
 import forms.PackAtBusinessAddressFormProvider
 import handlers.ErrorHandler
 import models.backend.Site
-import models.{Mode, RosmRegistration}
+import models.{ Mode, RosmRegistration }
 import navigation.Navigator
 import pages.PackAtBusinessAddressPage
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{ Action, AnyContent, MessagesControllerComponents }
 import services.AddressLookupState.PackingDetails
-import services.{AddressLookupService, SessionService}
+import services.{ AddressLookupService, SessionService }
 import utilities.GenericLogger
 import viewmodels.AddressFormattingHelper
 import views.html.PackAtBusinessAddressView
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
-class PackAtBusinessAddressController @Inject()(
-                                       override val messagesApi: MessagesApi,
-                                       val sessionService: SessionService,
-                                       val navigator: Navigator,
-                                       controllerActions: ControllerActions,
-                                       formProvider: PackAtBusinessAddressFormProvider,
-                                       addressLookupService: AddressLookupService,
-                                       val controllerComponents: MessagesControllerComponents,
-                                       view: PackAtBusinessAddressView,
-                                       val errorHandler: ErrorHandler,
-                                       val genericLogger: GenericLogger
-                                     )(implicit ec: ExecutionContext) extends ControllerHelper {
+class PackAtBusinessAddressController @Inject() (
+  override val messagesApi: MessagesApi,
+  val sessionService: SessionService,
+  val navigator: Navigator,
+  controllerActions: ControllerActions,
+  formProvider: PackAtBusinessAddressFormProvider,
+  addressLookupService: AddressLookupService,
+  val controllerComponents: MessagesControllerComponents,
+  view: PackAtBusinessAddressView,
+  val errorHandler: ErrorHandler,
+  val genericLogger: GenericLogger)(implicit ec: ExecutionContext) extends ControllerHelper {
 
   val form = formProvider()
 
@@ -75,22 +74,19 @@ class PackAtBusinessAddressController @Inject()(
         value => {
           for {
             updatedAnswers <- Future.fromTry(request.userAnswers.set(PackAtBusinessAddressPage, value))
-            _              <- updateDatabaseWithoutRedirect(updatedAnswers, PackAtBusinessAddressPage)
-            onwardUrl              <- if(value){
+            _ <- updateDatabaseWithoutRedirect(updatedAnswers, PackAtBusinessAddressPage)
+            onwardUrl <- if (value) {
               updateDatabaseWithoutRedirect(updatedAnswers.copy(packagingSiteList = updatedAnswers.packagingSiteList ++ Map("1" ->
                 Site(
                   address = rosmReg.address,
                   ref = None,
                   tradingName = rosmReg.organisationName,
-                  closureDate = None
-                )
-              )), PackAtBusinessAddressPage).flatMap(_ =>
+                  closureDate = None))), PackAtBusinessAddressPage).flatMap(_ =>
                 Future.successful(routes.PackagingSiteDetailsController.onPageLoad(mode).url))
-            }else {
+            } else {
               addressLookupService.initJourneyAndReturnOnRampUrl(PackingDetails, mode = mode)
             }
-          }yield Redirect(onwardUrl)
-        }
-      )
+          } yield Redirect(onwardUrl)
+        })
   }
 }

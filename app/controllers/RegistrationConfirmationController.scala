@@ -19,40 +19,39 @@ package controllers
 import config.FrontendAppConfig
 import controllers.actions._
 import models.CreatedSubscriptionAndAmountProducedGlobally
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import repositories.{SDILSessionCache, SDILSessionKeys}
+import play.api.i18n.{ I18nSupport, MessagesApi }
+import play.api.mvc.{ Action, AnyContent, MessagesControllerComponents }
+import repositories.{ SDILSessionCache, SDILSessionKeys }
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.RegistrationConfirmationView
 import views.summary.RegistrationSummary
 
-import java.time.{LocalDateTime, ZoneId}
+import java.time.{ LocalDateTime, ZoneId }
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
-class RegistrationConfirmationController @Inject()(
-                                       override val messagesApi: MessagesApi,
-                                       controllerActions: ControllerActions,
-                                       sdilSessionCache: SDILSessionCache,
-                                       val controllerComponents: MessagesControllerComponents,
-                                       view: RegistrationConfirmationView
-                                     )(implicit config: FrontendAppConfig, ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+class RegistrationConfirmationController @Inject() (
+  override val messagesApi: MessagesApi,
+  controllerActions: ControllerActions,
+  sdilSessionCache: SDILSessionCache,
+  val controllerComponents: MessagesControllerComponents,
+  view: RegistrationConfirmationView)(implicit config: FrontendAppConfig, ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = controllerActions.withUserWhoHasSubmittedRegistrationAction.async {
-    implicit request => {
-      sdilSessionCache.fetchEntry[CreatedSubscriptionAndAmountProducedGlobally](
-        request.internalId, SDILSessionKeys.CREATED_SUBSCRIPTION_AND_AMOUNT_PRODUCED_GLOBALLY).map{
-        case Some(createdSubscriptionAndAmountProducedGlobally) =>
-          val sentDateTime = LocalDateTime.ofInstant(request.submittedDateTime, ZoneId.of("UTC"))
-          val summaryList = RegistrationSummary.summaryList(createdSubscriptionAndAmountProducedGlobally, false)
-          Ok(view(
-            summaryList,
-            sentDateTime,
-            request.rosmWithUtr.rosmRegistration.organisationName,
-            createdSubscriptionAndAmountProducedGlobally.subscription.contact.email
-          ))
-        case _ => Redirect(routes.RegistrationController.start)
+    implicit request =>
+      {
+        sdilSessionCache.fetchEntry[CreatedSubscriptionAndAmountProducedGlobally](
+          request.internalId, SDILSessionKeys.CREATED_SUBSCRIPTION_AND_AMOUNT_PRODUCED_GLOBALLY).map {
+            case Some(createdSubscriptionAndAmountProducedGlobally) =>
+              val sentDateTime = LocalDateTime.ofInstant(request.submittedDateTime, ZoneId.of("UTC"))
+              val summaryList = RegistrationSummary.summaryList(createdSubscriptionAndAmountProducedGlobally, false)
+              Ok(view(
+                summaryList,
+                sentDateTime,
+                request.rosmWithUtr.rosmRegistration.organisationName,
+                createdSubscriptionAndAmountProducedGlobally.subscription.contact.email))
+            case _ => Redirect(routes.RegistrationController.start)
+          }
       }
-    }
   }
 }

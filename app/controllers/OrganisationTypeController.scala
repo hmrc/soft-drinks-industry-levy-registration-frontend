@@ -23,25 +23,24 @@ import models.Mode
 import navigation.Navigator
 import pages.OrganisationTypePage
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{ Action, AnyContent, MessagesControllerComponents }
 import services.SessionService
 import utilities.GenericLogger
 import views.html.OrganisationTypeView
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
-class OrganisationTypeController @Inject()(
-                                       override val messagesApi: MessagesApi,
-                                       val sessionService: SessionService,
-                                       val navigator: Navigator,
-                                       controllerActions: ControllerActions,
-                                       formProvider: OrganisationTypeFormProvider,
-                                       val genericLogger: GenericLogger,
-                                       val controllerComponents: MessagesControllerComponents,
-                                       view: OrganisationTypeView,
-                                       val errorHandler: ErrorHandler
-                                     )(implicit ec: ExecutionContext) extends ControllerHelper {
+class OrganisationTypeController @Inject() (
+  override val messagesApi: MessagesApi,
+  val sessionService: SessionService,
+  val navigator: Navigator,
+  controllerActions: ControllerActions,
+  formProvider: OrganisationTypeFormProvider,
+  val genericLogger: GenericLogger,
+  val controllerComponents: MessagesControllerComponents,
+  view: OrganisationTypeView,
+  val errorHandler: ErrorHandler)(implicit ec: ExecutionContext) extends ControllerHelper {
 
   private val form = formProvider()
 
@@ -66,7 +65,6 @@ class OrganisationTypeController @Inject()(
         value => {
           val updatedAnswers = request.userAnswers.set(OrganisationTypePage, value)
           updateDatabaseAndRedirect(updatedAnswers, OrganisationTypePage, mode)
-        }
-      )
+        })
   }
 }

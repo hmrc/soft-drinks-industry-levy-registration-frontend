@@ -20,12 +20,12 @@ import base.SpecBase
 import errors.SessionDatabaseInsertError
 import forms.PackAtBusinessAddressFormProvider
 import helpers.LoggerHelper
-import models.{NormalMode, RegisterState, UserAnswers}
-import navigation.{FakeNavigator, Navigator}
+import models.{ NormalMode, RegisterState, UserAnswers }
+import navigation.{ FakeNavigator, Navigator }
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import org.mockito.MockitoSugar.{times, verify}
+import org.mockito.MockitoSugar.{ times, verify }
 import org.scalatestplus.mockito.MockitoSugar
 import pages.PackAtBusinessAddressPage
 import play.api.inject.bind
@@ -34,7 +34,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import repositories.SessionRepository
 import services.AddressLookupState.PackingDetails
-import services.{AddressLookupService, SessionService}
+import services.{ AddressLookupService, SessionService }
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 import utilities.GenericLogger
 import views.html.PackAtBusinessAddressView
@@ -66,7 +66,7 @@ class PackAtBusinessAddressControllerSpec extends SpecBase with MockitoSugar wit
         val view = application.injector.instanceOf[PackAtBusinessAddressView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, HtmlContent(formattedAddress),  NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, HtmlContent(formattedAddress), NormalMode)(request, messages(application)).toString
       }
     }
 
@@ -97,14 +97,13 @@ class PackAtBusinessAddressControllerSpec extends SpecBase with MockitoSugar wit
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration)
           .overrides(
-            bind[SessionService].toInstance(mockSessionService)
-          )
+            bind[SessionService].toInstance(mockSessionService))
           .build()
 
       running(application) {
         val request =
           FakeRequest(POST, packAtBusinessAddressRoute)
-        .withFormUrlEncodedBody(("value", "true"))
+            .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
 
@@ -118,11 +117,10 @@ class PackAtBusinessAddressControllerSpec extends SpecBase with MockitoSugar wit
       val mockAddressLookupService = mock[AddressLookupService]
       val onwardUrlForALF = "foobarwizz"
 
-
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
       when(mockAddressLookupService.initJourneyAndReturnOnRampUrl(
         ArgumentMatchers.eq(PackingDetails), ArgumentMatchers.any(), ArgumentMatchers.any())(
-        ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+          ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(onwardUrlForALF))
 
       val application =
@@ -130,8 +128,7 @@ class PackAtBusinessAddressControllerSpec extends SpecBase with MockitoSugar wit
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository),
-            bind[AddressLookupService].toInstance(mockAddressLookupService)
-          )
+            bind[AddressLookupService].toInstance(mockAddressLookupService))
           .build()
 
       running(application) {
@@ -146,7 +143,7 @@ class PackAtBusinessAddressControllerSpec extends SpecBase with MockitoSugar wit
 
         verify(mockAddressLookupService, times(1)).initJourneyAndReturnOnRampUrl(
           ArgumentMatchers.eq(PackingDetails), ArgumentMatchers.any(), ArgumentMatchers.any())(
-          ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+            ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
       }
     }
 
@@ -157,7 +154,7 @@ class PackAtBusinessAddressControllerSpec extends SpecBase with MockitoSugar wit
       running(application) {
         val request =
           FakeRequest(POST, packAtBusinessAddressRoute)
-        .withFormUrlEncodedBody(("value", ""))
+            .withFormUrlEncodedBody(("value", ""))
 
         val boundForm = form.bind(Map("value" -> ""))
 
@@ -191,7 +188,7 @@ class PackAtBusinessAddressControllerSpec extends SpecBase with MockitoSugar wit
       running(application) {
         val request =
           FakeRequest(POST, packAtBusinessAddressRoute)
-        .withFormUrlEncodedBody(("value", "true"))
+            .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
 
@@ -209,15 +206,14 @@ class PackAtBusinessAddressControllerSpec extends SpecBase with MockitoSugar wit
         applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration)
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionService].toInstance(mockSessionService)
-          )
+            bind[SessionService].toInstance(mockSessionService))
           .build()
 
       running(application) {
         withCaptureOfLoggingFrom(application.injector.instanceOf[GenericLogger].logger) { events =>
           val request =
             FakeRequest(POST, packAtBusinessAddressRoute)
-          .withFormUrlEncodedBody(("value", "true"))
+              .withFormUrlEncodedBody(("value", "true"))
 
           await(route(application, request).value)
           events.collectFirst {

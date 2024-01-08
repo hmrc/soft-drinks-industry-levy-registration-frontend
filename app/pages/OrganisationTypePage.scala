@@ -16,7 +16,7 @@
 
 package pages
 
-import models.{Mode, OrganisationType}
+import models.{ Mode, OrganisationType }
 import play.api.libs.json.JsPath
 
 case object OrganisationTypePage extends QuestionPage[OrganisationType] {

@@ -20,7 +20,7 @@ import models.Litreage
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Actions, SummaryListRow}
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{ Actions, SummaryListRow }
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
 
@@ -33,8 +33,7 @@ trait SummaryListRowLitresHelper {
   def rows(literage: Litreage, isCheckAnswers: Boolean)(implicit messages: Messages): Seq[SummaryListRow] = {
     Seq(
       bandRow(literage.lower, "litresInLowBand", isCheckAnswers),
-      bandRow(literage.upper, "litresInHighBand", isCheckAnswers)
-    )
+      bandRow(literage.upper, "litresInHighBand", isCheckAnswers))
   }
 
   private def bandRow(litres: Long, band: String, isCheckAnswers: Boolean)(implicit messages: Messages): SummaryListRow = {
@@ -44,12 +43,12 @@ trait SummaryListRowLitresHelper {
       key = band,
       value = ValueViewModel(HtmlContent(value)).withCssClass("sdil-right-align--desktop"),
       classes = "govuk-summary-list__row",
-      actions = action(isCheckAnswers, band)
-    )
-}
+      actions = action(isCheckAnswers, band))
+  }
 
   def action(isCheckAnswers: Boolean, band: String)(implicit messages: Messages): Option[Actions] = if (isCheckAnswers) {
-    Some(Actions("",
+    Some(Actions(
+      "",
       items =
         Seq(
           ActionItemViewModel("site.change", actionUrl)

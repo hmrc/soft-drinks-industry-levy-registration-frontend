@@ -19,11 +19,11 @@ package controllers
 import controllers.actions._
 import forms.RemoveWarehouseDetailsFormProvider
 import handlers.ErrorHandler
-import models.{Mode, UserAnswers, Warehouse}
+import models.{ Mode, UserAnswers, Warehouse }
 import navigation.Navigator
 import pages.RemoveWarehouseDetailsPage
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{ Action, AnyContent, MessagesControllerComponents }
 import play.twirl.api.Html
 import services.SessionService
 import utilities.GenericLogger
@@ -31,19 +31,18 @@ import viewmodels.AddressFormattingHelper
 import views.html.RemoveWarehouseDetailsView
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
-class RemoveWarehouseDetailsController @Inject()(
-                                                  override val messagesApi: MessagesApi,
-                                                  val sessionService: SessionService,
-                                                  val navigator: Navigator,
-                                                  controllerActions: ControllerActions,
-                                                  formProvider: RemoveWarehouseDetailsFormProvider,
-                                                  val controllerComponents: MessagesControllerComponents,
-                                                  view: RemoveWarehouseDetailsView,
-                                                  val genericLogger: GenericLogger,
-                                                  val errorHandler: ErrorHandler
-                                     )(implicit ec: ExecutionContext) extends ControllerHelper {
+class RemoveWarehouseDetailsController @Inject() (
+  override val messagesApi: MessagesApi,
+  val sessionService: SessionService,
+  val navigator: Navigator,
+  controllerActions: ControllerActions,
+  formProvider: RemoveWarehouseDetailsFormProvider,
+  val controllerComponents: MessagesControllerComponents,
+  view: RemoveWarehouseDetailsView,
+  val genericLogger: GenericLogger,
+  val errorHandler: ErrorHandler)(implicit ec: ExecutionContext) extends ControllerHelper {
 
   val form = formProvider()
 
@@ -53,8 +52,9 @@ class RemoveWarehouseDetailsController @Inject()(
         case Some(warehouse) =>
           val formattedAddress = AddressFormattingHelper.addressFormatting(warehouse.address, warehouse.tradingName)
           Ok(view(form, mode, formattedAddress, index))
-        case _ => genericLogger.logger.warn(s"Warehouse index $index doesn't exist ${request.userAnswers.id} warehouse list length:" +
-          s"${request.userAnswers.warehouseList.size}")
+        case _ =>
+          genericLogger.logger.warn(s"Warehouse index $index doesn't exist ${request.userAnswers.id} warehouse list length:" +
+            s"${request.userAnswers.warehouseList.size}")
           Redirect(routes.WarehouseDetailsController.onPageLoad(mode))
       }
   }
@@ -65,7 +65,7 @@ class RemoveWarehouseDetailsController @Inject()(
       warehouseToRemove match {
         case None =>
           genericLogger.logger.warn(s"Warehouse index $index doesn't exist ${request.userAnswers.id} warehouse list length:" +
-          s"${request.userAnswers.warehouseList.size}")
+            s"${request.userAnswers.warehouseList.size}")
           Future.successful(Redirect(routes.WarehouseDetailsController.onPageLoad(mode)))
         case Some(warehouse) =>
           val formattedAddress: Html = AddressFormattingHelper.addressFormatting(warehouse.address, warehouse.tradingName)
@@ -79,8 +79,7 @@ class RemoveWarehouseDetailsController @Inject()(
                 request.userAnswers
               }
               updateDatabaseAndRedirect(updatedAnswersFinal, RemoveWarehouseDetailsPage, mode)
-            }
-          )
+            })
       }
   }
 }

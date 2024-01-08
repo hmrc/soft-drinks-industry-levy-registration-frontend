@@ -20,12 +20,12 @@ import base.SpecBase
 import forms.WarehouseDetailsFormProvider
 import helpers.LoggerHelper
 import models.backend.UkAddress
-import models.{NormalMode, RegisterState, UserAnswers, Warehouse}
-import navigation.{FakeNavigator, Navigator}
+import models.{ NormalMode, RegisterState, UserAnswers, Warehouse }
+import navigation.{ FakeNavigator, Navigator }
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import org.mockito.MockitoSugar.{times, verify}
+import org.mockito.MockitoSugar.{ times, verify }
 import org.scalatestplus.mockito.MockitoSugar
 import pages.WarehouseDetailsPage
 import play.api.inject.bind
@@ -36,7 +36,7 @@ import play.api.test.Helpers._
 import repositories.SessionRepository
 import services.AddressLookupService
 import services.AddressLookupState.WarehouseDetails
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, SummaryListRow}
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{ SummaryList, SummaryListRow }
 import utilities.GenericLogger
 import viewmodels.govuk.SummaryListFluency
 import views.html.WarehouseDetailsView
@@ -53,12 +53,11 @@ class WarehouseDetailsControllerSpec extends SpecBase with MockitoSugar with Log
 
   lazy val warehouseDetailsRoute = routes.WarehouseDetailsController.onPageLoad(NormalMode).url
 
-  val twoWarehouses: Map[String,Warehouse] = Map(
-    "1"-> Warehouse("ABC Ltd", UkAddress(List("33 Rhes Priordy", "East London","Line 3","Line 4"),"WR53 7CX")),
-    "2" -> Warehouse("Super Cola Ltd", UkAddress(List("33 Rhes Priordy", "East London","Line 3",""),"SA13 7CE"))
-  )
+  val twoWarehouses: Map[String, Warehouse] = Map(
+    "1" -> Warehouse("ABC Ltd", UkAddress(List("33 Rhes Priordy", "East London", "Line 3", "Line 4"), "WR53 7CX")),
+    "2" -> Warehouse("Super Cola Ltd", UkAddress(List("33 Rhes Priordy", "East London", "Line 3", ""), "SA13 7CE")))
 
-  val userAnswerTwoWarehouses : UserAnswers = UserAnswers(sdilNumber, RegisterState.RegisterWithAuthUTR,Json.obj(), warehouseList = twoWarehouses)
+  val userAnswerTwoWarehouses: UserAnswers = UserAnswers(sdilNumber, RegisterState.RegisterWithAuthUTR, Json.obj(), warehouseList = twoWarehouses)
 
   "WarehouseDetails Controller" - {
 
@@ -111,7 +110,7 @@ class WarehouseDetailsControllerSpec extends SpecBase with MockitoSugar with Log
 
       when(mockAddressLookupService.initJourneyAndReturnOnRampUrl(
         ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any(), ArgumentMatchers.any())(
-        ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+          ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(onwardUrlForALF))
 
       val application =
@@ -119,8 +118,7 @@ class WarehouseDetailsControllerSpec extends SpecBase with MockitoSugar with Log
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository),
-            bind[AddressLookupService].toInstance(mockAddressLookupService)
-          )
+            bind[AddressLookupService].toInstance(mockAddressLookupService))
           .build()
 
       running(application) {
@@ -135,7 +133,7 @@ class WarehouseDetailsControllerSpec extends SpecBase with MockitoSugar with Log
 
         verify(mockAddressLookupService, times(1)).initJourneyAndReturnOnRampUrl(
           ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any(), ArgumentMatchers.any())(
-          ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+            ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
       }
     }
     "must redirect to the next page when valid data is submitted (false)" in {
@@ -148,8 +146,7 @@ class WarehouseDetailsControllerSpec extends SpecBase with MockitoSugar with Log
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository),
-            bind[AddressLookupService].toInstance(mockAddressLookupService)
-          )
+            bind[AddressLookupService].toInstance(mockAddressLookupService))
           .build()
 
       running(application) {
@@ -164,7 +161,7 @@ class WarehouseDetailsControllerSpec extends SpecBase with MockitoSugar with Log
 
         verify(mockAddressLookupService, times(0)).initJourneyAndReturnOnRampUrl(
           ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())(
-          ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+            ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
       }
     }
 
@@ -189,7 +186,7 @@ class WarehouseDetailsControllerSpec extends SpecBase with MockitoSugar with Log
       running(application) {
         val request =
           FakeRequest(POST, warehouseDetailsRoute)
-        .withFormUrlEncodedBody(("value", "true"))
+            .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
 
@@ -205,7 +202,7 @@ class WarehouseDetailsControllerSpec extends SpecBase with MockitoSugar with Log
 
       when(mockAddressLookupService.initJourneyAndReturnOnRampUrl(
         ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any(), ArgumentMatchers.any())(
-        ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+          ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.failed(new Exception("uh oh spaghetio")))
 
       val application =
@@ -213,8 +210,7 @@ class WarehouseDetailsControllerSpec extends SpecBase with MockitoSugar with Log
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository),
-            bind[AddressLookupService].toInstance(mockAddressLookupService)
-          )
+            bind[AddressLookupService].toInstance(mockAddressLookupService))
           .build()
 
       running(application) {
@@ -224,10 +220,9 @@ class WarehouseDetailsControllerSpec extends SpecBase with MockitoSugar with Log
 
         intercept[Exception](await(route(application, request).value))
 
-
         verify(mockAddressLookupService, times(1)).initJourneyAndReturnOnRampUrl(
           ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any(), ArgumentMatchers.any())(
-          ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+            ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
       }
     }
 
@@ -246,16 +241,16 @@ class WarehouseDetailsControllerSpec extends SpecBase with MockitoSugar with Log
 
         val result = route(application, request).value
 
-        val warehouseMap: Map[String,Warehouse] =
-          Map("1"-> Warehouse("ABC Ltd", UkAddress(List("33 Rhes Priordy", "East London","Line 3","Line 4"),"WR53 7CX")),
-            "2" -> Warehouse("Super Cola Ltd", UkAddress(List("33 Rhes Priordy", "East London","Line 3",""),"SA13 7CE")))
+        val warehouseMap: Map[String, Warehouse] =
+          Map(
+            "1" -> Warehouse("ABC Ltd", UkAddress(List("33 Rhes Priordy", "East London", "Line 3", "Line 4"), "WR53 7CX")),
+            "2" -> Warehouse("Super Cola Ltd", UkAddress(List("33 Rhes Priordy", "East London", "Line 3", ""), "SA13 7CE")))
 
         val warehouseSummaryList: List[SummaryListRow] =
           WarehouseDetailsSummary.warehouseDetailsRow(warehouseMap, NormalMode)(messages(application))
 
         val summaryList: SummaryList = SummaryListViewModel(
-          rows = warehouseSummaryList
-        )
+          rows = warehouseSummaryList)
 
         status(result) mustEqual BAD_REQUEST
         contentAsString(result) mustEqual view(boundForm, NormalMode, Some(summaryList), 2)(request, messages(application)).toString

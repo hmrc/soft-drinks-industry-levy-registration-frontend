@@ -17,7 +17,7 @@
 package views.summary
 
 import controllers.routes
-import models.{CheckMode, UserAnswers}
+import models.{ CheckMode, UserAnswers }
 import pages.VerifyPage
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
@@ -26,7 +26,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
 
-object VerifySummary  {
+object VerifySummary {
 
   def row(answers: UserAnswers)(implicit messages: Messages): Option[SummaryListRow] =
     answers.get(VerifyPage).map {
@@ -34,17 +34,13 @@ object VerifySummary  {
 
         val value = ValueViewModel(
           HtmlContent(
-            HtmlFormat.escape(messages(s"verify.$answer"))
-          )
-        ).withCssClass("sdil-right-align--desktop")
+            HtmlFormat.escape(messages(s"verify.$answer")))).withCssClass("sdil-right-align--desktop")
 
         SummaryListRowViewModel(
-          key     = "verify.checkYourAnswersLabel",
-          value   = value,
+          key = "verify.checkYourAnswersLabel",
+          value = value,
           actions = Seq(
             ActionItemViewModel("site.change", routes.VerifyController.onPageLoad(CheckMode).url)
-              .withVisuallyHiddenText(messages("verify.change.hidden"))
-          )
-        )
+              .withVisuallyHiddenText(messages("verify.change.hidden"))))
     }
 }

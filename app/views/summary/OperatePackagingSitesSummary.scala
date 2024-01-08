@@ -18,11 +18,11 @@ package views.summary
 
 import controllers.routes
 import models.backend.Subscription
-import models.{CheckMode, HowManyLitresGlobally}
+import models.{ CheckMode, HowManyLitresGlobally }
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 
-object OperatePackagingSitesSummary extends RegisterDetailsSummaryListWithLitres  {
+object OperatePackagingSitesSummary extends RegisterDetailsSummaryListWithLitres {
 
   override val summaryLitres: SummaryListRowLitresHelper = HowManyOperatePackagingSitesSummary
   //LDS ignore
@@ -31,9 +31,8 @@ object OperatePackagingSitesSummary extends RegisterDetailsSummaryListWithLitres
   override val actionId: String = "change-operatePackagingSites"
   override val hiddenText: String = "operatePackagingSites"
 
-  def getOptHeadingAndSummary(subscription: Subscription, howManyLitresGlobally: HowManyLitresGlobally, isCheckAnswers: Boolean)
-                             (implicit messages: Messages): Option[(String, SummaryList)] = {
-    if(howManyLitresGlobally == HowManyLitresGlobally.None) {
+  def getOptHeadingAndSummary(subscription: Subscription, howManyLitresGlobally: HowManyLitresGlobally, isCheckAnswers: Boolean)(implicit messages: Messages): Option[(String, SummaryList)] = {
+    if (howManyLitresGlobally == HowManyLitresGlobally.None) {
       None
     } else {
       Some(getHeadingAndSummary(subscription.activity.ProducedOwnBrand, isCheckAnswers))

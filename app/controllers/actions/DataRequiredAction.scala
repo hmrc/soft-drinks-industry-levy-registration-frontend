@@ -20,22 +20,22 @@ import connectors.SoftDrinksIndustryLevyConnector
 import controllers.routes
 import handlers.ErrorHandler
 import models.RegisterState.RegisterWithOtherUTR
-import models.requests.{DataRequest, OptionalDataRequest}
-import models.{RegisterState, UserAnswers}
+import models.requests.{ DataRequest, OptionalDataRequest }
+import models.{ RegisterState, UserAnswers }
 import pages.EnterBusinessDetailsPage
-import play.api.mvc.Results.{InternalServerError, Redirect}
-import play.api.mvc.{ActionRefiner, Result}
+import play.api.mvc.Results.{ InternalServerError, Redirect }
+import play.api.mvc.{ ActionRefiner, Result }
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import utilities.GenericLogger
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
-class DataRequiredActionImpl @Inject()(sdilConnector: SoftDrinksIndustryLevyConnector,
-                                       genericLogger: GenericLogger,
-                                       errorHandler: ErrorHandler)
-                                      (implicit val executionContext: ExecutionContext) extends DataRequiredAction  {
+class DataRequiredActionImpl @Inject() (
+  sdilConnector: SoftDrinksIndustryLevyConnector,
+  genericLogger: GenericLogger,
+  errorHandler: ErrorHandler)(implicit val executionContext: ExecutionContext) extends DataRequiredAction {
 
   override protected def refine[A](request: OptionalDataRequest[A]): Future[Either[Result, DataRequest[A]]] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
@@ -43,10 +43,10 @@ class DataRequiredActionImpl @Inject()(sdilConnector: SoftDrinksIndustryLevyConn
     request.userAnswers match {
       case Some(useranswers) if useranswers.submittedOn.isDefined =>
         Future.successful(Left(Redirect(routes.RegistrationConfirmationController.onPageLoad)))
-      case Some(useranswers) if RegisterState.canRegister(useranswers.registerState)=>
+      case Some(useranswers) if RegisterState.canRegister(useranswers.registerState) =>
         getUtrFromUserAnswers(useranswers, request) match {
           case Some(utr) =>
-            sdilConnector.retreiveRosmSubscription(utr, request.internalId).value.map{
+            sdilConnector.retreiveRosmSubscription(utr, request.internalId).value.map {
               case Right(rosmWithUtr) => Right(DataRequest(request, request.internalId, request.hasCTEnrolment, request.authUtr, useranswers, rosmWithUtr))
               case Left(_) => Left(InternalServerError(errorHandler.internalServerErrorTemplate(request)))
             }

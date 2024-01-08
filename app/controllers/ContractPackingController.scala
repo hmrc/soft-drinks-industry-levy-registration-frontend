@@ -21,27 +21,26 @@ import forms.ContractPackingFormProvider
 import handlers.ErrorHandler
 import models.Mode
 import navigation.Navigator
-import pages.{ContractPackingPage, HowManyContractPackingPage}
+import pages.{ ContractPackingPage, HowManyContractPackingPage }
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{ Action, AnyContent, MessagesControllerComponents }
 import services.SessionService
 import utilities.GenericLogger
 import views.html.ContractPackingView
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
-class ContractPackingController @Inject()(
-                                         override val messagesApi: MessagesApi,
-                                         val sessionService: SessionService,
-                                         val navigator: Navigator,
-                                         controllerActions: ControllerActions,
-                                         formProvider: ContractPackingFormProvider,
-                                         val controllerComponents: MessagesControllerComponents,
-                                         view: ContractPackingView,
-                                         val errorHandler: ErrorHandler,
-                                         val genericLogger: GenericLogger
-                                 )(implicit ec: ExecutionContext) extends ControllerHelper {
+class ContractPackingController @Inject() (
+  override val messagesApi: MessagesApi,
+  val sessionService: SessionService,
+  val navigator: Navigator,
+  controllerActions: ControllerActions,
+  formProvider: ContractPackingFormProvider,
+  val controllerComponents: MessagesControllerComponents,
+  view: ContractPackingView,
+  val errorHandler: ErrorHandler,
+  val genericLogger: GenericLogger)(implicit ec: ExecutionContext) extends ControllerHelper {
 
   val form = formProvider()
 
@@ -66,7 +65,6 @@ class ContractPackingController @Inject()(
         value => {
           val updatedAnswers = request.userAnswers.setAndRemoveLitresIfReq(ContractPackingPage, HowManyContractPackingPage, value)
           updateDatabaseAndRedirect(updatedAnswers, ContractPackingPage, mode)
-          }
-      )
+        })
   }
 }

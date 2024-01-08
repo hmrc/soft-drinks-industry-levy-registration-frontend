@@ -25,7 +25,6 @@ import uk.gov.hmrc.http.HttpResponse
 import play.api.Logger
 import play.mvc.Http.HeaderNames
 
-
 object AddressLookupHttpParser {
 
   implicit object AddressLookupGetAddressReads extends HttpReads[HttpResult[AlfResponse]] {
@@ -39,12 +38,11 @@ object AddressLookupHttpParser {
               Logger(s"[AddressLookupHttpParser][read]: Invalid Json - ${invalid.map(res => res._1)}")
               Left(ErrorModel(Status.INTERNAL_SERVER_ERROR, "Invalid Json returned from Address Lookup"))
             },
-            valid => Right(valid)
-          )
+            valid => Right(valid))
         }
         case status =>
           Logger(s"[AddressLookupHttpParser][read]: Unexpected Response, Status $status returned")
-          Left(ErrorModel(status,"Downstream error returned when retrieving CustomerAddressModel from AddressLookup"))
+          Left(ErrorModel(status, "Downstream error returned when retrieving CustomerAddressModel from AddressLookup"))
       }
     }
   }

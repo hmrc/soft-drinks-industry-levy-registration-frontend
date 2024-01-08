@@ -19,32 +19,31 @@ package controllers
 import controllers.actions._
 import forms.PackagingSiteDetailsFormProvider
 import handlers.ErrorHandler
-import models.{Mode, NormalMode}
+import models.{ Mode, NormalMode }
 import navigation.Navigator
 import pages.PackagingSiteDetailsPage
 import play.api.data.Form
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{ Action, AnyContent, MessagesControllerComponents }
 import services.AddressLookupState.PackingDetails
-import services.{AddressLookupService, SessionService}
+import services.{ AddressLookupService, SessionService }
 import utilities.GenericLogger
 import views.html.PackagingSiteDetailsView
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
-class PackagingSiteDetailsController @Inject()(
-                                       override val messagesApi: MessagesApi,
-                                       val sessionService: SessionService,
-                                       val navigator: Navigator,
-                                       controllerActions: ControllerActions,
-                                       formProvider: PackagingSiteDetailsFormProvider,
-                                       addressLookupService: AddressLookupService,
-                                       val controllerComponents: MessagesControllerComponents,
-                                       view: PackagingSiteDetailsView,
-                                       val errorHandler: ErrorHandler,
-                                       val genericLogger: GenericLogger
-                                     )(implicit ec: ExecutionContext) extends ControllerHelper {
+class PackagingSiteDetailsController @Inject() (
+  override val messagesApi: MessagesApi,
+  val sessionService: SessionService,
+  val navigator: Navigator,
+  controllerActions: ControllerActions,
+  formProvider: PackagingSiteDetailsFormProvider,
+  addressLookupService: AddressLookupService,
+  val controllerComponents: MessagesControllerComponents,
+  view: PackagingSiteDetailsView,
+  val errorHandler: ErrorHandler,
+  val genericLogger: GenericLogger)(implicit ec: ExecutionContext) extends ControllerHelper {
 
   val form: Form[Boolean] = formProvider()
 
@@ -73,16 +72,15 @@ class PackagingSiteDetailsController @Inject()(
         value => {
           for {
             updatedAnswers <- Future.fromTry(request.userAnswers.set(PackagingSiteDetailsPage, value))
-            _              <- updateDatabaseWithoutRedirect(updatedAnswers, PackagingSiteDetailsPage)
-            onwardUrl              <- if(value){
+            _ <- updateDatabaseWithoutRedirect(updatedAnswers, PackagingSiteDetailsPage)
+            onwardUrl <- if (value) {
               addressLookupService.initJourneyAndReturnOnRampUrl(PackingDetails, mode = mode)
-            } else if(mode == NormalMode){
-             Future.successful(routes.AskSecondaryWarehousesController.onPageLoad(mode).url)
+            } else if (mode == NormalMode) {
+              Future.successful(routes.AskSecondaryWarehousesController.onPageLoad(mode).url)
             } else {
               Future.successful(routes.CheckYourAnswersController.onPageLoad.url)
             }
-          }yield Redirect(onwardUrl)
-        }
-      )
+          } yield Redirect(onwardUrl)
+        })
   }
 }

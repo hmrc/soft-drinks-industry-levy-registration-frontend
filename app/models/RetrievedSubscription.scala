@@ -22,14 +22,14 @@ import play.api.libs.json.Json
 import java.time.LocalDate
 
 case class RetrievedSubscription(
-                                  utr: String,
-                                  sdilRef: String,
-                                  orgName: String,
-                                  address: UkAddress,
-                                  activity: RetrievedActivity,
-                                  liabilityDate: LocalDate,
-                                  contact: Contact,
-                                  deregDate: Option[LocalDate] = None)
+  utr: String,
+  sdilRef: String,
+  orgName: String,
+  address: UkAddress,
+  activity: RetrievedActivity,
+  liabilityDate: LocalDate,
+  contact: Contact,
+  deregDate: Option[LocalDate] = None)
 
 object RetrievedSubscription {
   implicit val format = Json.format[RetrievedSubscription]

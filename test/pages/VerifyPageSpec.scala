@@ -16,7 +16,7 @@
 
 package pages
 
-import models.{CheckMode, NormalMode, Verify}
+import models.{ CheckMode, NormalMode, Verify }
 import pages.behaviours.PageBehaviours
 
 class VerifyPageSpec extends PageBehaviours {

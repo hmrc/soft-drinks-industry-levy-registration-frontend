@@ -20,30 +20,29 @@ import controllers.actions._
 import forms.ContactDetailsFormProvider
 
 import javax.inject.Inject
-import models.{ContactDetails, Mode}
+import models.{ ContactDetails, Mode }
 import navigation.Navigator
 import pages.ContactDetailsPage
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{ Action, AnyContent, MessagesControllerComponents }
 import services.SessionService
 import views.html.ContactDetailsView
 import handlers.ErrorHandler
 import play.api.data.Form
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 import utilities.GenericLogger
 
-class ContactDetailsController @Inject()(
-                                       override val messagesApi: MessagesApi,
-                                       val sessionService: SessionService,
-                                       val navigator: Navigator,
-                                       controllerActions: ControllerActions,
-                                       formProvider: ContactDetailsFormProvider,
-                                       val controllerComponents: MessagesControllerComponents,
-                                       view: ContactDetailsView,
-                                       val errorHandler: ErrorHandler,
-                                       val genericLogger: GenericLogger
-                                     )(implicit ec: ExecutionContext) extends ControllerHelper {
+class ContactDetailsController @Inject() (
+  override val messagesApi: MessagesApi,
+  val sessionService: SessionService,
+  val navigator: Navigator,
+  controllerActions: ControllerActions,
+  formProvider: ContactDetailsFormProvider,
+  val controllerComponents: MessagesControllerComponents,
+  view: ContactDetailsView,
+  val errorHandler: ErrorHandler,
+  val genericLogger: GenericLogger)(implicit ec: ExecutionContext) extends ControllerHelper {
 
   val form: Form[ContactDetails] = formProvider()
 
@@ -68,7 +67,6 @@ class ContactDetailsController @Inject()(
         value => {
           val updatedAnswers = request.userAnswers.set(ContactDetailsPage, value)
           updateDatabaseAndRedirect(updatedAnswers, ContactDetailsPage, mode)
-        }
-      )
+        })
   }
 }

@@ -120,7 +120,7 @@ class PackagingSiteNameViewSpec extends ViewSpecHelper {
 
     testBackLink(document)
     validateTimeoutDialog(document)
-    validateTechnicalHelpLinkPresent(document)
+
     validateAccessibilityStatementLinkPresent(document)
   }
 }

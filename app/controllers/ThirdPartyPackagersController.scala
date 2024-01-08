@@ -23,25 +23,24 @@ import models.Mode
 import navigation.Navigator
 import pages.ThirdPartyPackagersPage
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{ Action, AnyContent, MessagesControllerComponents }
 import services.SessionService
 import utilities.GenericLogger
 import views.html.ThirdPartyPackagersView
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
-class ThirdPartyPackagersController @Inject()(
-                                       override val messagesApi: MessagesApi,
-                                       val sessionService: SessionService,
-                                       val navigator: Navigator,
-                                       controllerActions: ControllerActions,
-                                       formProvider: ThirdPartyPackagersFormProvider,
-                                       val controllerComponents: MessagesControllerComponents,
-                                       view: ThirdPartyPackagersView,
-                                       val errorHandler: ErrorHandler,
-                                       val genericLogger: GenericLogger
-                                     )(implicit ec: ExecutionContext) extends ControllerHelper {
+class ThirdPartyPackagersController @Inject() (
+  override val messagesApi: MessagesApi,
+  val sessionService: SessionService,
+  val navigator: Navigator,
+  controllerActions: ControllerActions,
+  formProvider: ThirdPartyPackagersFormProvider,
+  val controllerComponents: MessagesControllerComponents,
+  view: ThirdPartyPackagersView,
+  val errorHandler: ErrorHandler,
+  val genericLogger: GenericLogger)(implicit ec: ExecutionContext) extends ControllerHelper {
 
   val form = formProvider()
 
@@ -66,7 +65,6 @@ class ThirdPartyPackagersController @Inject()(
         value => {
           val updatedAnswers = request.userAnswers.set(ThirdPartyPackagersPage, value)
           updateDatabaseAndRedirect(updatedAnswers, ThirdPartyPackagersPage, mode)
-        }
-      )
+        })
   }
 }

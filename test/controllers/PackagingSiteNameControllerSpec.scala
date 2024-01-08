@@ -20,8 +20,8 @@ import base.SpecBase
 import forms.PackagingSiteNameFormProvider
 import helpers.LoggerHelper
 import models.alf.AddressResponseForLookupState
-import models.backend.{Site, UkAddress}
-import models.{NormalMode, PackagingSiteName, UserAnswers}
+import models.backend.{ Site, UkAddress }
+import models.{ NormalMode, PackagingSiteName, UserAnswers }
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
@@ -46,18 +46,14 @@ class PackagingSiteNameControllerSpec extends SpecBase with MockitoSugar with Lo
 
   val alfResponseForLookupState = AddressResponseForLookupState(ukAddress, PackingDetails, sdilId)
 
-
   val userAnswersWithAlfResponseForSdilId: UserAnswers = emptyUserAnswers.copy(
-    alfResponseForLookupState = Some(alfResponseForLookupState)
-  )
+    alfResponseForLookupState = Some(alfResponseForLookupState))
 
   val userAnswersWithNoAlfResponseButPackingSiteWithSdilRef = emptyUserAnswers.copy(
-    packagingSiteList = Map(sdilId -> Site(ukAddress, None, tradingName, None))
-  )
+    packagingSiteList = Map(sdilId -> Site(ukAddress, None, tradingName, None)))
 
   val userAnswersWithPackagingSitesButNotForSdilRef = emptyUserAnswers.copy(
-    packagingSiteList = Map("5432456" -> Site(ukAddress, None, tradingName, None))
-  )
+    packagingSiteList = Map("5432456" -> Site(ukAddress, None, tradingName, None)))
 
   "PackagingSiteName Controller" - {
     "when the user has entered a packing site address in alf" - {
@@ -85,8 +81,7 @@ class PackagingSiteNameControllerSpec extends SpecBase with MockitoSugar with Lo
         val application =
           applicationBuilder(userAnswers = Some(userAnswersWithAlfResponseForSdilId))
             .overrides(
-              bind[SessionService].toInstance(mockSessionService)
-            )
+              bind[SessionService].toInstance(mockSessionService))
             .build()
 
         running(application) {
@@ -127,8 +122,7 @@ class PackagingSiteNameControllerSpec extends SpecBase with MockitoSugar with Lo
         val application =
           applicationBuilder(userAnswers = Some(userAnswersWithNoAlfResponseButPackingSiteWithSdilRef))
             .overrides(
-              bind[SessionService].toInstance(mockSessionService)
-            )
+              bind[SessionService].toInstance(mockSessionService))
             .build()
 
         running(application) {
@@ -148,8 +142,7 @@ class PackagingSiteNameControllerSpec extends SpecBase with MockitoSugar with Lo
       "must not render the page and redirect to packagingSiteDetails for GET" in {
         val application =
           applicationBuilder(userAnswers = Some(userAnswersWithPackagingSitesButNotForSdilRef))
-            .overrides(
-            )
+            .overrides()
             .build()
 
         running(application) {
@@ -164,13 +157,11 @@ class PackagingSiteNameControllerSpec extends SpecBase with MockitoSugar with Lo
       }
     }
 
-
     "when the user answers contains no alfAddress or packaging sites" - {
       "must not render the page and redirect to packagingAtBusinessAddress for GET" in {
         val application =
           applicationBuilder(userAnswers = Some(emptyUserAnswers))
-            .overrides(
-            )
+            .overrides()
             .build()
 
         running(application) {
@@ -191,9 +182,8 @@ class PackagingSiteNameControllerSpec extends SpecBase with MockitoSugar with Lo
 
       running(application) {
         val request =
-          FakeRequest(POST, packagingSiteNameRoute
-        )
-        .withFormUrlEncodedBody(("value", "invalid value"))
+          FakeRequest(POST, packagingSiteNameRoute)
+            .withFormUrlEncodedBody(("value", "invalid value"))
 
         val boundForm = form.bind(Map("value" -> "invalid value"))
 
@@ -226,9 +216,8 @@ class PackagingSiteNameControllerSpec extends SpecBase with MockitoSugar with Lo
 
       running(application) {
         val request =
-          FakeRequest(POST, packagingSiteNameRoute
-        )
-        .withFormUrlEncodedBody(("packagingSiteName", "value 1"))
+          FakeRequest(POST, packagingSiteNameRoute)
+            .withFormUrlEncodedBody(("packagingSiteName", "value 1"))
 
         val result = route(application, request).value
 
@@ -245,16 +234,14 @@ class PackagingSiteNameControllerSpec extends SpecBase with MockitoSugar with Lo
       val application =
         applicationBuilder(userAnswers = Some(userAnswersWithAlfResponseForSdilId))
           .overrides(
-            bind[SessionService].toInstance(mockSessionService)
-          )
+            bind[SessionService].toInstance(mockSessionService))
           .build()
 
       running(application) {
         withCaptureOfLoggingFrom(application.injector.instanceOf[GenericLogger].logger) { events =>
           val request =
-            FakeRequest(POST, packagingSiteNameRoute
-          )
-          .withFormUrlEncodedBody(("packagingSiteName", "value 1"))
+            FakeRequest(POST, packagingSiteNameRoute)
+              .withFormUrlEncodedBody(("packagingSiteName", "value 1"))
 
           await(route(application, request).value)
           events.collectFirst {

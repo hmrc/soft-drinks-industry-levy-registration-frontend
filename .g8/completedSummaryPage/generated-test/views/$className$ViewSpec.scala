@@ -84,7 +84,7 @@ class $className$ViewSpec extends ViewSpecHelper {
 
     testNoBackLink(document)
     validateTimeoutDialog(document)
-    validateTechnicalHelpLinkPresent(document)
+
     validateAccessibilityStatementLinkPresent(document)
   }
 

@@ -16,9 +16,9 @@
 
 package controllers.addressLookupFrontend
 
-import controllers.actions.{DataRequiredAction, DataRetrievalAction, IdentifierAction}
-import models.{Mode, NormalMode}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import controllers.actions.{ DataRequiredAction, DataRetrievalAction, IdentifierAction }
+import models.{ Mode, NormalMode }
+import play.api.mvc.{ Action, AnyContent, MessagesControllerComponents }
 import repositories.SessionRepository
 import services.AddressLookupService
 import services.AddressLookupState._
@@ -28,23 +28,23 @@ import javax.inject.Inject
 import scala.annotation.unused
 import scala.concurrent.ExecutionContext
 
-class RampOffController @Inject()(identify: IdentifierAction,
-                                  getData: DataRetrievalAction,
-                                  requireData: DataRequiredAction,
-                                  addressLookupService: AddressLookupService,
-                                  sessionRepository: SessionRepository,
-                                  val controllerComponents: MessagesControllerComponents)
-                                 (implicit val ex: ExecutionContext) extends FrontendBaseController {
+class RampOffController @Inject() (
+  identify: IdentifierAction,
+  getData: DataRetrievalAction,
+  requireData: DataRequiredAction,
+  addressLookupService: AddressLookupService,
+  sessionRepository: SessionRepository,
+  val controllerComponents: MessagesControllerComponents)(implicit val ex: ExecutionContext) extends FrontendBaseController {
 
   def businessAddressOffRamp(@unused sdilId: String, alfId: String, mode: Mode): Action[AnyContent] = (identify andThen getData andThen requireData).async {
     implicit request =>
       for {
-        alfResponse         <- addressLookupService.getAddress(alfId)
-        ukAddress           = addressLookupService.addressChecker(alfResponse.address, alfId)
+        alfResponse <- addressLookupService.getAddress(alfId)
+        ukAddress = addressLookupService.addressChecker(alfResponse.address, alfId)
         updatedUserAnswers = request.userAnswers.setBusinessAddress(ukAddress)
-        _                   <- sessionRepository.set(updatedUserAnswers)
+        _ <- sessionRepository.set(updatedUserAnswers)
       } yield {
-        val redirectUrl = if(mode == NormalMode) {
+        val redirectUrl = if (mode == NormalMode) {
           controllers.routes.OrganisationTypeController.onPageLoad(NormalMode)
         } else {
           controllers.routes.CheckYourAnswersController.onPageLoad
@@ -57,16 +57,16 @@ class RampOffController @Inject()(identify: IdentifierAction,
     implicit request =>
       val userAnswers = request.userAnswers
       for {
-        alfResponse         <- addressLookupService.getAddress(alfId)
-        ukAddress           = addressLookupService.addressChecker(alfResponse.address, alfId)
-        optTradingName      = alfResponse.address.organisation
+        alfResponse <- addressLookupService.getAddress(alfId)
+        ukAddress = addressLookupService.addressChecker(alfResponse.address, alfId)
+        optTradingName = alfResponse.address.organisation
         updatedUserAnswers = optTradingName match {
           case Some(tradingName) => userAnswers.addWarehouse(ukAddress, tradingName, sdilId)
           case None => userAnswers.setAlfResponse(ukAddress, WarehouseDetails, sdilId)
         }
-        _                   <- sessionRepository.set(updatedUserAnswers)
+        _ <- sessionRepository.set(updatedUserAnswers)
       } yield {
-        if(optTradingName.nonEmpty) {
+        if (optTradingName.nonEmpty) {
           Redirect(controllers.routes.WarehouseDetailsController.onPageLoad(mode))
         } else {
           Redirect(controllers.routes.WarehousesTradingNameController.onPageLoad(mode, sdilId))

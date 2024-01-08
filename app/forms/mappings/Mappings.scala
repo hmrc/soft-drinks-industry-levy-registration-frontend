@@ -19,8 +19,8 @@ package forms.mappings
 import models.Enumerable
 import play.api.data.Forms.of
 import play.api.data.format.Formats.stringFormat
-import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
-import play.api.data.{FieldMapping, Mapping}
+import play.api.data.validation.{ Constraint, Invalid, Valid, ValidationError }
+import play.api.data.{ FieldMapping, Mapping }
 
 import java.time.LocalDate
 
@@ -45,47 +45,49 @@ trait Mappings extends Formatters with Constraints {
       validPostcode(
         invalidFormatFailure = "enterBusinessDetails.postcode.invalid",
         emptyFailure = "enterBusinessDetails.postcode.required",
-        invalidCharactersFailure = "enterBusinessDetails.postcode.special"
-      )
-    )
+        invalidCharactersFailure = "enterBusinessDetails.postcode.special"))
 
   protected def text(errorKey: String = "error.required", args: Seq[String] = Seq.empty): FieldMapping[String] =
     of(stringFormatter(errorKey, args))
 
-  protected def int(requiredKey: String = "error.required",
-                    wholeNumberKey: String = "error.wholeNumber",
-                    nonNumericKey: String = "error.nonNumeric",
-                    invalidLength: String = "error.length",
-                    args: Seq[String] = Seq.empty): FieldMapping[Int] =
-    of(intFormatter(requiredKey, wholeNumberKey, nonNumericKey,invalidLength, args))
+  protected def int(
+    requiredKey: String = "error.required",
+    wholeNumberKey: String = "error.wholeNumber",
+    nonNumericKey: String = "error.nonNumeric",
+    invalidLength: String = "error.length",
+    args: Seq[String] = Seq.empty): FieldMapping[Int] =
+    of(intFormatter(requiredKey, wholeNumberKey, nonNumericKey, invalidLength, args))
 
-  protected def litres(band: String,
-                       args: Seq[String] = Seq.empty): Mapping[Long] =
+  protected def litres(
+    band: String,
+    args: Seq[String] = Seq.empty): Mapping[Long] =
     of(litresFormatter(band, args))
       .verifying(maximumValueNotEqual(100000000000000L, s"litres.error.$band.outOfMaxVal"))
 
-  protected def boolean(requiredKey: String = "error.required",
-                        invalidKey: String = "error.boolean",
-                        args: Seq[String] = Seq.empty): FieldMapping[Boolean] =
+  protected def boolean(
+    requiredKey: String = "error.required",
+    invalidKey: String = "error.boolean",
+    args: Seq[String] = Seq.empty): FieldMapping[Boolean] =
     of(booleanFormatter(requiredKey, invalidKey, args))
 
-  protected def enumerable[A](requiredKey: String = "error.required",
-                              invalidKey: String = "error.invalid",
-                              args: Seq[String] = Seq.empty)(implicit ev: Enumerable[A]): FieldMapping[A] =
+  protected def enumerable[A](
+    requiredKey: String = "error.required",
+    invalidKey: String = "error.invalid",
+    args: Seq[String] = Seq.empty)(implicit ev: Enumerable[A]): FieldMapping[A] =
     of(enumerableFormatter[A](requiredKey, invalidKey, args))
 
   protected def localDate(
-                           invalidKey: String,
-                           allRequiredKey: String,
-                           twoRequiredKey: String,
-                           requiredKey: String,
-                           invalidDay: String,
-                           invalidDayLength: String,
-                           invalidMonth: String,
-                           invalidMonthLength: String,
-                           invalidYear: String,
-                           invalidYearLength: String,
-                           args: Seq[String] = Seq.empty): FieldMapping[LocalDate] =
+    invalidKey: String,
+    allRequiredKey: String,
+    twoRequiredKey: String,
+    requiredKey: String,
+    invalidDay: String,
+    invalidDayLength: String,
+    invalidMonth: String,
+    invalidMonthLength: String,
+    invalidYear: String,
+    invalidYearLength: String,
+    args: Seq[String] = Seq.empty): FieldMapping[LocalDate] =
     of(new LocalDateFormatter(
       invalidKey,
       allRequiredKey,

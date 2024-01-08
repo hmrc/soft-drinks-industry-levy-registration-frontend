@@ -23,25 +23,24 @@ import models.Mode
 import navigation.Navigator
 import pages.HowManyContractPackingPage
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{ Action, AnyContent, MessagesControllerComponents }
 import services.SessionService
 import utilities.GenericLogger
 import views.html.HowManyContractPackingView
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
-class HowManyContractPackingController @Inject()(
-                                         override val messagesApi: MessagesApi,
-                                         val sessionService: SessionService,
-                                         val navigator: Navigator,
-                                         controllerActions: ControllerActions,
-                                         formProvider: HowManyLitresFormProvider,
-                                         val controllerComponents: MessagesControllerComponents,
-                                         view: HowManyContractPackingView,
-                                         val errorHandler: ErrorHandler,
-                                         val genericLogger: GenericLogger
-                                 )(implicit ec: ExecutionContext) extends ControllerHelper {
+class HowManyContractPackingController @Inject() (
+  override val messagesApi: MessagesApi,
+  val sessionService: SessionService,
+  val navigator: Navigator,
+  controllerActions: ControllerActions,
+  formProvider: HowManyLitresFormProvider,
+  val controllerComponents: MessagesControllerComponents,
+  view: HowManyContractPackingView,
+  val errorHandler: ErrorHandler,
+  val genericLogger: GenericLogger)(implicit ec: ExecutionContext) extends ControllerHelper {
 
   val form = formProvider()
 
@@ -66,7 +65,6 @@ class HowManyContractPackingController @Inject()(
         value => {
           val updatedAnswers = request.userAnswers.set(HowManyContractPackingPage, value)
           updateDatabaseAndRedirect(updatedAnswers, HowManyContractPackingPage, mode)
-        }
-      )
+        })
   }
 }

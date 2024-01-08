@@ -70,13 +70,11 @@ class ContractPackingSummarySpec extends RegistrationSubscriptionHelper {
           rows.head.value.classes.trim mustBe "sdil-right-align--desktop"
           rows.head.actions.get mustBe Actions("", List.empty)
 
-
           rows(1).key.content.asHtml mustBe Html("Litres in the low band")
           rows(1).key.classes mustBe ""
           rows(1).value.content.asHtml mustBe Html("1,000")
           rows(1).value.classes.trim mustBe "sdil-right-align--desktop"
           rows(1).actions mustBe None
-
 
           rows(2).key.content.asHtml mustBe Html("Litres in the high band")
           rows(2).key.classes mustBe ""

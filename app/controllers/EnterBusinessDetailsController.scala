@@ -18,34 +18,33 @@ package controllers
 
 import config.FrontendAppConfig
 import controllers.actions._
-import errors.{EnteredBusinessDetailsDoNotMatch, NoROSMRegistration}
+import errors.{ EnteredBusinessDetailsDoNotMatch, NoROSMRegistration }
 import forms.EnterBusinessDetailsFormProvider
 import handlers.ErrorHandler
-import models.{Identify, NormalMode, UserAnswers}
+import models.{ Identify, NormalMode, UserAnswers }
 import navigation.Navigator
 import orchestrators.RegistrationOrchestrator
 import pages.EnterBusinessDetailsPage
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{ Action, AnyContent, MessagesControllerComponents }
 import services.SessionService
 import utilities.GenericLogger
 import views.html.EnterBusinessDetailsView
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
-class EnterBusinessDetailsController @Inject()(
-                                       override val messagesApi: MessagesApi,
-                                       val sessionService: SessionService,
-                                       val navigator: Navigator,
-                                       controllerActions: ControllerActions,
-                                       formProvider: EnterBusinessDetailsFormProvider,
-                                       registrationOrchestrator: RegistrationOrchestrator,
-                                       val controllerComponents: MessagesControllerComponents,
-                                       view: EnterBusinessDetailsView,
-                                       val errorHandler: ErrorHandler,
-                                       val genericLogger: GenericLogger
-                                     )(implicit ec: ExecutionContext, config: FrontendAppConfig) extends ControllerHelper {
+class EnterBusinessDetailsController @Inject() (
+  override val messagesApi: MessagesApi,
+  val sessionService: SessionService,
+  val navigator: Navigator,
+  controllerActions: ControllerActions,
+  formProvider: EnterBusinessDetailsFormProvider,
+  registrationOrchestrator: RegistrationOrchestrator,
+  val controllerComponents: MessagesControllerComponents,
+  view: EnterBusinessDetailsView,
+  val errorHandler: ErrorHandler,
+  val genericLogger: GenericLogger)(implicit ec: ExecutionContext, config: FrontendAppConfig) extends ControllerHelper {
 
   private val form = formProvider()
 
@@ -80,8 +79,7 @@ class EnterBusinessDetailsController @Inject()(
                 Future.successful(InternalServerError(errorHandler.internalServerErrorTemplate))
             }
           }
-        }
-      )
+        })
   }
 
   private def sameBusinessDetailsEntered(identify: Identify, userAnswers: UserAnswers): Boolean = {

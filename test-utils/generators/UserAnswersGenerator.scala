@@ -18,34 +18,34 @@ package generators
 
 import models.UserAnswers
 import org.scalacheck.Arbitrary.arbitrary
-import org.scalacheck.{Arbitrary, Gen}
+import org.scalacheck.{ Arbitrary, Gen }
 import org.scalatest.TryValues
 import pages._
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.{ JsValue, Json }
 
 trait UserAnswersGenerator extends TryValues {
   self: Generators =>
 
   val generators: Seq[Gen[(QuestionPage[_], JsValue)]] =
     arbitrary[(WarehousesTradingNamePage.type, JsValue)] ::
-    arbitrary[(PackagingSiteNamePage.type, JsValue)] ::
-    arbitrary[(RemovePackagingSiteDetailsPage.type, JsValue)] ::
-    arbitrary[(EnterBusinessDetailsPage.type, JsValue)] ::
-    arbitrary[(WarehouseDetailsPage.type, JsValue)] ::
-    arbitrary[(RemoveWarehouseDetailsPage.type, JsValue)] ::
-    arbitrary[(VerifyPage.type, JsValue)] ::
-    arbitrary[(ContactDetailsPage.type, JsValue)] ::
-    arbitrary[(PackAtBusinessAddressPage.type, JsValue)] ::
-    arbitrary[(ContractPackingPage.type, JsValue)] ::
-    arbitrary[(ImportsPage.type, JsValue)] ::
-    arbitrary[(OperatePackagingSitesPage.type, JsValue)] ::
-    arbitrary[(PackagingSiteDetailsPage.type, JsValue)] ::
-    arbitrary[(HowManyLitresGloballyPage.type, JsValue)] ::
-    arbitrary[(AskSecondaryWarehousesPage.type, JsValue)] ::
-    arbitrary[(ThirdPartyPackagersPage.type, JsValue)] ::
-    arbitrary[(StartDatePage.type, JsValue)] ::
-    arbitrary[(OrganisationTypePage.type, JsValue)] ::
-    Nil
+      arbitrary[(PackagingSiteNamePage.type, JsValue)] ::
+      arbitrary[(RemovePackagingSiteDetailsPage.type, JsValue)] ::
+      arbitrary[(EnterBusinessDetailsPage.type, JsValue)] ::
+      arbitrary[(WarehouseDetailsPage.type, JsValue)] ::
+      arbitrary[(RemoveWarehouseDetailsPage.type, JsValue)] ::
+      arbitrary[(VerifyPage.type, JsValue)] ::
+      arbitrary[(ContactDetailsPage.type, JsValue)] ::
+      arbitrary[(PackAtBusinessAddressPage.type, JsValue)] ::
+      arbitrary[(ContractPackingPage.type, JsValue)] ::
+      arbitrary[(ImportsPage.type, JsValue)] ::
+      arbitrary[(OperatePackagingSitesPage.type, JsValue)] ::
+      arbitrary[(PackagingSiteDetailsPage.type, JsValue)] ::
+      arbitrary[(HowManyLitresGloballyPage.type, JsValue)] ::
+      arbitrary[(AskSecondaryWarehousesPage.type, JsValue)] ::
+      arbitrary[(ThirdPartyPackagersPage.type, JsValue)] ::
+      arbitrary[(StartDatePage.type, JsValue)] ::
+      arbitrary[(OrganisationTypePage.type, JsValue)] ::
+      Nil
 
   implicit lazy val arbitraryUserData: Arbitrary[UserAnswers] = {
 
@@ -53,18 +53,17 @@ trait UserAnswersGenerator extends TryValues {
 
     Arbitrary {
       for {
-        id      <- nonEmptyString
-        data    <- generators match {
+        id <- nonEmptyString
+        data <- generators match {
           case Nil => Gen.const(Map[QuestionPage[_], JsValue]())
-          case _   => Gen.mapOf(oneOf(generators))
+          case _ => Gen.mapOf(oneOf(generators))
         }
-      } yield UserAnswers (
+      } yield UserAnswers(
         id = id, RegisterState.RegisterWithAuthUTR,
         data = data.foldLeft(Json.obj()) {
           case (obj, (path, value)) =>
             obj.setObject(path.path, value).get
-        }
-      )
+        })
     }
   }
 }

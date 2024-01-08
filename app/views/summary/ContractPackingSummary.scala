@@ -22,7 +22,7 @@ import models.backend.Subscription
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 
-object ContractPackingSummary extends RegisterDetailsSummaryListWithLitres  {
+object ContractPackingSummary extends RegisterDetailsSummaryListWithLitres {
 
   override val summaryLitres: SummaryListRowLitresHelper = HowManyContractPackingSummary
   //LDS ignore
@@ -31,8 +31,7 @@ object ContractPackingSummary extends RegisterDetailsSummaryListWithLitres  {
   override val actionId: String = "change-contractPacking"
   override val hiddenText: String = "contractPacking"
 
-  def getOptHeadingAndSummary(subscription: Subscription, isCheckAnswers: Boolean)
-                             (implicit messages: Messages): (String, SummaryList) = {
+  def getOptHeadingAndSummary(subscription: Subscription, isCheckAnswers: Boolean)(implicit messages: Messages): (String, SummaryList) = {
     getHeadingAndSummary(subscription.activity.CopackerAll, isCheckAnswers)
   }
 

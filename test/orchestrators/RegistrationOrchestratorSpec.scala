@@ -21,14 +21,14 @@ import connectors._
 import errors._
 import models.RegisterState._
 import models._
-import models.requests.{DataRequest, IdentifierRequest}
+import models.requests.{ DataRequest, IdentifierRequest }
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{ContactDetailsPage, HowManyLitresGloballyPage, OrganisationTypePage}
+import pages.{ ContactDetailsPage, HowManyLitresGloballyPage, OrganisationTypePage }
 import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
-import repositories.{CacheMap, SDILSessionCache}
+import repositories.{ CacheMap, SDILSessionCache }
 import services.SessionService
 
 import java.time.Instant
@@ -60,16 +60,14 @@ class RegistrationOrchestratorSpec extends RegistrationSubscriptionHelper with M
     Map(
       Pending -> RegistrationPending,
       Registered -> RegisterApplicationAccepted,
-      DoesNotExist -> registerWithUTR
-    )
+      DoesNotExist -> registerWithUTR)
   }
 
   "handleRegistrationRequest" - {
     "when the user has useranswers that contains a submittedOn time" - {
       "should return RegistrationAlreadySubmitted error" in {
         when(mockSessionService.get(identifier)).thenReturn(
-          createSuccessRegistrationResult(Some(emptyUserAnswers.copy(submittedOn = Some(Instant.now))))
-        )
+          createSuccessRegistrationResult(Some(emptyUserAnswers.copy(submittedOn = Some(Instant.now)))))
 
         val res = orchestrator.handleRegistrationRequest(identifyRequestWithAuthUtrAndRegistered, hc, ec)
 
@@ -95,23 +93,24 @@ class RegistrationOrchestratorSpec extends RegistrationSubscriptionHelper with M
               }
             }
           }
-          expectedRegStateForSubscriptionStatus(false).foreach { case (subscriptionStatus, expectedState) =>
-            s"and has a subscription status of $subscriptionStatus" - {
-              "for a user that is not registered" - {
-                s"should return $expectedState" in {
-                  when(mockSessionService.get(identifier)).thenReturn(createSuccessRegistrationResult(Some(emptyUserAnswers)))
-                  when(mockSDILConnector.retreiveRosmSubscription(utr, identifier)(hc)).thenReturn(createSuccessRegistrationResult(rosmRegistration))
-                  when(mockSDILConnector.checkPendingQueue(utr)(hc)).thenReturn(createSuccessRegistrationResult(subscriptionStatus))
-                  when(mockSessionService.set(any())).thenReturn(createSuccessRegistrationResult(true))
+          expectedRegStateForSubscriptionStatus(false).foreach {
+            case (subscriptionStatus, expectedState) =>
+              s"and has a subscription status of $subscriptionStatus" - {
+                "for a user that is not registered" - {
+                  s"should return $expectedState" in {
+                    when(mockSessionService.get(identifier)).thenReturn(createSuccessRegistrationResult(Some(emptyUserAnswers)))
+                    when(mockSDILConnector.retreiveRosmSubscription(utr, identifier)(hc)).thenReturn(createSuccessRegistrationResult(rosmRegistration))
+                    when(mockSDILConnector.checkPendingQueue(utr)(hc)).thenReturn(createSuccessRegistrationResult(subscriptionStatus))
+                    when(mockSessionService.set(any())).thenReturn(createSuccessRegistrationResult(true))
 
-                  val res = orchestrator.handleRegistrationRequest(identifyRequestWithAuthAndNotRegistered, hc, ec)
+                    val res = orchestrator.handleRegistrationRequest(identifyRequestWithAuthAndNotRegistered, hc, ec)
 
-                  whenReady(res.value) { result =>
-                    result mustBe Right(expectedState)
+                    whenReady(res.value) { result =>
+                      result mustBe Right(expectedState)
+                    }
                   }
                 }
               }
-            }
           }
 
           "for a user that is not register" - {
@@ -202,23 +201,24 @@ class RegistrationOrchestratorSpec extends RegistrationSubscriptionHelper with M
               }
             }
           }
-          expectedRegStateForSubscriptionStatus(false).foreach { case (subscriptionStatus, expectedState) =>
-            s"and has a subscription status of $subscriptionStatus" - {
-              "for a user that is not registered" - {
-                s"should return $expectedState" in {
-                  when(mockSessionService.get(identifier)).thenReturn(createSuccessRegistrationResult(None))
-                  when(mockSDILConnector.retreiveRosmSubscription(utr, identifier)(hc)).thenReturn(createSuccessRegistrationResult(rosmRegistration))
-                  when(mockSDILConnector.checkPendingQueue(utr)(hc)).thenReturn(createSuccessRegistrationResult(subscriptionStatus))
-                  when(mockSessionService.set(any())).thenReturn(createSuccessRegistrationResult(true))
+          expectedRegStateForSubscriptionStatus(false).foreach {
+            case (subscriptionStatus, expectedState) =>
+              s"and has a subscription status of $subscriptionStatus" - {
+                "for a user that is not registered" - {
+                  s"should return $expectedState" in {
+                    when(mockSessionService.get(identifier)).thenReturn(createSuccessRegistrationResult(None))
+                    when(mockSDILConnector.retreiveRosmSubscription(utr, identifier)(hc)).thenReturn(createSuccessRegistrationResult(rosmRegistration))
+                    when(mockSDILConnector.checkPendingQueue(utr)(hc)).thenReturn(createSuccessRegistrationResult(subscriptionStatus))
+                    when(mockSessionService.set(any())).thenReturn(createSuccessRegistrationResult(true))
 
-                  val res = orchestrator.handleRegistrationRequest(identifyRequestWithAuthAndNotRegistered, hc, ec)
+                    val res = orchestrator.handleRegistrationRequest(identifyRequestWithAuthAndNotRegistered, hc, ec)
 
-                  whenReady(res.value) { result =>
-                    result mustBe Right(expectedState)
+                    whenReady(res.value) { result =>
+                      result mustBe Right(expectedState)
+                    }
                   }
                 }
               }
-            }
           }
 
           "for a user that is not register" - {
@@ -491,6 +491,5 @@ class RegistrationOrchestratorSpec extends RegistrationSubscriptionHelper with M
       }
     }
   }
-
 
 }

@@ -18,7 +18,7 @@ package views
 
 import controllers.routes
 import forms.PackAtBusinessAddressFormProvider
-import models.{CheckMode, NormalMode}
+import models.{ CheckMode, NormalMode }
 import play.api.data.Form
 import play.api.mvc.Request
 import play.api.test.FakeRequest
@@ -46,7 +46,7 @@ class PackAtBusinessAddressViewSpec extends ViewSpecHelper {
   }
 
   "View" - {
-    val html = view(form, HtmlContent(""),  NormalMode)(request, messages(application))
+    val html = view(form, HtmlContent(""), NormalMode)(request, messages(application))
     val document = doc(html)
     "should contain the expected title" in {
       document.title() mustBe "Your business address - Soft Drinks Industry Levy - GOV.UK"
@@ -226,7 +226,7 @@ class PackAtBusinessAddressViewSpec extends ViewSpecHelper {
 
     testBackLink(document)
     validateTimeoutDialog(document)
-    validateTechnicalHelpLinkPresent(document)
+
     validateAccessibilityStatementLinkPresent(document)
   }
 

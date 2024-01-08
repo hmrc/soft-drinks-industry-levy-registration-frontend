@@ -32,7 +32,7 @@ class ContactDetailsFormProvider @Inject() extends Mappings {
   private val phoneNumberRegex = """^[A-Z0-9 )/(\\#+*\-]+$"""
 
   def apply(): Form[ContactDetails] = Form(
-     mapping(
+    mapping(
       "fullName" -> text("contactDetails.error.fullName.required")
         .verifying(maxLength(40, "contactDetails.error.fullName.length"))
         .verifying(regexp(nameRegex, "contactDetails.error.fullName.invalid")),
@@ -44,7 +44,5 @@ class ContactDetailsFormProvider @Inject() extends Mappings {
         .verifying(regexp(phoneNumberRegex, "contactDetails.error.phoneNumber.invalid")),
       "email" -> text("contactDetails.error.email.required")
         .verifying(maxLength(132, "contactDetails.error.email.length"))
-        .verifying(regexp(emailRegex, "contactDetails.error.email.invalid"))
-    )(ContactDetails.apply)(ContactDetails.unapply)
-   )
- }
+        .verifying(regexp(emailRegex, "contactDetails.error.email.invalid")))(ContactDetails.apply)(ContactDetails.unapply))
+}

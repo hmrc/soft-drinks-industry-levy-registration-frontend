@@ -17,7 +17,7 @@
 package models
 
 import models.alf.AddressResponseForLookupState
-import models.backend.{Site, UkAddress}
+import models.backend.{ Site, UkAddress }
 import play.api.libs.json._
 import repositories.DatedCacheMap
 import services.Encryption
@@ -30,41 +30,40 @@ object ModelEncryption {
     (
       datedCacheMap.id,
       datedCacheMap.data.map(item => item._1 -> encryption.crypto.encrypt(item._2.toString(), datedCacheMap.id)),
-      datedCacheMap.lastUpdated
-    )
+      datedCacheMap.lastUpdated)
   }
-  def decryptDatedCacheMap(id: String,
-                           data: Map[String, EncryptedValue],
-                           lastUpdated: Instant)(implicit encryption: Encryption): DatedCacheMap = {
+  def decryptDatedCacheMap(
+    id: String,
+    data: Map[String, EncryptedValue],
+    lastUpdated: Instant)(implicit encryption: Encryption): DatedCacheMap = {
     DatedCacheMap(
       id = id,
       data = data.map(item => item._1 -> Json.parse(encryption.crypto.decrypt(item._2, id))),
-      lastUpdated = lastUpdated
-    )
+      lastUpdated = lastUpdated)
   }
 
-  def encryptUserAnswers(userAnswers: UserAnswers)(implicit encryption: Encryption):
-  (String, RegisterState, EncryptedValue, EncryptedValue, Map[String, EncryptedValue], Map[String, EncryptedValue], Option[EncryptedValue], Option[Instant], Instant) = {
-    ( userAnswers.id,
+  def encryptUserAnswers(userAnswers: UserAnswers)(implicit encryption: Encryption): (String, RegisterState, EncryptedValue, EncryptedValue, Map[String, EncryptedValue], Map[String, EncryptedValue], Option[EncryptedValue], Option[Instant], Instant) = {
+    (
+      userAnswers.id,
       userAnswers.registerState,
       encryption.crypto.encrypt(userAnswers.data.toString(), userAnswers.id),
       encryption.crypto.encrypt(Json.toJson(userAnswers.address).toString(), userAnswers.id),
       userAnswers.packagingSiteList.map(site => site._1 -> encryption.crypto.encrypt(Json.toJson(site._2).toString(), userAnswers.id)),
       userAnswers.warehouseList.map(warehouse => warehouse._1 -> encryption.crypto.encrypt(Json.toJson(warehouse._2).toString(), userAnswers.id)),
       userAnswers.alfResponseForLookupState.map(alfResponseForLookupState => encryption.crypto.encrypt(Json.toJson(alfResponseForLookupState).toString(), userAnswers.id)),
-      userAnswers.submittedOn, userAnswers.lastUpdated
-    )
+      userAnswers.submittedOn, userAnswers.lastUpdated)
   }
 
-  def decryptUserAnswers(id: String,
-                         registerState: RegisterState,
-                         data: EncryptedValue,
-                         address: EncryptedValue,
-                         packagingSiteList: Map[String, EncryptedValue],
-                         warehouseList: Map[String, EncryptedValue],
-                         alfResponseForLookupState: Option[EncryptedValue],
-                         submittedOn: Option[Instant],
-                         lastUpdated: Instant)(implicit encryption: Encryption): UserAnswers = {
+  def decryptUserAnswers(
+    id: String,
+    registerState: RegisterState,
+    data: EncryptedValue,
+    address: EncryptedValue,
+    packagingSiteList: Map[String, EncryptedValue],
+    warehouseList: Map[String, EncryptedValue],
+    alfResponseForLookupState: Option[EncryptedValue],
+    submittedOn: Option[Instant],
+    lastUpdated: Instant)(implicit encryption: Encryption): UserAnswers = {
     UserAnswers(
       id = id,
       data = Json.parse(encryption.crypto.decrypt(data, id)).as[JsObject],
@@ -75,8 +74,7 @@ object ModelEncryption {
       alfResponseForLookupState = alfResponseForLookupState
         .map(alfRespWithState => Json.parse(encryption.crypto.decrypt(alfRespWithState, id)).as[AddressResponseForLookupState]),
       submittedOn = submittedOn,
-      lastUpdated = lastUpdated
-    )
+      lastUpdated = lastUpdated)
   }
 
 }

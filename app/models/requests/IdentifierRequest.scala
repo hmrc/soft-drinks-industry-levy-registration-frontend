@@ -16,10 +16,11 @@
 
 package models.requests
 
-import play.api.mvc.{Request, WrappedRequest}
+import play.api.mvc.{ Request, WrappedRequest }
 
-case class IdentifierRequest[A] (request: Request[A],
-                                 internalId: String,
-                                 hasCTEnrolment: Boolean = false,
-                                 optUTR: Option[String] = None,
-                                 isRegistered: Boolean = false) extends WrappedRequest[A](request)
+case class IdentifierRequest[A](
+  request: Request[A],
+  internalId: String,
+  hasCTEnrolment: Boolean = false,
+  optUTR: Option[String] = None,
+  isRegistered: Boolean = false) extends WrappedRequest[A](request)

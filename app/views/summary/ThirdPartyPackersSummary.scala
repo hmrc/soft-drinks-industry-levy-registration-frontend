@@ -18,12 +18,12 @@ package views.summary
 
 import controllers.routes
 import models.backend.Subscription
-import models.{CheckMode, HowManyLitresGlobally}
+import models.{ CheckMode, HowManyLitresGlobally }
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 import viewmodels.govuk.summarylist._
 
-object ThirdPartyPackersSummary extends RegisterDetailsSummaryRowHelper  {
+object ThirdPartyPackersSummary extends RegisterDetailsSummaryRowHelper {
 
   //LDS ignore
   override val key: String = "thirdPartyPackagers"
@@ -31,12 +31,10 @@ object ThirdPartyPackersSummary extends RegisterDetailsSummaryRowHelper  {
   override val actionId: String = "change-thirdPartyPackagers"
   override val hiddenText: String = "thirdPartyPackagers"
 
-  def getOptHeadingAndSummary(subscription: Subscription, howManyLitresGlobally: HowManyLitresGlobally, isCheckAnswers: Boolean)
-                             (implicit messages: Messages): Option[(String, SummaryList)] = {
-    if(howManyLitresGlobally == HowManyLitresGlobally.Small) {
+  def getOptHeadingAndSummary(subscription: Subscription, howManyLitresGlobally: HowManyLitresGlobally, isCheckAnswers: Boolean)(implicit messages: Messages): Option[(String, SummaryList)] = {
+    if (howManyLitresGlobally == HowManyLitresGlobally.Small) {
       Some(s"$key.checkYourAnswersLabel" -> SummaryListViewModel(rows =
-        row(subscription.activity.Copackee, isCheckAnswers)
-      ))
+        row(subscription.activity.Copackee, isCheckAnswers)))
     } else {
       None
     }

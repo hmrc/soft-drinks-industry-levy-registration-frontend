@@ -44,12 +44,9 @@ trait RegisterDetailsSummaryRowHelper {
           Seq(
             ActionItemViewModel("site.change", action)
               .withAttribute(("id", actionId))
-              .withVisuallyHiddenText(messages(s"$hiddenText.change.hidden"))
-          )
+              .withVisuallyHiddenText(messages(s"$hiddenText.change.hidden")))
         } else {
           Seq.empty
-        }
-      )
-    )
+        }))
   }
 }

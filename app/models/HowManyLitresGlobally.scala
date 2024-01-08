@@ -29,16 +29,14 @@ object HowManyLitresGlobally extends Enumerable.Implicits {
   case object None extends WithName("xnot") with HowManyLitresGlobally
 
   val values: Seq[HowManyLitresGlobally] = Seq(
-    Large, Small, None
-  )
+    Large, Small, None)
 
   def options(implicit messages: Messages): Seq[RadioItem] = values.zipWithIndex.map {
     case (value, index) =>
       RadioItem(
         content = Text(messages(s"howManyLitresGlobally.${value.toString}")),
-        value   = Some(value.toString),
-        id      = Some(s"value_$index")
-      )
+        value = Some(value.toString),
+        id = Some(s"value_$index"))
   }
 
   implicit val enumerable: Enumerable[HowManyLitresGlobally] =

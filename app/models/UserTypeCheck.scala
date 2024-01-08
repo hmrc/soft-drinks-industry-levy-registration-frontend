@@ -16,7 +16,7 @@
 
 package models
 
-import pages.{ContractPackingPage, HowManyContractPackingPage, HowManyImportsPage, HowManyLitresGloballyPage, HowManyOperatePackagingSitesPage, ImportsPage, ThirdPartyPackagersPage}
+import pages.{ ContractPackingPage, HowManyContractPackingPage, HowManyImportsPage, HowManyLitresGloballyPage, HowManyOperatePackagingSitesPage, ImportsPage, ThirdPartyPackagersPage }
 
 object UserTypeCheck {
   def isLarge(userAnswers: UserAnswers): Boolean = userAnswers.get(HowManyLitresGloballyPage).contains(HowManyLitresGlobally.Large)

@@ -20,22 +20,21 @@ import config.FrontendAppConfig
 import connectors.SoftDrinksIndustryLevyConnector
 import controllers.actions._
 import models.RosmRegistration
-import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.i18n.{ I18nSupport, MessagesApi }
+import play.api.mvc.{ Action, AnyContent, MessagesControllerComponents }
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.AddressFormattingHelper
 import views.html.RegistrationPendingView
 
 import javax.inject.Inject
 
-class RegistrationPendingController @Inject()(
-                                               override val messagesApi: MessagesApi,
-                                               controllerActions: ControllerActions,
-                                               sdilConnector: SoftDrinksIndustryLevyConnector,
-                                               val controllerComponents: MessagesControllerComponents,
-                                               view: RegistrationPendingView,
-                                               frontendAppConfig: FrontendAppConfig
-                                     ) extends FrontendBaseController with I18nSupport {
+class RegistrationPendingController @Inject() (
+  override val messagesApi: MessagesApi,
+  controllerActions: ControllerActions,
+  sdilConnector: SoftDrinksIndustryLevyConnector,
+  val controllerComponents: MessagesControllerComponents,
+  view: RegistrationPendingView,
+  frontendAppConfig: FrontendAppConfig) extends FrontendBaseController with I18nSupport {
   private val formattedAddress = (rosmRegistration: RosmRegistration) =>
     AddressFormattingHelper.formatBusinessAddress(rosmRegistration.address, Some(rosmRegistration.organisationName))
 

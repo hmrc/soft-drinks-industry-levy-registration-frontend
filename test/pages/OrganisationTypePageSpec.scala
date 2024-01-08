@@ -16,7 +16,7 @@
 
 package pages
 
-import models.{CheckMode, NormalMode, OrganisationType}
+import models.{ CheckMode, NormalMode, OrganisationType }
 import pages.behaviours.PageBehaviours
 
 class OrganisationTypePageSpec extends PageBehaviours {

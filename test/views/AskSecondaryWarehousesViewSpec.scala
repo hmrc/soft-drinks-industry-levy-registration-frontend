@@ -18,7 +18,7 @@ package views
 
 import controllers.routes
 import forms.AskSecondaryWarehousesFormProvider
-import models.{CheckMode, NormalMode}
+import models.{ CheckMode, NormalMode }
 import play.api.i18n.Messages
 import play.api.mvc.Request
 import play.api.test.FakeRequest
@@ -226,7 +226,7 @@ class AskSecondaryWarehousesViewSpec extends ViewSpecHelper {
 
     testBackLink(document)
     validateTimeoutDialog(document)
-    validateTechnicalHelpLinkPresent(document)
+
     validateAccessibilityStatementLinkPresent(document)
   }
 

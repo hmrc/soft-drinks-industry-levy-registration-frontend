@@ -30,8 +30,6 @@ class HowManyLitresFormProvider @Inject() extends Mappings {
       "lowBand" -> litres(
         "lowBand"),
       "highBand" -> litres(
-        "highBand")
-    )(LitresInBands.apply)(LitresInBands.unapply)
-   )
+        "highBand"))(LitresInBands.apply)(LitresInBands.unapply))
 
- }
+}

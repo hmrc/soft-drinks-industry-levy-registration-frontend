@@ -17,22 +17,21 @@
 package connectors
 
 import play.api.Configuration
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
+import uk.gov.hmrc.http.{ HeaderCarrier, HttpClient, HttpResponse }
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 import uk.gov.hmrc.http.HttpReads.Implicits._
 
-class TestConnector @Inject() (http: HttpClient, val configuration: Configuration
-                    )(implicit ec: ExecutionContext)
-  extends ServicesConfig(configuration){
+class TestConnector @Inject() (http: HttpClient, val configuration: Configuration)(implicit ec: ExecutionContext)
+  extends ServicesConfig(configuration) {
 
   lazy val testUrl: String = baseUrl("soft-drinks-industry-levy")
 
-  def resetPending (implicit hc: HeaderCarrier): Future[HttpResponse] =
+  def resetPending(implicit hc: HeaderCarrier): Future[HttpResponse] =
     http.GET[HttpResponse](s"$testUrl/test-only/reset-pending")
 
-  def resetSubscriptions (implicit hc: HeaderCarrier): Future[HttpResponse] =
+  def resetSubscriptions(implicit hc: HeaderCarrier): Future[HttpResponse] =
     http.GET[HttpResponse](s"$testUrl/test-only/reset-subscriptions")
 }

@@ -16,7 +16,7 @@
 
 package pages
 
-import models.{CheckMode, NormalMode}
+import models.{ CheckMode, NormalMode }
 
 import java.time.LocalDate
 import org.scalacheck.Arbitrary

@@ -19,13 +19,13 @@ package models
 import base.SpecBase
 import base.SpecBase.aTradingName
 import models.alf.AddressResponseForLookupState
-import models.backend.{Site, UkAddress}
-import play.api.libs.json.{JsObject, Json, Reads}
+import models.backend.{ Site, UkAddress }
+import play.api.libs.json.{ JsObject, Json, Reads }
 import repositories.DatedCacheMap
 import services.AddressLookupState.WarehouseDetails
 import services.Encryption
 
-import java.time.{Instant, LocalDate}
+import java.time.{ Instant, LocalDate }
 
 class ModelEncryptionSpec extends SpecBase {
 
@@ -37,9 +37,9 @@ class ModelEncryptionSpec extends SpecBase {
       val alfId: String = "bar"
       val userAnswers = UserAnswers("id", RegisterState.RegisterWithAuthUTR,
         Json.obj("foo" -> "bar"),
-        Some(UkAddress(List("Line 1", "Line 2", "Line 3", "Line 4"),"aa1 1aa", alfId = Some(alfId))),
-        Map("foo" -> Site(UkAddress(List("foo"),"foo", Some("foo")),Some("foo"), aTradingName, Some(LocalDate.now()))),
-        Map("foo" -> Warehouse(aTradingName,UkAddress(List("foo"),"foo", Some("foo")))),
+        Some(UkAddress(List("Line 1", "Line 2", "Line 3", "Line 4"), "aa1 1aa", alfId = Some(alfId))),
+        Map("foo" -> Site(UkAddress(List("foo"), "foo", Some("foo")), Some("foo"), aTradingName, Some(LocalDate.now()))),
+        Map("foo" -> Warehouse(aTradingName, UkAddress(List("foo"), "foo", Some("foo")))),
         Some(AddressResponseForLookupState(alfAddress, WarehouseDetails, "12345")),
         Some(Instant.ofEpochSecond(1)),
         Instant.ofEpochSecond(1))
@@ -63,22 +63,21 @@ class ModelEncryptionSpec extends SpecBase {
       val alfId: String = "bar"
       val userAnswers = UserAnswers("id", RegisterState.RegisterWithAuthUTR,
         Json.obj("foo" -> "bar"),
-        Some(UkAddress(List("Line 1", "Line 2", "Line 3", "Line 4"),"aa1 1aa", alfId = Some(alfId))),
-        Map("foo" -> Site(UkAddress(List("foo"),"foo", Some("foo")),Some("foo"), aTradingName,Some(LocalDate.now()))),
-        Map("foo" -> Warehouse(aTradingName,UkAddress(List("foo"),"foo", Some("foo")))),
+        Some(UkAddress(List("Line 1", "Line 2", "Line 3", "Line 4"), "aa1 1aa", alfId = Some(alfId))),
+        Map("foo" -> Site(UkAddress(List("foo"), "foo", Some("foo")), Some("foo"), aTradingName, Some(LocalDate.now()))),
+        Map("foo" -> Warehouse(aTradingName, UkAddress(List("foo"), "foo", Some("foo")))),
         Some(AddressResponseForLookupState(alfAddress, WarehouseDetails, "12345")),
         None,
         Instant.ofEpochSecond(1))
 
-     val result = ModelEncryption.decryptUserAnswers(
+      val result = ModelEncryption.decryptUserAnswers(
         userAnswers.id, RegisterState.RegisterWithAuthUTR,
         encryption.crypto.encrypt(userAnswers.data.toString(), userAnswers.id),
         encryption.crypto.encrypt(Json.toJson(userAnswers.address).toString(), userAnswers.id),
         userAnswers.packagingSiteList.map(site => site._1 -> encryption.crypto.encrypt(Json.toJson(site._2).toString(), userAnswers.id)),
         userAnswers.warehouseList.map(warehouse => warehouse._1 -> encryption.crypto.encrypt(Json.toJson(warehouse._2).toString(), userAnswers.id)),
-       userAnswers.alfResponseForLookupState.map(alfRespWithState => encryption.crypto.encrypt(Json.toJson(alfRespWithState).toString(), userAnswers.id)),
-       userAnswers.submittedOn, userAnswers.lastUpdated
-      )
+        userAnswers.alfResponseForLookupState.map(alfRespWithState => encryption.crypto.encrypt(Json.toJson(alfRespWithState).toString(), userAnswers.id)),
+        userAnswers.submittedOn, userAnswers.lastUpdated)
       result mustBe userAnswers
 
     }
@@ -89,8 +88,7 @@ class ModelEncryptionSpec extends SpecBase {
       val datedCacheMap: DatedCacheMap = DatedCacheMap(
         "foo",
         Map("string" -> Json.obj("foo" -> "bar")),
-        Instant.now()
-      )
+        Instant.now())
 
       val result = ModelEncryption.encryptDatedCacheMap(datedCacheMap)
       result._1 mustBe datedCacheMap.id
@@ -105,14 +103,12 @@ class ModelEncryptionSpec extends SpecBase {
       val datedCacheMap: DatedCacheMap = DatedCacheMap(
         "foo",
         Map("string" -> Json.obj("foo" -> "bar")),
-        Instant.now()
-      )
+        Instant.now())
 
       val result = ModelEncryption.decryptDatedCacheMap(
         datedCacheMap.id,
         datedCacheMap.data.map(item => item._1 -> encryption.crypto.encrypt(item._2.toString(), datedCacheMap.id)),
-        datedCacheMap.lastUpdated
-      )
+        datedCacheMap.lastUpdated)
       result mustBe datedCacheMap
     }
   }

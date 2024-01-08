@@ -17,28 +17,27 @@
 package models
 
 import models.alf.AddressResponseForLookupState
-import models.backend.{Site, UkAddress}
+import models.backend.{ Site, UkAddress }
 import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.api.libs.json._
-import queries.{Gettable, Settable}
-import services.{AddressLookupState, Encryption}
+import queries.{ Gettable, Settable }
+import services.{ AddressLookupState, Encryption }
 import uk.gov.hmrc.crypto.EncryptedValue
 import uk.gov.hmrc.crypto.json.CryptoFormats
 
 import java.time.Instant
-import scala.util.{Failure, Success, Try}
+import scala.util.{ Failure, Success, Try }
 
 case class UserAnswers(
-                        id: String,
-                        registerState: RegisterState,
-                        data: JsObject = Json.obj(),
-                        address: Option[UkAddress] = None,
-                        packagingSiteList: Map[String, Site] = Map.empty,
-                        warehouseList: Map[String, Warehouse] = Map.empty,
-                        alfResponseForLookupState: Option[AddressResponseForLookupState] = None,
-                        submittedOn: Option[Instant] = None,
-                        lastUpdated: Instant = Instant.now
-                            ) {
+  id: String,
+  registerState: RegisterState,
+  data: JsObject = Json.obj(),
+  address: Option[UkAddress] = None,
+  packagingSiteList: Map[String, Site] = Map.empty,
+  warehouseList: Map[String, Warehouse] = Map.empty,
+  alfResponseForLookupState: Option[AddressResponseForLookupState] = None,
+  submittedOn: Option[Instant] = None,
+  lastUpdated: Instant = Instant.now) {
 
   def get[A](page: Gettable[A])(implicit rds: Reads[A]): Option[A] =
     Reads.optionNoError(Reads.at(page.path)).reads(data).getOrElse(None)
@@ -59,8 +58,7 @@ case class UserAnswers(
     }
   }
 
-  def setAndRemoveLitresIfReq(page: Settable[Boolean], litresPage: Settable[LitresInBands], value: Boolean)
-                             (implicit writes: Writes[Boolean]): Try[UserAnswers] = {
+  def setAndRemoveLitresIfReq(page: Settable[Boolean], litresPage: Settable[LitresInBands], value: Boolean)(implicit writes: Writes[Boolean]): Try[UserAnswers] = {
 
     set(page, value).map { updatedAnswers =>
       if (value) {
@@ -79,15 +77,13 @@ case class UserAnswers(
   def addPackagingSite(packagingSiteAddress: UkAddress, tradingName: String, sdilId: String): UserAnswers = {
     copy(
       alfResponseForLookupState = None,
-      packagingSiteList = packagingSiteList.filterNot(_._1 == sdilId) ++ Map(sdilId -> Site(packagingSiteAddress, None, tradingName, None))
-    )
+      packagingSiteList = packagingSiteList.filterNot(_._1 == sdilId) ++ Map(sdilId -> Site(packagingSiteAddress, None, tradingName, None)))
   }
 
   def addWarehouse(warehouseAddress: UkAddress, tradingName: String, sdilId: String): UserAnswers = {
     copy(
       alfResponseForLookupState = None,
-      warehouseList = warehouseList.filterNot(_._1 == sdilId) ++ Map(sdilId -> Warehouse(tradingName, warehouseAddress))
-    )
+      warehouseList = warehouseList.filterNot(_._1 == sdilId) ++ Map(sdilId -> Warehouse(tradingName, warehouseAddress)))
   }
 
   def setBusinessAddress(businessAddress: UkAddress): UserAnswers = {
@@ -126,44 +122,41 @@ case class UserAnswers(
 
 object UserAnswers {
 
-    object MongoFormats {
-      implicit val cryptEncryptedValueFormats: Format[EncryptedValue]  = CryptoFormats.encryptedValueFormat
-      import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats.Implicits._
+  object MongoFormats {
+    implicit val cryptEncryptedValueFormats: Format[EncryptedValue] = CryptoFormats.encryptedValueFormat
+    import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats.Implicits._
 
-      def reads()(implicit encryption: Encryption): Reads[UserAnswers] = {
-        (
-          (__ \ "_id").read[String] and
-            (__ \ "registerState").read[RegisterState] and
-            (__ \ "data").read[EncryptedValue] and
-            (__ \ "address").read[EncryptedValue] and
-            (__ \ "packagingSiteList").read[Map[String, EncryptedValue]] and
-            (__ \ "warehouseList").read[Map[String, EncryptedValue]] and
-            (__ \ "alfResponseForLookupState").readNullable[EncryptedValue] and
-            (__ \ "submittedOn").readNullable[Instant] and
-            (__ \ "lastUpdated").read[Instant]
-          )(ModelEncryption.decryptUserAnswers _)
-      }
-
-      def writes(implicit encryption: Encryption): OWrites[UserAnswers] = new OWrites[UserAnswers] {
-        override def writes(userAnswers: UserAnswers): JsObject = {
-          val encryptedValue: (String, RegisterState, EncryptedValue, EncryptedValue, Map[String, EncryptedValue],
-            Map[String, EncryptedValue], Option[EncryptedValue], Option[Instant], Instant) = {
-            ModelEncryption.encryptUserAnswers(userAnswers)
-          }
-          Json.obj(
-            "id" -> encryptedValue._1,
-            "registerState" -> encryptedValue._2,
-            "data" -> encryptedValue._3,
-            "address" -> encryptedValue._4,
-            "packagingSiteList" -> encryptedValue._5,
-            "warehouseList" -> encryptedValue._6,
-            "alfResponseForLookupState" -> encryptedValue._7,
-            "submittedOn" -> encryptedValue._8,
-            "lastUpdated" -> encryptedValue._9
-          )
-        }
-      }
-
-      def format(implicit encryption: Encryption): OFormat[UserAnswers] = OFormat(reads(), writes)
+    def reads()(implicit encryption: Encryption): Reads[UserAnswers] = {
+      (
+        (__ \ "_id").read[String] and
+        (__ \ "registerState").read[RegisterState] and
+        (__ \ "data").read[EncryptedValue] and
+        (__ \ "address").read[EncryptedValue] and
+        (__ \ "packagingSiteList").read[Map[String, EncryptedValue]] and
+        (__ \ "warehouseList").read[Map[String, EncryptedValue]] and
+        (__ \ "alfResponseForLookupState").readNullable[EncryptedValue] and
+        (__ \ "submittedOn").readNullable[Instant] and
+        (__ \ "lastUpdated").read[Instant])(ModelEncryption.decryptUserAnswers _)
     }
+
+    def writes(implicit encryption: Encryption): OWrites[UserAnswers] = new OWrites[UserAnswers] {
+      override def writes(userAnswers: UserAnswers): JsObject = {
+        val encryptedValue: (String, RegisterState, EncryptedValue, EncryptedValue, Map[String, EncryptedValue], Map[String, EncryptedValue], Option[EncryptedValue], Option[Instant], Instant) = {
+          ModelEncryption.encryptUserAnswers(userAnswers)
+        }
+        Json.obj(
+          "id" -> encryptedValue._1,
+          "registerState" -> encryptedValue._2,
+          "data" -> encryptedValue._3,
+          "address" -> encryptedValue._4,
+          "packagingSiteList" -> encryptedValue._5,
+          "warehouseList" -> encryptedValue._6,
+          "alfResponseForLookupState" -> encryptedValue._7,
+          "submittedOn" -> encryptedValue._8,
+          "lastUpdated" -> encryptedValue._9)
+      }
+    }
+
+    def format(implicit encryption: Encryption): OFormat[UserAnswers] = OFormat(reads(), writes)
+  }
 }

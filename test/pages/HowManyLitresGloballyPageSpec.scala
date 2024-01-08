@@ -16,7 +16,7 @@
 
 package pages
 
-import models.{CheckMode, HowManyLitresGlobally, NormalMode}
+import models.{ CheckMode, HowManyLitresGlobally, NormalMode }
 import pages.behaviours.PageBehaviours
 
 class HowManyLitresGloballyPageSpec extends PageBehaviours {

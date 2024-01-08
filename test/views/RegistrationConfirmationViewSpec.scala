@@ -141,7 +141,7 @@ class RegistrationConfirmationViewSpec extends ViewSpecHelper {
 
     testNoBackLink(document)
     validateTimeoutDialog(document)
-    validateTechnicalHelpLinkPresent(document)
+
     validateAccessibilityStatementLinkPresent(document)
   }
 

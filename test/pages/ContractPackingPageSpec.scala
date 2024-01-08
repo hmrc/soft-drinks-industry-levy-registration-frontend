@@ -16,7 +16,7 @@
 
 package pages
 
-import models.{CheckMode, NormalMode}
+import models.{ CheckMode, NormalMode }
 import pages.behaviours.PageBehaviours
 
 class ContractPackingPageSpec extends PageBehaviours {

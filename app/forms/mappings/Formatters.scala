@@ -21,7 +21,7 @@ import play.api.data.FormError
 import play.api.data.format.Formatter
 
 import scala.util.control.Exception.nonFatalCatch
-import scala.util.{Failure, Success, Try}
+import scala.util.{ Failure, Success, Try }
 
 trait Formatters {
 
@@ -29,9 +29,9 @@ trait Formatters {
 
     override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], String] =
       data.get(key) match {
-        case None                      => Left(Seq(FormError(key, errorKey, args)))
+        case None => Left(Seq(FormError(key, errorKey, args)))
         case Some(s) if s.trim.isEmpty => Left(Seq(FormError(key, errorKey, args)))
-        case Some(s)                   => Right(s)
+        case Some(s) => Right(s)
       }
 
     override def unbind(key: String, value: String): Map[String, String] =
@@ -47,16 +47,16 @@ trait Formatters {
         baseFormatter
           .bind(key, data)
           .flatMap {
-          case "true"  => Right(true)
-          case "false" => Right(false)
-          case _       => Left(Seq(FormError(key, invalidKey, args)))
-        }
+            case "true" => Right(true)
+            case "false" => Right(false)
+            case _ => Left(Seq(FormError(key, invalidKey, args)))
+          }
 
       def unbind(key: String, value: Boolean): Map[String, String] = Map(key -> value.toString)
     }
 
-  private[mappings] def intFormatter(requiredKey: String, wholeNumberKey: String, nonNumericKey: String,invalidLength:String,
-                                     args: Seq[String] = Seq.empty): Formatter[Int] =
+  private[mappings] def intFormatter(requiredKey: String, wholeNumberKey: String, nonNumericKey: String, invalidLength: String,
+    args: Seq[String] = Seq.empty): Formatter[Int] =
     new Formatter[Int] {
       val decimalRegexp = """^-?(\d*\.\d*)$"""
       private val baseFormatter = stringFormatter(requiredKey, args)
@@ -73,20 +73,18 @@ trait Formatters {
             case s => Try(s.toInt) match {
               case Failure(_) => Left(Seq(FormError(key, nonNumericKey, args)))
               case Success(number) if (number > 31 && key == s"$key.day"
-                  || number > 12 && key == s"$key.month"
-                  || number.toString.length > 4 && key == s"$key.year") =>
+                || number > 12 && key == s"$key.month"
+                || number.toString.length > 4 && key == s"$key.year") =>
                 Left(Seq(FormError(key, invalidLength, args)))
               case Success(number) => Right(number)
             }
-        }
+          }
 
       override def unbind(key: String, value: Int): Map[String, String] =
         baseFormatter.unbind(key, value.toString)
     }
 
-
-  private[mappings] def enumerableFormatter[A](requiredKey: String, invalidKey: String, args: Seq[String] = Seq.empty)
-                                              (implicit ev: Enumerable[A]): Formatter[A] =
+  private[mappings] def enumerableFormatter[A](requiredKey: String, invalidKey: String, args: Seq[String] = Seq.empty)(implicit ev: Enumerable[A]): Formatter[A] =
     new Formatter[A] {
 
       private val baseFormatter = stringFormatter(requiredKey, args)
@@ -103,8 +101,9 @@ trait Formatters {
         baseFormatter.unbind(key, value.toString)
     }
 
-  private[mappings] def litresFormatter(band: String,
-                                        args: Seq[String] = Seq.empty): Formatter[Long] = {
+  private[mappings] def litresFormatter(
+    band: String,
+    args: Seq[String] = Seq.empty): Formatter[Long] = {
 
     new Formatter[Long] {
 
@@ -138,7 +137,8 @@ trait Formatters {
               Left(Seq(FormError(key, negativeNumber, args)))
             case s if s.matches(decimalRegexp) =>
               Try(s.split("\\.")(0).toLong)
-                .fold(_ => Left(Seq(FormError(key, outOfRangeKey, args))),
+                .fold(
+                  _ => Left(Seq(FormError(key, outOfRangeKey, args))),
                   _ => Left(Seq(FormError(key, wholeNumberKey, args))))
             case s =>
               nonFatalCatch
@@ -162,6 +162,5 @@ trait Formatters {
         false
     }
   }
-
 
 }

@@ -19,12 +19,12 @@ package controllers
 import controllers.actions._
 import forms.RemovePackagingSiteDetailsFormProvider
 import handlers.ErrorHandler
-import models.{Mode, UserAnswers}
+import models.{ Mode, UserAnswers }
 import navigation.Navigator
 import pages.RemovePackagingSiteDetailsPage
 import play.api.data.Form
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{ Action, AnyContent, MessagesControllerComponents }
 import play.twirl.api.Html
 import services.SessionService
 import utilities.GenericLogger
@@ -32,19 +32,18 @@ import viewmodels.AddressFormattingHelper
 import views.html.RemovePackagingSiteDetailsView
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
-class RemovePackagingSiteDetailsController @Inject()(
-                                       override val messagesApi: MessagesApi,
-                                       val sessionService: SessionService,
-                                       val navigator: Navigator,
-                                       controllerActions: ControllerActions,
-                                       formProvider: RemovePackagingSiteDetailsFormProvider,
-                                       val controllerComponents: MessagesControllerComponents,
-                                       view: RemovePackagingSiteDetailsView,
-                                       val errorHandler: ErrorHandler,
-                                       val genericLogger: GenericLogger
-                                     )(implicit ec: ExecutionContext) extends ControllerHelper {
+class RemovePackagingSiteDetailsController @Inject() (
+  override val messagesApi: MessagesApi,
+  val sessionService: SessionService,
+  val navigator: Navigator,
+  controllerActions: ControllerActions,
+  formProvider: RemovePackagingSiteDetailsFormProvider,
+  val controllerComponents: MessagesControllerComponents,
+  view: RemovePackagingSiteDetailsView,
+  val errorHandler: ErrorHandler,
+  val genericLogger: GenericLogger)(implicit ec: ExecutionContext) extends ControllerHelper {
 
   val form: Form[Boolean] = formProvider()
 
@@ -67,7 +66,8 @@ class RemovePackagingSiteDetailsController @Inject()(
       } else {
         genericLogger.logger.info(
           s"User at ${RemovePackagingSiteDetailsPage.toString} with 1 or less sites in packaging site list. Redirected to PackagingSiteDetails")
-        Redirect(routes.PackagingSiteDetailsController.onPageLoad(mode))}
+        Redirect(routes.PackagingSiteDetailsController.onPageLoad(mode))
+      }
   }
 
   private def getPackagingSiteAddressBaseOnRef(ref: String, userAnswers: UserAnswers): Option[Html] = {
@@ -99,8 +99,7 @@ class RemovePackagingSiteDetailsController @Inject()(
             value => {
               val updatedAnswersAfterUserAnswer = removePackagingDetailsFromUserAnswers(value, request.userAnswers, ref)
               updateDatabaseAndRedirect(updatedAnswersAfterUserAnswer, RemovePackagingSiteDetailsPage, mode)
-            }
-          )
+            })
       }
   }
 }

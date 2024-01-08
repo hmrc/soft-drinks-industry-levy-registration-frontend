@@ -16,9 +16,9 @@
 
 package models.backend
 
-import models.{HowManyLitresGlobally, Litreage, UserAnswers}
+import models.{ HowManyLitresGlobally, Litreage, UserAnswers }
 import pages._
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.{ Format, Json }
 
 case class Activity(
   ProducedOwnBrand: Option[Litreage],
@@ -38,7 +38,8 @@ object Activity {
     val copackerAll = userAnswers.get(HowManyContractPackingPage)
       .map(Litreage.fromLitresInBands(_))
     val copackee = userAnswers.get(ThirdPartyPackagersPage)
-      .collect{case true => Litreage(1, 1)
+      .collect {
+        case true => Litreage(1, 1)
       }
     Activity(
       producedOwnBrand,
@@ -46,7 +47,6 @@ object Activity {
       copackerAll,
       copackee,
       userAnswers.get(HowManyLitresGloballyPage)
-        .exists(_ == HowManyLitresGlobally.Large)
-    )
+        .exists(_ == HowManyLitresGlobally.Large))
   }
 }

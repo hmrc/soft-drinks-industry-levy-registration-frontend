@@ -22,7 +22,7 @@ import connectors.httpParsers.ResponseHttpParser.HttpResult
 import controllers.routes
 import models.Mode
 import models.alf.init._
-import models.alf.{AlfAddress, AlfResponse}
+import models.alf.{ AlfAddress, AlfResponse }
 import models.backend.UkAddress
 import play.api.Logger
 import play.api.i18n.Messages
@@ -31,12 +31,11 @@ import uk.gov.hmrc.http.HeaderCarrier
 import utilities.AddressHelper
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
-class AddressLookupService @Inject()(
-                                      addressLookupConnector: AddressLookupConnector,
-                                      frontendAppConfig: FrontendAppConfig
-                                    ) extends AddressHelper {
+class AddressLookupService @Inject() (
+  addressLookupConnector: AddressLookupConnector,
+  frontendAppConfig: FrontendAppConfig) extends AddressHelper {
 
   val logger: Logger = Logger(this.getClass)
 
@@ -61,8 +60,7 @@ class AddressLookupService @Inject()(
     addressLookupConnector.initJourney(journeyConfig)
   }
 
-  def initJourneyAndReturnOnRampUrl(state: AddressLookupState, sdilId: String = generateId, mode: Mode)
-                                   (implicit hc: HeaderCarrier, ec: ExecutionContext, messages: Messages): Future[String] = {
+  def initJourneyAndReturnOnRampUrl(state: AddressLookupState, sdilId: String = generateId, mode: Mode)(implicit hc: HeaderCarrier, ec: ExecutionContext, messages: Messages): Future[String] = {
     val journeyConfig: JourneyConfig = createJourneyConfig(state, sdilId, mode)
     initJourney(journeyConfig).map {
       case Right(onRampUrl) => onRampUrl
@@ -86,8 +84,7 @@ class AddressLookupService @Inject()(
         ukMode = Some(true),
         selectPageConfig = Some(SelectPageConfig(
           proposalListLimit = Some(frontendAppConfig.AddressLookupConfig.selectPageConfigProposalLimit),
-          showSearchAgainLink = Some(true)
-        )),
+          showSearchAgainLink = Some(true))),
         showBackButtons = Some(true),
         disableTranslations = Some(true),
         allowedCountryCodes = None,
@@ -95,22 +92,18 @@ class AddressLookupService @Inject()(
           showSearchAgainLink = Some(true),
           showSubHeadingAndInfo = Some(true),
           showChangeLink = Some(true),
-          showConfirmChangeText = Some(true)
-        )),
+          showConfirmChangeText = Some(true))),
         timeoutConfig = Some(TimeoutConfig(
           timeoutAmount = frontendAppConfig.timeout,
           timeoutUrl = controllers.auth.routes.AuthController.signOut.url,
-          timeoutKeepAliveUrl = Some(routes.KeepAliveController.keepAlive.url)
-        )),
+          timeoutKeepAliveUrl = Some(routes.KeepAliveController.keepAlive.url))),
         serviceHref = Some(frontendAppConfig.sdilHomeUrl),
-        pageHeadingStyle = Some("govuk-heading-l")
-      ),
+        pageHeadingStyle = Some("govuk-heading-l")),
       labels = returnJourneyLabels(state),
-      requestedVersion = None
-    )
+      requestedVersion = None)
   }
 
- private def returnJourneyLabels(state: AddressLookupState)(implicit messages: Messages): Option[JourneyLabels] = {
+  private def returnJourneyLabels(state: AddressLookupState)(implicit messages: Messages): Option[JourneyLabels] = {
     state match {
 
       case BusinessAddress => Some(
@@ -118,8 +111,7 @@ class AddressLookupService @Inject()(
           en = Some(LanguageLabels(
             appLevelLabels = Some(AppLevelLabels(
               navTitle = Some(messages("service.name")),
-              phaseBannerHtml = None
-            )),
+              phaseBannerHtml = None)),
             selectPageLabels = None,
             lookupPageLabels = Some(
               LookupPageLabels(
@@ -134,21 +126,16 @@ class AddressLookupService @Inject()(
                 line2Label = Some(messages("addressLookupFrontend.businessAddress.editPageLabels.line2Label")),
                 line3Label = Some(messages("addressLookupFrontend.businessAddress.editPageLabels.line3Label")),
                 townLabel = Some(messages("addressLookupFrontend.businessAddress.editPageLabels.townLabel")),
-                postcodeLabel= Some(messages("addressLookupFrontend.businessAddress.editPageLabels.postcodeLabel"))
-                )
-            ),
+                postcodeLabel = Some(messages("addressLookupFrontend.businessAddress.editPageLabels.postcodeLabel")))),
             confirmPageLabels = None,
-            countryPickerLabels = None
-          ))
-        ))
+            countryPickerLabels = None))))
 
       case PackingDetails => Some(
         JourneyLabels(
           en = Some(LanguageLabels(
             appLevelLabels = Some(AppLevelLabels(
               navTitle = Some(messages("service.name")),
-              phaseBannerHtml = None
-            )),
+              phaseBannerHtml = None)),
             selectPageLabels = None,
             lookupPageLabels = Some(
               LookupPageLabels(
@@ -163,21 +150,17 @@ class AddressLookupService @Inject()(
                 line2Label = Some(messages("addressLookupFrontend.packingDetails.editPageLabels.line2Label")),
                 line3Label = Some(messages("addressLookupFrontend.packingDetails.editPageLabels.line3Label")),
                 townLabel = Some(messages("addressLookupFrontend.packingDetails.editPageLabels.townLabel")),
-                postcodeLabel= Some(messages("addressLookupFrontend.packingDetails.editPageLabels.postcodeLabel")),
-                organisationLabel = Some(messages("addressLookupFrontend.packingDetails.editPageLabels.organisationLabel")))
-            ),
+                postcodeLabel = Some(messages("addressLookupFrontend.packingDetails.editPageLabels.postcodeLabel")),
+                organisationLabel = Some(messages("addressLookupFrontend.packingDetails.editPageLabels.organisationLabel")))),
             confirmPageLabels = None,
-            countryPickerLabels = None
-          ))
-        ))
+            countryPickerLabels = None))))
 
       case WarehouseDetails => Some(
         JourneyLabels(
           en = Some(LanguageLabels(
             appLevelLabels = Some(AppLevelLabels(
               navTitle = Some(messages("service.name")),
-              phaseBannerHtml = None
-            )),
+              phaseBannerHtml = None)),
             selectPageLabels = None,
             lookupPageLabels = Some(
               LookupPageLabels(
@@ -192,13 +175,10 @@ class AddressLookupService @Inject()(
                 line2Label = Some(messages("addressLookupFrontend.warehouseDetails.editPageLabels.line2Label")),
                 line3Label = Some(messages("addressLookupFrontend.warehouseDetails.editPageLabels.line3Label")),
                 townLabel = Some(messages("addressLookupFrontend.warehouseDetails.editPageLabels.townLabel")),
-                postcodeLabel= Some(messages("addressLookupFrontend.warehouseDetails.editPageLabels.postcodeLabel")),
-                organisationLabel = Some(messages("addressLookupFrontend.warehouseDetails.editPageLabels.organisationLabel")))
-            ),
+                postcodeLabel = Some(messages("addressLookupFrontend.warehouseDetails.editPageLabels.postcodeLabel")),
+                organisationLabel = Some(messages("addressLookupFrontend.warehouseDetails.editPageLabels.organisationLabel")))),
             confirmPageLabels = None,
-            countryPickerLabels = None
-          ))
-        ))
+            countryPickerLabels = None))))
     }
   }
 

@@ -19,29 +19,29 @@ package controllers
 import com.google.inject.Inject
 import config.FrontendAppConfig
 import controllers.actions.IdentifierAction
-import errors.{AuthenticationError, RegistrationAlreadySubmitted}
+import errors.{ AuthenticationError, RegistrationAlreadySubmitted }
 import handlers.ErrorHandler
 import models.NormalMode
 import models.RegisterState._
 import orchestrators.RegistrationOrchestrator
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{ Action, AnyContent, MessagesControllerComponents }
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utilities.GenericLogger
 
 import scala.concurrent.ExecutionContext
 
-class RegistrationController @Inject()(identify: IdentifierAction,
-                                       registrationOrchestrator: RegistrationOrchestrator,
-                                       val controllerComponents: MessagesControllerComponents,
-                                       errorHandler: ErrorHandler,
-                                       val genericLogger: GenericLogger,
-                                       config: FrontendAppConfig
-                                      )(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+class RegistrationController @Inject() (
+  identify: IdentifierAction,
+  registrationOrchestrator: RegistrationOrchestrator,
+  val controllerComponents: MessagesControllerComponents,
+  errorHandler: ErrorHandler,
+  val genericLogger: GenericLogger,
+  config: FrontendAppConfig)(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
 
   def start: Action[AnyContent] = identify.async {
     implicit request =>
-      registrationOrchestrator.handleRegistrationRequest.value.map{
+      registrationOrchestrator.handleRegistrationRequest.value.map {
         case Right(RegistrationPending) => Redirect(routes.RegistrationPendingController.onPageLoad)
         case Right(RequiresBusinessDetails) => Redirect(routes.EnterBusinessDetailsController.onPageLoad)
         case Right(AlreadyRegistered) => Redirect(routes.AlreadyRegisteredController.onPageLoad)

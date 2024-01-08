@@ -20,7 +20,7 @@ import forms.mappings.Mappings
 import models.Identify
 import play.api.data.Form
 import play.api.data.Forms._
-import play.api.data.validation.{Constraint, Invalid, Valid}
+import play.api.data.validation.{ Constraint, Invalid, Valid }
 
 import javax.inject.Inject
 
@@ -29,16 +29,14 @@ class EnterBusinessDetailsFormProvider @Inject() extends Mappings {
   def apply(): Form[Identify] =
     Form(
       mapping(
-      "utr" -> text("enterBusinessDetails.required.utr").verifying(Constraint { x: String =>
-        x match {
-          case ""                            => Invalid("enterBusinessDetails.required.utr")
-          case utr if utr.exists(!_.isDigit) => Invalid("enterBusinessDetails.invalid.utr")
-          case utr if utr.length != 10       => Invalid("enterBusinessDetails.invalid.utr.length")
-          case _                             => Valid
-        }
-      }),
-      "postcode" -> postcode
-      )(Identify.apply)(Identify.unapply)
-    )
+        "utr" -> text("enterBusinessDetails.required.utr").verifying(Constraint { x: String =>
+          x match {
+            case "" => Invalid("enterBusinessDetails.required.utr")
+            case utr if utr.exists(!_.isDigit) => Invalid("enterBusinessDetails.invalid.utr")
+            case utr if utr.length != 10 => Invalid("enterBusinessDetails.invalid.utr.length")
+            case _ => Valid
+          }
+        }),
+        "postcode" -> postcode)(Identify.apply)(Identify.unapply))
 
 }

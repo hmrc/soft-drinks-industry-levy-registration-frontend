@@ -23,25 +23,24 @@ import models.Mode
 import navigation.Navigator
 import pages.HowManyLitresGloballyPage
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{ Action, AnyContent, MessagesControllerComponents }
 import services.SessionService
 import utilities.GenericLogger
 import views.html.HowManyLitresGloballyView
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{ ExecutionContext, Future }
 
-class HowManyLitresGloballyController @Inject()(
-                                       override val messagesApi: MessagesApi,
-                                       val sessionService: SessionService,
-                                       val navigator: Navigator,
-                                       controllerActions: ControllerActions,
-                                       formProvider: HowManyLitresGloballyFormProvider,
-                                       val controllerComponents: MessagesControllerComponents,
-                                       view: HowManyLitresGloballyView,
-                                       val errorHandler: ErrorHandler,
-                                       val genericLogger: GenericLogger
-                                     )(implicit ec: ExecutionContext) extends ControllerHelper {
+class HowManyLitresGloballyController @Inject() (
+  override val messagesApi: MessagesApi,
+  val sessionService: SessionService,
+  val navigator: Navigator,
+  controllerActions: ControllerActions,
+  formProvider: HowManyLitresGloballyFormProvider,
+  val controllerComponents: MessagesControllerComponents,
+  view: HowManyLitresGloballyView,
+  val errorHandler: ErrorHandler,
+  val genericLogger: GenericLogger)(implicit ec: ExecutionContext) extends ControllerHelper {
 
   val form = formProvider()
 
@@ -67,7 +66,6 @@ class HowManyLitresGloballyController @Inject()(
           val previousValue = request.userAnswers.get(HowManyLitresGloballyPage).map(litres => litres.toString)
           val updatedAnswers = request.userAnswers.set(HowManyLitresGloballyPage, value)
           updateDatabaseAndRedirect(updatedAnswers, HowManyLitresGloballyPage, mode, previousValue)
-        }
-      )
+        })
   }
 }
