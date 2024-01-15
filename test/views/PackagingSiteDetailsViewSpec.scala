@@ -256,6 +256,38 @@ class PackagingSiteDetailsViewSpec extends ViewSpecHelper {
               document1PackagingSite.getElementsByClass(Selectors.button).text() mustBe "Save and continue"
             }
 
+            "contains a form with the correct action" - {
+              "when in CheckMode" - {
+                val html = view(form, CheckMode, packagingSiteListWith1)(request, messages(application))
+                val document = doc(html)
+
+                "and yes is selected" in {
+                  document.select(Selectors.form)
+                    .attr("action") mustEqual routes.PackagingSiteDetailsController.onSubmit(CheckMode).url
+                }
+
+                "and no is selected" in {
+                  document.select(Selectors.form)
+                    .attr("action") mustEqual routes.PackagingSiteDetailsController.onSubmit(CheckMode).url
+                }
+              }
+
+              "when in mode" - {
+                val html = view(form, mode, packagingSiteListWith1)(request, messages(application))
+                val document = doc(html)
+
+                "and yes is selected" in {
+                  document.select(Selectors.form)
+                    .attr("action") mustEqual routes.PackagingSiteDetailsController.onSubmit(mode).url
+                }
+
+                "and no is selected" in {
+                  document.select(Selectors.form)
+                    .attr("action") mustEqual routes.PackagingSiteDetailsController.onSubmit(mode).url
+                }
+              }
+            }
+
             "when there are form errors" - {
               val htmlWithErrors = view(form.bind(Map("value" -> "")), mode, packagingSiteListWith1)(request, messages(application))
               val documentWithErrors = doc(htmlWithErrors)

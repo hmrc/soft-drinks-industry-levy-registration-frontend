@@ -17,7 +17,7 @@
 package views
 
 import forms.WarehouseDetailsFormProvider
-import models.NormalMode
+import models.{CheckMode, NormalMode}
 import play.api.data.Form
 import play.api.i18n.Messages
 import play.api.mvc.Request
@@ -164,6 +164,38 @@ class WarehouseDetailsViewSpec extends ViewSpecHelper {
 
     "contain the correct button" - {
       document.getElementsByClass(Selectors.button).text() mustBe "Save and continue"
+    }
+
+    "contains a form with the correct action" - {
+      "when in CheckMode" - {
+        val html = view(form, CheckMode, None)(request, messages(application))
+        val document = doc(html)
+
+        "and yes is selected" in {
+          document.select(Selectors.form)
+            .attr("action") mustEqual controllers.routes.WarehouseDetailsController.onSubmit(CheckMode).url
+        }
+
+        "and no is selected" in {
+          document.select(Selectors.form)
+            .attr("action") mustEqual controllers.routes.WarehouseDetailsController.onSubmit(CheckMode).url
+        }
+      }
+
+      "when in NormalMode" - {
+        val html = view(form, NormalMode, None)(request, messages(application))
+        val document = doc(html)
+
+        "and yes is selected" in {
+          document.select(Selectors.form)
+            .attr("action") mustEqual controllers.routes.WarehouseDetailsController.onSubmit(NormalMode).url
+        }
+
+        "and no is selected" in {
+          document.select(Selectors.form)
+            .attr("action") mustEqual controllers.routes.WarehouseDetailsController.onSubmit(NormalMode).url
+        }
+      }
     }
 
     "when there are form errors" - {
