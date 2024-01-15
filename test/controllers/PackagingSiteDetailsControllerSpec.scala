@@ -93,7 +93,7 @@ class PackagingSiteDetailsControllerSpec extends SpecBase with MockitoSugar with
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode, packagingSiteListWith1)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, packagingSiteListWith1)(request, messages(application)).toString
       }
     }
 

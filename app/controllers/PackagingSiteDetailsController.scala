@@ -50,12 +50,8 @@ class PackagingSiteDetailsController @Inject() (
   def onPageLoad(mode: Mode): Action[AnyContent] = controllerActions.withUserWhoCanRegister {
     implicit request =>
 
-      val preparedForm = request.userAnswers.get(PackagingSiteDetailsPage) match {
-        case None => form
-        case Some(value) => form.fill(value)
-      }
       if (request.userAnswers.packagingSiteList.nonEmpty) {
-        Ok(view(preparedForm, mode, request.userAnswers.packagingSiteList))
+        Ok(view(form, mode, request.userAnswers.packagingSiteList))
       } else {
         genericLogger.logger.info(s"User at ${PackagingSiteDetailsPage.toString} with an empty packaging site list.  Redirected to Pack at business address")
         Redirect(routes.PackAtBusinessAddressController.onPageLoad(mode))

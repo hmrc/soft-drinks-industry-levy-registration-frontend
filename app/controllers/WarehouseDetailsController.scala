@@ -54,13 +54,9 @@ class WarehouseDetailsController @Inject() (
     implicit request =>
 
       warehouseDetailsChecker.checkWarehouseDetails(request.userAnswers, mode) {
-        val preparedForm = request.userAnswers.get(WarehouseDetailsPage) match {
-          case None => form
-          case Some(value) => form.fill(value)
-        }
         val warehouses = request.userAnswers.warehouseList
 
-        Ok(view(preparedForm, mode, createWarehouseSummary(warehouses, mode), warehouses.size))
+        Ok(view(form, mode, createWarehouseSummary(warehouses, mode), warehouses.size))
       }
   }
 

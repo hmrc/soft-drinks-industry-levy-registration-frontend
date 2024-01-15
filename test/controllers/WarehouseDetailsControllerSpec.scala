@@ -97,7 +97,7 @@ class WarehouseDetailsControllerSpec extends SpecBase with MockitoSugar with Log
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode, warehouseSummary, 1)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, warehouseSummary, 1)(request, messages(application)).toString
       }
     }
 
