@@ -30,6 +30,7 @@ import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatest.Assertion
 import org.scalatestplus.mockito.MockitoSugar
+import pages.RemovePackagingSiteDetailsPage
 import play.api.data.Form
 import play.api.inject.bind
 import play.api.mvc.Call
@@ -74,15 +75,21 @@ class RemovePackagingSiteDetailsControllerSpec extends SpecBase with MockitoSuga
         aTradingName,
         None))
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers.copy(packagingSiteList = packagingSite))).build()
-      running(application) {
-        val request = FakeRequest(GET, routes.RemovePackagingSiteDetailsController.onPageLoad(NormalMode, ref).url)
 
-        val result = route(application, request).value
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.PackagingSiteDetailsController.onPageLoad(NormalMode).url
+      running(application) {
+        withCaptureOfLoggingFrom(application.injector.instanceOf[GenericLogger].logger) { events =>
+          val request = FakeRequest(GET, routes.RemovePackagingSiteDetailsController.onPageLoad(NormalMode, ref).url)
+          val result = await(route(application, request).value)
+          events.collectFirst {
+            case event =>
+              event.getLevel.levelStr mustBe "INFO"
+              event.getMessage mustEqual s"User at ${RemovePackagingSiteDetailsPage.toString} with 1 or less sites in packaging site list. Redirected to PackagingSiteDetails"
+          }.getOrElse(fail("No logging captured"))
+
+          result.header.status mustEqual SEE_OTHER
+        }
       }
     }
-
 
     "must redirect to the site details page when valid data is submitted and item exists in site details" in {
       val ref: String = "12345678"

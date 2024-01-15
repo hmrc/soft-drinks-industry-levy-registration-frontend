@@ -56,12 +56,7 @@ class RemovePackagingSiteDetailsController @Inject() (
               s"$ref ${request.userAnswers.id} amount currently: ${request.userAnswers.packagingSiteList.size}")
             Redirect(routes.PackagingSiteDetailsController.onPageLoad(mode))
           case Some(packagingSiteDetails) =>
-            val preparedForm = request.userAnswers.get(RemovePackagingSiteDetailsPage) match {
-              case None => form
-              case Some(value) => form.fill(value)
-            }
-
-            Ok(view(preparedForm, mode, ref, packagingSiteDetails))
+            Ok(view(form, mode, ref, packagingSiteDetails))
         }
       } else {
         genericLogger.logger.info(

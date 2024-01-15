@@ -182,8 +182,8 @@ class PackagingSiteDetailsViewSpec extends ViewSpecHelper {
               }
             }
 
-            "when the form is preoccupied with yes and has no errors" - {
-              val html1 = view(form.fill(true), mode, packagingSiteListWith1)(request, messages(application))
+            "when the form is not preoccupied with yes and has no errors" - {
+              val html1 = view(form, mode, packagingSiteListWith1)(request, messages(application))
               val document1 = doc(html1)
               "should have radio buttons" - {
                 val radioButtons = document1.getElementsByClass(Selectors.radios)
@@ -198,7 +198,7 @@ class PackagingSiteDetailsViewSpec extends ViewSpecHelper {
                     .attr("value") mustBe "true"
                   radioButton1
                     .getElementsByClass(Selectors.radioInput)
-                    .hasAttr("checked") mustBe true
+                    .hasAttr("checked") mustBe false
                 }
 
                 "that has the option to select No and is unchecked" in {
@@ -217,8 +217,8 @@ class PackagingSiteDetailsViewSpec extends ViewSpecHelper {
               }
             }
 
-            "when the form is preoccupied with no and has no errors" - {
-              val html1 = view(form.fill(false), mode, packagingSiteListWith1)(request, messages(application))
+            "when the form is not preoccupied with no and has no errors" - {
+              val html1 = view(form, mode, packagingSiteListWith1)(request, messages(application))
               val document1 = doc(html1)
               "should have radio buttons" - {
                 val radioButtons = document1.getElementsByClass(Selectors.radios)
@@ -247,7 +247,7 @@ class PackagingSiteDetailsViewSpec extends ViewSpecHelper {
                     .attr("value") mustBe "false"
                   radioButton1
                     .getElementsByClass(Selectors.radioInput)
-                    .hasAttr("checked") mustBe true
+                    .hasAttr("checked") mustBe false
                 }
               }
             }
@@ -258,35 +258,31 @@ class PackagingSiteDetailsViewSpec extends ViewSpecHelper {
 
             "contains a form with the correct action" - {
               "when in CheckMode" - {
-                val htmlYesSelected = view(form.fill(true), CheckMode, packagingSiteListWith1)(request, messages(application))
-                val documentYesSelected = doc(htmlYesSelected)
+                val html = view(form, CheckMode, packagingSiteListWith1)(request, messages(application))
+                val document = doc(html)
 
-                val htmlNoSelected = view(form.fill(false), CheckMode, packagingSiteListWith1)(request, messages(application))
-                val documentNoSelected = doc(htmlNoSelected)
                 "and yes is selected" in {
-                  documentYesSelected.select(Selectors.form)
+                  document.select(Selectors.form)
                     .attr("action") mustEqual routes.PackagingSiteDetailsController.onSubmit(CheckMode).url
                 }
 
                 "and no is selected" in {
-                  documentNoSelected.select(Selectors.form)
+                  document.select(Selectors.form)
                     .attr("action") mustEqual routes.PackagingSiteDetailsController.onSubmit(CheckMode).url
                 }
               }
 
               "when in mode" - {
-                val htmlYesSelected = view(form.fill(true), mode, packagingSiteListWith1)(request, messages(application))
-                val documentYesSelected = doc(htmlYesSelected)
+                val html = view(form, mode, packagingSiteListWith1)(request, messages(application))
+                val document = doc(html)
 
-                val htmlNoSelected = view(form.fill(false), mode, packagingSiteListWith1)(request, messages(application))
-                val documentNoSelected = doc(htmlNoSelected)
                 "and yes is selected" in {
-                  documentYesSelected.select(Selectors.form)
+                  document.select(Selectors.form)
                     .attr("action") mustEqual routes.PackagingSiteDetailsController.onSubmit(mode).url
                 }
 
                 "and no is selected" in {
-                  documentNoSelected.select(Selectors.form)
+                  document.select(Selectors.form)
                     .attr("action") mustEqual routes.PackagingSiteDetailsController.onSubmit(mode).url
                 }
               }

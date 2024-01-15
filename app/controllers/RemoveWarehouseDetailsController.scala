@@ -19,11 +19,12 @@ package controllers
 import controllers.actions._
 import forms.RemoveWarehouseDetailsFormProvider
 import handlers.ErrorHandler
-import models.{ Mode, UserAnswers, Warehouse }
+import models.{Mode, UserAnswers, Warehouse}
 import navigation.Navigator
 import pages.RemoveWarehouseDetailsPage
+import play.api.data.Form
 import play.api.i18n.MessagesApi
-import play.api.mvc.{ Action, AnyContent, MessagesControllerComponents }
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import play.twirl.api.Html
 import services.SessionService
 import utilities.GenericLogger
@@ -31,7 +32,7 @@ import viewmodels.AddressFormattingHelper
 import views.html.RemoveWarehouseDetailsView
 
 import javax.inject.Inject
-import scala.concurrent.{ ExecutionContext, Future }
+import scala.concurrent.{ExecutionContext, Future}
 
 class RemoveWarehouseDetailsController @Inject() (
   override val messagesApi: MessagesApi,
@@ -44,7 +45,7 @@ class RemoveWarehouseDetailsController @Inject() (
   val genericLogger: GenericLogger,
   val errorHandler: ErrorHandler)(implicit ec: ExecutionContext) extends ControllerHelper {
 
-  val form = formProvider()
+  val form: Form[Boolean] = formProvider()
 
   def onPageLoad(mode: Mode, index: String): Action[AnyContent] = controllerActions.withUserWhoCanRegister {
     implicit request =>

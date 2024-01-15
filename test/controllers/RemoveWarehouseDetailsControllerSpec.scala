@@ -21,12 +21,14 @@ import base.SpecBase.aTradingName
 import errors.SessionDatabaseInsertError
 import forms.RemoveWarehouseDetailsFormProvider
 import helpers.LoggerHelper
-import models.backend.UkAddress
+import models.backend.{Site, UkAddress}
 import models.{NormalMode, UserAnswers, Warehouse}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
+import pages.RemovePackagingSiteDetailsPage
+import play.api.data.Form
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -38,13 +40,13 @@ import views.html.RemoveWarehouseDetailsView
 
 class RemoveWarehouseDetailsControllerSpec extends SpecBase with MockitoSugar with LoggerHelper {
 
-  def onwardRoute = Call("GET", "/foo")
+  def onwardRoute: Call = Call("GET", "/foo")
 
   val formProvider = new RemoveWarehouseDetailsFormProvider()
-  val form = formProvider()
+  val form: Form[Boolean] = formProvider()
 
   val indexOfWarehouseToBeRemoved: String = "foobar"
-  lazy val removeWarehouseDetailsRoute = routes.RemoveWarehouseDetailsController.onPageLoad(NormalMode, indexOfWarehouseToBeRemoved).url
+  lazy val removeWarehouseDetailsRoute: String = routes.RemoveWarehouseDetailsController.onPageLoad(NormalMode, indexOfWarehouseToBeRemoved).url
   val addressOfWarehouse: UkAddress = UkAddress(List("foo"),"bar", None)
   val userAnswersWithWarehouse: UserAnswers = emptyUserAnswers
     .copy(warehouseList = Map(indexOfWarehouseToBeRemoved -> Warehouse(aTradingName, addressOfWarehouse)))
@@ -64,7 +66,28 @@ class RemoveWarehouseDetailsControllerSpec extends SpecBase with MockitoSugar wi
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual
-          view(form, NormalMode, AddressFormattingHelper.addressFormatting(addressOfWarehouse, aTradingName), indexOfWarehouseToBeRemoved)(request, messages(application)).toString
+          view(form, NormalMode, AddressFormattingHelper.addressFormatting(addressOfWarehouse, aTradingName),
+            indexOfWarehouseToBeRemoved)(request, messages(application)).toString
+      }
+    }
+
+    "must redirect to site details page when loaded but no site ref exists in list on load" in {
+      val ref: String = "12345678"
+      val application = applicationBuilder(userAnswers = Some(userAnswersWithWarehouse)).build()
+
+      running(application) {
+        withCaptureOfLoggingFrom(application.injector.instanceOf[GenericLogger].logger) { events =>
+          val request = FakeRequest(GET, routes.RemoveWarehouseDetailsController.onPageLoad(NormalMode, ref).url)
+          val result = await(route(application, request).value)
+          events.collectFirst {
+            case event =>
+              event.getLevel.levelStr mustBe "WARN"
+              event.getMessage mustEqual s"Warehouse index $ref doesn't exist ${userAnswersWithWarehouse.id} warehouse list length:" +
+                s"${userAnswersWithWarehouse.warehouseList.size}"
+          }.getOrElse(fail("No logging captured"))
+
+          result.header.status mustEqual SEE_OTHER
+        }
       }
     }
 
@@ -111,7 +134,8 @@ class RemoveWarehouseDetailsControllerSpec extends SpecBase with MockitoSugar wi
 
         status(result) mustEqual BAD_REQUEST
         contentAsString(result) mustEqual
-          view(boundForm, NormalMode, AddressFormattingHelper.addressFormatting(addressOfWarehouse, aTradingName), indexOfWarehouseToBeRemoved)(request, messages(application)).toString
+          view(boundForm, NormalMode, AddressFormattingHelper.addressFormatting(addressOfWarehouse, aTradingName),
+            indexOfWarehouseToBeRemoved)(request, messages(application)).toString
       }
     }
 

@@ -97,7 +97,7 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
 
     userAnswersForPackagingSiteDetailsPage.foreach { case (key, userAnswers) =>
       s"when the userAnswers contains data for the page with " + key + " selected" - {
-        s"should return OK and render the page with " + key + " radio checked" in {
+        s"should return OK and render the page with " + key + " radio unchecked" in {
           given
             .commonPrecondition
 
@@ -113,9 +113,9 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe 2
               radioInputs.get(0).attr("value") mustBe "true"
-              radioInputs.get(0).hasAttr("checked") mustBe key == "yes"
+              radioInputs.get(0).hasAttr("checked") mustBe false
               radioInputs.get(1).attr("value") mustBe "false"
-              radioInputs.get(1).hasAttr("checked") mustBe key == "no"
+              radioInputs.get(1).hasAttr("checked") mustBe false
             }
           }
         }
@@ -193,7 +193,7 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
 
     userAnswersForPackagingSiteDetailsPage.foreach { case (key, userAnswers) =>
       s"when the userAnswers contains data for the page with " + key + " selected" - {
-        s"should return OK and render the page with " + key + " radio checked" in {
+        s"should return OK and render the page with " + key + " radio unchecked" in {
           given
             .commonPrecondition
 
@@ -215,9 +215,9 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe 2
               radioInputs.get(0).attr("value") mustBe "true"
-              radioInputs.get(0).hasAttr("checked") mustBe key == "yes"
+              radioInputs.get(0).hasAttr("checked") mustBe false
               radioInputs.get(1).attr("value") mustBe "false"
-              radioInputs.get(1).hasAttr("checked") mustBe key == "no"
+              radioInputs.get(1).hasAttr("checked") mustBe false
             }
           }
         }
