@@ -156,7 +156,7 @@ class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual  view(form.fill(Identify(utr = "0000000436", postcode = "GU148NL"))
+        contentAsString(result) mustEqual  view(form.fill(Identify(utr = "0000000436", postcode = "GU14 8NL"))
           .withError("utr", "enterBusinessDetails.no-record.utr"))(request, messages(application), frontendAppConfig).toString
       }
     }
