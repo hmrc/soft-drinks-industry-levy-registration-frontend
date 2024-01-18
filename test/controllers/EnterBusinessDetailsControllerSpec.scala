@@ -153,6 +153,7 @@ class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with
 
         val view = application.injector.instanceOf[EnterBusinessDetailsView]
 
+        
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
