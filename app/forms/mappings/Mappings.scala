@@ -30,7 +30,12 @@ trait Mappings extends Formatters with Constraints {
 
   val postcodeRegex = "^[A-Z]{1,2}[0-9][0-9A-Z]?\\s?[0-9][A-Z]{2}$|BFPO\\s?[0-9]{1,5}$"
 
-  val trimmedUppercaseText: Mapping[String] = of[String].transform(_.trim.toUpperCase, identity)
+  def addSpaceBeforeLastThreeCharsToPostCode(postCode: String) = {
+    val trimmedPostCode = postCode.replace(" ", "").toUpperCase
+    if (trimmedPostCode.startsWith("BFPO")) trimmedPostCode else s"${trimmedPostCode.dropRight(3)} ${trimmedPostCode.takeRight(3)}"
+  }
+
+  val trimmedUppercaseText: Mapping[String] = of[String].transform(addSpaceBeforeLastThreeCharsToPostCode, identity)
 
   def validPostcode(invalidFormatFailure: String, emptyFailure: String, invalidCharactersFailure: String): Constraint[String] =
     Constraint[String] { input: String =>
