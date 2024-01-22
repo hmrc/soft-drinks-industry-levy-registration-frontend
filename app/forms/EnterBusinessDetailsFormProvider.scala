@@ -37,6 +37,6 @@ class EnterBusinessDetailsFormProvider @Inject() extends Mappings {
             case _ => Valid
           }
         }),
-        "postcode" -> postcode)(Identify.apply)(Identify.unapply))
+        "postcode" -> postcode)((utr, postcode) => Identify(utr.replace(" ", ""), postcode))(Identify.unapply))
 
 }
