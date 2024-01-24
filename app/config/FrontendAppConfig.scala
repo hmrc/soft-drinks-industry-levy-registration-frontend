@@ -64,6 +64,8 @@ class FrontendAppConfig @Inject() (servicesConfig: ServicesConfig, configuration
   val findALostUtrLink: String = servicesConfig.getString("findALostUtrLink")
   val addressLookupOffRampUrl: String = servicesConfig.getString("addressLookupOffRampUrl")
 
+  val accessibilityStatementUrl: String = servicesConfig.getString("accessibility-statement.host")
+
   object AddressLookupConfig {
 
     private val addressLookupInitConfig: Config = configuration
