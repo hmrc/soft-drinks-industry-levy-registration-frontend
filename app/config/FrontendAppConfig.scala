@@ -64,7 +64,8 @@ class FrontendAppConfig @Inject() (servicesConfig: ServicesConfig, configuration
   val findALostUtrLink: String = servicesConfig.getString("findALostUtrLink")
   val addressLookupOffRampUrl: String = servicesConfig.getString("addressLookupOffRampUrl")
 
-  val accessibilityStatementUrl: String = servicesConfig.getString("accessibility-statement.host")
+  private val accessibilityHost: String = servicesConfig.getConfString("accessibility-statement.host", throw new Exception("missing config accessibility-statement.host"))
+  def accessibilityFooterUrl = s"$accessibilityHost/accessibility-statement/soft-drinks-industry-levy-registration-frontend"
 
   object AddressLookupConfig {
 
