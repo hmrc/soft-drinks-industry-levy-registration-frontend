@@ -191,7 +191,11 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
           continueUrl = s"http://localhost:8706/soft-drinks-industry-levy-registration/off-ramp/warehouses/${sdilNumber}",
           homeNavHref = None,
           signOutHref = Some(controllers.auth.routes.AuthController.signOut.url),
+<<<<<<< HEAD
           accessibilityFooterUrl = Some("localhost/accessibility-statement/soft-drinks-industry-levy-registration-frontend"),
+=======
+          accessibilityFooterUrl = Some("http://localhost:12346"),
+>>>>>>> origin/main
           phaseFeedbackLink = None,
           deskProServiceName = None,
           showPhaseBanner = Some(false),

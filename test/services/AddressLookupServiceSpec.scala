@@ -92,7 +92,11 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
               continueUrl = s"$offRampBaseUrl/${if(mode == CheckMode){"change-"}else{""}}packing-site-details/$sdilId",
               homeNavHref = None,
               signOutHref = Some(controllers.auth.routes.AuthController.signOut.url),
+<<<<<<< HEAD
               accessibilityFooterUrl = Some("localhost/accessibility-statement/soft-drinks-industry-levy-registration-frontend"),
+=======
+              accessibilityFooterUrl = Some("http://localhost:12346"),
+>>>>>>> origin/main
               phaseFeedbackLink = None,
               deskProServiceName = None,
               showPhaseBanner = Some(false),
@@ -165,7 +169,11 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
               continueUrl = s"$offRampBaseUrl/${if(mode == CheckMode){"change-"}else{""}}warehouses/$sdilId",
               homeNavHref = None,
               signOutHref = Some(controllers.auth.routes.AuthController.signOut.url),
+<<<<<<< HEAD
               accessibilityFooterUrl = Some("localhost/accessibility-statement/soft-drinks-industry-levy-registration-frontend"),
+=======
+              accessibilityFooterUrl = Some("http://localhost:12346"),
+>>>>>>> origin/main
               phaseFeedbackLink = None,deskProServiceName = None,
               showPhaseBanner = Some(false),
               alphaPhase = None,
@@ -238,7 +246,11 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
               continueUrl = s"$offRampBaseUrl/${if(mode == CheckMode){"change-"}else{""}}new-contact-address/$sdilId",
               homeNavHref = None,
               signOutHref = Some(controllers.auth.routes.AuthController.signOut.url),
+<<<<<<< HEAD
               accessibilityFooterUrl = Some("localhost/accessibility-statement/soft-drinks-industry-levy-registration-frontend"),
+=======
+              accessibilityFooterUrl = Some("http://localhost:12346"),
+>>>>>>> origin/main
               phaseFeedbackLink = None,
               deskProServiceName = None,
               showPhaseBanner = Some(false),
@@ -322,7 +334,11 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
               continueUrl = s"$offRampBaseUrl/${if(mode == CheckMode){"change-"}else{""}}warehouses/$exampleSdilIdWeGenerate",
               homeNavHref = None,
               signOutHref = Some(controllers.auth.routes.AuthController.signOut.url),
+<<<<<<< HEAD
               accessibilityFooterUrl = Some("localhost/accessibility-statement/soft-drinks-industry-levy-registration-frontend"),
+=======
+              accessibilityFooterUrl = Some("http://localhost:12346"),
+>>>>>>> origin/main
               phaseFeedbackLink = None,
               deskProServiceName = None,
               showPhaseBanner = Some(false),
