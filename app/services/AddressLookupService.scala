@@ -75,7 +75,7 @@ class AddressLookupService @Inject() (
         continueUrl = registrationContinueUrl(state, sdilId, mode),
         homeNavHref = None,
         signOutHref = Some(controllers.auth.routes.AuthController.signOut.url),
-        accessibilityFooterUrl = Some(frontendAppConfig.accessibilityStatementUrl),
+        accessibilityFooterUrl = Some(frontendAppConfig.accessibilityFooterUrl),
         phaseFeedbackLink = None,
         deskProServiceName = None,
         showPhaseBanner = Some(false),
