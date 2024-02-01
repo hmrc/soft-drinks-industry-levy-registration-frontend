@@ -21,7 +21,6 @@ import models.backend.UkAddress
 import models.{HowManyLitresGlobally, OrganisationDetails, RosmRegistration, RosmWithUtr}
 import play.twirl.api.Html
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
-import viewmodels.summary.BusinessDetailsSummary
 
 class BusinessDetailsSummarySpec extends RegistrationSubscriptionHelper {
 

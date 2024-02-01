@@ -19,7 +19,6 @@ package views.summary
 import base.RegistrationSubscriptionHelper
 import models.Contact
 import play.twirl.api.Html
-import viewmodels.summary.ContactDetailsSummary
 
 class ContactDetailsSummarySpec extends RegistrationSubscriptionHelper {
 

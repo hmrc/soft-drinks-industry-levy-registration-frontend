@@ -19,7 +19,6 @@ package views.summary
 import models.CreatedSubscriptionAndAmountProducedGlobally
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
-import viewmodels.summary.{ BusinessDetailsSummary, ContactDetailsSummary }
 
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
