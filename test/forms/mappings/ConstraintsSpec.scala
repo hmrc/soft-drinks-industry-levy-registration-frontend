@@ -26,7 +26,7 @@ import org.scalatest.matchers.must.Matchers
 import play.api.data.validation.{Invalid, Valid}
 
 class ConstraintsSpec extends AnyFreeSpec with Matchers with ScalaCheckPropertyChecks with Generators  with Constraints {
-
+  //  TODO: NEED TO ADD SOME TESTS FOR INRANGE AND NONEMPTYSET
 
   "firstError" - {
 

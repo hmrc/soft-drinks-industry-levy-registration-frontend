@@ -21,7 +21,7 @@ import models.HowManyLitresGlobally
 import uk.gov.hmrc.govukfrontend.views.Aliases._
 
 class UKSitesSummarySpec extends RegistrationSubscriptionHelper {
-
+  //  TODO: NEED TO ADD SOME TESTS FOR EDGE CASES
   "getHeadingAndSummary" - {
 
     HowManyLitresGlobally.values.foreach { case howManyLitresGlobally =>
