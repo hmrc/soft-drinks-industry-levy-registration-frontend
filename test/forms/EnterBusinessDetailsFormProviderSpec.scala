@@ -27,7 +27,7 @@ class EnterBusinessDetailsFormProviderSpec extends  IntFieldBehaviours with Matc
   val maxLength = 10
 
   val form: Form[Identify] = new EnterBusinessDetailsFormProvider().apply()
-  //  TODO: NEED TO ADD SOME TESTS
+
   ".utr" - {
 
     val fieldName = "utr"
