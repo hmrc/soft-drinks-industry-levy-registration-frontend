@@ -42,7 +42,7 @@ import utilities.GenericLogger
 import views.html.RemovePackagingSiteDetailsView
 
 class RemovePackagingSiteDetailsControllerSpec extends SpecBase with MockitoSugar with LoggerHelper {
-  //  TODO: NEED TO ADD SOME TESTS FOR INDEX NOT FOUD
+
   def onwardRoute: Call = Call("GET", "/foo")
 
   val formProvider = new RemovePackagingSiteDetailsFormProvider()
@@ -55,19 +55,26 @@ class RemovePackagingSiteDetailsControllerSpec extends SpecBase with MockitoSuga
       doc.getElementsByTag("form").attr("action") mustBe routes.RemovePackagingSiteDetailsController.onSubmit(NormalMode, ref).url
     }
 
-    "must redirect to site details page when 1 site or few exists in list on load" in {
-
+    "must redirect to site details page when 0 sites exists in list on load" in {
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
-      running(application) {
-        val request = FakeRequest(GET, routes.RemovePackagingSiteDetailsController.onPageLoad(NormalMode, "foo").url)
 
-        val result = route(application, request).value
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.PackagingSiteDetailsController.onPageLoad(NormalMode).url
+      running(application) {
+        withCaptureOfLoggingFrom(application.injector.instanceOf[GenericLogger].logger) { events =>
+          val request = FakeRequest(GET, routes.RemovePackagingSiteDetailsController.onPageLoad(NormalMode, "foo").url)
+          val result = await(route(application, request).value)
+          events.collectFirst {
+            case event =>
+              event.getLevel.levelStr mustBe "INFO"
+              event.getMessage mustEqual s"User at ${RemovePackagingSiteDetailsPage.toString} with 1 or less sites in packaging site list. Redirected to PackagingSiteDetails"
+          }.getOrElse(fail("No logging captured"))
+
+          result.header.status mustEqual SEE_OTHER
+          result.header.headers.get(LOCATION) mustEqual Some(routes.PackagingSiteDetailsController.onPageLoad(NormalMode).url)
+        }
       }
     }
 
-    "must redirect to site details page when loaded but no site ref exists in list on load" in {
+    "must redirect to site details page when 1 site exists in list on load" in {
       val ref: String = "12345678"
       val packagingSite: Map[String, Site] = Map(ref -> Site(
         UkAddress(List("a", "b"), "c"),
@@ -87,6 +94,32 @@ class RemovePackagingSiteDetailsControllerSpec extends SpecBase with MockitoSuga
           }.getOrElse(fail("No logging captured"))
 
           result.header.status mustEqual SEE_OTHER
+          result.header.headers.get(LOCATION) mustEqual Some(routes.PackagingSiteDetailsController.onPageLoad(NormalMode).url)
+        }
+      }
+    }
+
+    "must redirect to site details page when loaded but no site ref exists in list on load" in {
+      val wrongRef: String = "wrongref"
+      val packagingSite: Map[String, Site] = Map(
+        "12345678" -> Site(UkAddress(List("a", "b"), "c"), None, aTradingName, None),
+        "87654321" -> Site(UkAddress(List("a", "b"), "c"), None, aTradingName, None)
+      )
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers.copy(packagingSiteList = packagingSite))).build()
+
+      running(application) {
+        withCaptureOfLoggingFrom(application.injector.instanceOf[GenericLogger].logger) { events =>
+          val request = FakeRequest(GET, routes.RemovePackagingSiteDetailsController.onPageLoad(NormalMode, wrongRef).url)
+          val result = await(route(application, request).value)
+          events.collectFirst {
+            case event =>
+              event.getLevel.levelStr mustBe "WARN"
+              event.getMessage mustEqual s"user has potentially hit page and ref does not exist for packaging site" +
+                s"$wrongRef ${emptyUserAnswers.id} amount currently: 2"
+          }.getOrElse(fail("No logging captured"))
+
+          result.header.status mustEqual SEE_OTHER
+          result.header.headers.get(LOCATION) mustEqual Some(routes.PackagingSiteDetailsController.onPageLoad(NormalMode).url)
         }
       }
     }
@@ -114,6 +147,31 @@ class RemovePackagingSiteDetailsControllerSpec extends SpecBase with MockitoSuga
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
+      }
+    }
+
+    "must redirect to site details page when loaded but no site ref exists in list on submit" in {
+      val wrongRef: String = "wrongref"
+      val packagingSite: Map[String, Site] = Map(
+        "12345678" -> Site(UkAddress(List("a", "b"), "c"), None, aTradingName, None),
+        "87654321" -> Site(UkAddress(List("a", "b"), "c"), None, aTradingName, None)
+      )
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers.copy(packagingSiteList = packagingSite))).build()
+
+      running(application) {
+        withCaptureOfLoggingFrom(application.injector.instanceOf[GenericLogger].logger) { events =>
+          val request = FakeRequest(POST, routes.RemovePackagingSiteDetailsController.onSubmit(NormalMode, wrongRef).url)
+          val result = await(route(application, request).value)
+          events.collectFirst {
+            case event =>
+              event.getLevel.levelStr mustBe "WARN"
+              event.getMessage mustEqual s"user has potentially submit page and ref does not exist for packaging site" +
+                s"$wrongRef ${emptyUserAnswers.id} amount currently: 2"
+          }.getOrElse(fail("No logging captured"))
+
+          result.header.status mustEqual SEE_OTHER
+          result.header.headers.get(LOCATION) mustEqual Some(routes.PackagingSiteDetailsController.onPageLoad(NormalMode).url)
+        }
       }
     }
 
