@@ -21,7 +21,7 @@ import models.HowManyLitresGlobally
 import uk.gov.hmrc.govukfrontend.views.Aliases._
 
 class UKSitesSummarySpec extends RegistrationSubscriptionHelper {
-  //  TODO: NEED TO ADD SOME TESTS FOR EDGE CASES
+
   "getHeadingAndSummary" - {
 
     HowManyLitresGlobally.values.foreach { case howManyLitresGlobally =>
@@ -104,6 +104,22 @@ class UKSitesSummarySpec extends RegistrationSubscriptionHelper {
     }
 
     "when the user is voluntary" - {
+      "and there are production sites in the subscription" - {
+        "should return summary for packaging sites only" in {
+          val subscription = voluntarySubscription
+            .copy(warehouseSites = Seq.empty, productionSites = Seq(PackagingSite1))
+
+          val headingAndSummary = UKSitesSummary.getHeadingAndSummary(subscription, HowManyLitresGlobally.Small, true)
+
+          headingAndSummary mustBe defined
+          val (heading, summary) = headingAndSummary.get
+          heading mustBe "checkYourAnswers.sites"
+          summary mustBe SummaryList(List(SummaryListRow(Key(Text("You have 1 packaging site"), ""),
+            Value(Empty, ""), "", Some(Actions("", List(ActionItem("/soft-drinks-industry-levy-registration/change-packaging-site-details",
+              Text("Change"), Some("the UK packaging site that you operate to produce liable drinks"), "",
+              Map("id" -> "change-packaging-sites"))))))), None, "", Map())
+        }
+      }
       "and there is no packaging sites or warehouses" - {
         "should return None" in {
           val headingAndSummary = UKSitesSummary.getHeadingAndSummary(voluntarySubscription, HowManyLitresGlobally.Small, true)
