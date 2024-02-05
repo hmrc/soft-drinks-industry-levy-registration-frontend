@@ -117,6 +117,26 @@ class RemoveWarehouseDetailsControllerSpec extends SpecBase with MockitoSugar wi
       }
     }
 
+    "must redirect to site details page when loaded but no site ref exists in list on submit" in {
+      val ref: String = "12345678"
+      val application = applicationBuilder(userAnswers = Some(userAnswersWithWarehouse)).build()
+
+      running(application) {
+        withCaptureOfLoggingFrom(application.injector.instanceOf[GenericLogger].logger) { events =>
+          val request = FakeRequest(POST, routes.RemoveWarehouseDetailsController.onSubmit(NormalMode, ref).url)
+          val result = await(route(application, request).value)
+          events.collectFirst {
+            case event =>
+              event.getLevel.levelStr mustBe "WARN"
+              event.getMessage mustEqual s"Warehouse index $ref doesn't exist ${userAnswersWithWarehouse.id} warehouse list length:" +
+                s"${userAnswersWithWarehouse.warehouseList.size}"
+          }.getOrElse(fail("No logging captured"))
+
+          result.header.status mustEqual SEE_OTHER
+        }
+      }
+    }
+
     "must return a Bad Request and errors when invalid data is submitted" in {
 
       val application = applicationBuilder(userAnswers = Some(userAnswersWithWarehouse)).build()
