@@ -37,13 +37,6 @@ object AddressFormattingHelper {
     val breakLine = Html("<br>")
 
     addressFormat match {
-      case SeparatePostCodeAddressNoTradingName => HtmlFormat.fill(Seq(
-        htmlSiteAddress,
-        breakLine,
-        htmlPostcode))
-      case AddressNoTradingName => HtmlFormat.fill(Seq(
-        htmlSiteAddress,
-        htmlPostcode))
       case AddressWithTradingName => HtmlFormat.fill(Seq(
         htmlTradingName,
         breakLine,
@@ -69,8 +62,6 @@ object AddressFormattingHelper {
 }
 
 sealed trait AddressMatching
-case object SeparatePostCodeAddressNoTradingName extends AddressMatching
-case object AddressNoTradingName extends AddressMatching
 case object SeparatePostCodeAddressWithTradingName extends AddressMatching
 case object AddressWithTradingName extends AddressMatching
 

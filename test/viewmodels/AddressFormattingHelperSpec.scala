@@ -23,6 +23,7 @@ import play.twirl.api.Html
 import uk.gov.hmrc.govukfrontend.views.Aliases.HtmlContent
 
 class AddressFormattingHelperSpec extends SpecBase {
+
   "AddressFormattingHelper" - {
 
     "formatBusinessAddress" - {

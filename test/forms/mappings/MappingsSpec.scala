@@ -38,8 +38,97 @@ object MappingsSpec {
 }
 
 class MappingsSpec extends AnyFreeSpec with Matchers with OptionValues with Mappings {
-
   import MappingsSpec._
+
+  "postcode" - {
+
+    val testForm: Form[String] =
+      Form(
+        "value" -> postcode)
+
+    "must bind a valid string that matches postcode regex" - {
+      "with format AA1 1AA - spaces" in {
+        val result = testForm.bind(Map("value" -> "AA1 1AA"))
+        result.get mustEqual "AA1 1AA"
+      }
+
+      "with format AA11 1AA - spaces" in {
+        val result = testForm.bind(Map("value" -> "AA11 1AA"))
+        result.get mustEqual "AA11 1AA"
+      }
+
+      "with format A1 1AA - spaces" in {
+        val result = testForm.bind(Map("value" -> "A1 1AA"))
+        result.get mustEqual "A1 1AA"
+      }
+
+      "with format A11 1AA - spaces" in {
+        val result = testForm.bind(Map("value" -> "A11 1AA"))
+        result.get mustEqual "A11 1AA"
+      }
+
+      "with format AA1 1AA - no spaces" in {
+        val result = testForm.bind(Map("value" -> "AA11AA"))
+        result.get mustEqual "AA1 1AA"
+      }
+
+      "with format AA11 1AA - no spaces" in {
+        val result = testForm.bind(Map("value" -> "AA111AA"))
+        result.get mustEqual "AA11 1AA"
+      }
+
+      "with format A1 1AA - no spaces" in {
+        val result = testForm.bind(Map("value" -> "A11AA"))
+        result.get mustEqual "A1 1AA"
+      }
+
+      "with format A11 1AA - no spaces" in {
+        val result = testForm.bind(Map("value" -> "A111AA"))
+        result.get mustEqual "A11 1AA"
+      }
+
+      "with format BFPO 11111 - spaces" in {
+        val result = testForm.bind(Map("value" -> "BFPO 11111"))
+        result.get mustEqual "BFPO11111"
+      }
+
+      "with format BFPO 11111 - no spaces" in {
+        val result = testForm.bind(Map("value" -> "BFPO11111"))
+        result.get mustEqual "BFPO11111"
+      }
+    }
+
+    "must not bind a string that does not match postcode regex" in {
+      val result = testForm.bind(Map("value" -> "foobar"))
+      result.errors must contain(FormError("value", "enterBusinessDetails.postcode.invalid"))
+    }
+
+    "must not bind an empty string" in {
+      val result = testForm.bind(Map("value" -> ""))
+      result.errors must contain(FormError("value", "enterBusinessDetails.postcode.invalid"))
+    }
+
+    "must not bind a string of whitespace only" in {
+      val result = testForm.bind(Map("value" -> " \t"))
+      result.errors must contain(FormError("value", "enterBusinessDetails.postcode.special"))
+    }
+
+    "must not bind an empty map" in {
+      val result = testForm.bind(Map.empty[String, String])
+      result.errors must contain(FormError("value", "error.required"))
+    }
+
+    "must return a custom error message" in {
+      val form = Form("value" -> text("custom.error"))
+      val result = form.bind(Map("value" -> ""))
+      result.errors must contain(FormError("value", "custom.error"))
+    }
+
+    "must unbind a valid value" in {
+      val result = testForm.fill("foobar")
+      result.apply("value").value.value mustEqual "foobar"
+    }
+  }
 
   "text" - {
 
