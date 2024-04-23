@@ -56,10 +56,6 @@ error.number = Please enter a valid number
 error.required = Please enter a value
 error.summary.title = There is a problem
 
-index.title = soft-drinks-industry-levy-registration-frontend
-index.heading = soft-drinks-industry-levy-registration-frontend
-index.guidance = Welcome to your new frontend. Please see the README file for a guide to getting started.
-
 checkYourAnswers.title = Check your answers before sending your application
 checkYourAnswers.heading = Check your answers before sending your application
 checkYourAnswers.submit = Confirm details and apply
