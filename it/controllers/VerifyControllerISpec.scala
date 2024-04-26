@@ -298,7 +298,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
             errorSummary
               .select("a")
               .attr("href") mustBe "#value_0"
-            errorSummary.text() mustBe "Select if this is the business you want to register, if you want to register this business but want to add a new contact address for the Soft Drinks Industry Levy, or if you need to sign in using a different Government Gateway user ID"
+            errorSummary.text() mustBe "Select to confirm or change these business details"
           }
         }
       }
@@ -457,7 +457,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
             errorSummary
               .select("a")
               .attr("href") mustBe "#value_0"
-            errorSummary.text() mustBe "Select if this is the business you want to register, if you want to register this business but want to add a new contact address for the Soft Drinks Industry Levy, or if you need to sign in using a different Government Gateway user ID"
+            errorSummary.text() mustBe "Select to confirm or change these business details"
           }
         }
       }
