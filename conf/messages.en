@@ -315,10 +315,8 @@ verify.heading = Your business details
 verify.checkYourAnswersLabel = Your business details
 verify.yesRegister = Yes, this is the business I want to register
 verify.yesNewAddress = Yes, but I want to add a new contact address for the Soft Drinks Industry Levy
-verify.no = No, I need to sign in using a different Government Gateway user ID
-verify.error.required = Select if this is the business you want to register, if you want to register \
-                          this business but want to add a new contact address for the Soft Drinks Industry Levy, or if you need to sign in \
-                          using a different Government Gateway user ID
+verify.no = No, I need to sign in using different HMRC sign in details
+verify.error.required = Select to confirm or change these business details
 verify.subText = These are the details we hold for Unique Taxpayer Reference (UTR)
 verify.subHeading = Is this the business you want to register?
 businessDetails.businessAddress.change.hidden = business address
