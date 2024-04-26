@@ -373,7 +373,7 @@ applicationAlreadySubmitted.heading.title = This business already has an applica
 applicationAlreadySubmitted.first.paragraph = An application to register for the Soft Drinks Industry Levy has been submitted for this business.
 applicationAlreadySubmitted.second.paragraph.part.one = If you want to submit your return or check the status of your application you need to
 applicationAlreadySubmitted.second.paragraph.part.two = used to submit the application.
-applicationAlreadySubmitted.gg.sign.in = sign in using the same Government Gateway account
+applicationAlreadySubmitted.gg.sign.in = sign in using the same HMRC username and password
 
 packagingSiteName.title = What is your UK packaging site name?
 packagingSiteName.checkYourAnswersLabel = UK packaging site name

@@ -55,7 +55,7 @@ class ApplicationAlreadySubmittedViewSpec extends ViewSpecHelper {
 
     "should have a second paragraph with additional information including the account sign out link" in {
       document.getElementById("account-redirect").text() mustBe ("If you want to submit your return or check the status of your " +
-        "application you need to sign in using the same Government Gateway account used to submit the application.")
+        "application you need to sign in using the same HMRC username and password used to submit the application.")
       document.getElementById("account-link").attr("href") mustBe s"${frontendAppConfig.loginUrl}?continue=${frontendAppConfig.sdilHomeUrl}"
     }
 
