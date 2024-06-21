@@ -21,13 +21,12 @@ import base.SpecBase.aTradingName
 import errors.SessionDatabaseInsertError
 import forms.RemoveWarehouseDetailsFormProvider
 import helpers.LoggerHelper
-import models.backend.{Site, UkAddress}
+import models.backend.UkAddress
 import models.{NormalMode, UserAnswers, Warehouse}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.RemovePackagingSiteDetailsPage
 import play.api.data.Form
 import play.api.inject.bind
 import play.api.mvc.Call

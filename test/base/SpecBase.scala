@@ -48,7 +48,7 @@ import scala.util.{ Failure, Try }
 
 object SpecBase {
   val aTradingName = "Wild Lemonade Group"
-  val aSubscription = RetrievedSubscription(
+  val aSubscription: RetrievedSubscription = RetrievedSubscription(
     utr = "0000000022",
     sdilRef = "XKSDIL000000022",
     orgName = "Super Lemonade Plc",
@@ -80,20 +80,20 @@ trait SpecBase
   def identifier: String = "id"
   val sdilNumber: String = "XKSDIL000000022"
 
-  lazy val application = applicationBuilder(userAnswers = None, rosmRegistration = rosmRegistration).build()
-  implicit lazy val messagesAPI = application.injector.instanceOf[MessagesApi]
-  implicit lazy val messagesProvider = MessagesImpl(Lang("en"), messagesAPI)
-  lazy val mcc = application.injector.instanceOf[MessagesControllerComponents]
-  implicit lazy val frontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
+  lazy val application: Application = applicationBuilder(userAnswers = None, rosmRegistration = rosmRegistration).build()
+  implicit lazy val messagesAPI: MessagesApi = application.injector.instanceOf[MessagesApi]
+  implicit lazy val messagesProvider: MessagesImpl = MessagesImpl(Lang("en"), messagesAPI)
+  lazy val mcc: MessagesControllerComponents = application.injector.instanceOf[MessagesControllerComponents]
+  implicit lazy val frontendAppConfig: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
   val utr = "1234567891"
-  val rosmRegistration = RosmWithUtr(utr, RosmRegistration(
+  val rosmRegistration: RosmWithUtr = RosmWithUtr(utr, RosmRegistration(
     safeId = "safeid",
     organisation = Some(OrganisationDetails(organisationName = "Super Lemonade Plc")),
     individual = Some(IndividualDetails(firstName = "Ava", lastName = "Adams")),
     address = UkAddress(List("105B Godfrey Marchant Grove", "Guildford"), "GU14 8NL")))
-  lazy val logger = application.injector.instanceOf[GenericLogger]
+  lazy val logger: GenericLogger = application.injector.instanceOf[GenericLogger]
   implicit lazy val ec: ExecutionContext = application.injector.instanceOf[ExecutionContext]
-  implicit val hc = HeaderCarrier()
+  implicit val hc: HeaderCarrier = HeaderCarrier()
 
   override def afterEach(): Unit = {
     Play.stop(application)
