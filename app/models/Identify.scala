@@ -16,10 +16,10 @@
 
 package models
 
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 case class Identify(utr: String, postcode: String)
 
 object Identify {
-  implicit val format = Json.format[Identify]
+  implicit val format: OFormat[Identify] = Json.format[Identify]
 }
