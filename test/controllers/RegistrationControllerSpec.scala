@@ -20,12 +20,13 @@ import base.SpecBase
 import controllers.actions.{FakeIdentifierAction, IdentifierAction}
 import errors.{RegistrationAlreadySubmitted, SessionDatabaseInsertError, UnexpectedResponseFromSDIL}
 import models.RegisterState._
-import models.{NormalMode, RegisterState}
+import models.{Identify, NormalMode, RegisterState}
 import orchestrators.RegistrationOrchestrator
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
+import pages.EnterBusinessDetailsPage
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
@@ -57,13 +58,15 @@ class RegistrationControllerSpec extends SpecBase with SummaryListFluency with M
 
 
   "RegistrationController.start" - {
-    "when a valid user" - {
+    "when a valid user who is visiting for first time" - {
       RegisterState.values.foreach{registerState =>
         s"that is found to have a register state of $registerState" - {
           "should redirect to the expected location" in {
 
+            val userAnswers = emptyUserAnswers.copy(registerState = registerState)
+
             val application = applicationBuilderForHome().build()
-            when(mockOrchestrator.handleRegistrationRequest(any(), any(), any())) thenReturn createSuccessRegistrationResult(registerState)
+            when(mockOrchestrator.handleRegistrationRequest(any(), any(), any())) thenReturn createSuccessRegistrationResult(userAnswers)
 
             running(application) {
               val request = FakeRequest(GET, routes.RegistrationController.start.url)
@@ -72,6 +75,32 @@ class RegistrationControllerSpec extends SpecBase with SummaryListFluency with M
 
               status(result) mustEqual SEE_OTHER
               redirectLocation(result) mustEqual Some(expectedLocationForRegState(registerState))
+            }
+          }
+        }
+      }
+    }
+
+
+    s"when the user has already started a registration that required them to enter business details" - {
+      RegisterState.values.foreach { registerState =>
+        s"and is in a registerState of $registerState" - {
+          "should redirect to EnterBusinessDetails" in {
+
+            val userAnswers = emptyUserAnswers.copy(registerState = registerState)
+              .set(EnterBusinessDetailsPage, Identify(utr, "TF4 32d")).success.value
+
+            val application = applicationBuilderForHome().build()
+            when(mockOrchestrator.handleRegistrationRequest(any(), any(), any())) thenReturn createSuccessRegistrationResult(userAnswers)
+
+            running(application) {
+              val request = FakeRequest(GET, routes.RegistrationController.start.url)
+
+              val result = route(application, request).value
+
+              status(result) mustEqual SEE_OTHER
+              redirectLocation(result) mustEqual Some(routes.EnterBusinessDetailsController.onPageLoad.url)
+
             }
           }
         }

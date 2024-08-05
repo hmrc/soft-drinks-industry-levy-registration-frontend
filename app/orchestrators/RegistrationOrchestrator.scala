@@ -47,14 +47,13 @@ class RegistrationOrchestrator @Inject() (
   def handleRegistrationRequest(implicit
     request: IdentifierRequest[AnyContent],
     hc: HeaderCarrier,
-    ec: ExecutionContext): RegistrationResult[RegisterState] = {
+    ec: ExecutionContext): RegistrationResult[UserAnswers] = {
     val internalId = request.internalId
     def registerState(optUserAnswers: Option[UserAnswers]): Future[Either[RegistrationErrors, RegisterState]] = {
-      val alreadySubmittedRegistration = optUserAnswers.fold[Option[Instant]](None)(_.submittedOn)
-      if (alreadySubmittedRegistration.isDefined) {
-        Future.successful(Left(RegistrationAlreadySubmitted))
-      } else {
-        request.optUTR match {
+      optUserAnswers match {
+        case Some(userAnswers) if userAnswers.submittedOn.isDefined => Future.successful(Left(RegistrationAlreadySubmitted))
+        case Some(userAnswers) => Future.successful(Right(userAnswers.registerState))
+        case None => request.optUTR match {
           case Some(utr) if request.isRegistered => determineRegisterStateForRegisteredUsers(utr, internalId).value
           case Some(utr) => determineRegisterStateForNoneRegisteredUsers(utr, internalId).value
           case _ => Future(Right(RequiresBusinessDetails))
@@ -65,8 +64,11 @@ class RegistrationOrchestrator @Inject() (
     for {
       optUserAnswers <- sessionService.get(internalId)
       regState <- EitherT(registerState(optUserAnswers))
-      _ <- sessionService.set(optUserAnswers.fold(UserAnswers(internalId, regState))(ua => ua.copy(registerState = regState)))
-    } yield regState
+      ua <- EitherT.right[RegistrationErrors](Future.successful(
+        optUserAnswers.fold[UserAnswers](UserAnswers(internalId, regState))(ua => ua.copy(registerState = regState))
+      ))
+      _ <- sessionService.set(ua)
+    } yield ua
 
   }
   def checkEnteredBusinessDetailsAreValidAndUpdateUserAnswers(identify: Identify, internalId: String)(implicit
