@@ -21,14 +21,14 @@ import connectors._
 import errors._
 import models.RegisterState._
 import models._
-import models.requests.{ DataRequest, IdentifierRequest }
+import models.requests.{DataRequest, IdentifierRequest}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{ ContactDetailsPage, HowManyLitresGloballyPage, OrganisationTypePage }
+import pages.{ContactDetailsPage, HowManyLitresGloballyPage, OrganisationTypePage}
 import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
-import repositories.{ CacheMap, SDILSessionCache }
+import repositories.{CacheMap, SDILSessionCache}
 import services.SessionService
 
 import java.time.Instant
@@ -64,121 +64,34 @@ class RegistrationOrchestratorSpec extends RegistrationSubscriptionHelper with M
   }
 
   "handleRegistrationRequest" - {
-    "when the user has useranswers that contains a submittedOn time" - {
-      "should return RegistrationAlreadySubmitted error" in {
-        when(mockSessionService.get(identifier)).thenReturn(
-          createSuccessRegistrationResult(Some(emptyUserAnswers.copy(submittedOn = Some(Instant.now)))))
-
-        val res = orchestrator.handleRegistrationRequest(identifyRequestWithAuthUtrAndRegistered, hc, ec)
-
-        whenReady(res.value) { result =>
-          result mustBe Left(RegistrationAlreadySubmitted)
-        }
-      }
-    }
-
     "when the user has useranswers in the database" - {
-      "and has an authUtr " - {
-        "that has rosmData associated" - {
-          "for a user that is registered" - {
-            "should return AlreadyRegistered" in {
-              when(mockSessionService.get(identifier)).thenReturn(createSuccessRegistrationResult(Some(emptyUserAnswers)))
-              when(mockSDILConnector.retreiveRosmSubscription(utr, identifier)(hc)).thenReturn(createSuccessRegistrationResult(rosmRegistration))
-              when(mockSessionService.set(any())).thenReturn(createSuccessRegistrationResult(true))
+      "that contains a submittedOn time" - {
+        "should return RegistrationAlreadySubmitted error" in {
+          when(mockSessionService.get(identifier)).thenReturn(
+            createSuccessRegistrationResult(Some(emptyUserAnswers.copy(submittedOn = Some(Instant.now)))))
 
-              val res = orchestrator.handleRegistrationRequest(identifyRequestWithAuthUtrAndRegistered, hc, ec)
-
-              whenReady(res.value) { result =>
-                result mustBe Right(AlreadyRegistered)
-              }
-            }
-          }
-          expectedRegStateForSubscriptionStatus(false).foreach {
-            case (subscriptionStatus, expectedState) =>
-              s"and has a subscription status of $subscriptionStatus" - {
-                "for a user that is not registered" - {
-                  s"should return $expectedState" in {
-                    when(mockSessionService.get(identifier)).thenReturn(createSuccessRegistrationResult(Some(emptyUserAnswers)))
-                    when(mockSDILConnector.retreiveRosmSubscription(utr, identifier)(hc)).thenReturn(createSuccessRegistrationResult(rosmRegistration))
-                    when(mockSDILConnector.checkPendingQueue(utr)(hc)).thenReturn(createSuccessRegistrationResult(subscriptionStatus))
-                    when(mockSessionService.set(any())).thenReturn(createSuccessRegistrationResult(true))
-
-                    val res = orchestrator.handleRegistrationRequest(identifyRequestWithAuthAndNotRegistered, hc, ec)
-
-                    whenReady(res.value) { result =>
-                      result mustBe Right(expectedState)
-                    }
-                  }
-                }
-              }
-          }
-
-          "for a user that is not register" - {
-            "but the call to get subscriptionStatus fails" - {
-              "should return UnexpectedResponseFromSdil" in {
-                when(mockSessionService.get(identifier)).thenReturn(createSuccessRegistrationResult(Some(emptyUserAnswers)))
-                when(mockSDILConnector.retreiveRosmSubscription(utr, identifier)(hc)).thenReturn(createSuccessRegistrationResult(rosmRegistration))
-                when(mockSDILConnector.checkPendingQueue(utr)(hc)).thenReturn(createFailureRegistrationResult(UnexpectedResponseFromSDIL))
-
-                val res = orchestrator.handleRegistrationRequest(identifyRequestWithAuthAndNotRegistered, hc, ec)
-
-                whenReady(res.value) { result =>
-                  result mustBe Left(UnexpectedResponseFromSDIL)
-                }
-              }
-            }
-          }
-        }
-
-        "that has no rosmData associated" - {
-          "for a user who is registered" - {
-            "should return an AuthenticationError" in {
-              when(mockSessionService.get(identifier)).thenReturn(createSuccessRegistrationResult(Some(emptyUserAnswers)))
-              when(mockSDILConnector.retreiveRosmSubscription(utr, identifier)(hc)).thenReturn(createFailureRegistrationResult(NoROSMRegistration))
-
-              val res = orchestrator.handleRegistrationRequest(identifyRequestWithAuthUtrAndRegistered, hc, ec)
-
-              whenReady(res.value) { result =>
-                result mustBe Left(AuthenticationError)
-              }
-            }
-          }
-
-          "for a user who is not registered" - {
-            "should return RequiresBusinessDetails" in {
-              when(mockSessionService.get(identifier)).thenReturn(createSuccessRegistrationResult(Some(emptyUserAnswers)))
-              when(mockSDILConnector.retreiveRosmSubscription(utr, identifier)(hc)).thenReturn(createFailureRegistrationResult(NoROSMRegistration))
-              when(mockSessionService.set(any())).thenReturn(createSuccessRegistrationResult(true))
-
-              val res = orchestrator.handleRegistrationRequest(identifyRequestWithAuthAndNotRegistered, hc, ec)
-
-              whenReady(res.value) { result =>
-                result mustBe Right(RequiresBusinessDetails)
-              }
-            }
-          }
-        }
-        "but the call to get rosmRegistration fails" - {
-          "should return a UnexpectedResponseFromSdil error" in {
-            when(mockSessionService.get(identifier)).thenReturn(createSuccessRegistrationResult(Some(emptyUserAnswers)))
-            when(mockSDILConnector.retreiveRosmSubscription(utr, identifier)(hc)).thenReturn(createFailureRegistrationResult(UnexpectedResponseFromSDIL))
-
-            val res = orchestrator.handleRegistrationRequest(identifyRequestWithAuthAndNotRegistered, hc, ec)
-
-            whenReady(res.value) { result =>
-              result mustBe Left(UnexpectedResponseFromSDIL)
-            }
-          }
-        }
-      }
-
-      "when a user has no authUtr" - {
-        "should return RequiresBusinessDetails" in {
-          when(mockSessionService.get(identifier)).thenReturn(createSuccessRegistrationResult(Some(emptyUserAnswers)))
-          val res = orchestrator.handleRegistrationRequest(identifyRequestWithNoAuthAndNotRegistered, hc, ec)
+          val res = orchestrator.handleRegistrationRequest(identifyRequestWithAuthUtrAndRegistered, hc, ec)
 
           whenReady(res.value) { result =>
-            result mustBe Right(RequiresBusinessDetails)
+            result mustBe Left(RegistrationAlreadySubmitted)
+          }
+        }
+      }
+
+      "that does not contain a submittedOn time" - {
+        RegisterState.values.foreach { registerState =>
+          s"and has a registerState of $registerState" - {
+            "should return the database userAnswers" in {
+              val userAnswers = emptyUserAnswers.copy(registerState = registerState)
+              when(mockSessionService.get(identifier)).thenReturn(createSuccessRegistrationResult(Some(userAnswers)))
+              when(mockSessionService.set(any())).thenReturn(createSuccessRegistrationResult(true))
+
+              val res = orchestrator.handleRegistrationRequest(identifyRequestWithAuthUtrAndRegistered, hc, ec)
+
+              whenReady(res.value) { result =>
+                result mustBe Right(userAnswers)
+              }
+            }
           }
         }
       }
@@ -197,7 +110,7 @@ class RegistrationOrchestratorSpec extends RegistrationSubscriptionHelper with M
               val res = orchestrator.handleRegistrationRequest(identifyRequestWithAuthUtrAndRegistered, hc, ec)
 
               whenReady(res.value) { result =>
-                result mustBe Right(AlreadyRegistered)
+                result.map(_.registerState) mustBe Right(AlreadyRegistered)
               }
             }
           }
@@ -214,7 +127,7 @@ class RegistrationOrchestratorSpec extends RegistrationSubscriptionHelper with M
                     val res = orchestrator.handleRegistrationRequest(identifyRequestWithAuthAndNotRegistered, hc, ec)
 
                     whenReady(res.value) { result =>
-                      result mustBe Right(expectedState)
+                      result.map(_.registerState) mustBe Right(expectedState)
                     }
                   }
                 }
@@ -261,7 +174,7 @@ class RegistrationOrchestratorSpec extends RegistrationSubscriptionHelper with M
               val res = orchestrator.handleRegistrationRequest(identifyRequestWithAuthAndNotRegistered, hc, ec)
 
               whenReady(res.value) { result =>
-                result mustBe Right(RequiresBusinessDetails)
+                result.map(_.registerState) mustBe Right(RequiresBusinessDetails)
               }
             }
           }
@@ -286,7 +199,7 @@ class RegistrationOrchestratorSpec extends RegistrationSubscriptionHelper with M
           val res = orchestrator.handleRegistrationRequest(identifyRequestWithNoAuthAndNotRegistered, hc, ec)
 
           whenReady(res.value) { result =>
-            result mustBe Right(RequiresBusinessDetails)
+            result.map(_.registerState) mustBe Right(RequiresBusinessDetails)
           }
         }
       }

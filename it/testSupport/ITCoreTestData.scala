@@ -95,6 +95,9 @@ trait ITCoreTestData extends TryValues {
     Map("yes" -> yesSelected, "no" -> noSelected)
     }
 
+  val userAnswersForEnterBusinessDetailsPage = emptyUserAnswers
+    .set(EnterBusinessDetailsPage, Identify("0000001611", "TF8 4FH")).success.value
+
   var year = 2022
   var month = 11
   var day = 10

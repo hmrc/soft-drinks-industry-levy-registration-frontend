@@ -19,13 +19,13 @@ package controllers
 import com.google.inject.Inject
 import config.FrontendAppConfig
 import controllers.actions.IdentifierAction
-import errors.{ AuthenticationError, RegistrationAlreadySubmitted }
+import errors.{AuthenticationError, RegistrationAlreadySubmitted}
 import handlers.ErrorHandler
-import models.NormalMode
+import models.{NormalMode, UserAnswers}
 import models.RegisterState._
 import orchestrators.RegistrationOrchestrator
 import play.api.i18n.I18nSupport
-import play.api.mvc.{ Action, AnyContent, MessagesControllerComponents }
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utilities.GenericLogger
 
@@ -42,16 +42,25 @@ class RegistrationController @Inject() (
   def start: Action[AnyContent] = identify.async {
     implicit request =>
       registrationOrchestrator.handleRegistrationRequest.value.map {
-        case Right(RegistrationPending) => Redirect(routes.RegistrationPendingController.onPageLoad)
-        case Right(RequiresBusinessDetails) => Redirect(routes.EnterBusinessDetailsController.onPageLoad)
-        case Right(AlreadyRegistered) => Redirect(routes.AlreadyRegisteredController.onPageLoad)
-        case Right(RegisterApplicationAccepted) => Redirect(routes.ApplicationAlreadySubmittedController.onPageLoad)
-        case Right(_) => Redirect(routes.VerifyController.onPageLoad(NormalMode))
+        case Right(userAnswers) => handleSuccessResult(userAnswers)
         case Left(RegistrationAlreadySubmitted) => Redirect(routes.RegistrationConfirmationController.onPageLoad)
         case Left(AuthenticationError) => Redirect(config.loginUrl, Map("continue_url" -> Seq(config.sdilHomeUrl), "origin" -> Seq(config.appName)))
         case Left(error) =>
           genericLogger.logger.error(s"${getClass.getName} - $error while handling registration request")
           InternalServerError(errorHandler.internalServerErrorTemplate)
       }
+  }
+
+  private def handleSuccessResult(userAnswers: UserAnswers): Result = {
+    if(canAccessEnterBusinessDetails(userAnswers)) {
+      Redirect(routes.EnterBusinessDetailsController.onPageLoad)
+    } else {
+      userAnswers.registerState match {
+        case RegistrationPending => Redirect(routes.RegistrationPendingController.onPageLoad)
+        case AlreadyRegistered => Redirect(routes.AlreadyRegisteredController.onPageLoad)
+        case RegisterApplicationAccepted => Redirect(routes.ApplicationAlreadySubmittedController.onPageLoad)
+        case _ => Redirect(routes.VerifyController.onPageLoad(NormalMode))
+      }
+    }
   }
 }
