@@ -5,12 +5,7 @@
     private val playVersion = "play-30"
     private val bootstrapVersion = "8.6.0"
     private val hmrcMongoVersion = "2.2.0"
-    // private val playFrontendHMRCVersion = "8.5.0"
 
-    // Test dependencies
-    // private val scalaTestPlusPlayVersion = "7.0.0"
-    // private val scalatestPlusScalacheckVersion = "3.2.17.0"
-    // private val mockitoScalatestVersion = "1.17.30"
     val compile: Seq[ModuleID] = Seq(
       play.sbt.PlayImport.ws,
       "uk.gov.hmrc"       %% s"play-frontend-hmrc-$playVersion" % "8.5.0",
