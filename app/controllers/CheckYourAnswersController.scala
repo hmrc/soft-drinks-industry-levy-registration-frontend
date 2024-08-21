@@ -57,12 +57,16 @@ class CheckYourAnswersController @Inject() (
   def onSubmit: Action[AnyContent] = controllerActions.withUserWhoCanRegister.async {
     implicit request =>
       requiredUserAnswers.requireData(CheckYourAnswersPage) {
-        registrationOrchestrator.createSubscriptionAndUpdateUserAnswers.value.map {
-          case Right(_) => Redirect(controllers.routes.RegistrationConfirmationController.onPageLoad.url)
-          case Left(MissingRequiredUserAnswers) => Redirect(controllers.routes.VerifyController.onPageLoad(NormalMode))
+        registrationOrchestrator.createSubscriptionAndUpdateUserAnswers.value.flatMap {
+          case Right(_) => Future.successful(
+            Redirect(controllers.routes.RegistrationConfirmationController.onPageLoad.url)
+          )
+          case Left(MissingRequiredUserAnswers) => Future.successful(
+            Redirect(controllers.routes.VerifyController.onPageLoad(NormalMode))
+          )
           case Left(_) =>
             genericLogger.logger.error(s"${getClass.getName} - ${request.userAnswers.id} - failed to create subscription and create user answers")
-            InternalServerError(errorHandler.internalServerErrorTemplate)
+            errorHandler.internalServerErrorTemplate.map(errorView => InternalServerError(errorView))
         }
       }
   }

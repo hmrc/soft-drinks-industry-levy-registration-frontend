@@ -20,8 +20,6 @@ import com.google.inject.{Inject, Singleton}
 import com.typesafe.config.Config
 import models.Mode
 import play.api.Configuration
-import play.api.mvc.RequestHeader
-import uk.gov.hmrc.play.bootstrap.binders.SafeRedirectUrl
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import java.time.LocalDate
@@ -32,12 +30,6 @@ class FrontendAppConfig @Inject() (servicesConfig: ServicesConfig, configuration
   val registrationBaseUrl: String = servicesConfig.baseUrl("soft-drinks-industry-levy-registration-frontend")
   val appName: String = servicesConfig.getString("appName")
   val sdilFoundingDate: LocalDate = LocalDate.of(servicesConfig.getInt("sdilFoundingDate.year"), servicesConfig.getInt("sdilFoundingDate.month"), servicesConfig.getInt("sdilFoundingDate.day"))
-
-  private val contactHost = servicesConfig.getString("contact-frontend.host")
-  private val contactFormServiceIdentifier = "soft-drinks-industry-levy-registration"
-
-  def feedbackUrl(implicit request: RequestHeader): String =
-    s"$contactHost/contact/beta-feedback?service=$contactFormServiceIdentifier&backUrl=${SafeRedirectUrl(registrationBaseUrl + request.uri).encodedUrl}"
 
   val basGatewayBaseUrl: String = servicesConfig.baseUrl("bas-gateway")
   val sdilBaseUrl: String = servicesConfig.baseUrl("soft-drinks-industry-levy")

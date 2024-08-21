@@ -231,7 +231,7 @@ class VerifyControllerSpec extends SpecBase with MockitoSugar with LoggerHelper 
 
         status(result) mustEqual INTERNAL_SERVER_ERROR
         val page = Jsoup.parse(contentAsString(result))
-        page.title() mustBe "Sorry, we are experiencing technical difficulties - 500 - Soft Drinks Industry Levy - GOV.UK"
+        page.title() mustBe "Sorry, there is a problem with the service - 500 - Soft Drinks Industry Levy - GOV.UK"
       }
     }
     s"must fail if the setting of userAnswers fails for $YesNewAddress" in {
@@ -247,7 +247,7 @@ class VerifyControllerSpec extends SpecBase with MockitoSugar with LoggerHelper 
 
         status(result) mustEqual INTERNAL_SERVER_ERROR
         val page = Jsoup.parse(contentAsString(result))
-        page.title() mustBe "Sorry, we are experiencing technical difficulties - 500 - Soft Drinks Industry Levy - GOV.UK"
+        page.title() mustBe "Sorry, there is a problem with the service - 500 - Soft Drinks Industry Levy - GOV.UK"
       }
     }
 

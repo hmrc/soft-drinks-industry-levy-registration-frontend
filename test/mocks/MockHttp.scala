@@ -16,6 +16,7 @@
 
 package mocks
 
+import connectors.HttpClientV2Helper
 import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.mockito.stubbing.OngoingStubbing
@@ -23,26 +24,18 @@ import org.scalatest.BeforeAndAfterEach
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Writes
-import uk.gov.hmrc.http.{ HttpClient, HttpReads }
+import uk.gov.hmrc.http.{HttpClient, HttpReads}
 
 import scala.concurrent.Future
 
-trait MockHttp extends AnyFreeSpec with MockitoSugar with BeforeAndAfterEach {
+trait MockHttp extends HttpClientV2Helper with BeforeAndAfterEach {
+  def setupMockHttpGet[T](response: T): OngoingStubbing[Future[T]] =
+    when(requestBuilderExecute[T]).thenReturn(Future.successful(response))
 
-  val mockHttp: HttpClient = mock[HttpClient]
+  def setupMockHttpPost[O](response: O): OngoingStubbing[Future[O]] =
+    when(requestBuilderExecute[O]).thenReturn(Future.successful(response))
 
-  override def beforeEach(): Unit = {
-    super.beforeEach()
-    reset(mockHttp)
-  }
-
-  def setupMockHttpGet[T](url: String)(response: T): OngoingStubbing[Future[T]] =
-    when(mockHttp.GET[T](ArgumentMatchers.eq(url), ArgumentMatchers.any(), ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(response))
-
-  def setupMockHttpPost[I, O](url: String)(response: O): OngoingStubbing[Future[O]] =
-    when(mockHttp.POST[I, O](ArgumentMatchers.eq(url), ArgumentMatchers.any[I](), ArgumentMatchers.any())(ArgumentMatchers.any[Writes[I]](), ArgumentMatchers.any[HttpReads[O]](), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(response))
-
-  def setupMockHttpPut[I, O](url: String)(response: O): OngoingStubbing[Future[O]] =
-    when(mockHttp.PUT[I, O](ArgumentMatchers.eq(url), ArgumentMatchers.any[I](), ArgumentMatchers.any())(ArgumentMatchers.any[Writes[I]](), ArgumentMatchers.any[HttpReads[O]](), ArgumentMatchers.any(), ArgumentMatchers.any())).thenReturn(Future.successful(response))
+  def setupMockHttpPut[O](response: O): OngoingStubbing[Future[O]] =
+    when(requestBuilderExecute[O]).thenReturn(Future.successful(response))
 
 }

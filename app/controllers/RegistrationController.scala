@@ -29,7 +29,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utilities.GenericLogger
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class RegistrationController @Inject() (
   identify: IdentifierAction,
@@ -41,13 +41,15 @@ class RegistrationController @Inject() (
 
   def start: Action[AnyContent] = identify.async {
     implicit request =>
-      registrationOrchestrator.handleRegistrationRequest.value.map {
-        case Right(userAnswers) => handleSuccessResult(userAnswers)
-        case Left(RegistrationAlreadySubmitted) => Redirect(routes.RegistrationConfirmationController.onPageLoad)
-        case Left(AuthenticationError) => Redirect(config.loginUrl, Map("continue_url" -> Seq(config.sdilHomeUrl), "origin" -> Seq(config.appName)))
+      registrationOrchestrator.handleRegistrationRequest.value.flatMap {
+        case Right(userAnswers) => Future.successful(handleSuccessResult(userAnswers))
+        case Left(RegistrationAlreadySubmitted) => Future.successful(Redirect(routes.RegistrationConfirmationController.onPageLoad))
+        case Left(AuthenticationError) => Future.successful(
+          Redirect(config.loginUrl, Map("continue_url" -> Seq(config.sdilHomeUrl), "origin" -> Seq(config.appName)))
+        )
         case Left(error) =>
           genericLogger.logger.error(s"${getClass.getName} - $error while handling registration request")
-          InternalServerError(errorHandler.internalServerErrorTemplate)
+          errorHandler.internalServerErrorTemplate.map(errorView => InternalServerError(errorView))
       }
   }
 

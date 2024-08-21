@@ -76,7 +76,7 @@ class EnterBusinessDetailsController @Inject() (
                 Future.successful(BadRequest(view(form.fill(identify).withError("utr", "enterBusinessDetails.no-record.utr"))))
               case Left(error) =>
                 genericLogger.logger.error(s"${getClass.getName} - ${request.userAnswers.id} - ${error.getClass.getName} error returned")
-                Future.successful(InternalServerError(errorHandler.internalServerErrorTemplate))
+                errorHandler.internalServerErrorTemplate.map(errorView => InternalServerError(errorView))
             }
           }
         })

@@ -17,21 +17,28 @@
 package connectors
 
 import play.api.Configuration
-import uk.gov.hmrc.http.{ HeaderCarrier, HttpClient, HttpResponse }
+import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import javax.inject.Inject
-import scala.concurrent.{ ExecutionContext, Future }
-import uk.gov.hmrc.http.HttpReads.Implicits._
+import scala.concurrent.{ExecutionContext, Future}
 
-class TestConnector @Inject() (http: HttpClient, val configuration: Configuration)(implicit ec: ExecutionContext)
+class TestConnector @Inject()(http: HttpClientV2, val configuration: Configuration)(implicit ec: ExecutionContext)
   extends ServicesConfig(configuration) {
 
   lazy val testUrl: String = baseUrl("soft-drinks-industry-levy")
 
-  def resetPending(implicit hc: HeaderCarrier): Future[HttpResponse] =
-    http.GET[HttpResponse](s"$testUrl/test-only/reset-pending")
+  def resetPending(implicit hc: HeaderCarrier): Future[HttpResponse] = {
+    val pendingUrl = s"$testUrl/test-only/reset-pending"
+    http.get(url"$pendingUrl")
+      .execute[HttpResponse]
+  }
 
-  def resetSubscriptions(implicit hc: HeaderCarrier): Future[HttpResponse] =
-    http.GET[HttpResponse](s"$testUrl/test-only/reset-subscriptions")
+  def resetSubscriptions(implicit hc: HeaderCarrier): Future[HttpResponse] = {
+    val resetUrl = s"$testUrl/test-only/reset-subscriptions"
+    http.get(url"$resetUrl")
+      .execute[HttpResponse]
+  }
 }

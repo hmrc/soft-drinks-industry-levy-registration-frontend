@@ -50,7 +50,7 @@ class AuthenticatedIdentifierAction @Inject() (
 
     authorised(AuthProviders(GovernmentGateway)).retrieve(registrationRetrieval) {
       case enrolments ~ role ~ id ~ affinity =>
-        id.fold[Future[Either[Result, IdentifierRequest[A]]]](Future.successful(Left(InternalServerError(errorHandler.internalServerErrorTemplate)))) { internalId =>
+        id.fold[Future[Either[Result, IdentifierRequest[A]]]](errorHandler.internalServerErrorTemplate.map(errorView => Left(InternalServerError(errorView)))) { internalId =>
           val maybeUtr = getUtr(enrolments)
           val maybeSdil = getSdilEnrolment(enrolments)
           (maybeUtr, maybeSdil) match {
@@ -80,17 +80,17 @@ class AuthenticatedIdentifierAction @Inject() (
         Future.successful(Right(IdentifierRequest(request, internalId, hasCTEnrolment, Some(utr))))
       case Left(_) =>
         genericLogger.logger.error(s"${getClass.getName} - failed to handle user with UTR")
-        Future.successful(Left(InternalServerError(errorHandler.internalServerErrorTemplate(request))))
+        errorHandler.internalServerErrorTemplate(request).map(errorView => Left(InternalServerError(errorView)))
     }
   }
 
   private def handleUserWithNoUTRAndSDILEnrolment[A](internalId: String, sdil: EnrolmentIdentifier, hasCTEnrolment: Boolean)(implicit hc: HeaderCarrier, request: Request[A]): Future[Either[Result, IdentifierRequest[A]]] = {
-    sdilConnector.retrieveSubscription(sdil.value, "sdil", internalId).value.map {
-      case Right(Some(sub)) if sub.deregDate.isEmpty => Left(Redirect(config.sdilHomeUrl))
-      case Right(_) => Right(IdentifierRequest(request, internalId, hasCTEnrolment, None))
+    sdilConnector.retrieveSubscription(sdil.value, "sdil", internalId).value.flatMap {
+      case Right(Some(sub)) if sub.deregDate.isEmpty => Future.successful(Left(Redirect(config.sdilHomeUrl)))
+      case Right(_) => Future.successful(Right(IdentifierRequest(request, internalId, hasCTEnrolment, None)))
       case Left(_) =>
         genericLogger.logger.error(s"${getClass.getName} - failed to handle user with no UTR and SDIL enrolment")
-        Left(InternalServerError(errorHandler.internalServerErrorTemplate(request)))
+        errorHandler.internalServerErrorTemplate(request).map(errorView => Left(InternalServerError(errorView)))
     }
   }
 }

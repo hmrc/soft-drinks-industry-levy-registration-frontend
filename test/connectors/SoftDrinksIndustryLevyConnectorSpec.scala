@@ -16,25 +16,21 @@
 
 package connectors
 
-import base.SpecBase
 import errors.NoROSMRegistration
-import models.{ OptRetrievedSubscription, RetrievedSubscription, RosmRegistration, RosmWithUtr }
+import models.{OptRetrievedSubscription, RetrievedSubscription, RosmRegistration, RosmWithUtr}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import org.scalatest.concurrent.ScalaFutures
-import org.scalatestplus.mockito.MockitoSugar
 import play.api.libs.json.Json
-import repositories.{ CacheMap, SDILSessionCache }
-import uk.gov.hmrc.http.HttpClient
+import repositories.{CacheMap, SDILSessionCache}
 import utilities.GenericLogger
 
+import java.net.URL
 import scala.concurrent.Future
 
-class SoftDrinksIndustryLevyConnectorSpec extends SpecBase with MockitoSugar with ScalaFutures {
+class SoftDrinksIndustryLevyConnectorSpec extends HttpClientV2Helper {
 
   val (host, localPort) = ("host", "123")
 
-  val mockHttp = mock[HttpClient]
   val mockSDILSessionCache = mock[SDILSessionCache]
   val softDrinksIndustryLevyConnector = new SoftDrinksIndustryLevyConnector(http = mockHttp, frontendAppConfig, mockSDILSessionCache, application.injector.instanceOf[GenericLogger])
 
@@ -57,7 +53,7 @@ class SoftDrinksIndustryLevyConnectorSpec extends SpecBase with MockitoSugar wit
     s"should call the backend and return NoRosmRegistration if no rosm for utr" in {
       when(mockSDILSessionCache.fetchEntry[RosmRegistration](any(), any())(any()))
         .thenReturn(Future.successful(None))
-      when(mockHttp.GET[Option[RosmRegistration]](any(), any(), any())(any(), any(), any())).thenReturn(Future.successful(None))
+      when(requestBuilderExecute[Option[RosmRegistration]]).thenReturn(Future.successful(None))
       val res = softDrinksIndustryLevyConnector.retreiveRosmSubscription("utr here", "foo")
       whenReady(
         res.value) {
@@ -69,7 +65,7 @@ class SoftDrinksIndustryLevyConnectorSpec extends SpecBase with MockitoSugar wit
     "should call the backend, update the cache" - {
       "and return the rosm when one is returned" in {
         when(mockSDILSessionCache.fetchEntry[RosmRegistration](any(), any())(any())).thenReturn(Future.successful(None))
-        when(mockHttp.GET[Option[RosmRegistration]](any(), any(), any())(any(), any(), any())).thenReturn(Future.successful(Some(rosmRegistration.rosmRegistration)))
+        when(requestBuilderExecute[Option[RosmRegistration]]).thenReturn(Future.successful(Some(rosmRegistration.rosmRegistration)))
         when(mockSDILSessionCache.save[RosmRegistration](any, any, any)(any())).thenReturn(Future.successful(CacheMap("test", Map("ROSM_REGISTRATION" -> Json.toJson(rosmRegistration)))))
         val res = softDrinksIndustryLevyConnector.retreiveRosmSubscription(utr = utr, "foo")
         whenReady(
@@ -116,7 +112,7 @@ class SoftDrinksIndustryLevyConnectorSpec extends SpecBase with MockitoSugar wit
               "should call the backend, update the cache" - {
                 "and return the subscription when one is returned" in {
                   when(mockSDILSessionCache.fetchEntry[OptRetrievedSubscription](any(), any())(any())).thenReturn(Future.successful(None))
-                  when(mockHttp.GET[Option[RetrievedSubscription]](any(), any(), any())(any(), any(), any())).thenReturn(Future.successful(Some(aSubscription)))
+                  when(requestBuilderExecute[Option[RetrievedSubscription]]).thenReturn(Future.successful(Some(aSubscription)))
                   when(mockSDILSessionCache.save[OptRetrievedSubscription](any, any, any)(any())).thenReturn(Future.successful(CacheMap("test", Map("SUBSCRIPTION" -> Json.toJson(OptRetrievedSubscription(Some(aSubscription)))))))
                   val res = softDrinksIndustryLevyConnector.retrieveSubscription(sdilNumber, identifierType, "id")
 
@@ -128,7 +124,7 @@ class SoftDrinksIndustryLevyConnectorSpec extends SpecBase with MockitoSugar wit
                 }
                 "and return None when no subscription returned" in {
                   when(mockSDILSessionCache.fetchEntry[OptRetrievedSubscription](any(), any())(any())).thenReturn(Future.successful(None))
-                  when(mockHttp.GET[Option[RetrievedSubscription]](any(), any(), any())(any(), any(), any())).thenReturn(Future.successful(None))
+                  when(requestBuilderExecute[Option[RetrievedSubscription]]).thenReturn(Future.successful(None))
                   when(mockSDILSessionCache.save[OptRetrievedSubscription](any, any, any)(any())).thenReturn(Future.successful(CacheMap("test", Map("SUBSCRIPTION" -> Json.toJson(OptRetrievedSubscription(None))))))
                   val res = softDrinksIndustryLevyConnector.retrieveSubscription(sdilNumber, identifierType, "id")
 

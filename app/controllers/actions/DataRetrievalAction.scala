@@ -32,13 +32,14 @@ class DataRetrievalActionImpl @Inject() (
   val genericLogger: GenericLogger)(implicit val executionContext: ExecutionContext) extends DataRetrievalAction {
 
   override protected def refine[A](request: IdentifierRequest[A]): Future[Either[Result, OptionalDataRequest[A]]] = {
-    sessionService.get(request.internalId).value.map {
+    sessionService.get(request.internalId).value.flatMap {
       case Right(userAnsOps) =>
-        Right(
-          OptionalDataRequest(request, request.internalId, request.hasCTEnrolment, request.optUTR, userAnsOps))
+        Future.successful(Right(
+          OptionalDataRequest(request, request.internalId, request.hasCTEnrolment, request.optUTR, userAnsOps)
+        ))
       case Left(_) =>
         genericLogger.logger.error(s"${getClass.getName} - failed to get session data")
-        Left(InternalServerError(errorHandler.internalServerErrorTemplate(request)))
+        errorHandler.internalServerErrorTemplate(request).map(errorView => Left(InternalServerError(errorView)))
     }
   }
 }
