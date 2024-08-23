@@ -22,6 +22,7 @@ import errors.{NoROSMRegistration, UnexpectedResponseFromSDIL}
 import models._
 import models.backend.Subscription
 import play.api.http.Status._
+import play.api.libs.json.Json
 import repositories.{SDILSessionCache, SDILSessionKeys}
 import service.RegistrationResult
 import uk.gov.hmrc.http.HttpReads.Implicits._
@@ -99,6 +100,7 @@ class SoftDrinksIndustryLevyConnector @Inject() (
   def createSubscription(subscription: Subscription, safeId: String)(implicit hc: HeaderCarrier): RegistrationResult[Unit] = EitherT {
     val createUrl = s"$sdilUrl/subscription/utr/${subscription.utr}/$safeId"
     http.post(url"$createUrl")
+      .withBody(Json.toJson(subscription))
       .execute[HttpResponse]
       .map { resp =>
       resp.status match {
