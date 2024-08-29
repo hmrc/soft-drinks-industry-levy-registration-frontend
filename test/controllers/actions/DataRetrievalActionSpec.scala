@@ -80,7 +80,7 @@ class DataRetrievalActionSpec extends SpecBase with MockitoSugar {
         val sessionService = mock[SessionService]
         val errorHandler = mock[ErrorHandler]
         when(sessionService.get("id")) thenReturn createFailureRegistrationResult(SessionDatabaseGetError)
-        when(errorHandler.internalServerErrorTemplate(any())) thenReturn(Html("error"))
+        when(errorHandler.internalServerErrorTemplate(any())) thenReturn(Future.successful(Html("error")))
         val action = new Harness(sessionService, errorHandler, logger)
 
         val result = action.callRefine(new IdentifierRequest(FakeRequest(), "id")).futureValue

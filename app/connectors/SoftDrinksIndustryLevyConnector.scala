@@ -18,24 +18,26 @@ package connectors
 
 import cats.data.EitherT
 import config.FrontendAppConfig
-import errors.{ NoROSMRegistration, UnexpectedResponseFromSDIL }
+import errors.{NoROSMRegistration, UnexpectedResponseFromSDIL}
 import models._
 import models.backend.Subscription
 import play.api.http.Status._
-import repositories.{ SDILSessionCache, SDILSessionKeys }
+import play.api.libs.json.Json
+import repositories.{SDILSessionCache, SDILSessionKeys}
 import service.RegistrationResult
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http._
+import uk.gov.hmrc.http.client.HttpClientV2
 import utilities.GenericLogger
 
 import javax.inject.Inject
-import scala.concurrent.{ ExecutionContext, Future }
+import scala.concurrent.{ExecutionContext, Future}
 
 class SoftDrinksIndustryLevyConnector @Inject() (
-  val http: HttpClient,
-  frontendAppConfig: FrontendAppConfig,
-  sdilSessionCache: SDILSessionCache,
-  genericLogger: GenericLogger)(implicit ec: ExecutionContext) {
+                                                  val http: HttpClientV2,
+                                                  frontendAppConfig: FrontendAppConfig,
+                                                  sdilSessionCache: SDILSessionCache,
+                                                  genericLogger: GenericLogger)(implicit ec: ExecutionContext) {
 
   lazy val sdilUrl: String = frontendAppConfig.sdilBaseUrl
 
@@ -45,7 +47,9 @@ class SoftDrinksIndustryLevyConnector @Inject() (
     sdilSessionCache.fetchEntry[RosmWithUtr](internalId, SDILSessionKeys.ROSM_REGISTRATION).flatMap {
       case Some(rosmReg) if rosmReg.utr == utr => Future.successful(Right(rosmReg))
       case _ =>
-        http.GET[Option[RosmRegistration]](getRosmRegistration(utr)).flatMap {
+        http.get(url"${getRosmRegistration(utr)}")
+          .execute[Option[RosmRegistration]]
+          .flatMap {
           case Some(rosmReg) =>
             val rosmWithUtr = RosmWithUtr(utr, RosmRegistration(rosmReg.safeId, rosmReg.organisation, rosmReg.individual, rosmReg.address))
             sdilSessionCache.save(internalId, SDILSessionKeys.ROSM_REGISTRATION, rosmWithUtr).map { _ => Right(rosmWithUtr) }
@@ -61,7 +65,10 @@ class SoftDrinksIndustryLevyConnector @Inject() (
   private def getSubscriptionUrl(identifierValue: String, identifierType: String): String = s"$sdilUrl/subscription/$identifierType/$identifierValue"
 
   def checkPendingQueue(utr: String)(implicit hc: HeaderCarrier): RegistrationResult[SubscriptionStatus] = EitherT {
-    http.GET[HttpResponse](s"$sdilUrl/check-enrolment-status/$utr").map(_.status match {
+    val pendingQueueUrl = s"$sdilUrl/check-enrolment-status/$utr"
+    http.get(url"$pendingQueueUrl")
+      .execute[HttpResponse]
+      .map(_.status match {
       case OK => Right(Registered)
       case ACCEPTED => Right(Pending)
       case NOT_FOUND => Right(DoesNotExist)
@@ -75,7 +82,8 @@ class SoftDrinksIndustryLevyConnector @Inject() (
     sdilSessionCache.fetchEntry[OptRetrievedSubscription](internalId, SDILSessionKeys.SUBSCRIPTION).flatMap {
       case Some(optSubscription) => Future.successful(Right(optSubscription.optRetrievedSubscription))
       case None =>
-        http.GET[Option[RetrievedSubscription]](getSubscriptionUrl(identifierValue: String, identifierType)).flatMap {
+        http.get(url"${getSubscriptionUrl(identifierValue: String, identifierType)}")
+          .execute[Option[RetrievedSubscription]].flatMap {
           optRetrievedSubscription =>
             sdilSessionCache.save(internalId, SDILSessionKeys.SUBSCRIPTION, OptRetrievedSubscription(optRetrievedSubscription))
               .map { _ =>
@@ -90,8 +98,11 @@ class SoftDrinksIndustryLevyConnector @Inject() (
   }
 
   def createSubscription(subscription: Subscription, safeId: String)(implicit hc: HeaderCarrier): RegistrationResult[Unit] = EitherT {
-    val url = s"$sdilUrl/subscription/utr/${subscription.utr}/$safeId"
-    http.POST[Subscription, HttpResponse](url, subscription).map { resp =>
+    val createUrl = s"$sdilUrl/subscription/utr/${subscription.utr}/$safeId"
+    http.post(url"$createUrl")
+      .withBody(Json.toJson(subscription))
+      .execute[HttpResponse]
+      .map { resp =>
       resp.status match {
         case OK => Right((): Unit)
         case CONFLICT =>

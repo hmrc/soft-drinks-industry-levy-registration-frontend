@@ -155,13 +155,13 @@ trait ControllerActionHelper {
   def getRosmData[A](userAnswers: UserAnswers, request: OptionalDataRequest[A])(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Either[Result, RosmWithUtr]] = {
     getUtr(userAnswers, request) match {
       case Some(utr) =>
-        sdilConnector.retreiveRosmSubscription(utr, request.internalId).value.map {
-          case Right(rosmWithUtr) => Right(rosmWithUtr)
-          case Left(_) => Left(InternalServerError(errorHandler.internalServerErrorTemplate(request)))
+        sdilConnector.retreiveRosmSubscription(utr, request.internalId).value.flatMap {
+          case Right(rosmWithUtr) => Future.successful(Right(rosmWithUtr))
+          case Left(_) => errorHandler.internalServerErrorTemplate(request).map(errorView => Left(InternalServerError(errorView)))
         }
       case None =>
         genericLogger.logger.error(s"User has no utr when required for register state ${userAnswers.registerState}")
-        Future.successful(Left(InternalServerError(errorHandler.internalServerErrorTemplate(request))))
+        errorHandler.internalServerErrorTemplate(request).map(errorView => Left(InternalServerError(errorView)))
     }
   }
 

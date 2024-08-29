@@ -46,13 +46,15 @@ class DataRequiredActionImpl @Inject() (
       case Some(useranswers) if RegisterState.canRegister(useranswers.registerState) =>
         getUtrFromUserAnswers(useranswers, request) match {
           case Some(utr) =>
-            sdilConnector.retreiveRosmSubscription(utr, request.internalId).value.map {
-              case Right(rosmWithUtr) => Right(DataRequest(request, request.internalId, request.hasCTEnrolment, request.authUtr, useranswers, rosmWithUtr))
-              case Left(_) => Left(InternalServerError(errorHandler.internalServerErrorTemplate(request)))
+            sdilConnector.retreiveRosmSubscription(utr, request.internalId).value.flatMap {
+              case Right(rosmWithUtr) => Future.successful(
+                Right(DataRequest(request, request.internalId, request.hasCTEnrolment, request.authUtr, useranswers, rosmWithUtr))
+              )
+              case Left(_) => errorHandler.internalServerErrorTemplate(request).map(errorView => Left(InternalServerError(errorView)))
             }
           case None =>
             genericLogger.logger.error(s"User has no utr when required for register state ${useranswers.registerState}")
-            Future.successful(Left(InternalServerError(errorHandler.internalServerErrorTemplate(request))))
+            errorHandler.internalServerErrorTemplate(request).map(errorView => Left(InternalServerError(errorView)))
         }
       case Some(useranswers) =>
         val call = ActionHelpers.getRouteForRegisterState(useranswers.registerState)

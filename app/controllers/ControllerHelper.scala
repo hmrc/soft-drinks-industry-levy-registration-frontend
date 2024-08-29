@@ -42,12 +42,14 @@ trait ControllerHelper extends FrontendBaseController with I18nSupport {
     updatedAnswers match {
       case Failure(_) =>
         genericLogger.logger.error(s"Failed to resolve user answers while on ${page.toString}")
-        Future.successful(InternalServerError(errorHandler.internalServerErrorTemplate))
-      case Success(answers) => sessionService.set(answers).value.map {
-        case Right(_) => Redirect(navigator.nextPage(page, mode, answers, previousAnswer))
+        errorHandler.internalServerErrorTemplate.map(errorView => InternalServerError(errorView))
+      case Success(answers) => sessionService.set(answers).value.flatMap {
+        case Right(_) => Future.successful(
+          Redirect(navigator.nextPage(page, mode, answers, previousAnswer))
+        )
         case Left(_) =>
           genericLogger.logger.error(sessionRepo500ErrorMessage(page))
-          InternalServerError(errorHandler.internalServerErrorTemplate)
+          errorHandler.internalServerErrorTemplate.map(errorView => InternalServerError(errorView))
       }
     }
   }
@@ -62,18 +64,18 @@ trait ControllerHelper extends FrontendBaseController with I18nSupport {
   }
 
   def updateDatabaseAndRedirect(updatedAnswers: UserAnswers, page: Page, mode: Mode)(implicit ec: ExecutionContext, request: Request[AnyContent]): Future[Result] = {
-    sessionService.set(updatedAnswers).value.map {
-      case Right(_) => Redirect(navigator.nextPage(page, mode, updatedAnswers))
+    sessionService.set(updatedAnswers).value.flatMap {
+      case Right(_) => Future.successful(Redirect(navigator.nextPage(page, mode, updatedAnswers)))
       case Left(_) =>
         genericLogger.logger.error(sessionRepo500ErrorMessage(page))
-        InternalServerError(errorHandler.internalServerErrorTemplate)
+        errorHandler.internalServerErrorTemplate.map(errorView => InternalServerError(errorView))
     }
   }
   def updateDatabaseWithoutRedirect(updatedAnswers: Try[UserAnswers], page: Page)(success: Future[Result])(implicit ec: ExecutionContext, request: Request[AnyContent]): Future[Result] = {
     updatedAnswers match {
       case Failure(_) =>
         genericLogger.logger.error(s"Failed to resolve user answers while on ${page.toString}")
-        Future.successful(InternalServerError(errorHandler.internalServerErrorTemplate))
+        errorHandler.internalServerErrorTemplate.map(errorView => InternalServerError(errorView))
       case Success(userAnswers) =>
         sessionService.set(userAnswers).value.flatMap {
           case Right(_) => success
