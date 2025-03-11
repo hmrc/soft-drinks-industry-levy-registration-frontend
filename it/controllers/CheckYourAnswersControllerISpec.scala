@@ -157,7 +157,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
             .set(ImportsPage, false).success.value
             .remove(HowManyImportsPage).success.value
 
-        preconditionHelpers.commonPrecondition
+          preconditionHelpers.commonPrecondition
 
           setAnswers(userAnswers)(using timeout)
 
