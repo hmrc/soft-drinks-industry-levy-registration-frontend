@@ -2,19 +2,29 @@ package controllers
 
 import models.{Identify, RegisterState, UserAnswers}
 import org.jsoup.Jsoup
-import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
+import org.scalatest.matchers.must.Matchers.{include, must, mustBe}
+import org.scalatestplus.mockito.MockitoSugar.mock
 import pages.EnterBusinessDetailsPage
 import play.api.http.HeaderNames
 import play.api.libs.json.JsValue
 import play.api.libs.ws.{DefaultWSCookie, WSClient, WSResponse}
 import play.api.test.WsTestClient
+import testSupport.databases.SessionDatabaseOperations
 import testSupport.{ITCoreTestData, Specifications, TestConfiguration}
 
 import java.time.Instant
 import scala.concurrent.Future
+import testSupport.preConditions.{PreconditionHelpers, UserStub}
+import scala.concurrent.duration._
+import play.api.libs.ws.writeableOf_JsValue
 
 trait ControllerITTestHelper extends Specifications with TestConfiguration with ITCoreTestData {
-
+  val preconditionHelpers: PreconditionHelpers = mock[PreconditionHelpers]
+  val sessionDatabaseOperations: SessionDatabaseOperations = mock[SessionDatabaseOperations]
+  val userStub: UserStub = mock[UserStub]
+  
+  implicit val timeout: Duration = 5.seconds
+  
   def createClientRequestGet(client: WSClient, url: String): Future[WSResponse] = {
     client.url(url)
       .withFollowRedirects(false)
@@ -34,8 +44,8 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
   def testOtherSuccessUserTypes(url: String, expectedPageTitle: String, ua: UserAnswers = emptyUserAnswers): Unit = {
     "the user is authenticated, has a sdil subscription with a deregDate" - {
       s"render the $expectedPageTitle page" in {
-        given.authorisedWithSdilSubscriptionIncDeRegDatePrecondition
-        setAnswers(ua)
+        preconditionHelpers.authorisedWithSdilSubscriptionIncDeRegDatePrecondition
+        sessionDatabaseOperations.setAnswers(ua)(using timeout)
 
         WsTestClient.withClient { client =>
           val result1 = createClientRequestGet(client, url)
@@ -51,11 +61,11 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
 
     "the user is authenticated, has no sdilEnrolment but has entered utr" - {
       s"render the $expectedPageTitle page" in {
-        given.user.isAuthorisedButNotEnrolled()
+        userStub.isAuthorisedButNotEnrolled()
           .sdilBackend.retrieveRosm("0000001611")
           .sdilBackend.checkPendingQueueDoesntExist("0000001611")
 
-        setAnswers(ua.copy(registerState = RegisterState.RegisterWithOtherUTR).set(EnterBusinessDetailsPage, Identify("0000001611", "GU14 8NL")).success.value)
+        setAnswers(ua.copy(registerState = RegisterState.RegisterWithOtherUTR).set(EnterBusinessDetailsPage, Identify("0000001611", "GU14 8NL")).success.value)(using timeout)
 
         WsTestClient.withClient { client =>
           val result1 = createClientRequestGet(client, url)
@@ -73,7 +83,7 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
   def testUnauthorisedUser(url: String, optJson: Option[JsValue] = None): Unit = {
     "the user is unauthenticated" - {
       "redirect to gg-signin" in {
-        given.unauthorisedPrecondition
+        preconditionHelpers.unauthorisedPrecondition
 
         WsTestClient.withClient { client =>
           val result1 = optJson match {
@@ -91,7 +101,7 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
 
     "the user is authorised and has a subscription with no dereg date" - {
       "redirect to sdil home" in {
-        given.authorisedWithSdilSubscriptionNoDeRegDatePrecondition
+        preconditionHelpers.authorisedWithSdilSubscriptionNoDeRegDatePrecondition
 
         WsTestClient.withClient { client =>
           val result1 = optJson match {
@@ -109,7 +119,7 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
 
     "the user is authorised but has an invalid role" - {
       "redirect to sdil home" in {
-        given.authorisedWithInvalidRolePrecondition
+        preconditionHelpers.authorisedWithInvalidRolePrecondition
 
         WsTestClient.withClient { client =>
           val result1 = optJson match {
@@ -127,7 +137,7 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
 
     "the user is authorised but has an invalid rosm" - {
       "redirect to index page" in {
-        given.authorisedWithSdilSubscriptionNoRosm
+        preconditionHelpers.authorisedWithSdilSubscriptionNoRosm
 
         WsTestClient.withClient { client =>
           val result1 = optJson match {
@@ -145,7 +155,7 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
 
     "the user is authorised but has an invalid affinity group" - {
       "redirect to sdil home" in {
-        given.authorisedWithInvalidAffinityPrecondition
+        preconditionHelpers.authorisedWithInvalidAffinityPrecondition
 
         WsTestClient.withClient { client =>
           val result1 = optJson match {
@@ -163,7 +173,7 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
 
     "the user is authorised but has no identifer" - {
       "render the error page" in {
-        given.authorisedButInternalIdPrecondition
+        preconditionHelpers.authorisedButInternalIdPrecondition
 
         WsTestClient.withClient { client =>
           val result1 = optJson match {
@@ -184,8 +194,8 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
   def testUserWhoIsUnableToRegister(url: String, optJson: Option[JsValue] = None): Unit = {
     "when the user answers contain a submitted date" - {
       "should redirect to registration confirmation page" in {
-        given.commonPrecondition
-        setAnswers(emptyUserAnswers.copy(registerState = RegisterState.RegisterWithAuthUTR, submittedOn = Some(Instant.now)))
+        preconditionHelpers.commonPrecondition
+        setAnswers(emptyUserAnswers.copy(registerState = RegisterState.RegisterWithAuthUTR, submittedOn = Some(Instant.now)))(using timeout)
         WsTestClient.withClient { client =>
           val result1 = optJson match {
             case Some(json) => createClientRequestPOST(client, url, json)
@@ -208,8 +218,8 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
       }
       s"when the user has a register state of $registerState" - {
         s"should redirect to $expectedLocation" in {
-          given.commonPrecondition
-          setAnswers(emptyUserAnswers.copy(registerState = registerState))
+          preconditionHelpers.commonPrecondition
+          setAnswers(emptyUserAnswers.copy(registerState = registerState))(using timeout)
           WsTestClient.withClient { client =>
             val result1 = optJson match {
               case Some(json) => createClientRequestPOST(client, url, json)
@@ -229,9 +239,9 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
   def testAuthenticatedUserButNoUserAnswers(url: String, optJson: Option[JsValue] = None): Unit = {
     "the user is authenticated but has no user answers" - {
       "redirect to registration controller" in {
-        given.commonPrecondition
+        preconditionHelpers.commonPrecondition
 
-        remove(identifier)
+        remove(identifier)(using timeout)
 
         WsTestClient.withClient { client =>
           val result1 = optJson match {

@@ -2,24 +2,28 @@ package controllers
 
 import models.{CheckMode, LitresInBands, NormalMode}
 import org.jsoup.Jsoup
-import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
+import org.scalatest.matchers.must.Matchers._
 import pages._
 import play.api.http.HeaderNames
 import play.api.libs.json.Json
 import play.api.test.WsTestClient
+import org.scalatestplus.mockito.MockitoSugar.mock
+import testSupport.preConditions.PreconditionHelpers
 
 class ImportsControllerISpec extends ControllerITTestHelper {
 
   val normalRoutePath = "/imports"
   val checkRoutePath = "/change-imports"
 
+  override val preconditionHelpers: PreconditionHelpers = mock[PreconditionHelpers]
+  
   "GET " + normalRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the Imports page with no data populated" in {
-        given
+        preconditionHelpers
           .commonPrecondition
 
-        setAnswers(emptyUserAnswers)
+        setAnswers(emptyUserAnswers)(using timeout)
 
         WsTestClient.withClient { client =>
           val result1 = createClientRequestGet(client, baseUrl + normalRoutePath)
@@ -42,10 +46,10 @@ class ImportsControllerISpec extends ControllerITTestHelper {
     userAnswersForImportsPage.foreach { case (key, userAnswers) =>
       s"when the userAnswers contains data for the page with " + key + " selected" - {
         s"should return OK and render the page with " + key + " radio checked" in {
-          given
+          preconditionHelpers
             .commonPrecondition
 
-          setAnswers(userAnswers)
+          setAnswers(userAnswers)(using timeout)
 
           WsTestClient.withClient { client =>
             val result1 = createClientRequestGet(client, baseUrl + normalRoutePath)
@@ -75,10 +79,10 @@ class ImportsControllerISpec extends ControllerITTestHelper {
   s"GET " + checkRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the Imports page with no data populated" in {
-        given
+        preconditionHelpers
           .commonPrecondition
 
-        setAnswers(emptyUserAnswers)
+        setAnswers(emptyUserAnswers)(using timeout)
 
         WsTestClient.withClient { client =>
           val result1 = createClientRequestGet(client, baseUrl + checkRoutePath)
@@ -101,10 +105,10 @@ class ImportsControllerISpec extends ControllerITTestHelper {
     userAnswersForImportsPage.foreach { case (key, userAnswers) =>
       s"when the userAnswers contains data for the page with " + key + " selected" - {
         s"should return OK and render the page with " + key + " radio checked" in {
-          given
+          preconditionHelpers
             .commonPrecondition
 
-          setAnswers(userAnswers)
+          setAnswers(userAnswers)(using timeout)
 
           WsTestClient.withClient { client =>
             val result1 = createClientRequestGet(client, baseUrl + checkRoutePath)
@@ -137,10 +141,10 @@ class ImportsControllerISpec extends ControllerITTestHelper {
       "when the user selects " + key - {
         "should update the session and redirect to next page" - {
           "when the session contains no data for page" in {
-            given
+            preconditionHelpers
               .commonPrecondition
 
-            setAnswers(emptyUserAnswers)
+            setAnswers(emptyUserAnswers)(using timeout)
             WsTestClient.withClient { client =>
               val yesSelected = key == "yes"
               val result = createClientRequestPOST(
@@ -155,11 +159,11 @@ class ImportsControllerISpec extends ControllerITTestHelper {
                   routes.DoNotRegisterController.onPageLoad.url
                 }
                 res.header(HeaderNames.LOCATION) mustBe Some(expectedLocation)
-                val dataStoredForPage = getAnswers(emptyUserAnswers.id).fold[Option[Boolean]](None)(_.get(ImportsPage))
+                val dataStoredForPage = getAnswers(emptyUserAnswers.id)(using timeout).fold[Option[Boolean]](None)(_.get(ImportsPage))
 
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe yesSelected
-                val dataStoreForNextPage = getAnswers(emptyUserAnswers.id).fold[Option[LitresInBands]](None)(_.get(HowManyImportsPage))
+                val dataStoreForNextPage = getAnswers(emptyUserAnswers.id)(using timeout).fold[Option[LitresInBands]](None)(_.get(HowManyImportsPage))
                 dataStoreForNextPage mustBe None
 
               }
@@ -167,10 +171,10 @@ class ImportsControllerISpec extends ControllerITTestHelper {
           }
 
           "when the session already contains data for page" in {
-            given
+            preconditionHelpers
               .commonPrecondition
 
-            setAnswers(userAnswers)
+            setAnswers(userAnswers)(using timeout)
             WsTestClient.withClient { client =>
               val yesSelected = key == "yes"
               val result = createClientRequestPOST(
@@ -185,10 +189,10 @@ class ImportsControllerISpec extends ControllerITTestHelper {
                   routes.DoNotRegisterController.onPageLoad.url
                 }
                 res.header(HeaderNames.LOCATION) mustBe Some(expectedLocation)
-                val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(ImportsPage))
+                val dataStoredForPage = getAnswers(userAnswers.id)(using timeout).fold[Option[Boolean]](None)(_.get(ImportsPage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe yesSelected
-                val dataStoreForNextPage = getAnswers(userAnswers.id).fold[Option[LitresInBands]](None)(_.get(HowManyImportsPage))
+                val dataStoreForNextPage = getAnswers(userAnswers.id)(using timeout).fold[Option[LitresInBands]](None)(_.get(HowManyImportsPage))
                 if (yesSelected) {
                   dataStoreForNextPage.isDefined mustBe true
                 } else {
@@ -203,10 +207,10 @@ class ImportsControllerISpec extends ControllerITTestHelper {
 
     "when the user does not select yes or no" - {
       "should return 400 with required error" in {
-        given
+        preconditionHelpers
           .commonPrecondition
 
-        setAnswers(emptyUserAnswers)
+        setAnswers(emptyUserAnswers)(using timeout)
         WsTestClient.withClient { client =>
           val result = createClientRequestPOST(
             client, baseUrl + normalRoutePath, Json.obj("value" -> "")
@@ -237,10 +241,10 @@ class ImportsControllerISpec extends ControllerITTestHelper {
         val yesSelected = key == "yes"
         "should update the session with the new value and redirect to the checkAnswers controller" - {
           "when the session contains no data for page" in {
-            given
+            preconditionHelpers
               .commonPrecondition
 
-            setAnswers(emptyUserAnswers)
+            setAnswers(emptyUserAnswers)(using timeout)
             WsTestClient.withClient { client =>
               val result = createClientRequestPOST(
                 client, baseUrl + checkRoutePath, Json.obj("value" -> yesSelected.toString)
@@ -255,10 +259,10 @@ class ImportsControllerISpec extends ControllerITTestHelper {
               whenReady(result) { res =>
                 res.status mustBe 303
                 res.header(HeaderNames.LOCATION) mustBe Some(expectedUrl)
-                val dataStoredForPage = getAnswers(emptyUserAnswers.id).fold[Option[Boolean]](None)(_.get(ImportsPage))
+                val dataStoredForPage = getAnswers(emptyUserAnswers.id)(using timeout).fold[Option[Boolean]](None)(_.get(ImportsPage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe yesSelected
-                val dataStoreForNextPage = getAnswers(emptyUserAnswers.id).fold[Option[LitresInBands]](None)(_.get(HowManyImportsPage))
+                val dataStoreForNextPage = getAnswers(emptyUserAnswers.id)(using timeout).fold[Option[LitresInBands]](None)(_.get(HowManyImportsPage))
                 dataStoreForNextPage mustBe None
 
               }
@@ -266,10 +270,10 @@ class ImportsControllerISpec extends ControllerITTestHelper {
           }
 
           "when the session already contains data for page" in {
-            given
+            preconditionHelpers
               .commonPrecondition
 
-            setAnswers(userAnswers)
+            setAnswers(userAnswers)(using timeout)
             WsTestClient.withClient { client =>
               val yesSelected = key == "yes"
               val result = createClientRequestPOST(
@@ -284,10 +288,10 @@ class ImportsControllerISpec extends ControllerITTestHelper {
                 }
                 res.status mustBe 303
                 res.header(HeaderNames.LOCATION) mustBe Some(expectedUrl)
-                val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(ImportsPage))
+                val dataStoredForPage = getAnswers(userAnswers.id)(using timeout).fold[Option[Boolean]](None)(_.get(ImportsPage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe yesSelected
-                val dataStoreForNextPage = getAnswers(userAnswers.id).fold[Option[LitresInBands]](None)(_.get(HowManyImportsPage))
+                val dataStoreForNextPage = getAnswers(userAnswers.id)(using timeout).fold[Option[LitresInBands]](None)(_.get(HowManyImportsPage))
                 if (yesSelected) {
                   dataStoreForNextPage.isDefined mustBe true
                 } else {
@@ -302,10 +306,10 @@ class ImportsControllerISpec extends ControllerITTestHelper {
 
     "when the user does not select yes or no" - {
       "should return 400 with required error" in {
-        given
+        preconditionHelpers
           .commonPrecondition
 
-        setAnswers(emptyUserAnswers)
+        setAnswers(emptyUserAnswers)(using timeout)
         WsTestClient.withClient { client =>
           val result = createClientRequestPOST(
             client, baseUrl + checkRoutePath, Json.obj("value" -> "")
@@ -332,10 +336,10 @@ class ImportsControllerISpec extends ControllerITTestHelper {
   "Post" - {
     "in normal mode" - {
       s"Should redirect to the $StartDatePage when the user is a large producer " in {
-        given
+        preconditionHelpers
           .commonPrecondition
 
-        setAnswers(largeProducerNoPackagingRouteUserAnswers)
+        setAnswers(largeProducerNoPackagingRouteUserAnswers)(using timeout)
         WsTestClient.withClient { client =>
 
           val result = createClientRequestPOST(
@@ -350,10 +354,10 @@ class ImportsControllerISpec extends ControllerITTestHelper {
       }
 
       s"Should redirect to the $StartDatePage when the user is a non producer and selected yes on the $ContractPackingPage" in {
-        given
+        preconditionHelpers
           .commonPrecondition
 
-        setAnswers(nonProducerUserAnswers)
+        setAnswers(nonProducerUserAnswers)(using timeout)
         WsTestClient.withClient { client =>
 
           val result = createClientRequestPOST(
@@ -368,10 +372,10 @@ class ImportsControllerISpec extends ControllerITTestHelper {
       }
 
       s"Should redirect to the DoNotRegister page when the user is a non producer and selected no on the $ContractPackingPage" in {
-        given
+        preconditionHelpers
           .commonPrecondition
 
-        setAnswers(nonProducerDeregisterUserAnswers)
+        setAnswers(nonProducerDeregisterUserAnswers)(using timeout)
         WsTestClient.withClient { client =>
 
           val result = createClientRequestPOST(
@@ -386,10 +390,10 @@ class ImportsControllerISpec extends ControllerITTestHelper {
       }
 
       s"Should redirect to the $StartDatePage when the user is a small producer and selected yes on the $ContractPackingPage" in {
-        given
+        preconditionHelpers
           .commonPrecondition
 
-        setAnswers(smallProducerUserAnswers)
+        setAnswers(smallProducerUserAnswers)(using timeout)
         WsTestClient.withClient { client =>
 
           val result = createClientRequestPOST(
@@ -405,10 +409,10 @@ class ImportsControllerISpec extends ControllerITTestHelper {
 
       s"Should redirect to the $ContactDetailsPage if user selected yes on the $ThirdPartyPackagersPage, no on the $OperatePackagingSitesPage, " +
         s"and no on $ContractPackingPage" in {
-        given
+        preconditionHelpers
           .commonPrecondition
 
-        setAnswers(smallProducerNoPackagingRouteUserAnswers)
+        setAnswers(smallProducerNoPackagingRouteUserAnswers)(using timeout)
         WsTestClient.withClient { client =>
 
           val result = createClientRequestPOST(
@@ -424,10 +428,10 @@ class ImportsControllerISpec extends ControllerITTestHelper {
 
       s"Should redirect to the DoNotRegister page if user selected no on the $ThirdPartyPackagersPage, no on the $OperatePackagingSitesPage, " +
         s"and no on $ContractPackingPage" in {
-        given
+        preconditionHelpers
           .commonPrecondition
 
-        setAnswers(smallProducerDoNotRegisterUserAnswers)
+        setAnswers(smallProducerDoNotRegisterUserAnswers)(using timeout)
         WsTestClient.withClient { client =>
 
           val result = createClientRequestPOST(

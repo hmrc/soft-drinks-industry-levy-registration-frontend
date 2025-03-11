@@ -2,25 +2,31 @@ package controllers
 
 import models.{CheckMode, NormalMode, Warehouse}
 import org.jsoup.Jsoup
-import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
+import org.scalatest.matchers.must.Matchers.*
 import pages.RemoveWarehouseDetailsPage
 import play.api.http.HeaderNames
-import play.api.i18n.Messages
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.libs.json.Json
-import play.api.test.WsTestClient
+import play.api.test.{FakeRequest, WsTestClient}
+import org.scalatestplus.mockito.MockitoSugar.mock
+import testSupport.preConditions.PreconditionHelpers
 
 class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
 
+  override val preconditionHelpers: PreconditionHelpers = mock[PreconditionHelpers]
+  given messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  given messages: Messages = messagesApi.preferred(FakeRequest())
+  
   def normalRoutePath(index: String) = s"/warehouse-details/remove/$index"
   def checkRoutePath(index: String) = s"/change-warehouse-details/remove/$index"
   val indexOfWarehouseToBeRemoved: String = "warehouseUNO"
   "GET " + normalRoutePath("indexDoesntExist") - {
     "when the userAnswers contains no data" - {
       "should redirect away when no data exists" in {
-        given
+        preconditionHelpers
           .commonPrecondition
 
-        setAnswers(emptyUserAnswers)
+        setAnswers(emptyUserAnswers)(using timeout)
 
         WsTestClient.withClient { client =>
           val result = createClientRequestGet(client, baseUrl + normalRoutePath("indexDoesntExist"))
@@ -36,10 +42,10 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
     userAnswersForUpdateRegisteredDetailsRemoveWarehouseDetailsPage(indexOfWarehouseToBeRemoved).foreach { case (key, userAnswers) =>
       s"when the userAnswers contains data for the page with " + key + " selected" - {
         s"should return OK and render the page without the " + key + " radio checked" in {
-          given
+          preconditionHelpers
             .commonPrecondition
 
-          setAnswers(userAnswers)
+          setAnswers(userAnswers)(using timeout)
 
           WsTestClient.withClient { client =>
             val result = createClientRequestGet(client, baseUrl + normalRoutePath(indexOfWarehouseToBeRemoved))
@@ -47,7 +53,7 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
             whenReady(result) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include(Messages("removeWarehouseDetails" + ".title"))
+              page.title must include(messages("removeWarehouseDetails" + ".title"))
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe 2
               radioInputs.get(0).attr("value") mustBe "true"
@@ -67,10 +73,10 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
   s"GET " + checkRoutePath(indexOfWarehouseToBeRemoved) - {
     "when the userAnswers contains no data" - {
       "should redirect away when no data exists" in {
-        given
+        preconditionHelpers
           .commonPrecondition
 
-        setAnswers(emptyUserAnswers)
+        setAnswers(emptyUserAnswers)(using timeout)
 
         WsTestClient.withClient { client =>
           val result = createClientRequestGet(client, baseUrl + checkRoutePath("indexDoesntExist"))
@@ -86,10 +92,10 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
     userAnswersForUpdateRegisteredDetailsRemoveWarehouseDetailsPage(indexOfWarehouseToBeRemoved).foreach { case (key, userAnswers) =>
       s"when the userAnswers contains data for the page with " + key + " selected" - {
         s"should return OK and render the page without the " + key + " radio checked" in {
-          given
+          preconditionHelpers
             .commonPrecondition
 
-          setAnswers(userAnswers)
+          setAnswers(userAnswers)(using timeout)
 
           WsTestClient.withClient { client =>
             val result = createClientRequestGet(client, baseUrl + checkRoutePath(indexOfWarehouseToBeRemoved))
@@ -97,7 +103,7 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
             whenReady(result) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include(Messages("removeWarehouseDetails" + ".title"))
+              page.title must include(messages("removeWarehouseDetails" + ".title"))
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe 2
               radioInputs.get(0).attr("value") mustBe "true"
@@ -121,10 +127,10 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
       "when the user selects " + key - {
         "should update the session with the new value and redirect to the Warehouse details controller" - {
           "when the session contains no data for page" in {
-            given
+            preconditionHelpers
               .commonPrecondition
 
-            setAnswers(emptyUserAnswers)
+            setAnswers(emptyUserAnswers)(using timeout)
             WsTestClient.withClient { client =>
               val yesSelected = key == "yes"
               val result = createClientRequestPOST(
@@ -139,11 +145,11 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
           }
 
           "when the session already contains data for page" in {
-            given
+            preconditionHelpers
               .commonPrecondition
 
-            setAnswers(userAnswers)
-            getAnswers(userAnswers.id).get.warehouseList.size mustBe 1
+            setAnswers(userAnswers)(using timeout)
+            getAnswers(userAnswers.id)(using timeout).get.warehouseList.size mustBe 1
             WsTestClient.withClient { client =>
               val yesSelected = key == "yes"
               val result = createClientRequestPOST(
@@ -153,7 +159,7 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
               whenReady(result) { res =>
                 res.status mustBe 303
                 res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.WarehouseDetailsController.onPageLoad(NormalMode).url)
-                val userAnswersAfterTest = getAnswers(userAnswers.id)
+                val userAnswersAfterTest = getAnswers(userAnswers.id)(using timeout)
                 val dataStoredForPage = userAnswersAfterTest.fold[Option[Boolean]](None)(_.get(RemoveWarehouseDetailsPage))
                 if(yesSelected) {
                   userAnswersAfterTest.get.warehouseList.size mustBe 0
@@ -171,13 +177,13 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
 
     "when the user does not select yes or no" - {
       "should return 400 with required error" in {
-        given
+        preconditionHelpers
           .commonPrecondition
 
         setAnswers(
           emptyUserAnswers
-            .copy(warehouseList = Map(indexOfWarehouseToBeRemoved -> Warehouse(aTradingName, ukAddress))))
-        getAnswers(emptyUserAnswers.id).get.warehouseList.size mustBe 1
+            .copy(warehouseList = Map(indexOfWarehouseToBeRemoved -> Warehouse(aTradingName, ukAddress))))(using timeout)
+        getAnswers(emptyUserAnswers.id)(using timeout).get.warehouseList.size mustBe 1
         WsTestClient.withClient { client =>
           val result = createClientRequestPOST(
             client, baseUrl + normalRoutePath(indexOfWarehouseToBeRemoved), Json.obj("value" -> "")
@@ -186,15 +192,15 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + Messages("removeWarehouseDetails" + ".title"))
+            page.title must include("Error: " + messages("removeWarehouseDetails" + ".title"))
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")
               .attr("href") mustBe "#value"
-            errorSummary.text() mustBe Messages("removeWarehouseDetails" + ".error.required")
+            errorSummary.text() mustBe messages("removeWarehouseDetails" + ".error.required")
             page.getElementById("warehouseToRemove").text() mustBe s"$aTradingName foo, bar, wizz"
-            getAnswers(emptyUserAnswers.id).get.warehouseList.size mustBe 1
+            getAnswers(emptyUserAnswers.id)(using timeout).get.warehouseList.size mustBe 1
           }
         }
       }
@@ -210,10 +216,10 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
       "when the user selects " + key - {
         "should update the session with the new value and redirect to the Warehouse details controller" - {
           "when the session contains no data for page" in {
-            given
+            preconditionHelpers
               .commonPrecondition
 
-            setAnswers(emptyUserAnswers)
+            setAnswers(emptyUserAnswers)(using timeout)
             WsTestClient.withClient { client =>
               val yesSelected = key == "yes"
               val result = createClientRequestPOST(
@@ -228,11 +234,11 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
           }
 
           "when the session already contains data for page" in {
-            given
+            preconditionHelpers
               .commonPrecondition
 
-            setAnswers(userAnswers)
-            getAnswers(userAnswers.id).get.warehouseList.size mustBe 1
+            setAnswers(userAnswers)(using timeout)
+            getAnswers(userAnswers.id)(using timeout).get.warehouseList.size mustBe 1
             WsTestClient.withClient { client =>
               val yesSelected = key == "yes"
               val result = createClientRequestPOST(
@@ -242,7 +248,7 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
               whenReady(result) { res =>
                 res.status mustBe 303
                 res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.WarehouseDetailsController.onPageLoad(CheckMode).url)
-                val userAnswersAfterTest = getAnswers(userAnswers.id)
+                val userAnswersAfterTest = getAnswers(userAnswers.id)(using timeout)
                 val dataStoredForPage = userAnswersAfterTest.fold[Option[Boolean]](None)(_.get(RemoveWarehouseDetailsPage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe yesSelected
@@ -260,13 +266,13 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
 
     "when the user does not select yes or no" - {
       "should return 400 with required error" in {
-        given
+        preconditionHelpers
           .commonPrecondition
 
         setAnswers(
           emptyUserAnswers
-            .copy(warehouseList = Map(indexOfWarehouseToBeRemoved -> Warehouse(aTradingName, ukAddress))))
-        getAnswers(emptyUserAnswers.id).get.warehouseList.size mustBe 1
+            .copy(warehouseList = Map(indexOfWarehouseToBeRemoved -> Warehouse(aTradingName, ukAddress))))(using timeout)
+        getAnswers(emptyUserAnswers.id)(using timeout).get.warehouseList.size mustBe 1
         WsTestClient.withClient { client =>
           val result = createClientRequestPOST(
             client, baseUrl + checkRoutePath(indexOfWarehouseToBeRemoved), Json.obj("value" -> "")
@@ -274,15 +280,15 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
 
           whenReady(result) { res =>
             res.status mustBe 400
-            getAnswers(emptyUserAnswers.id).get.warehouseList.size mustBe 1
+            getAnswers(emptyUserAnswers.id)(using timeout).get.warehouseList.size mustBe 1
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + Messages("removeWarehouseDetails" + ".title"))
+            page.title must include("Error: " + messages("removeWarehouseDetails" + ".title"))
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")
               .attr("href") mustBe "#value"
-            errorSummary.text() mustBe Messages("removeWarehouseDetails" + ".error.required")
+            errorSummary.text() mustBe messages("removeWarehouseDetails" + ".error.required")
             page.getElementById("warehouseToRemove").text() mustBe s"$aTradingName foo, bar, wizz"
           }
         }

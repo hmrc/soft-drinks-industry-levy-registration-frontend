@@ -38,7 +38,7 @@ trait Mappings extends Formatters with Constraints {
   val trimmedUppercaseText: Mapping[String] = of[String].transform(addSpaceBeforeLastThreeCharsToPostCode, identity)
 
   def validPostcode(invalidFormatFailure: String, emptyFailure: String, invalidCharactersFailure: String): Constraint[String] =
-    Constraint[String] { input: String =>
+    Constraint[String] { (input: String) =>
       if (input.isEmpty) Invalid(ValidationError(emptyFailure))
       else if (!input.matches(postcodeCharactersRegex)) Invalid(ValidationError(invalidCharactersFailure))
       else if (!input.matches(postcodeRegex)) Invalid(ValidationError(invalidFormatFailure))

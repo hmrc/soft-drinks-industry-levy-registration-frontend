@@ -5,18 +5,26 @@ import models.RegisterState.{RegisterApplicationAccepted, RegisterWithOtherUTR, 
 import models.backend.{Site, UkAddress}
 import models.{Identify, NormalMode, RegisterState, Warehouse}
 import org.jsoup.Jsoup
-import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
+import org.scalatest.matchers.must.Matchers._
+import org.scalatestplus.mockito.MockitoSugar.mock
 import pages.EnterBusinessDetailsPage
 import play.api.http.HeaderNames
-import play.api.i18n.Messages
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.libs.json.Json
-import play.api.test.WsTestClient
+import play.api.test.{FakeRequest, WsTestClient}
 
 import scala.util.Random
+import testSupport.preConditions.{PreconditionHelpers, SdilBackendStub, UserStub}
 
 class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
 
   val path = "/enter-business-details"
+
+  override val preconditionHelpers: PreconditionHelpers = mock[PreconditionHelpers]
+  override val userStub: UserStub = mock[UserStub]
+  val sdilBackendStub: SdilBackendStub = mock[SdilBackendStub]
+  given messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  given messages: Messages = messagesApi.preferred(FakeRequest())
 
   val enterBusinessDetails = Identify(utr = "0000000437", postcode = "GU14 8NL")
 
@@ -40,10 +48,10 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
   "GET " + path - {
     "when the userAnswers contains no data" - {
       "should return OK and render the EnterBusinessDetails page with no data populated" in {
-        given
+        preconditionHelpers
           .commonPrecondition
 
-        setAnswers(emptyUserAnswers.copy(registerState = RegisterState.RequiresBusinessDetails))
+        setAnswers(emptyUserAnswers.copy(registerState = RegisterState.RequiresBusinessDetails))(using timeout)
 
         WsTestClient.withClient { client =>
           val result1 = createClientRequestGet(client, baseUrl + path)
@@ -51,7 +59,7 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include(Messages("enterBusinessDetails" + ".title"))
+            page.title must include(messages("enterBusinessDetails" + ".title"))
             val inputFields = page.getElementsByClass("govuk-input")
             inputFields.text() mustEqual ""
           }
@@ -67,12 +75,11 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
           s"and subscription status of $subscriptionState" - {
             s"should redirect to $expectedUrl" - {
               "when the session contains no data for the page" in {
-                given
-                  .user.isAuthorisedButNotEnrolled()
-                given.sdilBackend.retrieveRosm("0000000437")
-                given.sdilBackend.checkPendingQueue("0000000437", subscriptionState)
+                userStub.isAuthorisedButNotEnrolled()
+                sdilBackendStub.retrieveRosm("0000000437")
+                sdilBackendStub.checkPendingQueue("0000000437", subscriptionState)
 
-                setAnswers(emptyUserAnswers.copy(registerState = RegisterState.RequiresBusinessDetails))
+                setAnswers(emptyUserAnswers.copy(registerState = RegisterState.RequiresBusinessDetails))(using timeout)
                 WsTestClient.withClient { client =>
                   val result = createClientRequestPOST(
                     client, baseUrl + path, Json.obj("utr" -> "0000000437", "postcode" -> "GU14 8NL")
@@ -81,7 +88,7 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
                   whenReady(result) { res =>
                     res.status mustBe 303
                     res.header(HeaderNames.LOCATION) mustBe Some(expectedUrl)
-                    val updatedUA = getAnswers(userAnswersPageSame.id)
+                    val updatedUA = getAnswers(userAnswersPageSame.id)(using timeout)
                     updatedUA.get.registerState mustBe expectedRegisteredStateForSubscriptionStatus(subscriptionState)
                     val dataStoredForPage = updatedUA.fold[Option[Identify]](None)(_.get(EnterBusinessDetailsPage))
 
@@ -92,10 +99,9 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
               }
 
               "when the session already contains data for the page which is different" in {
-                given
-                  .user.isAuthorisedButNotEnrolled()
-                given.sdilBackend.retrieveRosm("0000000437")
-                given.sdilBackend.checkPendingQueue("0000000437", subscriptionState)
+                userStub.isAuthorisedButNotEnrolled()
+                sdilBackendStub.retrieveRosm("0000000437")
+                sdilBackendStub.checkPendingQueue("0000000437", subscriptionState)
 
                 val userAnswersWithNonIdenticalData = {
                   emptyUserAnswers
@@ -109,7 +115,7 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
                     )
                 }
 
-                setAnswers(userAnswersWithNonIdenticalData)
+                setAnswers(userAnswersWithNonIdenticalData)(using timeout)
                 WsTestClient.withClient { client =>
                   val result = createClientRequestPOST(
                     client, baseUrl + path, Json.obj("utr" -> "0000000437", "postcode" -> "GU14 8NL")
@@ -118,7 +124,7 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
                   whenReady(result) { res =>
                     res.status mustBe 303
                     res.header(HeaderNames.LOCATION) mustBe Some(expectedUrl)
-                    val updatedAnswers = getAnswers(userAnswersWithNonIdenticalData.id)
+                    val updatedAnswers = getAnswers(userAnswersWithNonIdenticalData.id)(using timeout)
                     val dataStoredForPage = updatedAnswers.fold[Option[Identify]](None)(_.get(EnterBusinessDetailsPage))
                     dataStoredForPage.nonEmpty mustBe true
                     dataStoredForPage.get mustBe Identify(utr = "0000000437", postcode = "GU14 8NL")
@@ -150,10 +156,10 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
               submittedOn = None
             )
         }
-        given
+        preconditionHelpers
           .commonPrecondition
 
-        setAnswers(userAnswersWithIdenticalData)
+        setAnswers(userAnswersWithIdenticalData)(using timeout)
         WsTestClient.withClient { client =>
           val result = createClientRequestPOST(
             client, baseUrl + path, Json.obj("utr" -> "0000001611", "postcode" -> "GU14 8NL")
@@ -162,7 +168,7 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 303
             res.header(HeaderNames.LOCATION) mustBe Some(routes.VerifyController.onPageLoad(NormalMode).url)
-            val updatedAnswers = getAnswers(userAnswersWithIdenticalData.id)
+            val updatedAnswers = getAnswers(userAnswersWithIdenticalData.id)(using timeout)
             updatedAnswers.get.address mustBe userAnswersWithIdenticalData.address
             updatedAnswers.get.warehouseList mustBe userAnswersWithIdenticalData.warehouseList
             updatedAnswers.get.packagingSiteList mustBe userAnswersWithIdenticalData.packagingSiteList
@@ -175,10 +181,10 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
 
     "should return 400 with utr max length error" - {
       "when the question is answered with incorrect data" in {
-        given
+        preconditionHelpers
           .commonPrecondition
 
-        setAnswers(emptyUserAnswers.copy(registerState = RegisterState.RequiresBusinessDetails))
+        setAnswers(emptyUserAnswers.copy(registerState = RegisterState.RequiresBusinessDetails))(using timeout)
         WsTestClient.withClient { client =>
           val result = createClientRequestPOST(
             client, baseUrl + path, Json.obj("utr" -> randomStringExceedingMaxLength, "postcode" -> "GU14 8NL")
@@ -187,7 +193,7 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + Messages("enterBusinessDetails" + ".title"
+            page.title must include("Error: " + messages("enterBusinessDetails" + ".title"
             ) )
             val errorSummaryList = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first().getElementsByTag("li")
@@ -196,7 +202,7 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
             errorSummary
               .select("a")
               .attr("href") mustBe "#utr"
-            errorSummary.text() mustBe Messages("enterBusinessDetails.invalid.utr.length"
+            errorSummary.text() mustBe messages("enterBusinessDetails.invalid.utr.length"
             )
           }
         }

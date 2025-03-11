@@ -1,30 +1,36 @@
 package controllers
 
-import models.alf.init._
+import models.alf.init.*
 import models.backend.UkAddress
 import models.{CheckMode, NormalMode, Warehouse}
 import org.jsoup.Jsoup
-import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
+import org.scalatest.matchers.must.Matchers._
+import org.scalatestplus.mockito.MockitoSugar.mock
 import pages.AskSecondaryWarehousesPage
 import play.api.http.HeaderNames
-import play.api.i18n.Messages
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.libs.json.{JsObject, Json}
 import play.api.libs.ws.DefaultWSCookie
-import play.api.test.WsTestClient
+import play.api.test.{FakeRequest, WsTestClient}
 import testSupport.ALFTestHelper
+import testSupport.preConditions.PreconditionHelpers
+import play.api.libs.ws.writeableOf_JsValue
 
 class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
 
   val normalRoutePath = "/ask-secondary-warehouses"
   val checkRoutePath = "/change-ask-secondary-warehouses"
+  override val preconditionHelpers: PreconditionHelpers = mock[PreconditionHelpers]
+
+  given messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  given messages: Messages = messagesApi.preferred(FakeRequest())
 
   "GET " + normalRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the AskSecondaryWarehouses page with no data populated" in {
-        given
-          .commonPrecondition
+        preconditionHelpers.commonPrecondition
 
-        setAnswers(emptyUserAnswers)
+        setAnswers(emptyUserAnswers)(using timeout)
 
         WsTestClient.withClient { client =>
           val result1 = createClientRequestGet(client, baseUrl + normalRoutePath)
@@ -32,7 +38,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include(Messages("askSecondaryWarehouses" + ".title"))
+            page.title must include(messages("askSecondaryWarehouses" + ".title"))
             val radioInputs = page.getElementsByClass("govuk-radios__input")
             radioInputs.size() mustBe 2
             radioInputs.get(0).attr("value") mustBe "true"
@@ -47,10 +53,9 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
     userAnswersForAskSecondaryWarehousesPage.foreach { case (key, userAnswers) =>
       s"when the userAnswers contains data for the page with " + key + " selected" - {
         s"should return OK and render the page with " + key + " radio checked" in {
-          given
-            .commonPrecondition
+          preconditionHelpers.commonPrecondition
 
-          setAnswers(userAnswers)
+          setAnswers(userAnswers)(using timeout)
 
           WsTestClient.withClient { client =>
             val result1 = createClientRequestGet(client, baseUrl + normalRoutePath)
@@ -58,7 +63,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include(Messages("askSecondaryWarehouses" + ".title"))
+              page.title must include(messages("askSecondaryWarehouses" + ".title"))
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe 2
               radioInputs.get(0).attr("value") mustBe "true"
@@ -70,7 +75,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
         }
       }
     }
-    testOtherSuccessUserTypes(baseUrl + normalRoutePath, Messages("askSecondaryWarehouses" + ".title"))
+    testOtherSuccessUserTypes(baseUrl + normalRoutePath, messages("askSecondaryWarehouses" + ".title"))
     testUnauthorisedUser(baseUrl + normalRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)
     testUserWhoIsUnableToRegister(baseUrl + normalRoutePath)
@@ -79,10 +84,9 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
   s"GET " + checkRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the AskSecondaryWarehouses page with no data populated" in {
-        given
-          .commonPrecondition
+        preconditionHelpers.commonPrecondition
 
-        setAnswers(emptyUserAnswers)
+        setAnswers(emptyUserAnswers)(using timeout)
 
         WsTestClient.withClient { client =>
           val result1 = createClientRequestGet(client, baseUrl + checkRoutePath)
@@ -90,7 +94,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include(Messages("askSecondaryWarehouses" + ".title"))
+            page.title must include(messages("askSecondaryWarehouses" + ".title"))
             val radioInputs = page.getElementsByClass("govuk-radios__input")
             radioInputs.size() mustBe 2
             radioInputs.get(0).attr("value") mustBe "true"
@@ -105,10 +109,9 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
     userAnswersForAskSecondaryWarehousesPage.foreach { case (key, userAnswers) =>
       s"when the userAnswers contains data for the page with " + key + " selected" - {
         s"should return OK and render the page with " + key + " radio checked" in {
-          given
-            .commonPrecondition
+          preconditionHelpers.commonPrecondition
 
-          setAnswers(userAnswers)
+          setAnswers(userAnswers)(using timeout)
 
           WsTestClient.withClient { client =>
             val result1 = createClientRequestGet(client, baseUrl + checkRoutePath)
@@ -116,7 +119,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include(Messages("askSecondaryWarehouses" + ".title"))
+              page.title must include(messages("askSecondaryWarehouses" + ".title"))
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe 2
               radioInputs.get(0).attr("value") mustBe "true"
@@ -129,7 +132,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
       }
     }
 
-    testOtherSuccessUserTypes(baseUrl + checkRoutePath, Messages("askSecondaryWarehouses" + ".title"))
+    testOtherSuccessUserTypes(baseUrl + checkRoutePath, messages("askSecondaryWarehouses" + ".title"))
     testUnauthorisedUser(baseUrl + checkRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath)
     testUserWhoIsUnableToRegister(baseUrl + checkRoutePath)
@@ -141,10 +144,9 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
     "when the user select no" - {
       "should update the session with the new value and redirect to the contact details page" - {
         "when the session contains no data for page" in {
-          given
-            .commonPrecondition
+          preconditionHelpers.commonPrecondition
 
-          setAnswers(emptyUserAnswers)
+          setAnswers(emptyUserAnswers)(using timeout)
 
           WsTestClient.withClient { client =>
             val result = createClientRequestPOST(
@@ -154,17 +156,16 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
             whenReady(result) { res =>
               res.status mustBe 303
               res.header(HeaderNames.LOCATION) mustBe Some(routes.ContactDetailsController.onPageLoad(NormalMode).url)
-              val dataStoredForPage = getAnswers(identifier).fold[Option[Boolean]](None)(_.get(AskSecondaryWarehousesPage))
+              val dataStoredForPage = getAnswers(identifier)(using timeout).fold[Option[Boolean]](None)(_.get(AskSecondaryWarehousesPage))
               dataStoredForPage.get mustBe radioNo
             }
           }
         }
 
         "when the session already contains data for page" in {
-          given
-            .commonPrecondition
+          preconditionHelpers.commonPrecondition
 
-          setAnswers(userAnswersForAskSecondaryWarehousesPage.get("yes").get)
+          setAnswers(userAnswersForAskSecondaryWarehousesPage.get("yes").get)(using timeout)
           WsTestClient.withClient { client =>
             val result = createClientRequestPOST(
               client, baseUrl + normalRoutePath, Json.obj("value" -> radioNo)
@@ -173,7 +174,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
             whenReady(result) { res =>
               res.status mustBe 303
               res.header(HeaderNames.LOCATION) mustBe Some(routes.ContactDetailsController.onPageLoad(NormalMode).url)
-              val dataStoredForPage = getAnswers(identifier).fold[Option[Boolean]](None)(_.get(AskSecondaryWarehousesPage))
+              val dataStoredForPage = getAnswers(identifier)(using timeout).fold[Option[Boolean]](None)(_.get(AskSecondaryWarehousesPage))
               dataStoredForPage.get mustBe radioNo
             }
           }
@@ -183,7 +184,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
 
     "user selects yes and saves and continues updating the user answers and ramps onto ALF, also NOT wiping the warehouse list" in {
       val warehouseToRemain = Map("foo" -> Warehouse(aTradingName, UkAddress(List.empty, "", None)))
-      setAnswers(emptyUserAnswers.copy(warehouseList = warehouseToRemain))
+      setAnswers(emptyUserAnswers.copy(warehouseList = warehouseToRemain))(using timeout)
 
       val journeyConfigToBePosted: JourneyConfig = JourneyConfig(
         version = 2,
@@ -254,9 +255,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
           "askSecondaryWarehouses" -> true
         ))
       val alfOnRampURL: String = "http://onramp.com"
-
-      given
-        .commonPrecondition
+      preconditionHelpers.commonPrecondition
         .alf.getSuccessResponseFromALFInit(alfOnRampURL)
 
       WsTestClient.withClient { client =>
@@ -270,8 +269,8 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
         whenReady(result1) { res =>
           res.status mustBe 303
           res.header(HeaderNames.LOCATION) mustBe Some(alfOnRampURL)
-          getAnswers(identifier).map(userAnswers => userAnswers.data) mustBe expectedResult
-          getAnswers(identifier).map(userAnswers => userAnswers.warehouseList).get mustBe warehouseToRemain
+          getAnswers(identifier)(using timeout).map(userAnswers => userAnswers.data) mustBe expectedResult
+          getAnswers(identifier)(using timeout).map(userAnswers => userAnswers.warehouseList).get mustBe warehouseToRemain
 
           ALFTestHelper.requestedBodyMatchesExpected(wireMockServer, journeyConfigToBePosted) mustBe true
         }
@@ -285,10 +284,9 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
       setAnswers(
         emptyUserAnswers.copy(warehouseList = warehouseListWith1)
           .set(AskSecondaryWarehousesPage, true).success.value
-      )
+      )(using timeout)
 
-      given
-        .commonPrecondition
+      preconditionHelpers.commonPrecondition
 
       val expectedResult: Some[JsObject] = Some(Json.obj("askSecondaryWarehouses" -> true))
 
@@ -303,8 +301,8 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
         whenReady(result1) { res =>
           res.status mustBe 303
           res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.WarehouseDetailsController.onPageLoad(NormalMode).url)
-          getAnswers(identifier).map(userAnswers => userAnswers.data) mustBe expectedResult
-          getAnswers(identifier).map(userAnswers => userAnswers.warehouseList).get mustBe warehouseListWith1
+          getAnswers(identifier)(using timeout).map(userAnswers => userAnswers.data) mustBe expectedResult
+          getAnswers(identifier)(using timeout).map(userAnswers => userAnswers.warehouseList).get mustBe warehouseListWith1
 
         }
 
@@ -313,10 +311,9 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
 
     "user selects no and saves and continues, user is taken to contact details, also wiping the warehouse list" in {
       val warehouseToBeWiped = Map("foo" -> Warehouse(aTradingName, UkAddress(List.empty, "", None)))
-      setAnswers(emptyUserAnswers.copy(warehouseList = warehouseToBeWiped))
+      setAnswers(emptyUserAnswers.copy(warehouseList = warehouseToBeWiped))(using timeout)
 
-      given
-        .commonPrecondition
+      preconditionHelpers.commonPrecondition
 
       val expectedResult: Some[JsObject] = Some(
         Json.obj(
@@ -334,8 +331,8 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
         whenReady(result1) { res =>
           res.status mustBe 303
           res.header(HeaderNames.LOCATION) mustBe Some(routes.ContactDetailsController.onPageLoad(NormalMode).url)
-          getAnswers(identifier).map(userAnswers => userAnswers.data) mustBe expectedResult
-          getAnswers(identifier).map(userAnswers => userAnswers.warehouseList).get mustBe Map.empty
+          getAnswers(identifier)(using timeout).map(userAnswers => userAnswers.data) mustBe expectedResult
+          getAnswers(identifier)(using timeout).map(userAnswers => userAnswers.warehouseList).get mustBe Map.empty
 
         }
 
@@ -344,10 +341,9 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
 
     "when the user does not select yes or no" - {
       "should return 400 with required error" in {
-        given
-          .commonPrecondition
+        preconditionHelpers.commonPrecondition
 
-        setAnswers(emptyUserAnswers)
+        setAnswers(emptyUserAnswers)(using timeout)
         WsTestClient.withClient { client =>
           val result = createClientRequestPOST(
             client, baseUrl + normalRoutePath, Json.obj("value" -> "")
@@ -356,13 +352,13 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + Messages("askSecondaryWarehouses" + ".title"))
+            page.title must include("Error: " + messages("askSecondaryWarehouses" + ".title"))
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")
               .attr("href") mustBe "#value"
-            errorSummary.text() mustBe Messages("askSecondaryWarehouses" + ".error.required")
+            errorSummary.text() mustBe messages("askSecondaryWarehouses" + ".error.required")
           }
         }
       }
@@ -377,10 +373,9 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
 
     "user selects no and saves and continues, user is taken to check your answers, also wiping the warehouse list" in {
       val warehouseToBeWiped = Map("foo" -> Warehouse(aTradingName, UkAddress(List.empty, "", None)))
-      setAnswers(emptyUserAnswers.copy(warehouseList = warehouseToBeWiped))
+      setAnswers(emptyUserAnswers.copy(warehouseList = warehouseToBeWiped))(using timeout)
 
-      given
-        .commonPrecondition
+      preconditionHelpers.commonPrecondition
 
       val expectedResult: Some[JsObject] = Some(
         Json.obj(
@@ -395,8 +390,8 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
         whenReady(result) { res =>
           res.status mustBe 303
           res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
-          getAnswers(identifier).map(userAnswers => userAnswers.data) mustBe expectedResult
-          getAnswers(identifier).map(userAnswers => userAnswers.warehouseList).get mustBe Map.empty
+          getAnswers(identifier)(using timeout).map(userAnswers => userAnswers.data) mustBe expectedResult
+          getAnswers(identifier)(using timeout).map(userAnswers => userAnswers.warehouseList).get mustBe Map.empty
 
         }
 
@@ -406,10 +401,9 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
     "when the user selects no" - {
       "should update the session with the new value and redirect to the checkAnswers controller" - {
         "when the session already contains data for page" in {
-          given
-            .commonPrecondition
+          preconditionHelpers.commonPrecondition
 
-          setAnswers(userAnswersForAskSecondaryWarehousesPage.get("yes").get)
+          setAnswers(userAnswersForAskSecondaryWarehousesPage.get("yes").get)(using timeout)
           WsTestClient.withClient { client =>
             val result = createClientRequestPOST(
               client, baseUrl + checkRoutePath, Json.obj("value" -> radioNo)
@@ -418,7 +412,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
             whenReady(result) { res =>
               res.status mustBe 303
               res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
-              val dataStoredForPage = getAnswers(identifier).fold[Option[Boolean]](None)(_.get(AskSecondaryWarehousesPage))
+              val dataStoredForPage = getAnswers(identifier)(using timeout).fold[Option[Boolean]](None)(_.get(AskSecondaryWarehousesPage))
               dataStoredForPage.get mustBe radioNo
             }
           }
@@ -428,7 +422,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
 
     "user selects yes and saves and continues updating the user answers and ramps onto ALF, also NOT wiping the warehouse list" in {
       val warehouseToRemain = Map("foo" -> Warehouse(aTradingName, UkAddress(List.empty, "", None)))
-      setAnswers(emptyUserAnswers.copy(warehouseList = warehouseToRemain))
+      setAnswers(emptyUserAnswers.copy(warehouseList = warehouseToRemain))(using timeout)
 
       val journeyConfigToBePosted: JourneyConfig = JourneyConfig(
         version = 2,
@@ -500,8 +494,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
         ))
       val alfOnRampURL: String = "http://onramp.com"
 
-      given
-        .commonPrecondition
+      preconditionHelpers.commonPrecondition
         .alf.getSuccessResponseFromALFInit(alfOnRampURL)
 
       WsTestClient.withClient { client =>
@@ -515,8 +508,8 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
         whenReady(result1) { res =>
           res.status mustBe 303
           res.header(HeaderNames.LOCATION) mustBe Some(alfOnRampURL)
-          getAnswers(identifier).map(userAnswers => userAnswers.data) mustBe expectedResult
-          getAnswers(identifier).map(userAnswers => userAnswers.warehouseList).get mustBe warehouseToRemain
+          getAnswers(identifier)(using timeout).map(userAnswers => userAnswers.data) mustBe expectedResult
+          getAnswers(identifier)(using timeout).map(userAnswers => userAnswers.warehouseList).get mustBe warehouseToRemain
 
           ALFTestHelper.requestedBodyMatchesExpected(wireMockServer, journeyConfigToBePosted) mustBe true
         }
@@ -530,10 +523,9 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
       setAnswers(
         emptyUserAnswers.copy(warehouseList = warehouseListWith1)
           .set(AskSecondaryWarehousesPage, true).success.value
-      )
+      )(using timeout)
 
-      given
-        .commonPrecondition
+      preconditionHelpers.commonPrecondition
 
       val expectedResult: Some[JsObject] = Some(Json.obj("askSecondaryWarehouses" -> true))
 
@@ -548,8 +540,8 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
         whenReady(result1) { res =>
           res.status mustBe 303
           res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.WarehouseDetailsController.onPageLoad(CheckMode).url)
-          getAnswers(identifier).map(userAnswers => userAnswers.data) mustBe expectedResult
-          getAnswers(identifier).map(userAnswers => userAnswers.warehouseList).get mustBe warehouseListWith1
+          getAnswers(identifier)(using timeout).map(userAnswers => userAnswers.data) mustBe expectedResult
+          getAnswers(identifier)(using timeout).map(userAnswers => userAnswers.warehouseList).get mustBe warehouseListWith1
 
         }
 
@@ -558,10 +550,9 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
 
     "when the user does not select yes or no" - {
       "should return 400 with required error" in {
-        given
-          .commonPrecondition
+        preconditionHelpers.commonPrecondition
 
-        setAnswers(emptyUserAnswers)
+        setAnswers(emptyUserAnswers)(using timeout)
         WsTestClient.withClient { client =>
           val result = createClientRequestPOST(
             client, baseUrl + checkRoutePath, Json.obj("value" -> "")
@@ -570,13 +561,13 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + Messages("askSecondaryWarehouses" + ".title"))
+            page.title must include("Error: " + messages("askSecondaryWarehouses" + ".title"))
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")
               .attr("href") mustBe "#value"
-            errorSummary.text() mustBe Messages("askSecondaryWarehouses" + ".error.required")
+            errorSummary.text() mustBe messages("askSecondaryWarehouses" + ".error.required")
           }
         }
       }

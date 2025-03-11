@@ -19,14 +19,15 @@ package services
 import base.SpecBase
 import connectors.AddressLookupConnector
 import controllers.routes
-import models.alf.init._
+import models.alf.init.*
 import models.alf.{AlfAddress, AlfResponse}
 import models.core.ErrorModel
 import models.{CheckMode, NormalMode}
 import org.mockito.ArgumentMatchers
-import org.mockito.MockitoSugar.{mock, when}
+import org.mockito.Mockito.when
+import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
-import services.AddressLookupState._
+import services.AddressLookupState.*
 
 import scala.concurrent.Future
 

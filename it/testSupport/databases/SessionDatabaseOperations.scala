@@ -10,16 +10,14 @@ import scala.concurrent.duration.Duration
 trait SessionDatabaseOperations {
 
   self: TestConfiguration =>
-
-  val sessionRepository: SessionRepository
-
+  
   def setAnswers(userAnswers: UserAnswers)(implicit timeout: Duration): Unit = Await.result(
-    sessionRepository.set(userAnswers),
+    self.sessionRepository.set(userAnswers),
     timeout
   )
 
   def getAnswers(id: String)(implicit timeout: Duration): Option[UserAnswers] = Await.result(
-    sessionRepository.get(id),
+    self.sessionRepository.get(id),
     timeout
   )
 

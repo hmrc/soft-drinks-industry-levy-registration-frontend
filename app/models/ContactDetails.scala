@@ -22,4 +22,6 @@ case class ContactDetails(fullName: String, position: String, phoneNumber: Strin
 
 object ContactDetails {
   implicit val contactDetailsFormat: Format[ContactDetails] = Json.format[ContactDetails]
+  def unapply(contact: ContactDetails): Option[(String, String, String, String)] =
+    Some((contact.fullName, contact.position, contact.phoneNumber, contact.email))
 }

@@ -2,18 +2,24 @@ package controllers
 
 import models.{ContactDetails, UserAnswers}
 import org.jsoup.Jsoup
-import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
+import org.scalatest.matchers.must.Matchers._
+import org.scalatestplus.mockito.MockitoSugar.mock
 import pages.ContactDetailsPage
 import play.api.http.HeaderNames
-import play.api.i18n.Messages
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.libs.json.{JsObject, JsValue, Json}
-import play.api.test.WsTestClient
+import play.api.test.{FakeRequest, WsTestClient}
+import testSupport.preConditions.PreconditionHelpers
 
 class ContactDetailsControllerISpec extends ControllerITTestHelper {
 
   val normalRoutePath = "/contact-details"
   val checkRoutePath = "/change-contact-details"
 
+  override val preconditionHelpers: PreconditionHelpers = mock[PreconditionHelpers]
+  given messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  given messages: Messages = messagesApi.preferred(FakeRequest())
+  
   val contactDetailsJsObject: collection.Map[String, JsValue] = Json.toJson(contactDetails).as[JsObject].value
   val contactDetailsMap: collection.Map[String, String] = {
     contactDetailsJsObject.map { case (fName, fValue) => fName -> fValue.as[String] }
@@ -25,10 +31,9 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
   "GET " + normalRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the ContactDetails page with no data populated" in {
-        given
-          .commonPrecondition
+        preconditionHelpers.commonPrecondition
 
-        setAnswers(emptyUserAnswers)
+        setAnswers(emptyUserAnswers)(using timeout)
 
         WsTestClient.withClient { client =>
           val result1 = createClientRequestGet(client, baseUrl + normalRoutePath)
@@ -50,10 +55,9 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
 
     s"when the userAnswers contains data for the page" - {
       s"should return OK and render the page with fields populated" in {
-        given
-          .commonPrecondition
+        preconditionHelpers.commonPrecondition
 
-        setAnswers(userAnswers)
+        setAnswers(userAnswers)(using timeout)
 
         WsTestClient.withClient { client =>
           val result1 = createClientRequestGet(client, baseUrl + normalRoutePath)
@@ -73,7 +77,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
         }
       }
     }
-    testOtherSuccessUserTypes(baseUrl + normalRoutePath, Messages("contactDetails" + ".title"))
+    testOtherSuccessUserTypes(baseUrl + normalRoutePath, messages("contactDetails" + ".title"))
     testUnauthorisedUser(baseUrl + normalRoutePath)
     testUserWhoIsUnableToRegister(baseUrl + normalRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)
@@ -82,10 +86,9 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
   "GET " + checkRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the ContactDetails page with no data populated" in {
-        given
-          .commonPrecondition
+        preconditionHelpers.commonPrecondition
 
-        setAnswers(emptyUserAnswers)
+        setAnswers(emptyUserAnswers)(using timeout)
 
         WsTestClient.withClient { client =>
           val result1 = createClientRequestGet(client, baseUrl + checkRoutePath)
@@ -107,10 +110,9 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
 
     s"when the userAnswers contains data for the page" - {
       s"should return OK and render the page with fields populated" in {
-        given
-          .commonPrecondition
+        preconditionHelpers.commonPrecondition
 
-        setAnswers(userAnswers)
+        setAnswers(userAnswers)(using timeout)
 
         WsTestClient.withClient { client =>
           val result1 = createClientRequestGet(client, baseUrl + checkRoutePath)
@@ -138,10 +140,9 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
     "when the user populates answers all questions" - {
       "should update the session with the new values and redirect to the Check Your Answers controller" - {
         "when the session contains no data for page" in {
-          given
-            .commonPrecondition
+          preconditionHelpers.commonPrecondition
 
-          setAnswers(emptyUserAnswers)
+          setAnswers(emptyUserAnswers)(using timeout)
           WsTestClient.withClient { client =>
             val result = createClientRequestPOST(
               client, baseUrl + normalRoutePath, Json.toJson(contactDetailsDiff)
@@ -150,7 +151,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
             whenReady(result) { res =>
               res.status mustBe 303
               res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
-              val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[ContactDetails]](None)(_.get(ContactDetailsPage))
+              val dataStoredForPage = getAnswers(userAnswers.id)(using timeout).fold[Option[ContactDetails]](None)(_.get(ContactDetailsPage))
               dataStoredForPage.nonEmpty mustBe true
               dataStoredForPage.get mustBe contactDetailsDiff
             }
@@ -158,10 +159,9 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
         }
 
         "when the session already contains data for page" in {
-          given
-            .commonPrecondition
+          preconditionHelpers.commonPrecondition
 
-          setAnswers(userAnswers)
+          setAnswers(userAnswers)(using timeout)
           WsTestClient.withClient { client =>
             val result = createClientRequestPOST(
               client, baseUrl + normalRoutePath, Json.toJson(contactDetailsDiff)
@@ -170,7 +170,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
             whenReady(result) { res =>
               res.status mustBe 303
               res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
-              val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[ContactDetails]](None)(_.get(ContactDetailsPage))
+              val dataStoredForPage = getAnswers(userAnswers.id)(using timeout).fold[Option[ContactDetails]](None)(_.get(ContactDetailsPage))
               dataStoredForPage.nonEmpty mustBe true
               dataStoredForPage.get mustBe contactDetailsDiff
             }
@@ -181,10 +181,9 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
 
     "should return 400 with required error" - {
       "when no questions are answered" in {
-        given
-          .commonPrecondition
+        preconditionHelpers.commonPrecondition
 
-        setAnswers(emptyUserAnswers)
+        setAnswers(emptyUserAnswers)(using timeout)
         WsTestClient.withClient { client =>
           val result = createClientRequestPOST(
             client, baseUrl + normalRoutePath, Json.toJson(ContactDetails("", "", "", ""))
@@ -202,17 +201,16 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
               errorSummary
                 .select("a")
                 .attr("href") mustBe "#" + fieldName
-              errorSummary.text() mustBe Messages("contactDetails.error." + fieldName + ".required")
+              errorSummary.text() mustBe messages("contactDetails.error." + fieldName + ".required")
             }
           }
         }
       }
       contactDetailsMap.zipWithIndex.foreach { case ((fieldName, _), index) =>
         "when no answer is given for field " + fieldName in {
-          given
-            .commonPrecondition
+          preconditionHelpers.commonPrecondition
 
-          setAnswers(emptyUserAnswers)
+          setAnswers(emptyUserAnswers)(using timeout)
           val invalidJson = contactDetailsMap.foldLeft(Json.obj()) { case (current, (fn, fv)) =>
             val fieldValue = if (fn == fieldName) {
               ""
@@ -237,7 +235,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
                 .select("a")
                 .attr("href") mustBe "#" + fieldName
 
-              errorSummaryList.text() must include (Messages("contactDetails.error." + fieldName + ".required"))
+              errorSummaryList.text() must include (messages("contactDetails.error." + fieldName + ".required"))
             }
           }
         }
@@ -253,10 +251,9 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
     "when the user populates answers all questions" - {
       "should update the session with the new values and redirect to the index controller" - {
         "when the session contains no data for page" in {
-          given
-            .commonPrecondition
+          preconditionHelpers.commonPrecondition
 
-          setAnswers(emptyUserAnswers)
+          setAnswers(emptyUserAnswers)(using timeout)
           WsTestClient.withClient { client =>
             val result = createClientRequestPOST(
               client, baseUrl + checkRoutePath, Json.toJson(contactDetailsDiff)
@@ -265,7 +262,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
             whenReady(result) { res =>
               res.status mustBe 303
               res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
-              val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[ContactDetails]](None)(_.get(ContactDetailsPage))
+              val dataStoredForPage = getAnswers(userAnswers.id)(using timeout).fold[Option[ContactDetails]](None)(_.get(ContactDetailsPage))
               dataStoredForPage.nonEmpty mustBe true
               dataStoredForPage.get mustBe contactDetailsDiff
             }
@@ -273,10 +270,9 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
         }
 
         "when the session already contains data for page" in {
-          given
-            .commonPrecondition
+          preconditionHelpers.commonPrecondition
 
-          setAnswers(userAnswers)
+          setAnswers(userAnswers)(using timeout)
           WsTestClient.withClient { client =>
             val result = createClientRequestPOST(
               client, baseUrl + checkRoutePath, Json.toJson(contactDetailsDiff)
@@ -285,7 +281,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
             whenReady(result) { res =>
               res.status mustBe 303
               res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
-              val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[ContactDetails]](None)(_.get(ContactDetailsPage))
+              val dataStoredForPage = getAnswers(userAnswers.id)(using timeout).fold[Option[ContactDetails]](None)(_.get(ContactDetailsPage))
               dataStoredForPage.nonEmpty mustBe true
               dataStoredForPage.get mustBe contactDetailsDiff
             }
@@ -296,10 +292,9 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
 
     "should return 400 with required error" - {
       "when no questions are answered" in {
-        given
-          .commonPrecondition
+        preconditionHelpers.commonPrecondition
 
-        setAnswers(emptyUserAnswers)
+        setAnswers(emptyUserAnswers)(using timeout)
         WsTestClient.withClient { client =>
           val result = createClientRequestPOST(
             client, baseUrl + checkRoutePath, Json.toJson(ContactDetails("", "", "", ""))
@@ -317,17 +312,16 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
               errorSummary
                 .select("a")
                 .attr("href") mustBe "#" + fieldName
-              errorSummary.text() mustBe Messages("contactDetails.error." + fieldName + ".required")
+              errorSummary.text() mustBe messages("contactDetails.error." + fieldName + ".required")
             }
           }
         }
       }
       contactDetailsMap.zipWithIndex.foreach { case ((fieldName, _), index) =>
         "when no answer is given for field " + fieldName in {
-          given
-            .commonPrecondition
+          preconditionHelpers.commonPrecondition
 
-          setAnswers(emptyUserAnswers)
+          setAnswers(emptyUserAnswers)(using timeout)
           val invalidJson = contactDetailsMap.foldLeft(Json.obj()) { case (current, (fn, fv)) =>
             val fieldValue = if (fn == fieldName) {
               ""
@@ -350,7 +344,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
               errorSummaryList
                 .select("a")
                 .attr("href") mustBe "#" + fieldName
-              errorSummaryList.text() must include (Messages("contactDetails.error." + fieldName + ".required"))
+              errorSummaryList.text() must include (messages("contactDetails.error." + fieldName + ".required"))
             }
           }
         }

@@ -1,23 +1,30 @@
 package controllers
 
 import org.jsoup.Jsoup
-import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
+import org.scalatest.matchers.must.Matchers.*
+import org.scalatestplus.mockito.MockitoSugar.mock
 import pages.StartDatePage
-import play.api.i18n.Messages
-import play.api.test.WsTestClient
+import play.api.i18n.{Messages, MessagesApi, MessagesProvider}
+import play.api.test.{FakeRequest, WsTestClient}
+import testSupport.preConditions.PreconditionHelpers
+import play.api.test.Helpers.*
+import play.api.i18n.Messages.implicitMessagesProviderToMessages
 
 class CannotRegisterPartnershipControllerISpec extends ControllerITTestHelper {
 
   val normalRoutePath = "/cannot-register-partnership"
+  override val preconditionHelpers: PreconditionHelpers = mock[PreconditionHelpers]
 
   "GET " + normalRoutePath - {
     "should return OK and render the CannotRegisterPartnership page" in {
-      given.commonPrecondition
+      preconditionHelpers.commonPrecondition
 
       val userAnswers = emptyUserAnswers.set(StartDatePage, date).success.value
-      setAnswers(userAnswers)
+      setAnswers(userAnswers)(using timeout)
 
-
+      given messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+      given request: FakeRequest[_] = FakeRequest()
+      given messagesProvider: MessagesProvider = messagesApi.preferred(request)
 
       WsTestClient.withClient { client =>
         val result1 = createClientRequestGet(client, baseUrl + normalRoutePath)
@@ -30,7 +37,7 @@ class CannotRegisterPartnershipControllerISpec extends ControllerITTestHelper {
         }
       }
     }
-    testOtherSuccessUserTypes(baseUrl + normalRoutePath, Messages("cannotRegisterPartnership" + ".title"))
+    testOtherSuccessUserTypes(baseUrl + normalRoutePath, Messages("cannotRegisterPartnership" + ".title")(using messagesProvider))
     testUnauthorisedUser(baseUrl + normalRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)
     testUserWhoIsUnableToRegister(baseUrl + normalRoutePath)

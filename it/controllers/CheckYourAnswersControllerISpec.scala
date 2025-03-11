@@ -5,26 +5,29 @@ import models.OrganisationType.LimitedCompany
 import models.Verify.YesRegister
 import models.{CheckMode, HowManyLitresGlobally}
 import org.jsoup.Jsoup
-import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
-import pages._
+import org.scalatest.matchers.must.Matchers.*
+import org.scalatestplus.mockito.MockitoSugar.mock
+import pages.*
 import play.api.http.HeaderNames
 import play.api.http.Status.{OK, SEE_OTHER}
-import play.api.i18n.Messages
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.libs.json.Json
-import play.api.test.WsTestClient
-
+import play.api.test.{FakeRequest, WsTestClient}
+import testSupport.preConditions.PreconditionHelpers
 
 class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
 
   val route = "/check-your-answers"
+  override val preconditionHelpers: PreconditionHelpers = mock[PreconditionHelpers]
+  given messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  given messages: Messages = messagesApi.preferred(FakeRequest())
 
   "GET " + routes.CheckYourAnswersController.onPageLoad.url - {
     "when the userAnswers contains no data" - {
       "should redirect to verify controller" in {
-        given
-          .commonPrecondition
+        preconditionHelpers.commonPrecondition
 
-        setAnswers(emptyUserAnswers)
+        setAnswers(emptyUserAnswers)(using timeout)
 
         WsTestClient.withClient { client =>
           val result = createClientRequestGet(client, baseUrl + route)
@@ -42,10 +45,9 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
       "and they have populated all pages including litres" - {
         "should render the check your answers page with only the required details" in {
           val userAnswers = userAnswerWithLitresForAllPagesIncludingOnesNotRequired(Large)
-          given
-            .commonPrecondition
+          preconditionHelpers.commonPrecondition
 
-          setAnswers(userAnswers)
+          setAnswers(userAnswers)(using timeout)
 
           WsTestClient.withClient { client =>
             val result = createClientRequestGet(client, baseUrl + route)
@@ -53,7 +55,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
             whenReady(result) { res =>
               res.status mustBe OK
               val page = Jsoup.parse(res.body)
-              page.title must include(Messages("checkYourAnswers.title"))
+              page.title must include(messages("checkYourAnswers.title"))
               page.getElementsByClass("govuk-summary-list").size() mustBe 7
 
               val businessDetails = page.getElementsByClass("govuk-summary-list").first()
@@ -95,10 +97,10 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
       "and they have only populated the required pages and have no litres" - {
         "should render the check your answers page with expected summary items" in {
           val userAnswers = userAnswerWithAllNoAndNoPagesToFilterOut(Large)
-          given
-            .commonPrecondition
 
-          setAnswers(userAnswers)
+          preconditionHelpers.commonPrecondition
+
+          setAnswers(userAnswers)(using timeout)
 
           WsTestClient.withClient { client =>
             val result = createClientRequestGet(client, baseUrl + route)
@@ -106,7 +108,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
             whenReady(result) { res =>
               res.status mustBe OK
               val page = Jsoup.parse(res.body)
-              page.title must include(Messages("checkYourAnswers.title"))
+              page.title must include(messages("checkYourAnswers.title"))
               page.getElementsByClass("govuk-summary-list").size() mustBe 7
 
               val businessDetails = page.getElementsByClass("govuk-summary-list").first()
@@ -155,10 +157,9 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
             .set(ImportsPage, false).success.value
             .remove(HowManyImportsPage).success.value
 
-        given
-            .commonPrecondition
+        preconditionHelpers.commonPrecondition
 
-          setAnswers(userAnswers)
+          setAnswers(userAnswers)(using timeout)
 
           WsTestClient.withClient { client =>
             val result = createClientRequestGet(client, baseUrl + route)
@@ -190,10 +191,9 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
           .set(ImportsPage, true).success.value
           .set(HowManyImportsPage, importsLitres).success.value
 
-        given
-          .commonPrecondition
+        preconditionHelpers.commonPrecondition
 
-        setAnswers(userAnswers)
+        setAnswers(userAnswers)(using timeout)
 
         WsTestClient.withClient { client =>
           val result = createClientRequestGet(client, baseUrl + route)
@@ -220,10 +220,9 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
           .set(OperatePackagingSitesPage, false).success.value
           .remove(HowManyOperatePackagingSitesPage).success.value
 
-        given
-          .commonPrecondition
+        preconditionHelpers.commonPrecondition
 
-        setAnswers(userAnswers)
+        setAnswers(userAnswers)(using timeout)
 
         WsTestClient.withClient { client =>
           val result = createClientRequestGet(client, baseUrl + route)
@@ -252,10 +251,9 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
           .set(ImportsPage, false).success.value
           .remove(HowManyImportsPage).success.value
 
-        given
-          .commonPrecondition
+        preconditionHelpers.commonPrecondition
 
-        setAnswers(userAnswers)
+        setAnswers(userAnswers)(using timeout)
 
         WsTestClient.withClient { client =>
           val result = createClientRequestGet(client, baseUrl + route)
@@ -284,10 +282,9 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
           .set(ImportsPage, false).success.value
           .remove(HowManyImportsPage).success.value
 
-        given
-          .commonPrecondition
+        preconditionHelpers.commonPrecondition
 
-        setAnswers(userAnswers)
+        setAnswers(userAnswers)(using timeout)
 
         WsTestClient.withClient { client =>
           val result = createClientRequestGet(client, baseUrl + route)
@@ -314,10 +311,9 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
           .set(ContractPackingPage, false).success.value
           .remove(HowManyContractPackingPage).success.value
 
-        given
-          .commonPrecondition
+        preconditionHelpers.commonPrecondition
 
-        setAnswers(userAnswers)
+        setAnswers(userAnswers)(using timeout)
 
         WsTestClient.withClient { client =>
           val result = createClientRequestGet(client, baseUrl + route)
@@ -344,10 +340,9 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
           .set(ImportsPage, false).success.value
           .remove(HowManyImportsPage).success.value
 
-        given
-          .commonPrecondition
+        preconditionHelpers.commonPrecondition
 
-        setAnswers(userAnswers)
+        setAnswers(userAnswers)(using timeout)
 
         WsTestClient.withClient { client =>
           val result = createClientRequestGet(client, baseUrl + route)
@@ -375,10 +370,9 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
       "and they have populated all pages including litres" - {
         "should render the check your answers page with only the required details" in {
           val userAnswers = userAnswerWithLitresForAllPagesIncludingOnesNotRequired(Small)
-          given
-            .commonPrecondition
+          preconditionHelpers.commonPrecondition
 
-          setAnswers(userAnswers)
+          setAnswers(userAnswers)(using timeout)
 
           WsTestClient.withClient { client =>
             val result = createClientRequestGet(client, baseUrl + route)
@@ -386,7 +380,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
             whenReady(result) { res =>
               res.status mustBe OK
               val page = Jsoup.parse(res.body)
-              page.title must include(Messages("checkYourAnswers.title"))
+              page.title must include(messages("checkYourAnswers.title"))
               page.getElementsByClass("govuk-summary-list").size() mustBe 8
 
               val businessDetails = page.getElementsByClass("govuk-summary-list").first()
@@ -432,10 +426,9 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
         "should redirect to doNotRegister page" in {
           val userAnswers = userAnswerWithAllNoAndNoPagesToFilterOut(Small)
             .set(ThirdPartyPackagersPage, false).success.value
-          given
-            .commonPrecondition
+          preconditionHelpers.commonPrecondition
 
-          setAnswers(userAnswers)
+          setAnswers(userAnswers)(using timeout)
 
           WsTestClient.withClient { client =>
             val result = createClientRequestGet(client, baseUrl + route)
@@ -459,10 +452,9 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
           .set(ImportsPage, false).success.value
           .remove(HowManyImportsPage).success.value
 
-        given
-          .commonPrecondition
+        preconditionHelpers.commonPrecondition
 
-        setAnswers(userAnswers)
+        setAnswers(userAnswers)(using timeout)
 
         WsTestClient.withClient { client =>
           val result = createClientRequestGet(client, baseUrl + route)
@@ -482,10 +474,9 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
           .set(ContractPackingPage, false).success.value
           .remove(HowManyContractPackingPage).success.value
 
-        given
-          .commonPrecondition
+        preconditionHelpers.commonPrecondition
 
-        setAnswers(userAnswers)
+        setAnswers(userAnswers)(using timeout)
 
         WsTestClient.withClient { client =>
           val result = createClientRequestGet(client, baseUrl + route)
@@ -514,10 +505,9 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
           .set(ImportsPage, false).success.value
           .remove(HowManyImportsPage).success.value
 
-        given
-          .commonPrecondition
+        preconditionHelpers.commonPrecondition
 
-        setAnswers(userAnswers)
+        setAnswers(userAnswers)(using timeout)
 
         WsTestClient.withClient { client =>
           val result = createClientRequestGet(client, baseUrl + route)
@@ -545,10 +535,9 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
           .set(ImportsPage, false).success.value
           .remove(HowManyImportsPage).success.value
 
-        given
-          .commonPrecondition
+        preconditionHelpers.commonPrecondition
 
-        setAnswers(userAnswers)
+        setAnswers(userAnswers)(using timeout)
 
         WsTestClient.withClient { client =>
           val result = createClientRequestGet(client, baseUrl + route)
@@ -575,10 +564,9 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
           .set(ContractPackingPage, false).success.value
           .remove(HowManyContractPackingPage).success.value
 
-        given
-          .commonPrecondition
+        preconditionHelpers.commonPrecondition
 
-        setAnswers(userAnswers)
+        setAnswers(userAnswers)(using timeout)
 
         WsTestClient.withClient { client =>
           val result = createClientRequestGet(client, baseUrl + route)
@@ -608,10 +596,9 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
           .set(ImportsPage, false).success.value
           .remove(HowManyImportsPage).success.value
 
-        given
-          .commonPrecondition
+        preconditionHelpers.commonPrecondition
 
-        setAnswers(userAnswers)
+        setAnswers(userAnswers)(using timeout)
 
         WsTestClient.withClient { client =>
           val result = createClientRequestGet(client, baseUrl + route)
@@ -639,10 +626,9 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
           .set(OperatePackagingSitesPage, false).success.value
           .remove(HowManyOperatePackagingSitesPage).success.value
 
-        given
-          .commonPrecondition
+        preconditionHelpers.commonPrecondition
 
-        setAnswers(userAnswers)
+        setAnswers(userAnswers)(using timeout)
 
         WsTestClient.withClient { client =>
           val result = createClientRequestGet(client, baseUrl + route)
@@ -668,10 +654,9 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
         val userAnswers = userAnswerWithLitresForAllPagesIncludingOnesNotRequired(Small)
           .set(ThirdPartyPackagersPage, false).success.value
 
-        given
-          .commonPrecondition
+        preconditionHelpers.commonPrecondition
 
-        setAnswers(userAnswers)
+        setAnswers(userAnswers)(using timeout)
 
         WsTestClient.withClient { client =>
           val result = createClientRequestGet(client, baseUrl + route)
@@ -699,10 +684,9 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
           .set(ImportsPage, false).success.value
           .remove(HowManyImportsPage).success.value
 
-        given
-          .commonPrecondition
+        preconditionHelpers.commonPrecondition
 
-        setAnswers(userAnswers)
+        setAnswers(userAnswers)(using timeout)
 
         WsTestClient.withClient { client =>
           val result = createClientRequestGet(client, baseUrl + route)
@@ -731,10 +715,9 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
           .set(ImportsPage, false).success.value
           .remove(HowManyImportsPage).success.value
 
-        given
-          .commonPrecondition
+        preconditionHelpers.commonPrecondition
 
-        setAnswers(userAnswers)
+        setAnswers(userAnswers)(using timeout)
 
         WsTestClient.withClient { client =>
           val result = createClientRequestGet(client, baseUrl + route)
@@ -761,10 +744,9 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
           .set(OperatePackagingSitesPage, false).success.value
           .remove(HowManyOperatePackagingSitesPage).success.value
 
-        given
-          .commonPrecondition
+        preconditionHelpers.commonPrecondition
 
-        setAnswers(userAnswers)
+        setAnswers(userAnswers)(using timeout)
 
         WsTestClient.withClient { client =>
           val result = createClientRequestGet(client, baseUrl + route)
@@ -791,10 +773,9 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
           .set(ImportsPage, false).success.value
           .remove(HowManyImportsPage).success.value
 
-        given
-          .commonPrecondition
+        preconditionHelpers.commonPrecondition
 
-        setAnswers(userAnswers)
+        setAnswers(userAnswers)(using timeout)
 
         WsTestClient.withClient { client =>
           val result = createClientRequestGet(client, baseUrl + route)
@@ -822,10 +803,9 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
           .set(ContractPackingPage, false).success.value
           .remove(HowManyContractPackingPage).success.value
 
-        given
-          .commonPrecondition
+        preconditionHelpers.commonPrecondition
 
-        setAnswers(userAnswers)
+        setAnswers(userAnswers)(using timeout)
 
         WsTestClient.withClient { client =>
           val result = createClientRequestGet(client, baseUrl + route)
@@ -854,10 +834,9 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
           .set(OperatePackagingSitesPage, false).success.value
           .remove(HowManyOperatePackagingSitesPage).success.value
 
-        given
-          .commonPrecondition
+        preconditionHelpers.commonPrecondition
 
-        setAnswers(userAnswers)
+        setAnswers(userAnswers)(using timeout)
 
         WsTestClient.withClient { client =>
           val result = createClientRequestGet(client, baseUrl + route)
@@ -889,10 +868,9 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
           .set(ImportsPage, false).success.value
           .remove(HowManyImportsPage).success.value
 
-        given
-          .commonPrecondition
+        preconditionHelpers.commonPrecondition
 
-        setAnswers(userAnswers)
+        setAnswers(userAnswers)(using timeout)
 
         WsTestClient.withClient { client =>
           val result = createClientRequestGet(client, baseUrl + route)
@@ -911,10 +889,9 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
       "and they have populated all pages including litres" - {
         "should render the check your answers page with only the required details" in {
           val userAnswers = userAnswerWithLitresForAllPagesIncludingOnesNotRequired(HowManyLitresGlobally.None)
-          given
-            .commonPrecondition
+          preconditionHelpers.commonPrecondition
 
-          setAnswers(userAnswers)
+          setAnswers(userAnswers)(using timeout)
 
           WsTestClient.withClient { client =>
             val result = createClientRequestGet(client, baseUrl + route)
@@ -922,7 +899,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
             whenReady(result) { res =>
               res.status mustBe OK
               val page = Jsoup.parse(res.body)
-              page.title must include(Messages("checkYourAnswers.title"))
+              page.title must include(messages("checkYourAnswers.title"))
               page.getElementsByClass("govuk-summary-list").size() mustBe 6
 
               val businessDetails = page.getElementsByClass("govuk-summary-list").first()
@@ -959,10 +936,9 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
       "and they have only populated the required pages and have no litres" - {
         "should redirect to doNotRegister page" in {
           val userAnswers = userAnswerWithAllNoAndNoPagesToFilterOut(HowManyLitresGlobally.None)
-          given
-            .commonPrecondition
+          preconditionHelpers.commonPrecondition
 
-          setAnswers(userAnswers)
+          setAnswers(userAnswers)(using timeout)
 
           WsTestClient.withClient { client =>
             val result = createClientRequestGet(client, baseUrl + route)
@@ -985,10 +961,9 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
             .set(ImportsPage, true).success.value
             .set(HowManyImportsPage, importsLitres).success.value
 
-          given
-            .commonPrecondition
+          preconditionHelpers.commonPrecondition
 
-          setAnswers(userAnswers)
+          setAnswers(userAnswers)(using timeout)
 
           WsTestClient.withClient { client =>
             val result = createClientRequestGet(client, baseUrl + route)
@@ -1019,10 +994,9 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
             .set(ContractPackingPage, true).success.value
             .set(HowManyContractPackingPage, contractPackingLitres).success.value
 
-          given
-            .commonPrecondition
+          preconditionHelpers.commonPrecondition
 
-          setAnswers(userAnswers)
+          setAnswers(userAnswers)(using timeout)
 
           WsTestClient.withClient { client =>
             val result = createClientRequestGet(client, baseUrl + route)
@@ -1053,10 +1027,9 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
             .set(ImportsPage, true).success.value
             .set(HowManyImportsPage, importsLitres).success.value
 
-          given
-            .commonPrecondition
+          preconditionHelpers.commonPrecondition
 
-          setAnswers(userAnswers)
+          setAnswers(userAnswers)(using timeout)
 
           WsTestClient.withClient { client =>
             val result = createClientRequestGet(client, baseUrl + route)
@@ -1080,7 +1053,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
       }
     }
 
-    testOtherSuccessUserTypes(baseUrl + route, Messages("checkYourAnswers.title"), fullExampleUserAnswers)
+    testOtherSuccessUserTypes(baseUrl + route, messages("checkYourAnswers.title"), fullExampleUserAnswers)
     testUnauthorisedUser(baseUrl + route)
     testUserWhoIsUnableToRegister(baseUrl + route)
     testAuthenticatedUserButNoUserAnswers(baseUrl + route)
@@ -1088,10 +1061,9 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
 
   "POST " + routes.CheckYourAnswersController.onPageLoad.url - {
     "should redirect to verify controller when user answers empty" in {
-      given
-        .commonPrecondition
+      preconditionHelpers.commonPrecondition
 
-      setAnswers(emptyUserAnswers)
+      setAnswers(emptyUserAnswers)(using timeout)
 
       WsTestClient.withClient { client =>
         val result = createClientRequestPOST(client, baseUrl + route, Json.obj())
@@ -1105,8 +1077,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
 
     "should create a subscription and send to back end then redirect to the next page" - {
       "when all required user answers are present" in {
-        given
-          .commonPrecondition
+        preconditionHelpers.commonPrecondition
           .sdilBackend.createSubscription("0000001611")
 
         val userAnswers = {
@@ -1127,7 +1098,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
             .set(WarehouseDetailsPage, true).success.value
             .set(ContactDetailsPage, contactDetails).success.value
         }
-        setAnswers(userAnswers)
+        setAnswers(userAnswers)(using timeout)
 
         WsTestClient.withClient { client =>
           val result = createClientRequestPOST(client, baseUrl + route, Json.obj())
@@ -1142,8 +1113,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
 
     "should render the error page" - {
       "when the sending of the created subscription fails" in {
-        given
-          .commonPrecondition
+        preconditionHelpers.commonPrecondition
           .sdilBackend.createSubscriptionError("0000001611")
 
         val userAnswers = {
@@ -1164,7 +1134,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
             .set(WarehouseDetailsPage, true).success.value
             .set(ContactDetailsPage, contactDetails).success.value
         }
-        setAnswers(userAnswers)
+        setAnswers(userAnswers)(using timeout)
 
         WsTestClient.withClient { client =>
           val result = createClientRequestPOST(client, baseUrl + route, Json.obj())
