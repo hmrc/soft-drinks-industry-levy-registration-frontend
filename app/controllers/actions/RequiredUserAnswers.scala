@@ -17,10 +17,11 @@
 package controllers.actions
 
 import controllers.routes
-import models.HowManyLitresGlobally._
+import izumi.reflect.Tag
+import models.HowManyLitresGlobally.*
 import models.requests.DataRequest
-import models.{ CheckMode, ContactDetails, HowManyLitresGlobally, LitresInBands, OrganisationType, UserTypeCheck, Verify }
-import pages._
+import models.{CheckMode, ContactDetails, HowManyLitresGlobally, LitresInBands, OrganisationType, UserTypeCheck, Verify}
+import pages.*
 import play.api.libs.json.Reads
 import play.api.mvc.Result
 import play.api.mvc.Results.Redirect
@@ -28,7 +29,7 @@ import utilities.GenericLogger
 
 import java.time.LocalDate
 import javax.inject.Inject
-import scala.concurrent.{ ExecutionContext, Future }
+import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
 
 class RequiredUserAnswers @Inject() (genericLogger: GenericLogger)(implicit val executionContext: ExecutionContext) extends ActionHelpers {
@@ -50,7 +51,7 @@ class RequiredUserAnswers @Inject() (genericLogger: GenericLogger)(implicit val 
     }
   }
 
-  private[controllers] def returnMissingAnswers[A, B](list: List[RequiredPage[_, _, _]])(implicit request: DataRequest[_]): List[RequiredPage[_, _, _]] = {
+  private[controllers] def returnMissingAnswers[A: Tag, B: Tag](list: List[RequiredPage[_, _, _]])(implicit request: DataRequest[_]): List[RequiredPage[_, _, _]] = {
     list.filterNot { listItem =>
       val currentPageFromUserAnswers: Option[A] = request.userAnswers.get(listItem.pageRequired.asInstanceOf[QuestionPage[A]])(listItem.reads.asInstanceOf[Reads[A]])
       (currentPageFromUserAnswers.isDefined, listItem.basedOnPreviousPages.nonEmpty) match {

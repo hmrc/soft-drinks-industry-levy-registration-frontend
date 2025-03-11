@@ -518,9 +518,7 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
       )
       val res = requiredUserAnswers.returnMissingAnswers(requiredUserAnswers.journey)
       val pageTypes = res.map(_.pageRequired)
-      //val pageTypes = res.map(_.pageRequired)
 
-      // Check that we got exactly these pages in this order
       pageTypes mustBe List(
         VerifyPage,
         OrganisationTypePage,
@@ -528,18 +526,7 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
         ContractPackingPage,
         ImportsPage
       )
-
-      // Check that all entries have empty basedOnPreviousPages
       res.forall(_.basedOnPreviousPages.isEmpty) mustBe true
-
-      /*res mustBe
-        List(
-          RequiredPage(VerifyPage, List.empty)(implicitly[Reads[Verify]]),
-          RequiredPage(OrganisationTypePage, List.empty)(implicitly[Reads[OrganisationType]]),
-          RequiredPage(HowManyLitresGloballyPage, List.empty)(implicitly[Reads[HowManyLitresGlobally]]),
-          RequiredPage(ContractPackingPage, List.empty)(implicitly[Reads[Boolean]]),
-          RequiredPage(ImportsPage, List.empty)(implicitly[Reads[Boolean]]),
-        )*/
     }
 
     "should return all but 1 missing answers when user answers is fully populated apart from 1 answer" in {
