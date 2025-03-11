@@ -30,6 +30,7 @@ import java.time.{ Clock, Instant }
 import java.util.concurrent.TimeUnit
 import javax.inject.{ Inject, Singleton }
 import scala.concurrent.{ ExecutionContext, Future }
+import org.mongodb.scala.SingleObservableFuture
 
 @Singleton
 class SessionRepository @Inject() (
@@ -45,7 +46,7 @@ class SessionRepository @Inject() (
         Indexes.ascending("lastUpdated"),
         IndexOptions()
           .name("lastUpdatedIdx")
-          .expireAfter(appConfig.cacheTtl, TimeUnit.SECONDS)))) {
+          .expireAfter(appConfig.cacheTtl.toLong, TimeUnit.SECONDS)))) {
 
   implicit val instantFormat: Format[Instant] = MongoJavatimeFormats.instantFormat
 

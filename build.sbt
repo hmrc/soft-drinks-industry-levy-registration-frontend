@@ -14,7 +14,7 @@ lazy val root = (project in file("."))
   .settings(majorVersion := 0, libraryDependencySchemes += "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always)
   .settings(ThisBuild / useSuperShell := false)
   .settings(
-    scalaVersion := "2.13.12",
+    scalaVersion := "3.3.4",
     name := appName,
     RoutesKeys.routesImport ++= Seq(
       "models._",

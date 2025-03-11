@@ -22,4 +22,5 @@ case class WarehousesTradingName(warehouseTradingName: String)
 
 object WarehousesTradingName {
   implicit val format: OFormat[WarehousesTradingName] = Json.format[WarehousesTradingName]
+  def unapply(wtn: WarehousesTradingName): Option[String] = Some(wtn.warehouseTradingName)
 }

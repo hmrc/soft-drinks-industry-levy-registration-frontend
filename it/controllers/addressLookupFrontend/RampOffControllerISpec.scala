@@ -40,7 +40,7 @@ class RampOffControllerISpec extends ControllerITTestHelper {
         "when ALF returns a valid address with a trading name" - {
           "should add the address to useranswers and redirect to the next page" - {
             "when no address exists in the database" in {
-              given
+              `given`
                 .commonPrecondition
                 .alf.getAddress(alfId, true)
               setAnswers(emptyUserAnswers)
@@ -66,7 +66,7 @@ class RampOffControllerISpec extends ControllerITTestHelper {
 
           "should override the address in useranswers and redirect to the next page" - {
             "when an address exists in the database" in {
-              given
+              `given`
                 .commonPrecondition
                 .alf.getAddress(alfId, true)
               setAnswers(emptyUserAnswers)
@@ -94,7 +94,7 @@ class RampOffControllerISpec extends ControllerITTestHelper {
         "when ALF returns a valid address with no trading name" - {
           "should add the address to useranswers and redirect to the next page" - {
             "when no address exists in the database" in {
-              given
+              `given`
                 .commonPrecondition
                 .alf.getAddress(alfId, false)
               val userAnswersBefore = emptyUserAnswers.copy(address = Some(UkAddress(List.empty, "", Some("foo"))))
@@ -122,7 +122,7 @@ class RampOffControllerISpec extends ControllerITTestHelper {
 
           "should override the address in useranswers and redirect to the next page" - {
             "when an address exists in the database" in {
-              given
+              `given`
                 .commonPrecondition
                 .alf.getAddress(alfId, true)
               setAnswers(emptyUserAnswers)
@@ -149,7 +149,7 @@ class RampOffControllerISpec extends ControllerITTestHelper {
 
         s"return $INTERNAL_SERVER_ERROR when" - {
           "alf returns error" in {
-            given
+            `given`
               .commonPrecondition
               .alf.getBadAddress(alfId)
             setAnswers(emptyUserAnswers)
@@ -176,7 +176,7 @@ class RampOffControllerISpec extends ControllerITTestHelper {
         "should not add the warehouse to useranswers but add a new alfResponseForLookupState" - {
           "then redirect to the trading name page when the request is valid and address is returned from ALF without a trading name and" - {
             "no warehouses or alfResponseForLookupState exist in DB currently for SDILID provided" in {
-              given
+              `given`
                 .commonPrecondition
                 .alf.getAddress(alfId, false)
               setAnswers(emptyUserAnswers)
@@ -204,7 +204,7 @@ class RampOffControllerISpec extends ControllerITTestHelper {
               val userAnswersBefore = emptyUserAnswers.copy(
                 warehouseList = Map(sdilId -> Warehouse(aTradingName, UkAddress(List.empty, "foo", Some("wizz")))),
                 alfResponseForLookupState = Some(AddressResponseForLookupState(UkAddress(List.empty, "foo", Some("wizz")), PackingDetails, sdilId)))
-              given
+              `given`
                 .commonPrecondition
                 .alf.getAddress(alfId, false)
               setAnswers(userAnswersBefore)
@@ -233,7 +233,7 @@ class RampOffControllerISpec extends ControllerITTestHelper {
           "no address exists in DB currently for SDILID provided" in {
             val sdilId: String = "foo"
             val alfId: String = "bar"
-            given
+            `given`
               .commonPrecondition
               .alf.getAddress(alfId, true)
             setAnswers(emptyUserAnswers)
@@ -260,7 +260,7 @@ class RampOffControllerISpec extends ControllerITTestHelper {
             val sdilId: String = "foo"
             val alfId: String = "bar"
             val userAnswersBefore = emptyUserAnswers.copy(warehouseList = Map(sdilId -> Warehouse(aTradingName, UkAddress(List.empty, "foo", Some("wizz")))))
-            given
+            `given`
               .commonPrecondition
               .alf.getAddress(alfId, true)
             setAnswers(userAnswersBefore)
@@ -285,7 +285,7 @@ class RampOffControllerISpec extends ControllerITTestHelper {
         }
         s"return $INTERNAL_SERVER_ERROR when" - {
           "alf returns error" in {
-            given
+            `given`
               .commonPrecondition
               .alf.getBadAddress(alfId)
             setAnswers(emptyUserAnswers)
@@ -312,7 +312,7 @@ class RampOffControllerISpec extends ControllerITTestHelper {
         "should not add the packagingSite to useranswers but add a new alfResponseForLookupState" - {
           "then redirect to the trading name page when the request is valid and address is returned from ALF without a trading name and" - {
             "no packaging sites or alfResponseForLookupState exist in DB currently for SDILID provided" in {
-              given
+              `given`
                 .commonPrecondition
                 .alf.getAddress(alfId, false)
               setAnswers(emptyUserAnswers)
@@ -339,7 +339,7 @@ class RampOffControllerISpec extends ControllerITTestHelper {
               val userAnswersBefore = emptyUserAnswers.copy(
                 packagingSiteList = Map(sdilId -> Site(UkAddress(List.empty, "foo", Some("wizz")), None, aTradingName, None)),
                 alfResponseForLookupState = Some(AddressResponseForLookupState(UkAddress(List.empty, "foo", Some("wizz")), WarehouseDetails, sdilId)))
-              given
+              `given`
                 .commonPrecondition
                 .alf.getAddress(alfId, false)
               setAnswers(userAnswersBefore)
@@ -367,7 +367,7 @@ class RampOffControllerISpec extends ControllerITTestHelper {
 
         "redirect to packaging site details page when request is valid and address is returned from ALF with a trading name and" - {
           "no address exists in DB currently for SDILID provided" in {
-            given
+            `given`
               .commonPrecondition
               .alf.getAddress(alfId)
             setAnswers(emptyUserAnswers)
@@ -393,7 +393,7 @@ class RampOffControllerISpec extends ControllerITTestHelper {
           }
           "an address already exists in DB currently for SDILID provided" in {
             val userAnswersBefore = emptyUserAnswers.copy(packagingSiteList = Map(sdilId -> Site(UkAddress(List.empty, "foo", Some("wizz")), None, aTradingName, None)))
-            given
+            `given`
               .commonPrecondition
               .alf.getAddress(alfId)
             setAnswers(userAnswersBefore)
@@ -419,7 +419,7 @@ class RampOffControllerISpec extends ControllerITTestHelper {
         }
         s"return $INTERNAL_SERVER_ERROR when" - {
           "alf returns error" in {
-            given
+            `given`
               .commonPrecondition
               .alf.getBadAddress(alfId)
             setAnswers(emptyUserAnswers)
