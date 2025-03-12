@@ -1083,7 +1083,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
       }
     }
 
-    testOtherSuccessUserTypes(baseUrl + route, "checkYourAnswers.title", fullExampleUserAnswers)
+    testOtherSuccessUserTypes(baseUrl + route, messages("checkYourAnswers.title"), fullExampleUserAnswers)
     testUnauthorisedUser(baseUrl + route)
     testUserWhoIsUnableToRegister(baseUrl + route)
     testAuthenticatedUserButNoUserAnswers(baseUrl + route)
