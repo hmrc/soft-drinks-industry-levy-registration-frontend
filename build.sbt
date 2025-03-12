@@ -49,7 +49,7 @@ lazy val root = (project in file("."))
       "-Wconf:msg=unused implicit parameter*:s",
       "-Wconf:msg=unused local definition*:s",
       "-Wconf:msg=unused-patterns&src=routes/.*:s",
-      "-Wconf:msg=exhaustive*:s",
+      "-Wconf:msg=exhaustive*:s"
     ),
     libraryDependencies ++= AppDependencies.all(),
     retrieveManaged := true,
