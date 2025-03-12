@@ -20,7 +20,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
 
   given messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   given messages: Messages = messagesApi.preferred(FakeRequest())
-  
+
   "GET " + routes.CheckYourAnswersController.onPageLoad.url - {
     "when the userAnswers contains no data" - {
       "should redirect to verify controller" in {
@@ -158,7 +158,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
             .set(ImportsPage, false).success.value
             .remove(HowManyImportsPage).success.value
 
-        `given`
+         `given`
             .commonPrecondition
 
           setAnswers(userAnswers)

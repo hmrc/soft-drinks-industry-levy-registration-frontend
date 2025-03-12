@@ -69,7 +69,7 @@ class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
         }
       }
     }
-    testOtherSuccessUserTypes(baseUrl + normalRoutePath, "packAtBusinessAddress" + ".title")
+    testOtherSuccessUserTypes(baseUrl + normalRoutePath, messages("packAtBusinessAddress" + ".title"))
     testUnauthorisedUser(baseUrl + normalRoutePath)
     testUserWhoIsUnableToRegister(baseUrl + normalRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)  }

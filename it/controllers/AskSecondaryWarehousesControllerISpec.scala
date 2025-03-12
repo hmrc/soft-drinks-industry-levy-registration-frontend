@@ -74,7 +74,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
         }
       }
     }
-    testOtherSuccessUserTypes(baseUrl + normalRoutePath, "askSecondaryWarehouses" + ".title")
+    testOtherSuccessUserTypes(baseUrl + normalRoutePath, messages("askSecondaryWarehouses" + ".title"))
     testUnauthorisedUser(baseUrl + normalRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)
     testUserWhoIsUnableToRegister(baseUrl + normalRoutePath)
@@ -133,7 +133,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
       }
     }
 
-    testOtherSuccessUserTypes(baseUrl + checkRoutePath, "askSecondaryWarehouses" + ".title")
+    testOtherSuccessUserTypes(baseUrl + checkRoutePath, messages("askSecondaryWarehouses" + ".title"))
     testUnauthorisedUser(baseUrl + checkRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath)
     testUserWhoIsUnableToRegister(baseUrl + checkRoutePath)

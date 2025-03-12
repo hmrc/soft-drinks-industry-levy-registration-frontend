@@ -1,13 +1,15 @@
 package test
 
 import controllers.ControllerITTestHelper
-import org.scalatest.matchers.must.Matchers._
-import play.api.libs.json.Json
+import org.scalatest.matchers.must.Matchers.*
+import play.api.libs.json.*
 import play.api.libs.ws.DefaultWSCookie
 import play.api.test.Helpers.{CONTENT_TYPE, JSON, LOCATION}
 import play.api.test.WsTestClient
 import play.api.libs.ws.JsonBodyWritables.writeableOf_JsValue
 import play.api.libs.ws.DefaultBodyReadables.readableAsByteArray
+
+import java.nio.charset.StandardCharsets
 
 class AddressFrontendStubControllerIntegrationSpec extends ControllerITTestHelper {
 
@@ -43,7 +45,10 @@ class AddressFrontendStubControllerIntegrationSpec extends ControllerITTestHelpe
             "\"country\":{\"code\":\"GB\",\"name\":\"United Kingdom\"}}}"
         whenReady(result1) { res =>
           res.status mustBe 200
-          res.body mustEqual addressConfirmed
+          val responseBody = new String(res.bodyAsBytes.toArray, "UTF-8")
+          val jsonResponse = Json.parse(responseBody)
+          val expectedJson = Json.parse(addressConfirmed)
+          jsonResponse mustEqual expectedJson
         }
       }
     }

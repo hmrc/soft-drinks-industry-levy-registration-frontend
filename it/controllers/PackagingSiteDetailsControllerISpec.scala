@@ -13,10 +13,10 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
 
   val normalRoutePath = "/packaging-site-details"
   val checkRoutePath = "/change-packaging-site-details"
-  
+
   given messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   given messages: Messages = messagesApi.preferred(FakeRequest())
-  
+
   "GET " + normalRoutePath - {
     "when the userAnswers contains 0 packaging sites" - {
       s"must redirect to $PackAtBusinessAddressPage on a GET if the packaging site list is empty" in {
@@ -124,7 +124,7 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
         }
       }
     }
-    testOtherSuccessUserTypes(baseUrl + normalRoutePath, ("packagingSiteDetails" + ".title1Site"), userAnswersWith1PackingSite)
+    testOtherSuccessUserTypes(baseUrl + normalRoutePath, messages("packagingSiteDetails" + ".title1Site"), userAnswersWith1PackingSite)
     testUnauthorisedUser(baseUrl + normalRoutePath)
     testUserWhoIsUnableToRegister(baseUrl + normalRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)  }
