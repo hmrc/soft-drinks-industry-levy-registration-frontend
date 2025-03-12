@@ -4,9 +4,9 @@ import models.{CheckMode, LitresInBands, NormalMode}
 import org.jsoup.Jsoup
 import pages.HowManyOperatePackagingSitesPage
 import play.api.http.HeaderNames
-import play.api.i18n.Messages
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.libs.json.Json
-import play.api.test.WsTestClient
+import play.api.test.{FakeRequest, WsTestClient}
 import org.scalatest.matchers.must.Matchers._
 
 
@@ -58,13 +58,13 @@ class HowManyOperatePackagingSitesControllerISpec extends LitresISpecHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include(Messages("howManyOperatePackagingSites" + ".title"))
+              page.title must include(messages("howManyOperatePackagingSites" + ".title"))
               testLitresInBandsWithPrepopulatedData(page)
             }
           }
         }
       }
-      testOtherSuccessUserTypes(baseUrl + path, Messages("howManyOperatePackagingSites" + ".title"))
+      testOtherSuccessUserTypes(baseUrl + path, messages("howManyOperatePackagingSites" + ".title"))
       testUnauthorisedUser(baseUrl + path)
       testUserWhoIsUnableToRegister(baseUrl + path)
       testAuthenticatedUserButNoUserAnswers(baseUrl + path)
@@ -116,7 +116,7 @@ class HowManyOperatePackagingSitesControllerISpec extends LitresISpecHelper {
       }
 
       "should return 400 with required error" - {
-        val errorTitle = "Error: " + Messages("howManyOperatePackagingSites.title")
+        val errorTitle = "Error: " + messages("howManyOperatePackagingSites.title")
 
         "when no questions are answered" in {
           `given`

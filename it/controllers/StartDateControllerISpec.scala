@@ -14,7 +14,7 @@ import java.time.LocalDate
 class StartDateControllerISpec extends ControllerITTestHelper {
   given messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   given messages: Messages = messagesApi.preferred(FakeRequest())
-  
+
   val normalRoutePath = "/start-date"
   val checkRoutePath = "/change-start-date"
 
@@ -206,13 +206,14 @@ class StartDateControllerISpec extends ControllerITTestHelper {
             whenReady(result) { res =>
               res.status mustBe 400
               val page = Jsoup.parse(res.body)
-              page.title must include("Error: " + "startDate" + ".title")
+              page.title must include("Error: " + messages("startDate" + ".title"))
               val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
                 .first()
               errorSummary
                 .select("a")
                 .attr("href") mustBe "#startDate.day"
-              errorSummary.text() mustBe s"startDate.error.required.two, ${otherFields(0)}, ${otherFields(1)}"
+              errorSummary.text() mustBe messages("startDate" + ".error.required.two", otherFields(0), otherFields(1)
+              )
             }
           }
         }
@@ -234,13 +235,14 @@ class StartDateControllerISpec extends ControllerITTestHelper {
             whenReady(result) { res =>
               res.status mustBe 400
               val page = Jsoup.parse(res.body)
-              page.title must include("Error: " + "startDate" + ".title")
+              page.title must include("Error: " + messages("startDate" + ".title"))
               val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
                 .first()
               errorSummary
                 .select("a")
                 .attr("href") mustBe "#startDate.day"
-              errorSummary.text() mustBe s"startDate.error.required , ${field}"
+              errorSummary.text() mustBe messages("startDate" + ".error.required", field
+              )
             }
           }
         }
@@ -263,13 +265,13 @@ class StartDateControllerISpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + "startDate" + ".title")
+            page.title must include("Error: " + messages("startDate" + ".title"))
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")
               .attr("href") mustBe "#startDate.day"
-            errorSummary.text() mustBe ("startDate" + ".error.required.all"
+            errorSummary.text() mustBe messages("startDate" + ".error.required.all"
             )
           }
         }
@@ -292,7 +294,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + "startDate" + ".title")
+            page.title must include("Error: " + messages("startDate" + ".title"))
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
@@ -376,13 +378,14 @@ class StartDateControllerISpec extends ControllerITTestHelper {
             whenReady(result) { res =>
               res.status mustBe 400
               val page = Jsoup.parse(res.body)
-              page.title must include("Error: " + "startDate" + ".title")
+              page.title must include("Error: " + messages("startDate" + ".title"))
               val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
                 .first()
               errorSummary
                 .select("a")
                 .attr("href") mustBe "#startDate.day"
-              errorSummary.text() mustBe s"startDate.error.required.two, ${otherFields(0)}, ${otherFields(1)}"
+              errorSummary.text() mustBe messages("startDate" + ".error.required.two", otherFields(0), otherFields(1)
+              )
             }
           }
         }
@@ -404,13 +407,14 @@ class StartDateControllerISpec extends ControllerITTestHelper {
             whenReady(result) { res =>
               res.status mustBe 400
               val page = Jsoup.parse(res.body)
-              page.title must include("Error: " + "startDate" + ".title")
+              page.title must include("Error: " + messages("startDate" + ".title"))
               val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
                 .first()
               errorSummary
                 .select("a")
                 .attr("href") mustBe "#startDate.day"
-              errorSummary.text() mustBe s"startDate.error.required, ${field}"
+              errorSummary.text() mustBe messages("startDate" + ".error.required", field
+              )
             }
           }
         }
@@ -433,13 +437,13 @@ class StartDateControllerISpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + "startDate" + ".title")
+            page.title must include("Error: " + messages("startDate" + ".title"))
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")
               .attr("href") mustBe "#startDate.day"
-            errorSummary.text() mustBe ("startDate" + ".error.required.all"
+            errorSummary.text() mustBe messages("startDate" + ".error.required.all"
             )
           }
         }
@@ -462,7 +466,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + "startDate" + ".title")
+            page.title must include("Error: " + messages("startDate" + ".title"))
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
