@@ -3,14 +3,18 @@ package controllers
 import models.alf.AddressResponseForLookupState
 import models.{CheckMode, NormalMode, UserAnswers, Warehouse, WarehousesTradingName}
 import org.jsoup.Jsoup
-import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
+import org.scalatest.matchers.must.Matchers._
 import play.api.http.HeaderNames
 import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.test.WsTestClient
 import services.AddressLookupState.WarehouseDetails
+import org.scalatestplus.mockito.MockitoSugar.mock
+import testSupport.preConditions.PreconditionHelpers
 
 class WarehousesTradingNameControllerISpec extends ControllerITTestHelper {
 
+  override val preconditionHelpers: PreconditionHelpers = mock[PreconditionHelpers]
+  
   val ref = "1234567890"
   val normalRoutePath = s"/warehouses-trading-name/$ref"
   val checkRoutePath = s"/change-warehouses-trading-name/$ref"
@@ -33,10 +37,10 @@ class WarehousesTradingNameControllerISpec extends ControllerITTestHelper {
     "GET " + path - {
       "when the userAnswers contains alfResponseWithLookupState for the reference number" - {
         "should return OK and render the WarehouseTradingName page with no data populated" in {
-          given
+          preconditionHelpers
             .commonPrecondition
 
-          setAnswers(userAnswersWithAlfResponseForSdilId)
+          setAnswers(userAnswersWithAlfResponseForSdilId)(using timeout)
 
           WsTestClient.withClient { client =>
             val result1 = createClientRequestGet(client, baseUrl + path)
@@ -56,10 +60,10 @@ class WarehousesTradingNameControllerISpec extends ControllerITTestHelper {
 
       "when the userAnswers contains no alfResponseWithLookupState but contains a packaging site for the reference number" - {
         "should return OK and render the WarehouseTradingName page with data populated" in {
-          given
+          preconditionHelpers
             .commonPrecondition
 
-          setAnswers(userAnswersWithNoAlfResponseButWarehouseWithSdilRef)
+          setAnswers(userAnswersWithNoAlfResponseButWarehouseWithSdilRef)(using timeout)
 
           WsTestClient.withClient { client =>
             val result1 = createClientRequestGet(client, baseUrl + path)
@@ -80,10 +84,10 @@ class WarehousesTradingNameControllerISpec extends ControllerITTestHelper {
 
       "when the useranswers contains warehouses but none with sdilId and has no alfAddres" - {
         "must redirect to warehouseDetails" in {
-          given
+          preconditionHelpers
             .commonPrecondition
 
-          setAnswers(userAnswersWithWarehousesButNotForSdilRef)
+          setAnswers(userAnswersWithWarehousesButNotForSdilRef)(using timeout)
 
           WsTestClient.withClient { client =>
             val result1 = createClientRequestGet(client, baseUrl + path)
@@ -98,10 +102,10 @@ class WarehousesTradingNameControllerISpec extends ControllerITTestHelper {
 
       "when the useranswers contains no warehouses or alfAddres" - {
         "must redirect to AskSecondaryWarehouse" in {
-          given
+          preconditionHelpers
             .commonPrecondition
 
-          setAnswers(emptyUserAnswers)
+          setAnswers(emptyUserAnswers)(using timeout)
 
           WsTestClient.withClient { client =>
             val result1 = createClientRequestGet(client, baseUrl + path)
@@ -121,10 +125,10 @@ class WarehousesTradingNameControllerISpec extends ControllerITTestHelper {
       "should add the warehouse and remove alfResponse from user answers if present and redirect to warehouse details" - {
         "when the user populates the trading name field with a valid value" - {
           "and the userAnswers contains alfResponseWithLookupState for the reference number" in {
-            given
+            preconditionHelpers
               .commonPrecondition
 
-            setAnswers(userAnswersWithAlfResponseForSdilId)
+            setAnswers(userAnswersWithAlfResponseForSdilId)(using timeout)
 
             WsTestClient.withClient { client =>
               val result1 = createClientRequestPOST(client, baseUrl + path, Json.toJson(warehousesTradingNameDiff))
@@ -132,7 +136,7 @@ class WarehousesTradingNameControllerISpec extends ControllerITTestHelper {
               whenReady(result1) { res =>
                 res.status mustBe 303
                 res.header(HeaderNames.LOCATION) mustBe Some(routes.WarehouseDetailsController.onPageLoad(mode).url)
-                val updatedUserAnswer = getAnswers(identifier).get
+                val updatedUserAnswer = getAnswers(identifier)(using timeout).get
                 updatedUserAnswer.alfResponseForLookupState mustBe None
                 updatedUserAnswer.warehouseList mustBe Map(ref -> Warehouse(warehousesTradingNameDiff.warehouseTradingName, ukAddress))
               }
@@ -140,10 +144,10 @@ class WarehousesTradingNameControllerISpec extends ControllerITTestHelper {
           }
 
           "and the userAnswers contains no alfResponseWithLookupState but has a warehouse for the reference number" in {
-            given
+            preconditionHelpers
               .commonPrecondition
 
-            setAnswers(userAnswersWithNoAlfResponseButWarehouseWithSdilRef)
+            setAnswers(userAnswersWithNoAlfResponseButWarehouseWithSdilRef)(using timeout)
 
             WsTestClient.withClient { client =>
               val result1 = createClientRequestPOST(client, baseUrl + path, Json.toJson(warehousesTradingNameDiff))
@@ -151,7 +155,7 @@ class WarehousesTradingNameControllerISpec extends ControllerITTestHelper {
               whenReady(result1) { res =>
                 res.status mustBe 303
                 res.header(HeaderNames.LOCATION) mustBe Some(routes.WarehouseDetailsController.onPageLoad(mode).url)
-                val updatedUserAnswer = getAnswers(identifier).get
+                val updatedUserAnswer = getAnswers(identifier)(using timeout).get
                 updatedUserAnswer.alfResponseForLookupState mustBe None
                 updatedUserAnswer.warehouseList mustBe Map(ref -> Warehouse(warehousesTradingNameDiff.warehouseTradingName, ukAddress))
               }
@@ -162,10 +166,10 @@ class WarehousesTradingNameControllerISpec extends ControllerITTestHelper {
 
       "should not update the database and redirect to warehouse details" - {
         "when the useranswers contains waehouses but none with sdilId and has no alfAddress" in {
-          given
+          preconditionHelpers
             .commonPrecondition
 
-          setAnswers(userAnswersWithWarehousesButNotForSdilRef)
+          setAnswers(userAnswersWithWarehousesButNotForSdilRef)(using timeout)
 
           WsTestClient.withClient { client =>
             val result1 = createClientRequestPOST(client, baseUrl + path, Json.toJson(warehousesTradingNameDiff))
@@ -180,10 +184,10 @@ class WarehousesTradingNameControllerISpec extends ControllerITTestHelper {
 
       "should not update the database and redirect to ask secondary warehouse" - {
         "when the useranswers contains no warehouses or alfAddress" in {
-          given
+          preconditionHelpers
             .commonPrecondition
 
-          setAnswers(emptyUserAnswers)
+          setAnswers(emptyUserAnswers)(using timeout)
 
           WsTestClient.withClient { client =>
             val result1 = createClientRequestPOST(client, baseUrl + path, Json.toJson(warehousesTradingNameDiff))
@@ -198,10 +202,10 @@ class WarehousesTradingNameControllerISpec extends ControllerITTestHelper {
 
       "should return 400 with required error" - {
         "when no questions are answered" in {
-          given
+          preconditionHelpers
             .commonPrecondition
 
-          setAnswers(userAnswersWithAlfResponseForSdilId)
+          setAnswers(userAnswersWithAlfResponseForSdilId)(using timeout)
           WsTestClient.withClient { client =>
             val result = createClientRequestPOST(
               client, baseUrl + path, Json.toJson(WarehousesTradingName(""))
@@ -226,10 +230,10 @@ class WarehousesTradingNameControllerISpec extends ControllerITTestHelper {
         }
         warehousesTradingNameMap.zipWithIndex.foreach { case ((fieldName, _), index) =>
           "when no answer is given for field" + fieldName in {
-            given
+            preconditionHelpers
               .commonPrecondition
 
-            setAnswers(userAnswersWithAlfResponseForSdilId)
+            setAnswers(userAnswersWithAlfResponseForSdilId)(using timeout)
             val invalidJson = warehousesTradingNameMap.foldLeft(Json.obj()) { case (current, (fn, fv)) =>
               val fieldValue = if (fn == fieldName) {
                 ""

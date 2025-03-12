@@ -24,9 +24,8 @@ import models.{ NormalMode, RegisterState, UserAnswers, Warehouse }
 import navigation.{ FakeNavigator, Navigator }
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
-import org.mockito.MockitoSugar.{ times, verify }
 import org.scalatestplus.mockito.MockitoSugar
+import org.mockito.Mockito._
 import pages.WarehouseDetailsPage
 import play.api.inject.bind
 import play.api.libs.json.Json

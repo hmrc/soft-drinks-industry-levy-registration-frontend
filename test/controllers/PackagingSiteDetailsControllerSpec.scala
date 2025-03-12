@@ -26,7 +26,7 @@ import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import org.mockito.MockitoSugar.{times, verify}
+import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
 import pages.PackagingSiteDetailsPage
 import play.api.data.Form
@@ -130,8 +130,7 @@ class PackagingSiteDetailsControllerSpec extends SpecBase with MockitoSugar with
           .build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, packagingSiteDetailsRoute)
+        val request = FakeRequest(POST, packagingSiteDetailsRoute)
         .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
@@ -175,8 +174,7 @@ class PackagingSiteDetailsControllerSpec extends SpecBase with MockitoSugar with
       val application = applicationBuilder(userAnswers = Some(userAnswersWithPackagingSite), rosmRegistration = rosmRegistration).build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, packagingSiteDetailsRoute)
+        val request = FakeRequest(POST, packagingSiteDetailsRoute)
         .withFormUrlEncodedBody(("value", ""))
 
         val boundForm = form.bind(Map("value" -> ""))
@@ -209,8 +207,7 @@ class PackagingSiteDetailsControllerSpec extends SpecBase with MockitoSugar with
       val application = applicationBuilder(userAnswers = None, rosmRegistration = rosmRegistration).build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, packagingSiteDetailsRoute)
+        val request = FakeRequest(POST, packagingSiteDetailsRoute)
         .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value

@@ -25,7 +25,7 @@ import navigation.{ FakeNavigator, Navigator }
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import org.mockito.MockitoSugar.{ times, verify }
+import org.mockito.Mockito._
 import org.scalatestplus.mockito.MockitoSugar
 import pages.PackAtBusinessAddressPage
 import play.api.inject.bind

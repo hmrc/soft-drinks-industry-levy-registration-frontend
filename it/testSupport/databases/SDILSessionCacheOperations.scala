@@ -11,17 +11,15 @@ trait SDILSessionCacheOperations {
 
   self: TestConfiguration =>
 
-  val sdilSessionCache: SDILSessionCache
-
   def addToCache[T](key: String, data: T)(
-    implicit fmt: Format[T], timeout: Duration): Unit = Await.result(
-    sdilSessionCache.save[T]("some-id", key, data).map(_ => ()),
-    timeout
+    implicit fmt: Format[T], cacheTimeout: Duration): Unit = Await.result(
+    self.sdilSessionCache.save[T]("some-id", key, data).map(_ => ()),
+    cacheTimeout
   )
 
-  def getFromCache[T](key: String)(implicit  fmt: Format[T], timeout: Duration): Option[T] = Await.result(
-    sdilSessionCache.fetchEntry("some-id", key),
-    timeout
+  def getFromCache[T](key: String)(implicit  fmt: Format[T], cacheTimeout: Duration): Option[T] = Await.result(
+    self.sdilSessionCache.fetchEntry("some-id", key),
+    cacheTimeout
   )
 
 }

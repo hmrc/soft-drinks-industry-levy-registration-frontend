@@ -4,16 +4,24 @@ import models.HowManyLitresGlobally.{Large, Small}
 import models.backend.Subscription
 import models.{CreatedSubscriptionAndAmountProducedGlobally, HowManyLitresGlobally, RosmWithUtr}
 import org.jsoup.Jsoup
-import org.scalatest.matchers.must.Matchers.{contain, convertToAnyMustWrapper, include}
+import org.scalatest.matchers.must.Matchers.*
 import play.api.http.HeaderNames
 import play.api.http.Status.{OK, SEE_OTHER}
-import play.api.i18n.Messages
-import play.api.test.WsTestClient
+import play.api.i18n.{Messages, MessagesApi}
+import play.api.test.{FakeRequest, WsTestClient}
 import repositories.SDILSessionKeys
+import org.scalatestplus.mockito.MockitoSugar.mock
+import testSupport.preConditions.PreconditionHelpers
 
+import scala.concurrent.duration.Duration
+import scala.concurrent.duration.DurationInt
 class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
 
   val path = "/registration-confirmation"
+
+  override val preconditionHelpers: PreconditionHelpers = mock[PreconditionHelpers]
+  given messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  given messages: Messages = messagesApi.preferred(FakeRequest())
 
   "GET " + path - {
     "when the user has submitted a registration request" - {
@@ -23,12 +31,12 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
             "and they have populated all pages including litres" in {
               val userAnswers = userAnswerWithLitresForAllPagesIncludingOnesNotRequired(HowManyLitresGlobally.Large)
                 .copy(submittedOn = Some(submittedDate))
+              
               val createdSubscriptionAndAmountProducedGlobally = CreatedSubscriptionAndAmountProducedGlobally(
                 Subscription.generate(userAnswers, RosmWithUtr("0000001611", rosmRegistration)), HowManyLitresGlobally.Large)
-              given
-                .commonPrecondition
-
-              setAnswers(userAnswers)
+              
+              preconditionHelpers.commonPrecondition
+              setAnswers(userAnswers)(using timeout)
               addToCache(SDILSessionKeys.CREATED_SUBSCRIPTION_AND_AMOUNT_PRODUCED_GLOBALLY, createdSubscriptionAndAmountProducedGlobally)
 
               WsTestClient.withClient { client =>
@@ -37,7 +45,7 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                 whenReady(result) { res =>
                   res.status mustBe OK
                   val page = Jsoup.parse(res.body)
-                  page.title must include(Messages("Application complete"))
+                  page.title must include(messages("Application complete"))
                   validateSummaryContent(page)
                   val detailsSection = page.getElementsByClass("govuk-details").get(0)
                   detailsSection.getElementsByClass("govuk-summary-list").size() mustBe 7
@@ -80,19 +88,18 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                 .copy(submittedOn = Some(submittedDate))
               val createdSubscriptionAndAmountProducedGlobally = CreatedSubscriptionAndAmountProducedGlobally(
                 Subscription.generate(userAnswers, RosmWithUtr("0000001611", rosmRegistration)), HowManyLitresGlobally.Large)
-              given
+              preconditionHelpers
                 .commonPrecondition
 
-              setAnswers(userAnswers)
+              setAnswers(userAnswers)(using timeout)
               addToCache(SDILSessionKeys.CREATED_SUBSCRIPTION_AND_AMOUNT_PRODUCED_GLOBALLY, createdSubscriptionAndAmountProducedGlobally)
-
               WsTestClient.withClient { client =>
                 val result = createClientRequestGet(client, baseUrl + path)
 
                 whenReady(result) { res =>
                   res.status mustBe OK
                   val page = Jsoup.parse(res.body)
-                  page.title must include(Messages("Application complete"))
+                  page.title must include(messages("Application complete"))
                   validateSummaryContent(page)
                   val detailsSection = page.getElementsByClass("govuk-details").get(0)
                   detailsSection.getElementsByClass("govuk-summary-list").size() mustBe 7
@@ -135,10 +142,10 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                 .copy(submittedOn = Some(submittedDate))
               val createdSubscriptionAndAmountProducedGlobally = CreatedSubscriptionAndAmountProducedGlobally(
                 Subscription.generate(userAnswers, RosmWithUtr("0000001611", rosmRegistration)), HowManyLitresGlobally.Small)
-              given
+              preconditionHelpers
                 .commonPrecondition
 
-              setAnswers(userAnswers)
+              setAnswers(userAnswers)(using timeout)
               addToCache(SDILSessionKeys.CREATED_SUBSCRIPTION_AND_AMOUNT_PRODUCED_GLOBALLY, createdSubscriptionAndAmountProducedGlobally)
 
               WsTestClient.withClient { client =>
@@ -147,7 +154,7 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                 whenReady(result) { res =>
                   res.status mustBe OK
                   val page = Jsoup.parse(res.body)
-                  page.title must include(Messages("Application complete"))
+                  page.title must include(messages("Application complete"))
                   validateSummaryContent(page)
                   val detailsSection = page.getElementsByClass("govuk-details").get(0)
                   detailsSection.getElementsByClass("govuk-summary-list").size() mustBe 8
@@ -192,10 +199,10 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                 .copy(submittedOn = Some(submittedDate))
               val createdSubscriptionAndAmountProducedGlobally = CreatedSubscriptionAndAmountProducedGlobally(
                 Subscription.generate(userAnswers, RosmWithUtr("0000001611", rosmRegistration)), HowManyLitresGlobally.Small)
-              given
+              preconditionHelpers
                 .commonPrecondition
 
-              setAnswers(userAnswers)
+              setAnswers(userAnswers)(using timeout)
               addToCache(SDILSessionKeys.CREATED_SUBSCRIPTION_AND_AMOUNT_PRODUCED_GLOBALLY, createdSubscriptionAndAmountProducedGlobally)
 
               WsTestClient.withClient { client =>
@@ -204,7 +211,7 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                 whenReady(result) { res =>
                   res.status mustBe OK
                   val page = Jsoup.parse(res.body)
-                  page.title must include(Messages("Application complete"))
+                  page.title must include(messages("Application complete"))
                   validateSummaryContent(page)
                   val detailsSection = page.getElementsByClass("govuk-details").get(0)
                   detailsSection.getElementsByClass("govuk-summary-list").size() mustBe 6
@@ -245,19 +252,18 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                 .copy(submittedOn = Some(submittedDate))
               val createdSubscriptionAndAmountProducedGlobally = CreatedSubscriptionAndAmountProducedGlobally(
                 Subscription.generate(userAnswers, RosmWithUtr("0000001611", rosmRegistration)), HowManyLitresGlobally.None)
-              given
+              preconditionHelpers
                 .commonPrecondition
 
-              setAnswers(userAnswers)
+              setAnswers(userAnswers)(using timeout)
               addToCache(SDILSessionKeys.CREATED_SUBSCRIPTION_AND_AMOUNT_PRODUCED_GLOBALLY, createdSubscriptionAndAmountProducedGlobally)
-
               WsTestClient.withClient { client =>
                 val result = createClientRequestGet(client, baseUrl + path)
 
                 whenReady(result) { res =>
                   res.status mustBe OK
                   val page = Jsoup.parse(res.body)
-                  page.title must include(Messages("Application complete"))
+                  page.title must include(messages("Application complete"))
                   validateSummaryContent(page)
                   val detailsSection = page.getElementsByClass("govuk-details").get(0)
                   detailsSection.getElementsByClass("govuk-summary-list").size() mustBe 6
@@ -293,10 +299,10 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                 .copy(submittedOn = Some(submittedDate))
               val createdSubscriptionAndAmountProducedGlobally = CreatedSubscriptionAndAmountProducedGlobally(
                 Subscription.generate(userAnswers, RosmWithUtr("0000001611", rosmRegistration)), HowManyLitresGlobally.None)
-              given
+              preconditionHelpers
                 .commonPrecondition
 
-              setAnswers(userAnswers)
+              setAnswers(userAnswers)(using timeout)
               addToCache(SDILSessionKeys.CREATED_SUBSCRIPTION_AND_AMOUNT_PRODUCED_GLOBALLY, createdSubscriptionAndAmountProducedGlobally)
 
               WsTestClient.withClient { client =>
@@ -305,7 +311,7 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                 whenReady(result) { res =>
                   res.status mustBe OK
                   val page = Jsoup.parse(res.body)
-                  page.title must include(Messages("Application complete"))
+                  page.title must include(messages("Application complete"))
                   validateSummaryContent(page)
                   val detailsSection = page.getElementsByClass("govuk-details").get(0)
                   detailsSection.getElementsByClass("govuk-summary-list").size() mustBe 6
@@ -343,12 +349,12 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
 
     "the user has not submitted a registration request" - {
       "should redirect to registration start" in {
-        given
+        preconditionHelpers
           .commonPrecondition
 
         val userAnswers = userAnswersWithLitres.copy(submittedOn = None)
 
-        setAnswers(userAnswers)
+        setAnswers(userAnswers)(using timeout)
 
         WsTestClient.withClient { client =>
           val result = createClientRequestGet(client, baseUrl + path)

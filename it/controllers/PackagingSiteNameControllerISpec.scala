@@ -4,11 +4,13 @@ import models.alf.AddressResponseForLookupState
 import models.backend.Site
 import models.{CheckMode, NormalMode, PackagingSiteName, UserAnswers}
 import org.jsoup.Jsoup
-import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
+import org.scalatest.matchers.must.Matchers._
 import play.api.http.HeaderNames
 import play.api.libs.json.{JsObject, JsValue, Json}
 import play.api.test.WsTestClient
 import services.AddressLookupState.PackingDetails
+import org.scalatestplus.mockito.MockitoSugar.mock
+import testSupport.preConditions.PreconditionHelpers
 
 class PackagingSiteNameControllerISpec extends ControllerITTestHelper {
 
@@ -16,6 +18,8 @@ class PackagingSiteNameControllerISpec extends ControllerITTestHelper {
   val normalRoutePath = s"/packaging-site-name/$ref"
   val checkRoutePath = s"/change-packaging-site-name/$ref"
 
+  override val preconditionHelpers: PreconditionHelpers = mock[PreconditionHelpers]
+  
   val packagingSiteNameJsObject: collection.Map[String, JsValue] = Json.toJson(packagingSiteName).as[JsObject].value
   val packagingSiteNameMap: collection.Map[String, String] = {
     packagingSiteNameJsObject.map { case (fName, fValue) => fName -> fValue.as[String] }
@@ -34,10 +38,10 @@ class PackagingSiteNameControllerISpec extends ControllerITTestHelper {
     "GET " + path - {
       "when the userAnswers contains alfResponseWithLookupState for the reference number" - {
         "should return OK and render the PackagingSiteName page with no data populated" in {
-          given
+          preconditionHelpers
             .commonPrecondition
 
-          setAnswers(userAnswersWithAlfResponseForSdilId)
+          setAnswers(userAnswersWithAlfResponseForSdilId)(using timeout)
 
           WsTestClient.withClient { client =>
             val result1 = createClientRequestGet(client, baseUrl + path)
@@ -57,10 +61,10 @@ class PackagingSiteNameControllerISpec extends ControllerITTestHelper {
 
       "when the userAnswers contains no alfResponseWithLookupState but contains a packaging site for the reference number" - {
         "should return OK and render the PackagingSiteName page with data populated" in {
-          given
+          preconditionHelpers
             .commonPrecondition
 
-          setAnswers(userAnswersWithNoAlfResponseButPackingSiteWithSdilRef)
+          setAnswers(userAnswersWithNoAlfResponseButPackingSiteWithSdilRef)(using timeout)
 
           WsTestClient.withClient { client =>
             val result1 = createClientRequestGet(client, baseUrl + path)
@@ -81,10 +85,10 @@ class PackagingSiteNameControllerISpec extends ControllerITTestHelper {
 
       "when the useranswers contains packaging sites but none with sdilId and has no alfAddres" - {
         "must redirect to packagingSiteDetails" in {
-          given
+          preconditionHelpers
             .commonPrecondition
 
-          setAnswers(userAnswersWithPackagingSitesButNotForSdilRef)
+          setAnswers(userAnswersWithPackagingSitesButNotForSdilRef)(using timeout)
 
           WsTestClient.withClient { client =>
             val result1 = createClientRequestGet(client, baseUrl + path)
@@ -99,10 +103,10 @@ class PackagingSiteNameControllerISpec extends ControllerITTestHelper {
 
       "when the useranswers contains no packaging sites or alfAddres" - {
         "must redirect to packAtBusinessAddress" in {
-          given
+          preconditionHelpers
             .commonPrecondition
 
-          setAnswers(emptyUserAnswers)
+          setAnswers(emptyUserAnswers)(using timeout)
 
           WsTestClient.withClient { client =>
             val result1 = createClientRequestGet(client, baseUrl + path)
@@ -122,10 +126,10 @@ class PackagingSiteNameControllerISpec extends ControllerITTestHelper {
       "should add the packaging site and remove alfResponse from user answers if present and redirect to packaging site details" - {
         "when the user populates the trading name field with a valid value" - {
           "and the userAnswers contains alfResponseWithLookupState for the reference number" in {
-            given
+            preconditionHelpers
               .commonPrecondition
 
-            setAnswers(userAnswersWithAlfResponseForSdilId)
+            setAnswers(userAnswersWithAlfResponseForSdilId)(using timeout)
 
             WsTestClient.withClient { client =>
               val result1 = createClientRequestPOST(client, baseUrl + path, Json.toJson(packagingSiteNameDiff))
@@ -133,7 +137,7 @@ class PackagingSiteNameControllerISpec extends ControllerITTestHelper {
               whenReady(result1) { res =>
                 res.status mustBe 303
                 res.header(HeaderNames.LOCATION) mustBe Some(routes.PackagingSiteDetailsController.onPageLoad(mode).url)
-                val updatedUserAnswer = getAnswers(identifier).get
+                val updatedUserAnswer = getAnswers(identifier)(using timeout).get
                 updatedUserAnswer.alfResponseForLookupState mustBe None
                 updatedUserAnswer.packagingSiteList mustBe Map(ref -> Site(ukAddress, None, packagingSiteNameDiff.packagingSiteName, None))
               }
@@ -141,10 +145,10 @@ class PackagingSiteNameControllerISpec extends ControllerITTestHelper {
           }
 
           "and the userAnswers contains no alfResponseWithLookupState but has a packaging site for the reference number" in {
-            given
+            preconditionHelpers
               .commonPrecondition
 
-            setAnswers(userAnswersWithNoAlfResponseButPackingSiteWithSdilRef)
+            setAnswers(userAnswersWithNoAlfResponseButPackingSiteWithSdilRef)(using timeout)
 
             WsTestClient.withClient { client =>
               val result1 = createClientRequestPOST(client, baseUrl + path, Json.toJson(packagingSiteNameDiff))
@@ -152,7 +156,7 @@ class PackagingSiteNameControllerISpec extends ControllerITTestHelper {
               whenReady(result1) { res =>
                 res.status mustBe 303
                 res.header(HeaderNames.LOCATION) mustBe Some(routes.PackagingSiteDetailsController.onPageLoad(mode).url)
-                val updatedUserAnswer = getAnswers(identifier).get
+                val updatedUserAnswer = getAnswers(identifier)(using timeout).get
                 updatedUserAnswer.alfResponseForLookupState mustBe None
                 updatedUserAnswer.packagingSiteList mustBe Map(ref -> Site(ukAddress, None, packagingSiteNameDiff.packagingSiteName, None))
               }
@@ -163,10 +167,10 @@ class PackagingSiteNameControllerISpec extends ControllerITTestHelper {
 
       "should not update the database and redirect to packaging site details" - {
         "when the useranswers contains packaging sites but none with sdilId and has no alfAddress" in {
-          given
+          preconditionHelpers
             .commonPrecondition
 
-          setAnswers(userAnswersWithPackagingSitesButNotForSdilRef)
+          setAnswers(userAnswersWithPackagingSitesButNotForSdilRef)(using timeout)
 
           WsTestClient.withClient { client =>
             val result1 = createClientRequestPOST(client, baseUrl + path, Json.toJson(packagingSiteNameDiff))
@@ -181,10 +185,10 @@ class PackagingSiteNameControllerISpec extends ControllerITTestHelper {
 
       "should not update the database and redirect to pack at business address" - {
         "when the useranswers contains no packaging sites or alfAddress" in {
-          given
+          preconditionHelpers
             .commonPrecondition
 
-          setAnswers(emptyUserAnswers)
+          setAnswers(emptyUserAnswers)(using timeout)
 
           WsTestClient.withClient { client =>
             val result1 = createClientRequestPOST(client, baseUrl + path, Json.toJson(packagingSiteNameDiff))
@@ -199,10 +203,10 @@ class PackagingSiteNameControllerISpec extends ControllerITTestHelper {
 
       "should return 400 with required error" - {
         "when no questions are answered" in {
-          given
+          preconditionHelpers
             .commonPrecondition
 
-          setAnswers(userAnswersWithAlfResponseForSdilId)
+          setAnswers(userAnswersWithAlfResponseForSdilId)(using timeout)
           WsTestClient.withClient { client =>
             val result = createClientRequestPOST(
               client, baseUrl + path, Json.toJson(PackagingSiteName(""))
@@ -227,10 +231,10 @@ class PackagingSiteNameControllerISpec extends ControllerITTestHelper {
         }
         packagingSiteNameMap.zipWithIndex.foreach { case ((fieldName, _), index) =>
           "when no answer is given for field" + fieldName in {
-            given
+            preconditionHelpers
               .commonPrecondition
 
-            setAnswers(userAnswersWithAlfResponseForSdilId)
+            setAnswers(userAnswersWithAlfResponseForSdilId)(using timeout)
             val invalidJson = packagingSiteNameMap.foldLeft(Json.obj()) { case (current, (fn, fv)) =>
               val fieldValue = if (fn == fieldName) {
                 ""

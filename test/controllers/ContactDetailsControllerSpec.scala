@@ -108,8 +108,7 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar with Logge
           .build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, contactDetailsRoute)
+        val request = FakeRequest(POST, contactDetailsRoute)
         .withFormUrlEncodedBody(("fullName", "Jane Doe"), ("position", "CEO"), ("phoneNumber", "07700 099 990"), ("email", "name@example.com"))
 
         val result = route(application, request).value
@@ -124,9 +123,7 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar with Logge
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, contactDetailsRoute
-        )
+        val request = FakeRequest(POST, contactDetailsRoute)
         .withFormUrlEncodedBody(("value", "invalid value"))
 
         val boundForm = form.bind(Map("value" -> "invalid value"))
@@ -159,9 +156,7 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar with Logge
       val application = applicationBuilder(userAnswers = None).build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, contactDetailsRoute
-        )
+        val request = FakeRequest(POST, contactDetailsRoute)
         .withFormUrlEncodedBody(("fullName", "Jane Doe"), ("position", "CEO"), ("phoneNumber", "07700 099 990"), ("email", "name@example.com"))
 
         val result = route(application, request).value
@@ -176,9 +171,7 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar with Logge
       val application = applicationBuilder(userAnswers = Some(userDetailsWithSetMethodsReturningFailure)).build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, contactDetailsRoute
-        )
+        val request = FakeRequest(POST, contactDetailsRoute)
         .withFormUrlEncodedBody(("fullName", "Jane Doe"), ("position", "CEO"), ("phoneNumber", "07700 099 990"), ("email", "name@example.com"))
 
         val result = route(application, request).value
@@ -204,9 +197,7 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar with Logge
 
       running(application) {
         withCaptureOfLoggingFrom(application.injector.instanceOf[GenericLogger].logger) { events =>
-          val request =
-            FakeRequest(POST, contactDetailsRoute
-          )
+          val request = FakeRequest(POST, contactDetailsRoute)
           .withFormUrlEncodedBody(("fullName", "Jane Doe"), ("position", "CEO"), ("phoneNumber", "07700 099 990"), ("email", "name@example.com"))
 
           await(route(application, request).value)

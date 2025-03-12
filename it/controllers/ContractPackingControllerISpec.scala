@@ -2,25 +2,30 @@ package controllers
 
 import models.{CheckMode, LitresInBands, NormalMode, RegisterState, UserAnswers}
 import org.jsoup.Jsoup
-import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
+import org.scalatest.matchers.must.Matchers.*
+import org.scalatestplus.mockito.MockitoSugar.mock
 import pages.{ContractPackingPage, HowManyContractPackingPage}
 import play.api.http.HeaderNames
-import play.api.i18n.Messages
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.libs.json.Json
-import play.api.test.WsTestClient
+import play.api.test.{FakeRequest, WsTestClient}
+import testSupport.preConditions.PreconditionHelpers
 
 class ContractPackingControllerISpec extends ControllerITTestHelper {
 
   val normalRoutePath = "/contract-packing"
   val checkRoutePath = "/change-contract-packing"
 
+  override val preconditionHelpers: PreconditionHelpers = mock[PreconditionHelpers]
+  given messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  given messages: Messages = messagesApi.preferred(FakeRequest())
+
   "GET " + normalRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the ContractPacking page with no data populated" in {
-        given
-          .commonPrecondition
+        preconditionHelpers.commonPrecondition
 
-        setAnswers(emptyUserAnswers)
+        setAnswers(emptyUserAnswers)(using timeout)
 
         WsTestClient.withClient { client =>
           val result1 = createClientRequestGet(client, baseUrl + normalRoutePath)
@@ -28,7 +33,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include(Messages("contractPacking" + ".title"))
+            page.title must include(messages("contractPacking" + ".title"))
             val radioInputs = page.getElementsByClass("govuk-radios__input")
             radioInputs.size() mustBe 2
             radioInputs.get(0).attr("value") mustBe "true"
@@ -43,10 +48,9 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
     userAnswersForContractPackingPage.foreach { case (key, userAnswers) =>
       s"when the userAnswers contains data for the page with " + key + " selected" - {
         s"should return OK and render the page with " + key + " radio checked" in {
-          given
-            .commonPrecondition
+          preconditionHelpers.commonPrecondition
 
-          setAnswers(userAnswers)
+          setAnswers(userAnswers)(using timeout)
 
           WsTestClient.withClient { client =>
             val result1 = createClientRequestGet(client, baseUrl + normalRoutePath)
@@ -54,7 +58,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include(Messages("contractPacking" + ".title"))
+              page.title must include(messages("contractPacking" + ".title"))
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe 2
               radioInputs.get(0).attr("value") mustBe "true"
@@ -66,7 +70,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
         }
       }
     }
-    testOtherSuccessUserTypes(baseUrl + normalRoutePath, Messages("contractPacking" + ".title"))
+    testOtherSuccessUserTypes(baseUrl + normalRoutePath, messages("contractPacking" + ".title"))
     testUnauthorisedUser(baseUrl + normalRoutePath)
     testUserWhoIsUnableToRegister(baseUrl + normalRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)
@@ -75,10 +79,9 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
   s"GET " + checkRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the ContractPacking page with no data populated" in {
-        given
-          .commonPrecondition
+        preconditionHelpers.commonPrecondition
 
-        setAnswers(emptyUserAnswers)
+        setAnswers(emptyUserAnswers)(using timeout)
 
         WsTestClient.withClient { client =>
           val result1 = createClientRequestGet(client, baseUrl + checkRoutePath)
@@ -86,7 +89,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include(Messages("contractPacking" + ".title"))
+            page.title must include(messages("contractPacking" + ".title"))
             val radioInputs = page.getElementsByClass("govuk-radios__input")
             radioInputs.size() mustBe 2
             radioInputs.get(0).attr("value") mustBe "true"
@@ -101,10 +104,9 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
     userAnswersForContractPackingPage.foreach { case (key, userAnswers) =>
       s"when the userAnswers contains data for the page with " + key + " selected" - {
         s"should return OK and render the page with " + key + " radio checked" in {
-          given
-            .commonPrecondition
+          preconditionHelpers.commonPrecondition
 
-          setAnswers(userAnswers)
+          setAnswers(userAnswers)(using timeout)
 
           WsTestClient.withClient { client =>
             val result1 = createClientRequestGet(client, baseUrl + checkRoutePath)
@@ -112,7 +114,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include(Messages("contractPacking" + ".title"))
+              page.title must include(messages("contractPacking" + ".title"))
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe 2
               radioInputs.get(0).attr("value") mustBe "true"
@@ -125,7 +127,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
       }
     }
 
-    testOtherSuccessUserTypes(baseUrl + checkRoutePath, Messages("contractPacking" + ".title"))
+    testOtherSuccessUserTypes(baseUrl + checkRoutePath, messages("contractPacking" + ".title"))
     testUnauthorisedUser(baseUrl + checkRoutePath)
     testUserWhoIsUnableToRegister(baseUrl + checkRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath)
@@ -136,10 +138,9 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
       "when the user selects " + key - {
         "should update the session with the new value and redirect to the index controller" - {
           "when the session contains no data for page" in {
-            given
-              .commonPrecondition
+            preconditionHelpers.commonPrecondition
 
-            setAnswers(emptyUserAnswers)
+            setAnswers(emptyUserAnswers)(using timeout)
             WsTestClient.withClient { client =>
               val yesSelected = key == "yes"
               val result = createClientRequestPOST(
@@ -154,7 +155,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
                   routes.ImportsController.onPageLoad(NormalMode).url
                 }
                 res.header(HeaderNames.LOCATION) mustBe Some(expectedLocation)
-                val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(ContractPackingPage))
+                val dataStoredForPage = getAnswers(userAnswers.id)(using timeout).fold[Option[Boolean]](None)(_.get(ContractPackingPage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe yesSelected
               }
@@ -162,10 +163,9 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
           }
 
           "when the session already contains data for page" in {
-            given
-              .commonPrecondition
+            preconditionHelpers.commonPrecondition
 
-            setAnswers(userAnswers)
+            setAnswers(userAnswers)(using timeout)
             WsTestClient.withClient { client =>
               val yesSelected = key == "yes"
               val result = createClientRequestPOST(
@@ -180,7 +180,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
                   routes.ImportsController.onPageLoad(NormalMode).url
                 }
                 res.header(HeaderNames.LOCATION) mustBe Some(expectedLocation)
-                val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(ContractPackingPage))
+                val dataStoredForPage = getAnswers(userAnswers.id)(using timeout).fold[Option[Boolean]](None)(_.get(ContractPackingPage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe yesSelected
               }
@@ -192,10 +192,9 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
 
     "when the user does not select yes or no" - {
       "should return 400 with required error" in {
-        given
-          .commonPrecondition
+        preconditionHelpers.commonPrecondition
 
-        setAnswers(emptyUserAnswers)
+        setAnswers(emptyUserAnswers)(using timeout)
         WsTestClient.withClient { client =>
           val result = createClientRequestPOST(
             client, baseUrl + normalRoutePath, Json.obj("value" -> "")
@@ -204,13 +203,13 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + Messages("contractPacking" + ".title"))
+            page.title must include("Error: " + messages("contractPacking" + ".title"))
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")
               .attr("href") mustBe "#value"
-            errorSummary.text() mustBe Messages("contractPacking" + ".error.required")
+            errorSummary.text() mustBe messages("contractPacking" + ".error.required")
           }
         }
       }
@@ -226,10 +225,9 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
         val yesSelected = key == "yes"
         "should update the session with the new value and redirect to the checkAnswers controller" - {
           "when the session contains no data for page" in {
-            given
-              .commonPrecondition
+            preconditionHelpers.commonPrecondition
 
-            setAnswers(emptyUserAnswers)
+            setAnswers(emptyUserAnswers)(using timeout)
             WsTestClient.withClient { client =>
               val result = createClientRequestPOST(
                 client, baseUrl + checkRoutePath, Json.obj("value" -> yesSelected.toString)
@@ -243,7 +241,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
                   routes.CheckYourAnswersController.onPageLoad.url
                 }
                 res.header(HeaderNames.LOCATION) mustBe Some(expectedLocation)
-                val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(ContractPackingPage))
+                val dataStoredForPage = getAnswers(userAnswers.id)(using timeout).fold[Option[Boolean]](None)(_.get(ContractPackingPage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe yesSelected
               }
@@ -251,10 +249,9 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
           }
 
           "when the session already contains data for page" in {
-            given
-              .commonPrecondition
+            preconditionHelpers.commonPrecondition
 
-            setAnswers(userAnswers)
+            setAnswers(userAnswers)(using timeout)
             WsTestClient.withClient { client =>
               val yesSelected = key == "yes"
               val result = createClientRequestPOST(
@@ -269,7 +266,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
                   routes.CheckYourAnswersController.onPageLoad.url
                 }
                 res.header(HeaderNames.LOCATION) mustBe Some(expectedLocation)
-                val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(ContractPackingPage))
+                val dataStoredForPage = getAnswers(userAnswers.id)(using timeout).fold[Option[Boolean]](None)(_.get(ContractPackingPage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe yesSelected
               }
@@ -281,10 +278,9 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
 
     "when the user does not select yes or no" - {
       "should return 400 with required error" in {
-        given
-          .commonPrecondition
+        preconditionHelpers.commonPrecondition
 
-        setAnswers(emptyUserAnswers)
+        setAnswers(emptyUserAnswers)(using timeout)
         WsTestClient.withClient { client =>
           val result = createClientRequestPOST(
             client, baseUrl + checkRoutePath, Json.obj("value" -> "")
@@ -293,13 +289,13 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + Messages("contractPacking" + ".title"))
+            page.title must include("Error: " + messages("contractPacking" + ".title"))
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")
               .attr("href") mustBe "#value"
-            errorSummary.text() mustBe Messages("contractPacking" + ".error.required")
+            errorSummary.text() mustBe messages("contractPacking" + ".error.required")
           }
         }
       }
@@ -310,15 +306,14 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
   }
 
   "POST must clear litres data when the session already contained data but no is selected" in {
-    given
-      .commonPrecondition
+    preconditionHelpers.commonPrecondition
 
     val previouslyFilledAnswers =
       UserAnswers("some-id", RegisterState.RegisterWithAuthUTR, Json.obj(
         ContractPackingPage.toString -> true,
         HowManyContractPackingPage.toString -> Json.obj("lowBand" -> "123", "highBand" -> "123")))
 
-    setAnswers(previouslyFilledAnswers)
+    setAnswers(previouslyFilledAnswers)(using timeout)
     WsTestClient.withClient { client =>
       val result = createClientRequestPOST(
         client, baseUrl + normalRoutePath, Json.obj("value" -> false)
@@ -327,7 +322,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
       whenReady(result) { res =>
         res.status mustBe 303
         res.header(HeaderNames.LOCATION) mustBe Some(routes.ImportsController.onPageLoad(NormalMode).url)
-        val litresData = getAnswers(previouslyFilledAnswers.id).fold[Option[LitresInBands]](None)(_.get(HowManyContractPackingPage))
+        val litresData = getAnswers(previouslyFilledAnswers.id)(using timeout).fold[Option[LitresInBands]](None)(_.get(HowManyContractPackingPage))
         litresData mustBe None
       }
     }

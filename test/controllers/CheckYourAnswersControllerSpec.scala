@@ -17,7 +17,7 @@
 package controllers
 
 import base.SpecBase
-import controllers.routes._
+import controllers.routes.*
 import errors.{MissingRequiredUserAnswers, UnexpectedResponseFromSDIL}
 import models.HowManyLitresGlobally.Large
 import models.OrganisationType.LimitedCompany
@@ -28,14 +28,15 @@ import orchestrators.RegistrationOrchestrator
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import org.mockito.MockitoSugar.mock
-import pages._
+import org.scalatestplus.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar.mock
+import pages.*
 import play.api.inject.bind
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import viewmodels.govuk.SummaryListFluency
 import views.html.CheckYourAnswersView
-import views.summary._
+import views.summary.*
 
 import java.time.LocalDate
 
