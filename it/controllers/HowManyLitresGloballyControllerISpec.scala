@@ -17,7 +17,7 @@ class HowManyLitresGloballyControllerISpec extends ControllerITTestHelper {
 
   given messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
   given messages: Messages = messagesApi.preferred(FakeRequest())
-  
+
   "GET " + normalRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the HowManyLitresGlobally page with no data populated" in {
@@ -407,4 +407,5 @@ class HowManyLitresGloballyControllerISpec extends ControllerITTestHelper {
     testUserWhoIsUnableToRegister(baseUrl + checkRoutePath, Some(Json.obj("value" -> "true")))
     testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath, Some(Json.obj("value" -> "true")))
   }
+  
 }
