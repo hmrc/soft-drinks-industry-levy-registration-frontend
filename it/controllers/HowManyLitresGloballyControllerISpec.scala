@@ -407,5 +407,5 @@ class HowManyLitresGloballyControllerISpec extends ControllerITTestHelper {
     testUserWhoIsUnableToRegister(baseUrl + checkRoutePath, Some(Json.obj("value" -> "true")))
     testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath, Some(Json.obj("value" -> "true")))
   }
-  
+
 }
