@@ -5,7 +5,7 @@ import models.RegisterState.{RegisterApplicationAccepted, RegisterWithOtherUTR, 
 import models.backend.{Site, UkAddress}
 import models.{Identify, NormalMode, RegisterState, Warehouse}
 import org.jsoup.Jsoup
-import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
+import org.scalatest.matchers.must.Matchers._
 import pages.EnterBusinessDetailsPage
 import play.api.http.HeaderNames
 import play.api.i18n.Messages
@@ -40,7 +40,7 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
   "GET " + path - {
     "when the userAnswers contains no data" - {
       "should return OK and render the EnterBusinessDetails page with no data populated" in {
-        given
+        `given`
           .commonPrecondition
 
         setAnswers(emptyUserAnswers.copy(registerState = RegisterState.RequiresBusinessDetails))
@@ -51,7 +51,7 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include(Messages("enterBusinessDetails" + ".title"))
+            page.title must include ("enterBusinessDetails" + ".title")
             val inputFields = page.getElementsByClass("govuk-input")
             inputFields.text() mustEqual ""
           }
@@ -67,10 +67,10 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
           s"and subscription status of $subscriptionState" - {
             s"should redirect to $expectedUrl" - {
               "when the session contains no data for the page" in {
-                given
+                `given`
                   .user.isAuthorisedButNotEnrolled()
-                given.sdilBackend.retrieveRosm("0000000437")
-                given.sdilBackend.checkPendingQueue("0000000437", subscriptionState)
+                `given`.sdilBackend.retrieveRosm("0000000437")
+                `given`.sdilBackend.checkPendingQueue("0000000437", subscriptionState)
 
                 setAnswers(emptyUserAnswers.copy(registerState = RegisterState.RequiresBusinessDetails))
                 WsTestClient.withClient { client =>
@@ -92,10 +92,10 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
               }
 
               "when the session already contains data for the page which is different" in {
-                given
+                `given`
                   .user.isAuthorisedButNotEnrolled()
-                given.sdilBackend.retrieveRosm("0000000437")
-                given.sdilBackend.checkPendingQueue("0000000437", subscriptionState)
+                `given`.sdilBackend.retrieveRosm("0000000437")
+                `given`.sdilBackend.checkPendingQueue("0000000437", subscriptionState)
 
                 val userAnswersWithNonIdenticalData = {
                   emptyUserAnswers
@@ -150,7 +150,7 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
               submittedOn = None
             )
         }
-        given
+        `given`
           .commonPrecondition
 
         setAnswers(userAnswersWithIdenticalData)
@@ -175,7 +175,7 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
 
     "should return 400 with utr max length error" - {
       "when the question is answered with incorrect data" in {
-        given
+        `given`
           .commonPrecondition
 
         setAnswers(emptyUserAnswers.copy(registerState = RegisterState.RequiresBusinessDetails))
@@ -187,8 +187,7 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + Messages("enterBusinessDetails" + ".title"
-            ) )
+            page.title must include("Error: " + "enterBusinessDetails" + ".title")
             val errorSummaryList = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first().getElementsByTag("li")
             errorSummaryList.size() mustBe 1
@@ -196,8 +195,7 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
             errorSummary
               .select("a")
               .attr("href") mustBe "#utr"
-            errorSummary.text() mustBe Messages("enterBusinessDetails.invalid.utr.length"
-            )
+            errorSummary.text() mustBe "enterBusinessDetails.invalid.utr.length"
           }
         }
       }

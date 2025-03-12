@@ -1,7 +1,7 @@
 package controllers
 
 import org.jsoup.Jsoup
-import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
+import org.scalatest.matchers.must.Matchers._
 import play.api.i18n.Messages
 import play.api.test.WsTestClient
 
@@ -11,7 +11,7 @@ class DoNotRegisterControllerISpec extends ControllerITTestHelper {
 
   "GET " + normalRoutePath - {
     "should return OK and render the DoNotRegister page" in {
-      given
+      `given`
         .commonPrecondition
 
       setAnswers(emptyUserAnswers)
@@ -22,12 +22,11 @@ class DoNotRegisterControllerISpec extends ControllerITTestHelper {
         whenReady(result1) { res =>
           res.status mustBe 200
           val page = Jsoup.parse(res.body)
-          page.title must include(Messages("doNotRegister" + ".title"))
+          page.title must include ("doNotRegister" + ".title")
         }
       }
     }
-    testOtherSuccessUserTypes(baseUrl + normalRoutePath, Messages("doNotRegister" + ".title"
-    ) )
+    testOtherSuccessUserTypes(baseUrl + normalRoutePath, "doNotRegister" + ".title")
     testUnauthorisedUser(baseUrl + normalRoutePath)
     testUserWhoIsUnableToRegister(baseUrl + normalRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)

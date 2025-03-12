@@ -3,7 +3,7 @@ package controllers
 import models.backend.UkAddress
 import models.{Identify, IndividualDetails, OrganisationDetails, RegisterState, RosmRegistration}
 import org.jsoup.Jsoup
-import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
+import org.scalatest.matchers.must.Matchers._
 import pages.EnterBusinessDetailsPage
 import play.api.i18n.Messages
 import play.api.test.WsTestClient
@@ -14,7 +14,7 @@ class RegistrationPendingControllerISpec extends ControllerITTestHelper {
 
   "GET " + normalRoutePath - {
     s"should return OK and render the RegistrationPending page when $EnterBusinessDetailsPage UTR IS NOT Populated" in {
-      given
+      `given`
         .authorisedWithoutSdilSubscriptionPendingQueueContainsRecordOfPending
 
       setAnswers(emptyUserAnswers.copy(registerState = RegisterState.RegistrationPending))
@@ -25,7 +25,7 @@ class RegistrationPendingControllerISpec extends ControllerITTestHelper {
         whenReady(result1) { res =>
           res.status mustBe 200
           val page = Jsoup.parse(res.body)
-          page.title must include(Messages("registrationPending" + ".title"))
+          page.title must include ("registrationPending" + ".title")
           page.getElementById("utrField").text() mustBe "0000001611:"
           page.getElementById("pendingUTRAddress").text() mustBe "Super Lemonade Plc 105B Godfrey Marchant Grove Guildford GU14 8NL"
           page.getElementById("subText2").text() mustBe "If you have not got your registration number within 24 hours you need to call the Soft Drinks Industry Levy Helpline on 0300 200 1000."
@@ -41,7 +41,7 @@ class RegistrationPendingControllerISpec extends ControllerITTestHelper {
         address = UkAddress(List("bang", "BANG2", "bang3", "bang4"), "wollop")
       )
 
-      given
+      `given`
         .authorisedButNoEnrolmentsPrecondition
         .sdilBackend.checkPendingQueueDoesntExist(utr)
         .sdilBackend.retrieveRosm(utr, rosmReg)
@@ -54,7 +54,7 @@ class RegistrationPendingControllerISpec extends ControllerITTestHelper {
         whenReady(result1) { res =>
           res.status mustBe 200
           val page = Jsoup.parse(res.body)
-          page.title must include(Messages("registrationPending" + ".title"))
+          page.title must include ("registrationPending" + ".title")
           page.getElementById("utrField").text() mustBe utr + ":"
           page.getElementById("pendingUTRAddress").text() mustBe "foo bang BANG2 bang3 bang4 wollop"
           page.getElementById("subText2").text() mustBe "If you have not got your registration number within 24 hours you need to call the Soft Drinks Industry Levy Helpline on 0300 200 1000."

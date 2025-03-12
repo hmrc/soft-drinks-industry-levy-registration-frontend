@@ -2,7 +2,7 @@ package controllers
 
 import models.{ContactDetails, UserAnswers}
 import org.jsoup.Jsoup
-import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
+import org.scalatest.matchers.must.Matchers._
 import pages.ContactDetailsPage
 import play.api.http.HeaderNames
 import play.api.i18n.Messages
@@ -25,7 +25,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
   "GET " + normalRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the ContactDetails page with no data populated" in {
-        given
+        `given`
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -50,7 +50,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
 
     s"when the userAnswers contains data for the page" - {
       s"should return OK and render the page with fields populated" in {
-        given
+        `given`
           .commonPrecondition
 
         setAnswers(userAnswers)
@@ -73,7 +73,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
         }
       }
     }
-    testOtherSuccessUserTypes(baseUrl + normalRoutePath, Messages("contactDetails" + ".title"))
+    testOtherSuccessUserTypes(baseUrl + normalRoutePath, "contactDetails" + ".title")
     testUnauthorisedUser(baseUrl + normalRoutePath)
     testUserWhoIsUnableToRegister(baseUrl + normalRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)
@@ -82,7 +82,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
   "GET " + checkRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the ContactDetails page with no data populated" in {
-        given
+        `given`
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -107,7 +107,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
 
     s"when the userAnswers contains data for the page" - {
       s"should return OK and render the page with fields populated" in {
-        given
+        `given`
           .commonPrecondition
 
         setAnswers(userAnswers)
@@ -138,7 +138,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
     "when the user populates answers all questions" - {
       "should update the session with the new values and redirect to the Check Your Answers controller" - {
         "when the session contains no data for page" in {
-          given
+          `given`
             .commonPrecondition
 
           setAnswers(emptyUserAnswers)
@@ -158,7 +158,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
         }
 
         "when the session already contains data for page" in {
-          given
+          `given`
             .commonPrecondition
 
           setAnswers(userAnswers)
@@ -181,7 +181,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
 
     "should return 400 with required error" - {
       "when no questions are answered" in {
-        given
+        `given`
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -202,14 +202,14 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
               errorSummary
                 .select("a")
                 .attr("href") mustBe "#" + fieldName
-              errorSummary.text() mustBe Messages("contactDetails.error." + fieldName + ".required")
+              errorSummary.text() mustBe ("contactDetails.error." + fieldName + ".required")
             }
           }
         }
       }
       contactDetailsMap.zipWithIndex.foreach { case ((fieldName, _), index) =>
         "when no answer is given for field " + fieldName in {
-          given
+          `given`
             .commonPrecondition
 
           setAnswers(emptyUserAnswers)
@@ -237,7 +237,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
                 .select("a")
                 .attr("href") mustBe "#" + fieldName
 
-              errorSummaryList.text() must include (Messages("contactDetails.error." + fieldName + ".required"))
+              errorSummaryList.text() must include ("contactDetails.error." + fieldName + ".required")
             }
           }
         }
@@ -253,7 +253,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
     "when the user populates answers all questions" - {
       "should update the session with the new values and redirect to the index controller" - {
         "when the session contains no data for page" in {
-          given
+          `given`
             .commonPrecondition
 
           setAnswers(emptyUserAnswers)
@@ -273,7 +273,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
         }
 
         "when the session already contains data for page" in {
-          given
+          `given`
             .commonPrecondition
 
           setAnswers(userAnswers)
@@ -296,7 +296,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
 
     "should return 400 with required error" - {
       "when no questions are answered" in {
-        given
+        `given`
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -317,14 +317,14 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
               errorSummary
                 .select("a")
                 .attr("href") mustBe "#" + fieldName
-              errorSummary.text() mustBe Messages("contactDetails.error." + fieldName + ".required")
+              errorSummary.text() mustBe ("contactDetails.error." + fieldName + ".required")
             }
           }
         }
       }
       contactDetailsMap.zipWithIndex.foreach { case ((fieldName, _), index) =>
         "when no answer is given for field " + fieldName in {
-          given
+          `given`
             .commonPrecondition
 
           setAnswers(emptyUserAnswers)
@@ -350,7 +350,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
               errorSummaryList
                 .select("a")
                 .attr("href") mustBe "#" + fieldName
-              errorSummaryList.text() must include (Messages("contactDetails.error." + fieldName + ".required"))
+              errorSummaryList.text() must include ("contactDetails.error." + fieldName + ".required")
             }
           }
         }

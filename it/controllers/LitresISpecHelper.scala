@@ -18,7 +18,7 @@ package controllers
 
 import models.LitresInBands
 import org.jsoup.nodes.Document
-import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
+import org.scalatest.matchers.must.Matchers._
 import play.api.i18n.Messages
 import play.api.libs.json.{JsObject, Json}
 
@@ -55,13 +55,13 @@ trait LitresISpecHelper extends ControllerITTestHelper {
     val formGroups = document.getElementsByClass(Selectors.govukFormGroup)
     formGroups.size() mustEqual 2
     val lowBandGroup = formGroups.get(0)
-    lowBandGroup.getElementsByClass(Selectors.label).text() mustBe Messages("litres.lowBand")
-    lowBandGroup.getElementById("lowBand-hint").text() mustBe Messages("litres.lowBandHint")
+    lowBandGroup.getElementsByClass(Selectors.label).text() mustBe "litres.lowBand"
+    lowBandGroup.getElementById("lowBand-hint").text() mustBe "litres.lowBandHint"
     lowBandGroup.getElementById("lowBand").hasAttr("value") mustBe true
     lowBandGroup.getElementById("lowBand").attr("value") mustBe lowBandValue.toString
     val highBandGroup = formGroups.get(1)
-    highBandGroup.getElementsByClass(Selectors.label).text() mustBe Messages("litres.highBand")
-    highBandGroup.getElementById("highBand-hint").text() mustBe Messages("litres.highBandHint")
+    highBandGroup.getElementsByClass(Selectors.label).text() mustBe "litres.highBand"
+    highBandGroup.getElementById("highBand-hint").text() mustBe "litres.highBandHint"
     highBandGroup.getElementById("highBand").hasAttr("value") mustBe true
     highBandGroup.getElementById("highBand").attr("value") mustBe highBandValue.toString
   }
@@ -70,12 +70,12 @@ trait LitresISpecHelper extends ControllerITTestHelper {
     val formGroups = document.getElementsByClass(Selectors.govukFormGroup)
     formGroups.size() mustEqual 2
     val lowBandGroup = formGroups.get(0)
-    lowBandGroup.getElementsByClass(Selectors.label).text() mustBe Messages("litres.lowBand")
-    lowBandGroup.getElementById("lowBand-hint").text() mustBe Messages("litres.lowBandHint")
+    lowBandGroup.getElementsByClass(Selectors.label).text() mustBe "litres.lowBand"
+    lowBandGroup.getElementById("lowBand-hint").text() mustBe "litres.lowBandHint"
     lowBandGroup.getElementById("lowBand").hasAttr("value") mustBe false
     val highBandGroup = formGroups.get(1)
-    highBandGroup.getElementsByClass(Selectors.label).text() mustBe Messages("litres.highBand")
-    highBandGroup.getElementById("highBand-hint").text() mustBe Messages("litres.highBandHint")
+    highBandGroup.getElementsByClass(Selectors.label).text() mustBe "litres.highBand"
+    highBandGroup.getElementById("highBand-hint").text() mustBe "litres.highBandHint"
     highBandGroup.getElementById("highBand").hasAttr("value") mustBe false
   }
 
@@ -90,9 +90,9 @@ trait LitresISpecHelper extends ControllerITTestHelper {
     val error1 = errors.get(0)
     val error2 = errors.get(1)
 
-    error1.text() mustBe Messages("litres.error.lowBand.required")
+    error1.text() mustBe "litres.error.lowBand.required"
     error1.select("a").attr("href") mustBe "#lowBand"
-    error2.text() mustBe Messages("litres.error.highBand.required")
+    error2.text() mustBe "litres.error.highBand.required"
     error2.select("a").attr("href") mustBe "#highBand"
   }
 
@@ -107,9 +107,9 @@ trait LitresISpecHelper extends ControllerITTestHelper {
     val error1 = errors.get(0)
     val error2 = errors.get(1)
 
-    error1.text() mustBe Messages("litres.error.lowBand.nonNumeric")
+    error1.text() mustBe "litres.error.lowBand.nonNumeric"
     error1.select("a").attr("href") mustBe "#lowBand"
-    error2.text() mustBe Messages("litres.error.highBand.nonNumeric")
+    error2.text() mustBe "litres.error.highBand.nonNumeric"
     error2.select("a").attr("href") mustBe "#highBand"
   }
 
@@ -124,9 +124,9 @@ trait LitresISpecHelper extends ControllerITTestHelper {
     val error1 = errors.get(0)
     val error2 = errors.get(1)
 
-    error1.text() mustBe Messages("litres.error.lowBand.negative")
+    error1.text() mustBe "litres.error.lowBand.negative"
     error1.select("a").attr("href") mustBe "#lowBand"
-    error2.text() mustBe Messages("litres.error.highBand.negative")
+    error2.text() mustBe "litres.error.highBand.negative"
     error2.select("a").attr("href") mustBe "#highBand"
   }
 
@@ -141,9 +141,9 @@ trait LitresISpecHelper extends ControllerITTestHelper {
     val error1 = errors.get(0)
     val error2 = errors.get(1)
 
-    error1.text() mustBe Messages("litres.error.lowBand.wholeNumber")
+    error1.text() mustBe "litres.error.lowBand.wholeNumber"
     error1.select("a").attr("href") mustBe "#lowBand"
-    error2.text() mustBe Messages("litres.error.highBand.wholeNumber")
+    error2.text() mustBe "litres.error.highBand.wholeNumber"
     error2.select("a").attr("href") mustBe "#highBand"
   }
 
@@ -158,9 +158,9 @@ trait LitresISpecHelper extends ControllerITTestHelper {
     val error1 = errors.get(0)
     val error2 = errors.get(1)
 
-    error1.text() mustBe Messages("litres.error.lowBand.outOfMaxVal")
+    error1.text() mustBe "litres.error.lowBand.outOfMaxVal"
     error1.select("a").attr("href") mustBe "#lowBand"
-    error2.text() mustBe Messages("litres.error.highBand.outOfMaxVal")
+    error2.text() mustBe "litres.error.highBand.outOfMaxVal"
     error2.select("a").attr("href") mustBe "#highBand"
   }
 }

@@ -2,7 +2,7 @@ package controllers
 
 import models.{CheckMode, NormalMode}
 import org.jsoup.Jsoup
-import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
+import org.scalatest.matchers.must.Matchers._
 import pages.PackAtBusinessAddressPage
 import play.api.http.HeaderNames
 import play.api.i18n.Messages
@@ -17,7 +17,7 @@ class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
   "GET " + normalRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the PackAtBusinessAddress page with no data populated" in {
-        given
+        `given`
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -28,7 +28,7 @@ class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include(Messages("packAtBusinessAddress" + ".title"))
+            page.title must include ("packAtBusinessAddress" + ".title")
             val radioInputs = page.getElementsByClass("govuk-radios__input")
             radioInputs.size() mustBe 2
             radioInputs.get(0).attr("value") mustBe "true"
@@ -43,7 +43,7 @@ class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
     userAnswersForPackAtBusinessAddressPage.foreach { case (key, userAnswers) =>
       s"when the userAnswers contains data for the page with " + key + " selected" - {
         s"should return OK and render the page with " + key + " radio checked" in {
-          given
+          `given`
             .commonPrecondition
 
           setAnswers(userAnswers)
@@ -54,7 +54,7 @@ class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include(Messages("packAtBusinessAddress" + ".title"))
+              page.title must include ("packAtBusinessAddress" + ".title")
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe 2
               radioInputs.get(0).attr("value") mustBe "true"
@@ -66,7 +66,7 @@ class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
         }
       }
     }
-    testOtherSuccessUserTypes(baseUrl + normalRoutePath, Messages("packAtBusinessAddress" + ".title"))
+    testOtherSuccessUserTypes(baseUrl + normalRoutePath, "packAtBusinessAddress" + ".title")
     testUnauthorisedUser(baseUrl + normalRoutePath)
     testUserWhoIsUnableToRegister(baseUrl + normalRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)  }
@@ -74,7 +74,7 @@ class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
   s"GET " + checkRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the PackAtBusinessAddress page with no data populated" in {
-        given
+        `given`
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -85,7 +85,7 @@ class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include(Messages("packAtBusinessAddress" + ".title"))
+            page.title must include ("packAtBusinessAddress" + ".title")
             val radioInputs = page.getElementsByClass("govuk-radios__input")
             radioInputs.size() mustBe 2
             radioInputs.get(0).attr("value") mustBe "true"
@@ -100,7 +100,7 @@ class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
     userAnswersForPackAtBusinessAddressPage.foreach { case (key, userAnswers) =>
       s"when the userAnswers contains data for the page with " + key + " selected" - {
         s"should return OK and render the page with " + key + " radio checked" in {
-          given
+          `given`
             .commonPrecondition
 
           setAnswers(userAnswers)
@@ -111,7 +111,7 @@ class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include(Messages("packAtBusinessAddress" + ".title"))
+              page.title must include ("packAtBusinessAddress" + ".title")
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe 2
               radioInputs.get(0).attr("value") mustBe "true"
@@ -124,7 +124,7 @@ class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
       }
     }
 
-    testOtherSuccessUserTypes(baseUrl + checkRoutePath, Messages("packAtBusinessAddress" + ".title"))
+    testOtherSuccessUserTypes(baseUrl + checkRoutePath, "packAtBusinessAddress" + ".title")
     testUnauthorisedUser(baseUrl + checkRoutePath)
     testUserWhoIsUnableToRegister(baseUrl + checkRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath)
@@ -134,7 +134,7 @@ class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
 
     "when user selects yes with user answers, set trading name to organisation name" in {
       setAnswers(emptyUserAnswers)
-      given
+      `given`
         .commonPrecondition
 
       WsTestClient.withClient { client =>
@@ -153,7 +153,7 @@ class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
 
     "when the user does not select yes or no" - {
       "should return 400 with required error" in {
-        given
+        `given`
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -165,13 +165,13 @@ class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + Messages("packAtBusinessAddress" + ".title"))
+            page.title must include("Error: " + "packAtBusinessAddress" + ".title")
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")
               .attr("href") mustBe "#value"
-            errorSummary.text() mustBe Messages("packAtBusinessAddress" + ".error.required")
+            errorSummary.text() mustBe ("packAtBusinessAddress" + ".error.required")
           }
         }
       }
@@ -187,7 +187,7 @@ class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
       val alfOnRampURL: String = "http://onramp.com"
       setAnswers(emptyUserAnswers.set(PackAtBusinessAddressPage, false).success.value
         .copy(warehouseList = warehouseListWith1))
-      given
+      `given`
         .commonPrecondition
         .alf.getSuccessResponseFromALFInit(alfOnRampURL)
       WsTestClient.withClient { client =>
@@ -208,7 +208,7 @@ class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
     "when user selects yes with user answers" in {
       setAnswers(emptyUserAnswers.set(PackAtBusinessAddressPage, true).success.value
         .copy(warehouseList = warehouseListWith1))
-      given
+      `given`
         .commonPrecondition
       WsTestClient.withClient { client =>
         emptyUserAnswers
@@ -228,7 +228,7 @@ class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
     "when user selects no without user answers" in {
       val alfOnRampURL: String = "http://onramp.com"
       setAnswers(emptyUserAnswers)
-      given
+      `given`
         .commonPrecondition
         .alf.getSuccessResponseFromALFInit(alfOnRampURL)
       WsTestClient.withClient { client =>
@@ -248,7 +248,7 @@ class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
 
     "when user selects yes without user answers" in {
       setAnswers(emptyUserAnswers)
-      given
+      `given`
         .commonPrecondition
       WsTestClient.withClient { client =>
         emptyUserAnswers
@@ -267,7 +267,7 @@ class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
 
     "when the user does not select yes or no" - {
       "should return 400 with required error" in {
-        given
+        `given`
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -279,13 +279,13 @@ class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + Messages("packAtBusinessAddress" + ".title"))
+            page.title must include("Error: " + "packAtBusinessAddress" + ".title")
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")
               .attr("href") mustBe "#value"
-            errorSummary.text() mustBe Messages("packAtBusinessAddress" + ".error.required")
+            errorSummary.text() mustBe ("packAtBusinessAddress" + ".error.required")
           }
         }
       }

@@ -4,7 +4,7 @@ import controllers.ControllerITTestHelper
 import models.alf.AddressResponseForLookupState
 import models.backend.{Site, UkAddress}
 import models.{CheckMode, Mode, NormalMode, Warehouse}
-import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
+import org.scalatest.matchers.must.Matchers._
 import play.api.http.Status.{INTERNAL_SERVER_ERROR, SEE_OTHER}
 import play.api.test.WsTestClient
 import play.mvc.Http.HeaderNames

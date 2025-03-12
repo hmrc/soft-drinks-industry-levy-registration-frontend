@@ -2,7 +2,7 @@ package controllers
 
 import models.{CheckMode, LitresInBands, NormalMode}
 import org.jsoup.Jsoup
-import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
+import org.scalatest.matchers.must.Matchers._
 import pages._
 import play.api.http.HeaderNames
 import play.api.libs.json.Json
@@ -16,7 +16,7 @@ class ImportsControllerISpec extends ControllerITTestHelper {
   "GET " + normalRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the Imports page with no data populated" in {
-        given
+        `given`
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -42,7 +42,7 @@ class ImportsControllerISpec extends ControllerITTestHelper {
     userAnswersForImportsPage.foreach { case (key, userAnswers) =>
       s"when the userAnswers contains data for the page with " + key + " selected" - {
         s"should return OK and render the page with " + key + " radio checked" in {
-          given
+          `given`
             .commonPrecondition
 
           setAnswers(userAnswers)
@@ -75,7 +75,7 @@ class ImportsControllerISpec extends ControllerITTestHelper {
   s"GET " + checkRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the Imports page with no data populated" in {
-        given
+        `given`
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -101,7 +101,7 @@ class ImportsControllerISpec extends ControllerITTestHelper {
     userAnswersForImportsPage.foreach { case (key, userAnswers) =>
       s"when the userAnswers contains data for the page with " + key + " selected" - {
         s"should return OK and render the page with " + key + " radio checked" in {
-          given
+          `given`
             .commonPrecondition
 
           setAnswers(userAnswers)
@@ -137,7 +137,7 @@ class ImportsControllerISpec extends ControllerITTestHelper {
       "when the user selects " + key - {
         "should update the session and redirect to next page" - {
           "when the session contains no data for page" in {
-            given
+            `given`
               .commonPrecondition
 
             setAnswers(emptyUserAnswers)
@@ -167,7 +167,7 @@ class ImportsControllerISpec extends ControllerITTestHelper {
           }
 
           "when the session already contains data for page" in {
-            given
+            `given`
               .commonPrecondition
 
             setAnswers(userAnswers)
@@ -203,7 +203,7 @@ class ImportsControllerISpec extends ControllerITTestHelper {
 
     "when the user does not select yes or no" - {
       "should return 400 with required error" in {
-        given
+        `given`
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -237,7 +237,7 @@ class ImportsControllerISpec extends ControllerITTestHelper {
         val yesSelected = key == "yes"
         "should update the session with the new value and redirect to the checkAnswers controller" - {
           "when the session contains no data for page" in {
-            given
+            `given`
               .commonPrecondition
 
             setAnswers(emptyUserAnswers)
@@ -266,7 +266,7 @@ class ImportsControllerISpec extends ControllerITTestHelper {
           }
 
           "when the session already contains data for page" in {
-            given
+            `given`
               .commonPrecondition
 
             setAnswers(userAnswers)
@@ -302,7 +302,7 @@ class ImportsControllerISpec extends ControllerITTestHelper {
 
     "when the user does not select yes or no" - {
       "should return 400 with required error" in {
-        given
+        `given`
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -332,7 +332,7 @@ class ImportsControllerISpec extends ControllerITTestHelper {
   "Post" - {
     "in normal mode" - {
       s"Should redirect to the $StartDatePage when the user is a large producer " in {
-        given
+        `given`
           .commonPrecondition
 
         setAnswers(largeProducerNoPackagingRouteUserAnswers)
@@ -350,7 +350,7 @@ class ImportsControllerISpec extends ControllerITTestHelper {
       }
 
       s"Should redirect to the $StartDatePage when the user is a non producer and selected yes on the $ContractPackingPage" in {
-        given
+        `given`
           .commonPrecondition
 
         setAnswers(nonProducerUserAnswers)
@@ -368,7 +368,7 @@ class ImportsControllerISpec extends ControllerITTestHelper {
       }
 
       s"Should redirect to the DoNotRegister page when the user is a non producer and selected no on the $ContractPackingPage" in {
-        given
+        `given`
           .commonPrecondition
 
         setAnswers(nonProducerDeregisterUserAnswers)
@@ -386,7 +386,7 @@ class ImportsControllerISpec extends ControllerITTestHelper {
       }
 
       s"Should redirect to the $StartDatePage when the user is a small producer and selected yes on the $ContractPackingPage" in {
-        given
+        `given`
           .commonPrecondition
 
         setAnswers(smallProducerUserAnswers)
@@ -405,7 +405,7 @@ class ImportsControllerISpec extends ControllerITTestHelper {
 
       s"Should redirect to the $ContactDetailsPage if user selected yes on the $ThirdPartyPackagersPage, no on the $OperatePackagingSitesPage, " +
         s"and no on $ContractPackingPage" in {
-        given
+        `given`
           .commonPrecondition
 
         setAnswers(smallProducerNoPackagingRouteUserAnswers)
@@ -424,7 +424,7 @@ class ImportsControllerISpec extends ControllerITTestHelper {
 
       s"Should redirect to the DoNotRegister page if user selected no on the $ThirdPartyPackagersPage, no on the $OperatePackagingSitesPage, " +
         s"and no on $ContractPackingPage" in {
-        given
+        `given`
           .commonPrecondition
 
         setAnswers(smallProducerDoNotRegisterUserAnswers)

@@ -4,7 +4,7 @@ import models.HowManyLitresGlobally.{Large, Small}
 import models.backend.Subscription
 import models.{CreatedSubscriptionAndAmountProducedGlobally, HowManyLitresGlobally, RosmWithUtr}
 import org.jsoup.Jsoup
-import org.scalatest.matchers.must.Matchers.{contain, convertToAnyMustWrapper, include}
+import org.scalatest.matchers.must.Matchers._
 import play.api.http.HeaderNames
 import play.api.http.Status.{OK, SEE_OTHER}
 import play.api.i18n.Messages
@@ -25,7 +25,7 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                 .copy(submittedOn = Some(submittedDate))
               val createdSubscriptionAndAmountProducedGlobally = CreatedSubscriptionAndAmountProducedGlobally(
                 Subscription.generate(userAnswers, RosmWithUtr("0000001611", rosmRegistration)), HowManyLitresGlobally.Large)
-              given
+              `given`
                 .commonPrecondition
 
               setAnswers(userAnswers)
@@ -37,7 +37,7 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                 whenReady(result) { res =>
                   res.status mustBe OK
                   val page = Jsoup.parse(res.body)
-                  page.title must include(Messages("Application complete"))
+                  page.title must include ("Application complete")
                   validateSummaryContent(page)
                   val detailsSection = page.getElementsByClass("govuk-details").get(0)
                   detailsSection.getElementsByClass("govuk-summary-list").size() mustBe 7
@@ -80,7 +80,7 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                 .copy(submittedOn = Some(submittedDate))
               val createdSubscriptionAndAmountProducedGlobally = CreatedSubscriptionAndAmountProducedGlobally(
                 Subscription.generate(userAnswers, RosmWithUtr("0000001611", rosmRegistration)), HowManyLitresGlobally.Large)
-              given
+              `given`
                 .commonPrecondition
 
               setAnswers(userAnswers)
@@ -92,7 +92,7 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                 whenReady(result) { res =>
                   res.status mustBe OK
                   val page = Jsoup.parse(res.body)
-                  page.title must include(Messages("Application complete"))
+                  page.title must include ("Application complete")
                   validateSummaryContent(page)
                   val detailsSection = page.getElementsByClass("govuk-details").get(0)
                   detailsSection.getElementsByClass("govuk-summary-list").size() mustBe 7
@@ -135,7 +135,7 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                 .copy(submittedOn = Some(submittedDate))
               val createdSubscriptionAndAmountProducedGlobally = CreatedSubscriptionAndAmountProducedGlobally(
                 Subscription.generate(userAnswers, RosmWithUtr("0000001611", rosmRegistration)), HowManyLitresGlobally.Small)
-              given
+              `given`
                 .commonPrecondition
 
               setAnswers(userAnswers)
@@ -147,7 +147,7 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                 whenReady(result) { res =>
                   res.status mustBe OK
                   val page = Jsoup.parse(res.body)
-                  page.title must include(Messages("Application complete"))
+                  page.title must include ("Application complete")
                   validateSummaryContent(page)
                   val detailsSection = page.getElementsByClass("govuk-details").get(0)
                   detailsSection.getElementsByClass("govuk-summary-list").size() mustBe 8
@@ -192,7 +192,7 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                 .copy(submittedOn = Some(submittedDate))
               val createdSubscriptionAndAmountProducedGlobally = CreatedSubscriptionAndAmountProducedGlobally(
                 Subscription.generate(userAnswers, RosmWithUtr("0000001611", rosmRegistration)), HowManyLitresGlobally.Small)
-              given
+              `given`
                 .commonPrecondition
 
               setAnswers(userAnswers)
@@ -204,7 +204,7 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                 whenReady(result) { res =>
                   res.status mustBe OK
                   val page = Jsoup.parse(res.body)
-                  page.title must include(Messages("Application complete"))
+                  page.title must include ("Application complete")
                   validateSummaryContent(page)
                   val detailsSection = page.getElementsByClass("govuk-details").get(0)
                   detailsSection.getElementsByClass("govuk-summary-list").size() mustBe 6
@@ -245,7 +245,7 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                 .copy(submittedOn = Some(submittedDate))
               val createdSubscriptionAndAmountProducedGlobally = CreatedSubscriptionAndAmountProducedGlobally(
                 Subscription.generate(userAnswers, RosmWithUtr("0000001611", rosmRegistration)), HowManyLitresGlobally.None)
-              given
+              `given`
                 .commonPrecondition
 
               setAnswers(userAnswers)
@@ -257,7 +257,7 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                 whenReady(result) { res =>
                   res.status mustBe OK
                   val page = Jsoup.parse(res.body)
-                  page.title must include(Messages("Application complete"))
+                  page.title must include ("Application complete")
                   validateSummaryContent(page)
                   val detailsSection = page.getElementsByClass("govuk-details").get(0)
                   detailsSection.getElementsByClass("govuk-summary-list").size() mustBe 6
@@ -293,7 +293,7 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                 .copy(submittedOn = Some(submittedDate))
               val createdSubscriptionAndAmountProducedGlobally = CreatedSubscriptionAndAmountProducedGlobally(
                 Subscription.generate(userAnswers, RosmWithUtr("0000001611", rosmRegistration)), HowManyLitresGlobally.None)
-              given
+              `given`
                 .commonPrecondition
 
               setAnswers(userAnswers)
@@ -305,7 +305,7 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                 whenReady(result) { res =>
                   res.status mustBe OK
                   val page = Jsoup.parse(res.body)
-                  page.title must include(Messages("Application complete"))
+                  page.title must include ("Application complete")
                   validateSummaryContent(page)
                   val detailsSection = page.getElementsByClass("govuk-details").get(0)
                   detailsSection.getElementsByClass("govuk-summary-list").size() mustBe 6
@@ -343,7 +343,7 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
 
     "the user has not submitted a registration request" - {
       "should redirect to registration start" in {
-        given
+        `given`
           .commonPrecondition
 
         val userAnswers = userAnswersWithLitres.copy(submittedOn = None)

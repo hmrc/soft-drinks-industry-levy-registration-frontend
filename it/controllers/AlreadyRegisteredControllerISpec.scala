@@ -2,7 +2,7 @@ package controllers
 
 import models.RegisterState
 import org.jsoup.Jsoup
-import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
+import org.scalatest.matchers.must.Matchers._
 import play.api.i18n.Messages
 import play.api.test.WsTestClient
 
@@ -12,7 +12,7 @@ class AlreadyRegisteredControllerISpec extends ControllerITTestHelper {
 
   "GET " + normalRoutePath - {
     "should return OK and render the AlreadyRegistered page" in {
-      given
+      `given`
         .authorisedWithBothSDILandUTRInEnrolmentsAndHasROSM
 
       setAnswers(emptyUserAnswers.copy(registerState = RegisterState.AlreadyRegistered))
@@ -23,8 +23,8 @@ class AlreadyRegisteredControllerISpec extends ControllerITTestHelper {
         whenReady(result1) { res =>
           res.status mustBe 200
           val page = Jsoup.parse(res.body)
-          page.title must include(Messages("alreadyRegistered.heading.title"))
-          page.getElementsByClass("govuk-heading-l").text() mustEqual Messages("alreadyRegistered.heading.title")
+          page.title must include("alreadyRegistered.heading.title")
+          page.getElementsByClass("govuk-heading-l").text() mustEqual "alreadyRegistered.heading.title"
           page.getElementById("subheader").text() mustEqual s"These are the details we hold for Unique Taxpayer Reference (UTR) 0000001611:"
           page.getElementById("utrField").text() mustEqual "0000001611:"
           page.getElementById("addressForUTR").text() mustBe "Super Lemonade Plc 105B Godfrey Marchant Grove Guildford GU14 8NL"

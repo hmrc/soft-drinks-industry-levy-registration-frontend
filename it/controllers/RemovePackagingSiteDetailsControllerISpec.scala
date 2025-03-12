@@ -3,7 +3,7 @@ package controllers
 import models.NormalMode
 import models.backend.{Site, UkAddress}
 import org.jsoup.Jsoup
-import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
+import org.scalatest.matchers.must.Matchers._
 import pages.PackagingSiteDetailsPage
 import play.api.http.HeaderNames
 import play.api.i18n.Messages
@@ -24,7 +24,7 @@ class RemovePackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
   "GET " + normalRoutePath("ref") - {
     "when there is 1 or few packaging sites in the packaging site list" - {
       s"should redirect to the $PackagingSiteDetailsPage" in {
-        given
+        `given`
           .commonPrecondition
 
         setAnswers(emptyUserAnswers.copy(packagingSiteList = packagingSite))
@@ -42,7 +42,7 @@ class RemovePackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
 
     "when the userAnswers contains no data" - {
       "should return OK and render the RemovePackagingSiteDetails page with no data populated" in {
-        given
+        `given`
           .commonPrecondition
 
         setAnswers(updatedUserAnswers)
@@ -65,7 +65,7 @@ class RemovePackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
       }
     }
 
-    testOtherSuccessUserTypes(baseUrl + normalRoutePath(ref), Messages("Are you sure you want to remove this packaging site?"), ua = updatedUserAnswers)
+    testOtherSuccessUserTypes(baseUrl + normalRoutePath(ref), "Are you sure you want to remove this packaging site?", ua = updatedUserAnswers)
     testUnauthorisedUser(baseUrl + normalRoutePath(ref))
     testUserWhoIsUnableToRegister(baseUrl + normalRoutePath(ref))
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath(ref))
@@ -74,7 +74,7 @@ class RemovePackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
   s"POST " + normalRoutePath - {
     "when the user selects true" - {
       "should remove the packaging site details associated with the ref" in {
-        given
+        `given`
           .commonPrecondition
 
         setAnswers(updatedUserAnswers)
@@ -95,7 +95,7 @@ class RemovePackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
     }
     "when the user selects false" - {
       "should NOT remove the packaging site details associated with the ref" in {
-        given
+        `given`
           .commonPrecondition
 
         setAnswers(updatedUserAnswers)
@@ -120,7 +120,7 @@ class RemovePackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
 
   "when the user does not select yes or no" - {
     "should return 400 with required error" in {
-      given
+      `given`
         .commonPrecondition
 
       setAnswers(updatedUserAnswers)
@@ -132,13 +132,13 @@ class RemovePackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
         whenReady(result) { res =>
           res.status mustBe 400
           val page = Jsoup.parse(res.body)
-          page.title must include("Error: " + Messages("removePackagingSiteDetails" + ".title"))
+          page.title must include("Error: " + "removePackagingSiteDetails" + ".title")
           val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
             .first()
           errorSummary
             .select("a")
             .attr("href") mustBe "#value"
-          errorSummary.text() mustBe Messages("removePackagingSiteDetails" + ".error.required")
+          errorSummary.text() mustBe ("removePackagingSiteDetails" + ".error.required")
         }
       }
     }

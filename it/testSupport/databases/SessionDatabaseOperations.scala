@@ -11,8 +11,6 @@ trait SessionDatabaseOperations {
 
   self: TestConfiguration =>
 
-  val sessionRepository: SessionRepository
-
   def setAnswers(userAnswers: UserAnswers)(implicit timeout: Duration): Unit = Await.result(
     sessionRepository.set(userAnswers),
     timeout

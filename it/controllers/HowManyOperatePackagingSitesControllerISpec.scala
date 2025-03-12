@@ -7,7 +7,7 @@ import play.api.http.HeaderNames
 import play.api.i18n.Messages
 import play.api.libs.json.Json
 import play.api.test.WsTestClient
-import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
+import org.scalatest.matchers.must.Matchers._
 
 
 class HowManyOperatePackagingSitesControllerISpec extends LitresISpecHelper {
@@ -27,7 +27,7 @@ class HowManyOperatePackagingSitesControllerISpec extends LitresISpecHelper {
     "GET " + path - {
       "when the userAnswers contains no data" - {
         "should return OK and render the litres page for OperatePackagingSites with no data populated" in {
-          given
+          `given`
             .commonPrecondition
 
           setAnswers(emptyUserAnswers)
@@ -38,7 +38,7 @@ class HowManyOperatePackagingSitesControllerISpec extends LitresISpecHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include(Messages("howManyOperatePackagingSites" + ".title"))
+              page.title must include ("howManyOperatePackagingSites" + ".title")
               testLitresInBandsNoPrepopulatedData(page)
             }
           }
@@ -47,7 +47,7 @@ class HowManyOperatePackagingSitesControllerISpec extends LitresISpecHelper {
 
       s"when the userAnswers contains data for the page" - {
         s"should return OK and render the page with fields populated" in {
-          given
+          `given`
             .commonPrecondition
 
           setAnswers(userAnswers)
@@ -58,13 +58,13 @@ class HowManyOperatePackagingSitesControllerISpec extends LitresISpecHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include(Messages("howManyOperatePackagingSites" + ".title"))
+              page.title must include ("howManyOperatePackagingSites" + ".title")
               testLitresInBandsWithPrepopulatedData(page)
             }
           }
         }
       }
-      testOtherSuccessUserTypes(baseUrl + path, Messages("howManyOperatePackagingSites" + ".title"))
+      testOtherSuccessUserTypes(baseUrl + path, "howManyOperatePackagingSites" + ".title")
       testUnauthorisedUser(baseUrl + path)
       testUserWhoIsUnableToRegister(baseUrl + path)
       testAuthenticatedUserButNoUserAnswers(baseUrl + path)
@@ -74,7 +74,7 @@ class HowManyOperatePackagingSitesControllerISpec extends LitresISpecHelper {
       "when the user populates all litres fields" - {
         "should update the session with the new values and redirect to " + redirectLocation - {
           "when the session contains no data for page" in {
-            given
+            `given`
               .commonPrecondition
 
             setAnswers(emptyUserAnswers)
@@ -94,7 +94,7 @@ class HowManyOperatePackagingSitesControllerISpec extends LitresISpecHelper {
           }
 
           "when the session already contains data for page" in {
-            given
+            `given`
               .commonPrecondition
 
             setAnswers(userAnswers)
@@ -116,10 +116,10 @@ class HowManyOperatePackagingSitesControllerISpec extends LitresISpecHelper {
       }
 
       "should return 400 with required error" - {
-        val errorTitle = "Error: " + Messages("howManyOperatePackagingSites.title")
+        val errorTitle = "Error: " + "howManyOperatePackagingSites.title"
 
         "when no questions are answered" in {
-          given
+          `given`
             .commonPrecondition
 
           setAnswers(emptyUserAnswers)
@@ -137,7 +137,7 @@ class HowManyOperatePackagingSitesControllerISpec extends LitresISpecHelper {
         }
 
         "when the user answers with no numeric answers" in {
-          given
+          `given`
             .commonPrecondition
 
           setAnswers(emptyUserAnswers)
@@ -155,7 +155,7 @@ class HowManyOperatePackagingSitesControllerISpec extends LitresISpecHelper {
         }
 
         "when the user answers with negative numbers" in {
-          given
+          `given`
             .commonPrecondition
 
           setAnswers(emptyUserAnswers)
@@ -173,7 +173,7 @@ class HowManyOperatePackagingSitesControllerISpec extends LitresISpecHelper {
         }
 
         "when the user answers with decimal numbers" in {
-          given
+          `given`
             .commonPrecondition
 
           setAnswers(emptyUserAnswers)
@@ -191,7 +191,7 @@ class HowManyOperatePackagingSitesControllerISpec extends LitresISpecHelper {
         }
 
         "when the user answers with out of max range numbers" in {
-          given
+          `given`
             .commonPrecondition
 
           setAnswers(emptyUserAnswers)

@@ -2,7 +2,7 @@ package controllers
 
 import models.NormalMode
 import org.jsoup.Jsoup
-import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
+import org.scalatest.matchers.must.Matchers._
 import pages.ThirdPartyPackagersPage
 import play.api.http.HeaderNames
 import play.api.i18n.Messages
@@ -17,7 +17,7 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
   "GET " + normalRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the ThirdPartyPackagers page with no data populated" in {
-        given
+        `given`
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -28,7 +28,7 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include(Messages("thirdPartyPackagers" + ".title"))
+            page.title must include ("thirdPartyPackagers" + ".title")
             val radioInputs = page.getElementsByClass("govuk-radios__input")
             radioInputs.size() mustBe 2
             radioInputs.get(0).attr("value") mustBe "true"
@@ -43,7 +43,7 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
     userAnswersForThirdPartyPackagersPage.foreach { case (key, userAnswers) =>
       s"when the userAnswers contains data for the page with " + key + " selected" - {
         s"should return OK and render the page with " + key + " radio checked" in {
-          given
+          `given`
             .commonPrecondition
 
           setAnswers(userAnswers)
@@ -54,7 +54,7 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include(Messages("thirdPartyPackagers" + ".title"))
+              page.title must include ("thirdPartyPackagers" + ".title")
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe 2
               radioInputs.get(0).attr("value") mustBe "true"
@@ -66,7 +66,7 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
         }
       }
     }
-    testOtherSuccessUserTypes(baseUrl + normalRoutePath, Messages("thirdPartyPackagers" + ".title"))
+    testOtherSuccessUserTypes(baseUrl + normalRoutePath, "thirdPartyPackagers" + ".title")
     testUnauthorisedUser(baseUrl + normalRoutePath)
     testUserWhoIsUnableToRegister(baseUrl + normalRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)  }
@@ -74,7 +74,7 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
   s"GET " + checkRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the ThirdPartyPackagers page with no data populated" in {
-        given
+        `given`
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -85,7 +85,7 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include(Messages("thirdPartyPackagers" + ".title"))
+            page.title must include ("thirdPartyPackagers" + ".title")
             val radioInputs = page.getElementsByClass("govuk-radios__input")
             radioInputs.size() mustBe 2
             radioInputs.get(0).attr("value") mustBe "true"
@@ -100,7 +100,7 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
     userAnswersForThirdPartyPackagersPage.foreach { case (key, userAnswers) =>
       s"when the userAnswers contains data for the page with " + key + " selected" - {
         s"should return OK and render the page with " + key + " radio checked" in {
-          given
+          `given`
             .commonPrecondition
 
           setAnswers(userAnswers)
@@ -111,7 +111,7 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include(Messages("thirdPartyPackagers" + ".title"))
+              page.title must include ("thirdPartyPackagers" + ".title")
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe 2
               radioInputs.get(0).attr("value") mustBe "true"
@@ -124,7 +124,7 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
       }
     }
 
-    testOtherSuccessUserTypes(baseUrl + checkRoutePath, Messages("thirdPartyPackagers" + ".title"))
+    testOtherSuccessUserTypes(baseUrl + checkRoutePath, "thirdPartyPackagers" + ".title")
     testUnauthorisedUser(baseUrl + checkRoutePath)
     testUserWhoIsUnableToRegister(baseUrl + checkRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath)
@@ -135,7 +135,7 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
       "when the user selects " + key - {
         "should update the session with the new value and redirect to operate packaging sites controller" - {
           "when the session contains no data for page" in {
-            given
+            `given`
               .commonPrecondition
 
             setAnswers(emptyUserAnswers)
@@ -156,7 +156,7 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
           }
 
           "when the session already contains data for page" in {
-            given
+            `given`
               .commonPrecondition
 
             setAnswers(userAnswers)
@@ -181,7 +181,7 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
 
     "when the user does not select yes or no" - {
       "should return 400 with required error" in {
-        given
+        `given`
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -193,13 +193,13 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + Messages("thirdPartyPackagers" + ".title"))
+            page.title must include("Error: " + "thirdPartyPackagers" + ".title")
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")
               .attr("href") mustBe "#value"
-            errorSummary.text() mustBe Messages("thirdPartyPackagers" + ".error.required")
+            errorSummary.text() mustBe ("thirdPartyPackagers" + ".error.required")
           }
         }
       }
@@ -214,7 +214,7 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
       "when the user selects " + key - {
         "should update the session with the new value and redirect to the checkAnswers controller" - {
           "when the session contains no data for page" in {
-            given
+            `given`
               .commonPrecondition
 
             setAnswers(emptyUserAnswers)
@@ -235,7 +235,7 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
           }
 
           "when the session already contains data for page" in {
-            given
+            `given`
               .commonPrecondition
 
             setAnswers(userAnswers)
@@ -260,7 +260,7 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
 
     "when the user does not select yes or no" - {
       "should return 400 with required error" in {
-        given
+        `given`
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -272,13 +272,13 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + Messages("thirdPartyPackagers" + ".title"))
+            page.title must include("Error: " + "thirdPartyPackagers" + ".title")
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")
               .attr("href") mustBe "#value"
-            errorSummary.text() mustBe Messages("thirdPartyPackagers" + ".error.required")
+            errorSummary.text() mustBe ("thirdPartyPackagers" + ".error.required")
           }
         }
       }

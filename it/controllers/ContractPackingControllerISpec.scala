@@ -2,7 +2,7 @@ package controllers
 
 import models.{CheckMode, LitresInBands, NormalMode, RegisterState, UserAnswers}
 import org.jsoup.Jsoup
-import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
+import org.scalatest.matchers.must.Matchers._
 import pages.{ContractPackingPage, HowManyContractPackingPage}
 import play.api.http.HeaderNames
 import play.api.i18n.Messages
@@ -17,7 +17,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
   "GET " + normalRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the ContractPacking page with no data populated" in {
-        given
+        `given`
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -28,7 +28,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include(Messages("contractPacking" + ".title"))
+            page.title must include ("contractPacking" + ".title")
             val radioInputs = page.getElementsByClass("govuk-radios__input")
             radioInputs.size() mustBe 2
             radioInputs.get(0).attr("value") mustBe "true"
@@ -43,7 +43,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
     userAnswersForContractPackingPage.foreach { case (key, userAnswers) =>
       s"when the userAnswers contains data for the page with " + key + " selected" - {
         s"should return OK and render the page with " + key + " radio checked" in {
-          given
+          `given`
             .commonPrecondition
 
           setAnswers(userAnswers)
@@ -54,7 +54,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include(Messages("contractPacking" + ".title"))
+              page.title must include ("contractPacking" + ".title")
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe 2
               radioInputs.get(0).attr("value") mustBe "true"
@@ -66,7 +66,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
         }
       }
     }
-    testOtherSuccessUserTypes(baseUrl + normalRoutePath, Messages("contractPacking" + ".title"))
+    testOtherSuccessUserTypes(baseUrl + normalRoutePath, "contractPacking" + ".title")
     testUnauthorisedUser(baseUrl + normalRoutePath)
     testUserWhoIsUnableToRegister(baseUrl + normalRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)
@@ -75,7 +75,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
   s"GET " + checkRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the ContractPacking page with no data populated" in {
-        given
+        `given`
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -86,7 +86,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include(Messages("contractPacking" + ".title"))
+            page.title must include ("contractPacking" + ".title")
             val radioInputs = page.getElementsByClass("govuk-radios__input")
             radioInputs.size() mustBe 2
             radioInputs.get(0).attr("value") mustBe "true"
@@ -101,7 +101,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
     userAnswersForContractPackingPage.foreach { case (key, userAnswers) =>
       s"when the userAnswers contains data for the page with " + key + " selected" - {
         s"should return OK and render the page with " + key + " radio checked" in {
-          given
+          `given`
             .commonPrecondition
 
           setAnswers(userAnswers)
@@ -112,7 +112,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include(Messages("contractPacking" + ".title"))
+              page.title must include ("contractPacking" + ".title")
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe 2
               radioInputs.get(0).attr("value") mustBe "true"
@@ -125,7 +125,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
       }
     }
 
-    testOtherSuccessUserTypes(baseUrl + checkRoutePath, Messages("contractPacking" + ".title"))
+    testOtherSuccessUserTypes(baseUrl + checkRoutePath, "contractPacking" + ".title")
     testUnauthorisedUser(baseUrl + checkRoutePath)
     testUserWhoIsUnableToRegister(baseUrl + checkRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath)
@@ -136,7 +136,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
       "when the user selects " + key - {
         "should update the session with the new value and redirect to the index controller" - {
           "when the session contains no data for page" in {
-            given
+            `given`
               .commonPrecondition
 
             setAnswers(emptyUserAnswers)
@@ -162,7 +162,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
           }
 
           "when the session already contains data for page" in {
-            given
+            `given`
               .commonPrecondition
 
             setAnswers(userAnswers)
@@ -192,7 +192,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
 
     "when the user does not select yes or no" - {
       "should return 400 with required error" in {
-        given
+        `given`
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -204,13 +204,13 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + Messages("contractPacking" + ".title"))
+            page.title must include("Error: " + "contractPacking" + ".title")
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")
               .attr("href") mustBe "#value"
-            errorSummary.text() mustBe Messages("contractPacking" + ".error.required")
+            errorSummary.text() mustBe ("contractPacking" + ".error.required")
           }
         }
       }
@@ -226,7 +226,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
         val yesSelected = key == "yes"
         "should update the session with the new value and redirect to the checkAnswers controller" - {
           "when the session contains no data for page" in {
-            given
+            `given`
               .commonPrecondition
 
             setAnswers(emptyUserAnswers)
@@ -251,7 +251,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
           }
 
           "when the session already contains data for page" in {
-            given
+            `given`
               .commonPrecondition
 
             setAnswers(userAnswers)
@@ -281,7 +281,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
 
     "when the user does not select yes or no" - {
       "should return 400 with required error" in {
-        given
+        `given`
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -293,13 +293,13 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + Messages("contractPacking" + ".title"))
+            page.title must include("Error: " + "contractPacking" + ".title")
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")
               .attr("href") mustBe "#value"
-            errorSummary.text() mustBe Messages("contractPacking" + ".error.required")
+            errorSummary.text() mustBe ("contractPacking" + ".error.required")
           }
         }
       }
@@ -310,7 +310,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
   }
 
   "POST must clear litres data when the session already contained data but no is selected" in {
-    given
+    `given`
       .commonPrecondition
 
     val previouslyFilledAnswers =

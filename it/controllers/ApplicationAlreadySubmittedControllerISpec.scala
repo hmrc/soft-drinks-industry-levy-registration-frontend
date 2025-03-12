@@ -2,7 +2,7 @@ package controllers
 
 import models.RegisterState
 import org.jsoup.Jsoup
-import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
+import org.scalatest.matchers.must.Matchers._
 import play.api.i18n.Messages
 import play.api.test.WsTestClient
 
@@ -12,7 +12,7 @@ class ApplicationAlreadySubmittedControllerISpec extends ControllerITTestHelper 
 
   "GET " + normalRoutePath - {
     "should return OK and render the ApplicationAlreadySubmitted page" in {
-      given
+      `given`
         .commonPrecondition
 
       setAnswers(emptyUserAnswers.copy(registerState = RegisterState.RegisterApplicationAccepted))
@@ -23,7 +23,7 @@ class ApplicationAlreadySubmittedControllerISpec extends ControllerITTestHelper 
         whenReady(result1) { res =>
           res.status mustBe 200
           val page = Jsoup.parse(res.body)
-          page.title must include(Messages("applicationAlreadySubmitted.heading.title"))
+          page.title must include("applicationAlreadySubmitted.heading.title")
         }
       }
     }

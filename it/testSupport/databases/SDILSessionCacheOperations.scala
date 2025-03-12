@@ -11,8 +11,6 @@ trait SDILSessionCacheOperations {
 
   self: TestConfiguration =>
 
-  val sdilSessionCache: SDILSessionCache
-
   def addToCache[T](key: String, data: T)(
     implicit fmt: Format[T], timeout: Duration): Unit = Await.result(
     sdilSessionCache.save[T]("some-id", key, data).map(_ => ()),
