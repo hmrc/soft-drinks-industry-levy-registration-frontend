@@ -5,15 +5,18 @@ import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers._
 import pages.ContactDetailsPage
 import play.api.http.HeaderNames
-import play.api.i18n.Messages
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.libs.json.{JsObject, JsValue, Json}
-import play.api.test.WsTestClient
+import play.api.test.{FakeRequest, WsTestClient}
 
 class ContactDetailsControllerISpec extends ControllerITTestHelper {
 
   val normalRoutePath = "/contact-details"
   val checkRoutePath = "/change-contact-details"
 
+  given messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  given messages: Messages = messagesApi.preferred(FakeRequest())
+  
   val contactDetailsJsObject: collection.Map[String, JsValue] = Json.toJson(contactDetails).as[JsObject].value
   val contactDetailsMap: collection.Map[String, String] = {
     contactDetailsJsObject.map { case (fName, fValue) => fName -> fValue.as[String] }
@@ -73,7 +76,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
         }
       }
     }
-    testOtherSuccessUserTypes(baseUrl + normalRoutePath, "contactDetails" + ".title")
+    testOtherSuccessUserTypes(baseUrl + normalRoutePath, messages("contactDetails" + ".title"))
     testUnauthorisedUser(baseUrl + normalRoutePath)
     testUserWhoIsUnableToRegister(baseUrl + normalRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)
@@ -202,7 +205,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
               errorSummary
                 .select("a")
                 .attr("href") mustBe "#" + fieldName
-              errorSummary.text() mustBe ("contactDetails.error." + fieldName + ".required")
+              errorSummary.text() mustBe messages("contactDetails.error." + fieldName + ".required")
             }
           }
         }
@@ -237,7 +240,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
                 .select("a")
                 .attr("href") mustBe "#" + fieldName
 
-              errorSummaryList.text() must include ("contactDetails.error." + fieldName + ".required")
+              errorSummaryList.text() must include (messages("contactDetails.error." + fieldName + ".required"))
             }
           }
         }
@@ -317,7 +320,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
               errorSummary
                 .select("a")
                 .attr("href") mustBe "#" + fieldName
-              errorSummary.text() mustBe ("contactDetails.error." + fieldName + ".required")
+              errorSummary.text() mustBe messages("contactDetails.error." + fieldName + ".required")
             }
           }
         }
@@ -350,7 +353,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
               errorSummaryList
                 .select("a")
                 .attr("href") mustBe "#" + fieldName
-              errorSummaryList.text() must include ("contactDetails.error." + fieldName + ".required")
+              errorSummaryList.text() must include (messages("contactDetails.error." + fieldName + ".required"))
             }
           }
         }
@@ -359,5 +362,5 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
 
     testUnauthorisedUser(baseUrl + checkRoutePath, Some(Json.obj("value" -> "true")))
     testUserWhoIsUnableToRegister(baseUrl + checkRoutePath, Some(Json.obj("value" -> "true")))
-  testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath, Some(Json.obj("value" -> "true")))  }
+    testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath, Some(Json.obj("value" -> "true")))  }
 }

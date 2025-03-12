@@ -6,14 +6,17 @@ import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers._
 import pages.OrganisationTypePage
 import play.api.http.HeaderNames
-import play.api.i18n.Messages
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.libs.json.Json
-import play.api.test.WsTestClient
+import play.api.test.{FakeRequest, WsTestClient}
 
 class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
   val normalRoutePath = "/organisation-type"
   val checkRoutePath = "/change-organisation-type"
 
+  given messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  given messages: Messages = messagesApi.preferred(FakeRequest())
+  
   "GET" + normalRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the OrganisationType page with no data populated" in {
@@ -28,7 +31,7 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include ("organisationType.title")
+            page.title must include(messages("organisationType.title"))
             val radioInputs = page.getElementsByClass("govuk-radios__input")
             radioInputs.size() mustBe OrganisationType.values.size
 
@@ -57,7 +60,7 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include ("organisationType.title")
+              page.title must include(messages("organisationType.title"))
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe OrganisationType.values.size
 
@@ -70,7 +73,7 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
         }
       }
     }
-    testOtherSuccessUserTypes(baseUrl + normalRoutePath, "organisationType.title")
+    testOtherSuccessUserTypes(baseUrl + normalRoutePath, messages("organisationType.title"))
     testUnauthorisedUser(baseUrl + normalRoutePath)
     testUserWhoIsUnableToRegister(baseUrl + normalRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)
@@ -90,7 +93,7 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include ("organisationType.title")
+            page.title must include(messages("organisationType.title"))
             val radioInputs = page.getElementsByClass("govuk-radios__input")
             radioInputs.size() mustBe OrganisationType.values.size
 
@@ -120,7 +123,7 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include ("organisationType.title")
+              page.title must include(messages("organisationType.title"))
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe OrganisationType.values.size
 
@@ -133,7 +136,7 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
         }
       }
     }
-    testOtherSuccessUserTypes(baseUrl + checkRoutePath, "organisationType.title")
+    testOtherSuccessUserTypes(baseUrl + checkRoutePath, messages("organisationType.title"))
     testUnauthorisedUser(baseUrl + checkRoutePath)
     testUserWhoIsUnableToRegister(baseUrl + checkRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath)
@@ -250,13 +253,13 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + "organisationType" + ".title")
+            page.title must include("Error: " + messages("organisationType" + ".title"))
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")
               .attr("href") mustBe "#value_0"
-            errorSummary.text() mustBe ("organisationType" + ".error.required")
+            errorSummary.text() mustBe messages("organisationType" + ".error.required")
           }
         }
       }
@@ -374,13 +377,13 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + "organisationType" + ".title")
+            page.title must include("Error: " + messages("organisationType" + ".title"))
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")
               .attr("href") mustBe "#value_0"
-            errorSummary.text() mustBe ("organisationType" + ".error.required")
+            errorSummary.text() mustBe messages("organisationType" + ".error.required")
           }
         }
       }

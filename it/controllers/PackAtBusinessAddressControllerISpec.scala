@@ -5,14 +5,17 @@ import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers._
 import pages.PackAtBusinessAddressPage
 import play.api.http.HeaderNames
-import play.api.i18n.Messages
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.libs.json.Json
-import play.api.test.WsTestClient
+import play.api.test.{FakeRequest, WsTestClient}
 
 class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
 
   val normalRoutePath = "/pack-at-business-address"
   val checkRoutePath = "/change-pack-at-business-address"
+
+  given messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  given messages: Messages = messagesApi.preferred(FakeRequest())
 
   "GET " + normalRoutePath - {
     "when the userAnswers contains no data" - {
@@ -28,7 +31,7 @@ class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include ("packAtBusinessAddress" + ".title")
+            page.title must include(messages("packAtBusinessAddress" + ".title"))
             val radioInputs = page.getElementsByClass("govuk-radios__input")
             radioInputs.size() mustBe 2
             radioInputs.get(0).attr("value") mustBe "true"
@@ -54,7 +57,7 @@ class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include ("packAtBusinessAddress" + ".title")
+              page.title must include(messages("packAtBusinessAddress" + ".title"))
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe 2
               radioInputs.get(0).attr("value") mustBe "true"
@@ -85,7 +88,7 @@ class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include ("packAtBusinessAddress" + ".title")
+            page.title must include(messages("packAtBusinessAddress" + ".title"))
             val radioInputs = page.getElementsByClass("govuk-radios__input")
             radioInputs.size() mustBe 2
             radioInputs.get(0).attr("value") mustBe "true"
@@ -111,7 +114,7 @@ class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include ("packAtBusinessAddress" + ".title")
+              page.title must include(messages("packAtBusinessAddress" + ".title"))
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe 2
               radioInputs.get(0).attr("value") mustBe "true"
@@ -124,7 +127,7 @@ class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
       }
     }
 
-    testOtherSuccessUserTypes(baseUrl + checkRoutePath, "packAtBusinessAddress" + ".title")
+    testOtherSuccessUserTypes(baseUrl + checkRoutePath, messages("packAtBusinessAddress" + ".title"))
     testUnauthorisedUser(baseUrl + checkRoutePath)
     testUserWhoIsUnableToRegister(baseUrl + checkRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath)
@@ -165,13 +168,13 @@ class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + "packAtBusinessAddress" + ".title")
+            page.title must include("Error: " + messages("packAtBusinessAddress" + ".title"))
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")
               .attr("href") mustBe "#value"
-            errorSummary.text() mustBe ("packAtBusinessAddress" + ".error.required")
+            errorSummary.text() mustBe messages("packAtBusinessAddress" + ".error.required")
           }
         }
       }
@@ -279,13 +282,13 @@ class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + "packAtBusinessAddress" + ".title")
+            page.title must include("Error: " + messages("packAtBusinessAddress" + ".title"))
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")
               .attr("href") mustBe "#value"
-            errorSummary.text() mustBe ("packAtBusinessAddress" + ".error.required")
+            errorSummary.text() mustBe messages("packAtBusinessAddress" + ".error.required")
           }
         }
       }

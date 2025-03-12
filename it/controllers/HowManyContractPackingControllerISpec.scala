@@ -9,7 +9,6 @@ import play.api.libs.json.Json
 import play.api.test.WsTestClient
 import org.scalatest.matchers.must.Matchers._
 
-
 class HowManyContractPackingControllerISpec extends LitresISpecHelper {
 
   val normalRoutePath = "/how-many-contract-packing-next-12-months"
@@ -38,7 +37,7 @@ class HowManyContractPackingControllerISpec extends LitresISpecHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include ("howManyContractPacking" + ".title")
+              page.title must include(Messages("howManyContractPacking" + ".title"))
               testLitresInBandsNoPrepopulatedData(page)
             }
           }
@@ -58,13 +57,13 @@ class HowManyContractPackingControllerISpec extends LitresISpecHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include ("howManyContractPacking" + ".title")
+              page.title must include(Messages("howManyContractPacking" + ".title"))
               testLitresInBandsWithPrepopulatedData(page)
             }
           }
         }
       }
-      testOtherSuccessUserTypes(baseUrl + path, "howManyContractPacking" + ".title")
+      testOtherSuccessUserTypes(baseUrl + path, Messages("howManyContractPacking" + ".title"))
       testUnauthorisedUser(baseUrl + path)
       testUserWhoIsUnableToRegister(baseUrl + path)
       testAuthenticatedUserButNoUserAnswers(baseUrl + path)
@@ -116,7 +115,7 @@ class HowManyContractPackingControllerISpec extends LitresISpecHelper {
       }
 
       "should return 400 with required error" - {
-        val errorTitle = "Error: " + "howManyContractPacking.title"
+        val errorTitle = "Error: " + Messages("howManyContractPacking.title")
 
         "when no questions are answered" in {
           `given`

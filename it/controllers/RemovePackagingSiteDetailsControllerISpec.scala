@@ -6,12 +6,14 @@ import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers._
 import pages.PackagingSiteDetailsPage
 import play.api.http.HeaderNames
-import play.api.i18n.Messages
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.libs.json.Json
-import play.api.test.WsTestClient
+import play.api.test.{FakeRequest, WsTestClient}
 
 class RemovePackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
-
+  given messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  given messages: Messages = messagesApi.preferred(FakeRequest())
+  
   val normalRoutePath = (ref: String)  => s"/packaging-site-details/remove/$ref"
   val ref: String = "12345678"
   val packagingSite: Map[String, Site] = Map(ref -> Site(
@@ -65,7 +67,7 @@ class RemovePackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
       }
     }
 
-    testOtherSuccessUserTypes(baseUrl + normalRoutePath(ref), "Are you sure you want to remove this packaging site?", ua = updatedUserAnswers)
+    testOtherSuccessUserTypes(baseUrl + normalRoutePath(ref), messages("Are you sure you want to remove this packaging site?"), ua = updatedUserAnswers)
     testUnauthorisedUser(baseUrl + normalRoutePath(ref))
     testUserWhoIsUnableToRegister(baseUrl + normalRoutePath(ref))
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath(ref))
@@ -132,13 +134,13 @@ class RemovePackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
         whenReady(result) { res =>
           res.status mustBe 400
           val page = Jsoup.parse(res.body)
-          page.title must include("Error: " + "removePackagingSiteDetails" + ".title")
+          page.title must include("Error: " + messages("removePackagingSiteDetails" + ".title"))
           val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
             .first()
           errorSummary
             .select("a")
             .attr("href") mustBe "#value"
-          errorSummary.text() mustBe ("removePackagingSiteDetails" + ".error.required")
+          errorSummary.text() mustBe messages("removePackagingSiteDetails" + ".error.required")
         }
       }
     }

@@ -5,12 +5,14 @@ import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers._
 import pages.ThirdPartyPackagersPage
 import play.api.http.HeaderNames
-import play.api.i18n.Messages
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.libs.json.Json
-import play.api.test.WsTestClient
+import play.api.test.{FakeRequest, WsTestClient}
 
 class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
-
+  given messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  given messages: Messages = messagesApi.preferred(FakeRequest())
+  
   val normalRoutePath = "/third-party-packagers"
   val checkRoutePath = "/change-third-party-packagers"
 
@@ -28,7 +30,7 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include ("thirdPartyPackagers" + ".title")
+            page.title must include(messages("thirdPartyPackagers" + ".title"))
             val radioInputs = page.getElementsByClass("govuk-radios__input")
             radioInputs.size() mustBe 2
             radioInputs.get(0).attr("value") mustBe "true"
@@ -54,7 +56,7 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include ("thirdPartyPackagers" + ".title")
+              page.title must include(messages("thirdPartyPackagers" + ".title"))
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe 2
               radioInputs.get(0).attr("value") mustBe "true"
@@ -66,7 +68,7 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
         }
       }
     }
-    testOtherSuccessUserTypes(baseUrl + normalRoutePath, "thirdPartyPackagers" + ".title")
+    testOtherSuccessUserTypes(baseUrl + normalRoutePath, messages("thirdPartyPackagers" + ".title"))
     testUnauthorisedUser(baseUrl + normalRoutePath)
     testUserWhoIsUnableToRegister(baseUrl + normalRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)  }
@@ -85,7 +87,7 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include ("thirdPartyPackagers" + ".title")
+            page.title must include(messages("thirdPartyPackagers" + ".title"))
             val radioInputs = page.getElementsByClass("govuk-radios__input")
             radioInputs.size() mustBe 2
             radioInputs.get(0).attr("value") mustBe "true"
@@ -111,7 +113,7 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include ("thirdPartyPackagers" + ".title")
+              page.title must include(messages("thirdPartyPackagers" + ".title"))
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe 2
               radioInputs.get(0).attr("value") mustBe "true"
@@ -124,7 +126,7 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
       }
     }
 
-    testOtherSuccessUserTypes(baseUrl + checkRoutePath, "thirdPartyPackagers" + ".title")
+    testOtherSuccessUserTypes(baseUrl + checkRoutePath, messages("thirdPartyPackagers" + ".title"))
     testUnauthorisedUser(baseUrl + checkRoutePath)
     testUserWhoIsUnableToRegister(baseUrl + checkRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath)
@@ -193,13 +195,13 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + "thirdPartyPackagers" + ".title")
+            page.title must include("Error: " + messages("thirdPartyPackagers" + ".title"))
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")
               .attr("href") mustBe "#value"
-            errorSummary.text() mustBe ("thirdPartyPackagers" + ".error.required")
+            errorSummary.text() mustBe messages("thirdPartyPackagers" + ".error.required")
           }
         }
       }
@@ -272,13 +274,13 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + "thirdPartyPackagers" + ".title")
+            page.title must include("Error: " + messages("thirdPartyPackagers" + ".title"))
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")
               .attr("href") mustBe "#value"
-            errorSummary.text() mustBe ("thirdPartyPackagers" + ".error.required")
+            errorSummary.text() mustBe messages("thirdPartyPackagers" + ".error.required")
           }
         }
       }

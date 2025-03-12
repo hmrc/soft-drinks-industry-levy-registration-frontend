@@ -38,7 +38,7 @@ class HowManyOperatePackagingSitesControllerISpec extends LitresISpecHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include ("howManyOperatePackagingSites" + ".title")
+              page.title must include(Messages("howManyOperatePackagingSites" + ".title"))
               testLitresInBandsNoPrepopulatedData(page)
             }
           }
@@ -58,13 +58,13 @@ class HowManyOperatePackagingSitesControllerISpec extends LitresISpecHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include ("howManyOperatePackagingSites" + ".title")
+              page.title must include(Messages("howManyOperatePackagingSites" + ".title"))
               testLitresInBandsWithPrepopulatedData(page)
             }
           }
         }
       }
-      testOtherSuccessUserTypes(baseUrl + path, "howManyOperatePackagingSites" + ".title")
+      testOtherSuccessUserTypes(baseUrl + path, Messages("howManyOperatePackagingSites" + ".title"))
       testUnauthorisedUser(baseUrl + path)
       testUserWhoIsUnableToRegister(baseUrl + path)
       testAuthenticatedUserButNoUserAnswers(baseUrl + path)
@@ -116,7 +116,7 @@ class HowManyOperatePackagingSitesControllerISpec extends LitresISpecHelper {
       }
 
       "should return 400 with required error" - {
-        val errorTitle = "Error: " + "howManyOperatePackagingSites.title"
+        val errorTitle = "Error: " + Messages("howManyOperatePackagingSites.title")
 
         "when no questions are answered" in {
           `given`

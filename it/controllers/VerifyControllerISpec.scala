@@ -7,12 +7,14 @@ import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers._
 import pages.VerifyPage
 import play.api.http.HeaderNames
-import play.api.i18n.Messages
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.libs.json.Json
-import play.api.test.WsTestClient
+import play.api.test.{FakeRequest, WsTestClient}
 
 class VerifyControllerISpec extends ControllerITTestHelper {
-
+  given messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  given messages: Messages = messagesApi.preferred(FakeRequest())
+  
   val normalRoutePath = "/verify"
   val checkRoutePath = "/change-verify"
 
@@ -30,7 +32,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include ("verify" + ".title")
+            page.title must include(messages("verify" + ".title"))
             val radioInputs = page.getElementsByClass("govuk-radios__input")
             radioInputs.size() mustBe Verify.values.size
             page.getElementById("addressForUTR").text() mustBe "Super Lemonade Plc 105B Godfrey Marchant Grove Guildford GU14 8NL"
@@ -60,7 +62,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include ("verify" + ".title")
+              page.title must include(messages("verify" + ".title"))
               page.getElementById("addressForUTR").text() mustBe "Super Lemonade Plc 105B Godfrey Marchant Grove Guildford GU14 8NL"
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe Verify.values.size
@@ -75,7 +77,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
         }
       }
     }
-    testOtherSuccessUserTypes(baseUrl + normalRoutePath, "verify" + ".title")
+    testOtherSuccessUserTypes(baseUrl + normalRoutePath, messages("verify" + ".title"))
     testUnauthorisedUser(baseUrl + normalRoutePath)
     testUserWhoIsUnableToRegister(baseUrl + normalRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)
@@ -95,7 +97,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include ("verify" + ".title")
+            page.title must include(messages("verify" + ".title"))
             val radioInputs = page.getElementsByClass("govuk-radios__input")
             radioInputs.size() mustBe Verify.values.size
             page.getElementById("addressForUTR").text() mustBe "Super Lemonade Plc 105B Godfrey Marchant Grove Guildford GU14 8NL"
@@ -126,7 +128,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include ("verify" + ".title")
+              page.title must include(messages("verify" + ".title"))
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe Verify.values.size
               page.getElementById("addressForUTR").text() mustBe "Super Lemonade Plc 105B Godfrey Marchant Grove Guildford GU14 8NL"
@@ -140,7 +142,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
         }
       }
     }
-    testOtherSuccessUserTypes(baseUrl + checkRoutePath, "verify" + ".title")
+    testOtherSuccessUserTypes(baseUrl + checkRoutePath, messages("verify" + ".title"))
     testUnauthorisedUser(baseUrl + checkRoutePath)
     testUserWhoIsUnableToRegister(baseUrl + checkRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath)
@@ -290,7 +292,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + "verify" + ".title")
+            page.title must include("Error: " + messages("verify" + ".title"))
             page.getElementById("addressForUTR").text() mustBe "Super Lemonade Plc 105B Godfrey Marchant Grove Guildford GU14 8NL"
             page.getElementById("utrField").text() mustBe "0000001611:"
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
@@ -449,7 +451,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + "verify" + ".title")
+            page.title must include("Error: " + messages("verify" + ".title"))
             page.getElementById("addressForUTR").text() mustBe "Super Lemonade Plc 105B Godfrey Marchant Grove Guildford GU14 8NL"
             page.getElementById("utrField").text() mustBe "0000001611:"
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")

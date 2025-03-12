@@ -5,12 +5,14 @@ import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers._
 import pages.{AskSecondaryWarehousesPage, WarehouseDetailsPage}
 import play.api.http.HeaderNames
-import play.api.i18n.Messages
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.libs.json.Json
-import play.api.test.WsTestClient
+import play.api.test.{FakeRequest, WsTestClient}
 
 class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
-
+  given messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  given messages: Messages = messagesApi.preferred(FakeRequest())
+  
   val normalRoutePath = "/warehouses"
   val checkRoutePath = "/change-warehouses"
 
@@ -47,7 +49,7 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include (s"warehouseDetails.title.heading 1 ")
+              page.title must include(messages("warehouseDetails.title.heading","1",""))
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe 2
               radioInputs.get(0).attr("value") mustBe "true"
@@ -97,7 +99,7 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include (s"warehouseDetails.title.heading 1 ")
+              page.title must include(messages("warehouseDetails.title.heading","1",""))
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe 2
               radioInputs.get(0).attr("value") mustBe "true"
@@ -143,7 +145,7 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
       whenReady(result) { res =>
         res.status mustBe 200
         val page = Jsoup.parse(res.body)
-        page.title must include ("warehouseDetails.title.heading" + "1" + "")
+        page.title must include(messages("warehouseDetails.title.heading", "1", ""))
         page.getElementsByClass("remove-link").size() mustEqual 1
       }
     }
@@ -158,7 +160,7 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
       whenReady(result) { res =>
         res.status mustBe 200
         val page = Jsoup.parse(res.body)
-        page.title must include ("warehouseDetails.title.heading"+ "2" + "s")
+        page.title must include(messages("warehouseDetails.title.heading", "2", "s"))
         page.getElementsByClass("remove-link").size() mustEqual 2
       }
     }
@@ -234,13 +236,13 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + "warehouseDetails.title.heading"+"0"+"s")
+            page.title must include("Error: " + messages("warehouseDetails.title.heading","0","s"))
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")
               .attr("href") mustBe "#value"
-            errorSummary.text() mustBe ("warehouseDetails" + ".error.required")
+            errorSummary.text() mustBe messages("warehouseDetails" + ".error.required")
           }
         }
       }
@@ -360,13 +362,13 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + "warehouseDetails.title.heading"+"0"+"s")
+            page.title must include("Error: " + messages("warehouseDetails.title.heading","0","s"))
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")
               .attr("href") mustBe "#value"
-            errorSummary.text() mustBe ("warehouseDetails" + ".error.required")
+            errorSummary.text() mustBe messages("warehouseDetails" + ".error.required")
           }
         }
       }

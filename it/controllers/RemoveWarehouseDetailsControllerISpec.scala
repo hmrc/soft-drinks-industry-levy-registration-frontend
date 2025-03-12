@@ -5,12 +5,14 @@ import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers._
 import pages.RemoveWarehouseDetailsPage
 import play.api.http.HeaderNames
-import play.api.i18n.Messages
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.libs.json.Json
-import play.api.test.WsTestClient
+import play.api.test.{FakeRequest, WsTestClient}
 
 class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
-
+  given messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  given messages: Messages = messagesApi.preferred(FakeRequest())
+  
   def normalRoutePath(index: String) = s"/warehouse-details/remove/$index"
   def checkRoutePath(index: String) = s"/change-warehouse-details/remove/$index"
   val indexOfWarehouseToBeRemoved: String = "warehouseUNO"
@@ -47,7 +49,7 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
             whenReady(result) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include ("removeWarehouseDetails" + ".title")
+              page.title must include(messages("removeWarehouseDetails" + ".title"))
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe 2
               radioInputs.get(0).attr("value") mustBe "true"
@@ -97,7 +99,7 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
             whenReady(result) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include ("removeWarehouseDetails" + ".title")
+              page.title must include(messages("removeWarehouseDetails" + ".title"))
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe 2
               radioInputs.get(0).attr("value") mustBe "true"
@@ -186,13 +188,13 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + "removeWarehouseDetails" + ".title")
+            page.title must include("Error: " + messages("removeWarehouseDetails" + ".title"))
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")
               .attr("href") mustBe "#value"
-            errorSummary.text() mustBe ("removeWarehouseDetails" + ".error.required")
+            errorSummary.text() mustBe messages("removeWarehouseDetails" + ".error.required")
             page.getElementById("warehouseToRemove").text() mustBe s"$aTradingName foo, bar, wizz"
             getAnswers(emptyUserAnswers.id).get.warehouseList.size mustBe 1
           }
@@ -276,13 +278,13 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
             res.status mustBe 400
             getAnswers(emptyUserAnswers.id).get.warehouseList.size mustBe 1
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + "removeWarehouseDetails" + ".title")
+            page.title must include("Error: " + messages("removeWarehouseDetails" + ".title"))
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")
               .attr("href") mustBe "#value"
-            errorSummary.text() mustBe ("removeWarehouseDetails" + ".error.required")
+            errorSummary.text() mustBe messages("removeWarehouseDetails" + ".error.required")
             page.getElementById("warehouseToRemove").text() mustBe s"$aTradingName foo, bar, wizz"
           }
         }

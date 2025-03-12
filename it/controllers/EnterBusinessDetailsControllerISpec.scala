@@ -8,9 +8,9 @@ import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers._
 import pages.EnterBusinessDetailsPage
 import play.api.http.HeaderNames
-import play.api.i18n.Messages
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.libs.json.Json
-import play.api.test.WsTestClient
+import play.api.test.{FakeRequest, WsTestClient}
 
 import scala.util.Random
 
@@ -18,6 +18,9 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
 
   val path = "/enter-business-details"
 
+  given messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  given messages: Messages = messagesApi.preferred(FakeRequest())
+  
   val enterBusinessDetails = Identify(utr = "0000000437", postcode = "GU14 8NL")
 
   val randomStringExceedingMaxLength = Random.nextString(10 + 1)
@@ -51,7 +54,7 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include ("enterBusinessDetails" + ".title")
+            page.title must include(messages("enterBusinessDetails" + ".title"))
             val inputFields = page.getElementsByClass("govuk-input")
             inputFields.text() mustEqual ""
           }
@@ -187,7 +190,8 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + "enterBusinessDetails" + ".title")
+            page.title must include("Error: " + messages("enterBusinessDetails" + ".title"
+            ) )
             val errorSummaryList = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first().getElementsByTag("li")
             errorSummaryList.size() mustBe 1
@@ -195,7 +199,8 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
             errorSummary
               .select("a")
               .attr("href") mustBe "#utr"
-            errorSummary.text() mustBe "enterBusinessDetails.invalid.utr.length"
+            errorSummary.text() mustBe messages("enterBusinessDetails.invalid.utr.length"
+            )
           }
         }
       }

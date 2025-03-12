@@ -7,13 +7,16 @@ import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers._
 import play.api.http.HeaderNames
 import play.api.http.Status.{OK, SEE_OTHER}
-import play.api.i18n.Messages
-import play.api.test.WsTestClient
+import play.api.i18n.{Messages, MessagesApi}
+import play.api.test.{FakeRequest, WsTestClient}
 import repositories.SDILSessionKeys
 
 class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
 
   val path = "/registration-confirmation"
+
+  given messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  given messages: Messages = messagesApi.preferred(FakeRequest())
 
   "GET " + path - {
     "when the user has submitted a registration request" - {
@@ -37,7 +40,7 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                 whenReady(result) { res =>
                   res.status mustBe OK
                   val page = Jsoup.parse(res.body)
-                  page.title must include ("Application complete")
+                  page.title must include(messages("Application complete"))
                   validateSummaryContent(page)
                   val detailsSection = page.getElementsByClass("govuk-details").get(0)
                   detailsSection.getElementsByClass("govuk-summary-list").size() mustBe 7
@@ -92,7 +95,7 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                 whenReady(result) { res =>
                   res.status mustBe OK
                   val page = Jsoup.parse(res.body)
-                  page.title must include ("Application complete")
+                  page.title must include(messages("Application complete"))
                   validateSummaryContent(page)
                   val detailsSection = page.getElementsByClass("govuk-details").get(0)
                   detailsSection.getElementsByClass("govuk-summary-list").size() mustBe 7
@@ -147,7 +150,7 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                 whenReady(result) { res =>
                   res.status mustBe OK
                   val page = Jsoup.parse(res.body)
-                  page.title must include ("Application complete")
+                  page.title must include(messages("Application complete"))
                   validateSummaryContent(page)
                   val detailsSection = page.getElementsByClass("govuk-details").get(0)
                   detailsSection.getElementsByClass("govuk-summary-list").size() mustBe 8
@@ -204,7 +207,7 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                 whenReady(result) { res =>
                   res.status mustBe OK
                   val page = Jsoup.parse(res.body)
-                  page.title must include ("Application complete")
+                  page.title must include(messages("Application complete"))
                   validateSummaryContent(page)
                   val detailsSection = page.getElementsByClass("govuk-details").get(0)
                   detailsSection.getElementsByClass("govuk-summary-list").size() mustBe 6
@@ -257,7 +260,7 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                 whenReady(result) { res =>
                   res.status mustBe OK
                   val page = Jsoup.parse(res.body)
-                  page.title must include ("Application complete")
+                  page.title must include(messages("Application complete"))
                   validateSummaryContent(page)
                   val detailsSection = page.getElementsByClass("govuk-details").get(0)
                   detailsSection.getElementsByClass("govuk-summary-list").size() mustBe 6
@@ -305,7 +308,7 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                 whenReady(result) { res =>
                   res.status mustBe OK
                   val page = Jsoup.parse(res.body)
-                  page.title must include ("Application complete")
+                  page.title must include(messages("Application complete"))
                   validateSummaryContent(page)
                   val detailsSection = page.getElementsByClass("govuk-details").get(0)
                   detailsSection.getElementsByClass("govuk-summary-list").size() mustBe 6

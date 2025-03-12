@@ -2,9 +2,9 @@ package controllers
 
 import models.RegisterState
 import org.jsoup.Jsoup
-import org.scalatest.matchers.must.Matchers._
-import play.api.i18n.Messages
-import play.api.test.WsTestClient
+import org.scalatest.matchers.must.Matchers.*
+import play.api.i18n.{Messages, MessagesApi}
+import play.api.test.{FakeRequest, WsTestClient}
 
 class AlreadyRegisteredControllerISpec extends ControllerITTestHelper {
 
@@ -23,8 +23,12 @@ class AlreadyRegisteredControllerISpec extends ControllerITTestHelper {
         whenReady(result1) { res =>
           res.status mustBe 200
           val page = Jsoup.parse(res.body)
-          page.title must include("alreadyRegistered.heading.title")
-          page.getElementsByClass("govuk-heading-l").text() mustEqual "alreadyRegistered.heading.title"
+
+          given messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+          given messages: Messages = messagesApi.preferred(FakeRequest())
+
+          page.title must include(messages("alreadyRegistered.heading.title"))
+          page.getElementsByClass("govuk-heading-l").text() mustEqual Messages("alreadyRegistered.heading.title")
           page.getElementById("subheader").text() mustEqual s"These are the details we hold for Unique Taxpayer Reference (UTR) 0000001611:"
           page.getElementById("utrField").text() mustEqual "0000001611:"
           page.getElementById("addressForUTR").text() mustBe "Super Lemonade Plc 105B Godfrey Marchant Grove Guildford GU14 8NL"

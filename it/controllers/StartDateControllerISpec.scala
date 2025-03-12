@@ -5,14 +5,16 @@ import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers._
 import pages.StartDatePage
 import play.api.http.HeaderNames
-import play.api.i18n.Messages
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.libs.json.Json
-import play.api.test.WsTestClient
+import play.api.test.{FakeRequest, WsTestClient}
 
 import java.time.LocalDate
 
 class StartDateControllerISpec extends ControllerITTestHelper {
-
+  given messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  given messages: Messages = messagesApi.preferred(FakeRequest())
+  
   val normalRoutePath = "/start-date"
   val checkRoutePath = "/change-start-date"
 
@@ -30,7 +32,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include ("startDate" + ".title")
+            page.title must include(messages("startDate" + ".title"))
             val dateInputs = page.getElementsByClass("govuk-date-input__item")
             dateInputs.size() mustBe 3
             dateInputs.get(0).getElementById("startDate.day").hasAttr("value") mustBe false
@@ -56,7 +58,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include ("startDate" + ".title")
+            page.title must include(messages("startDate" + ".title"))
             val dateInputs = page.getElementsByClass("govuk-date-input__item")
             dateInputs.size() mustBe 3
             dateInputs.get(0).getElementById("startDate.day").hasAttr("value") mustBe true
@@ -69,7 +71,8 @@ class StartDateControllerISpec extends ControllerITTestHelper {
         }
       }
     }
-    testOtherSuccessUserTypes(baseUrl + normalRoutePath, "startDate" + ".title")
+    testOtherSuccessUserTypes(baseUrl + normalRoutePath, messages("startDate" + ".title"
+    ) )
     testUnauthorisedUser(baseUrl + normalRoutePath)
     testUserWhoIsUnableToRegister(baseUrl + normalRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)
@@ -89,7 +92,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include ("startDate" + ".title")
+            page.title must include(messages("startDate" + ".title"))
             val dateInputs = page.getElementsByClass("govuk-date-input__item")
             dateInputs.size() mustBe 3
             dateInputs.get(0).getElementById("startDate.day").hasAttr("value") mustBe false
@@ -115,7 +118,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include ("startDate" + ".title")
+            page.title must include(messages("startDate" + ".title"))
             val dateInputs = page.getElementsByClass("govuk-date-input__item")
             dateInputs.size() mustBe 3
             dateInputs.get(0).getElementById("startDate.day").hasAttr("value") mustBe true
@@ -129,7 +132,8 @@ class StartDateControllerISpec extends ControllerITTestHelper {
       }
     }
 
-    testOtherSuccessUserTypes(baseUrl + checkRoutePath, "startDate" + ".title")
+    testOtherSuccessUserTypes(baseUrl + checkRoutePath, messages("startDate" + ".title"
+    ) )
     testUnauthorisedUser(baseUrl + normalRoutePath)
     testUserWhoIsUnableToRegister(baseUrl + normalRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)

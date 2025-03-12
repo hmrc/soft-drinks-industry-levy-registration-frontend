@@ -5,15 +5,18 @@ import org.jsoup.Jsoup
 import org.scalatest.matchers.must.Matchers._
 import pages.{ContractPackingPage, HowManyContractPackingPage}
 import play.api.http.HeaderNames
-import play.api.i18n.Messages
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.libs.json.Json
-import play.api.test.WsTestClient
+import play.api.test.{FakeRequest, WsTestClient}
 
 class ContractPackingControllerISpec extends ControllerITTestHelper {
 
   val normalRoutePath = "/contract-packing"
   val checkRoutePath = "/change-contract-packing"
 
+  given messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  given messages: Messages = messagesApi.preferred(FakeRequest())
+  
   "GET " + normalRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the ContractPacking page with no data populated" in {
@@ -28,7 +31,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include ("contractPacking" + ".title")
+            page.title must include(messages("contractPacking" + ".title"))
             val radioInputs = page.getElementsByClass("govuk-radios__input")
             radioInputs.size() mustBe 2
             radioInputs.get(0).attr("value") mustBe "true"
@@ -54,7 +57,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include ("contractPacking" + ".title")
+              page.title must include(messages("contractPacking" + ".title"))
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe 2
               radioInputs.get(0).attr("value") mustBe "true"
@@ -66,7 +69,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
         }
       }
     }
-    testOtherSuccessUserTypes(baseUrl + normalRoutePath, "contractPacking" + ".title")
+    testOtherSuccessUserTypes(baseUrl + normalRoutePath, messages("contractPacking" + ".title"))
     testUnauthorisedUser(baseUrl + normalRoutePath)
     testUserWhoIsUnableToRegister(baseUrl + normalRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)
@@ -86,7 +89,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include ("contractPacking" + ".title")
+            page.title must include(messages("contractPacking" + ".title"))
             val radioInputs = page.getElementsByClass("govuk-radios__input")
             radioInputs.size() mustBe 2
             radioInputs.get(0).attr("value") mustBe "true"
@@ -112,7 +115,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include ("contractPacking" + ".title")
+              page.title must include(messages("contractPacking" + ".title"))
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe 2
               radioInputs.get(0).attr("value") mustBe "true"
@@ -125,7 +128,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
       }
     }
 
-    testOtherSuccessUserTypes(baseUrl + checkRoutePath, "contractPacking" + ".title")
+    testOtherSuccessUserTypes(baseUrl + checkRoutePath, messages("contractPacking" + ".title"))
     testUnauthorisedUser(baseUrl + checkRoutePath)
     testUserWhoIsUnableToRegister(baseUrl + checkRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath)
@@ -204,13 +207,13 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + "contractPacking" + ".title")
+            page.title must include("Error: " + messages("contractPacking" + ".title"))
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")
               .attr("href") mustBe "#value"
-            errorSummary.text() mustBe ("contractPacking" + ".error.required")
+            errorSummary.text() mustBe messages("contractPacking" + ".error.required")
           }
         }
       }
@@ -293,13 +296,13 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + "contractPacking" + ".title")
+            page.title must include("Error: " + messages("contractPacking" + ".title"))
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")
               .attr("href") mustBe "#value"
-            errorSummary.text() mustBe ("contractPacking" + ".error.required")
+            errorSummary.text() mustBe messages("contractPacking" + ".error.required")
           }
         }
       }
