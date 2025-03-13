@@ -21,7 +21,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
   "GET " + normalRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the Verify page with no data populated" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -49,7 +49,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
     Verify.values.zipWithIndex.foreach { case (radio, index) =>
       s"when the userAnswers contains data for the page with " + radio.toString + " selected" - {
         s"should return OK and render the page with " + radio.toString + " radio checked" in {
-          `given`
+          build
             .commonPrecondition
 
           val userAnswers = emptyUserAnswers.set(VerifyPage, radio).success.value
@@ -86,7 +86,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
   s"GET " + checkRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the Verify page with no data populated" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -114,7 +114,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
     Verify.values.zipWithIndex.foreach { case (radio, index) =>
       s"when the userAnswers contains data for the page with " + radio.toString + " selected" - {
         s"should return OK and render the page with " + radio.toString + " radio checked" in {
-          `given`
+          build
             .commonPrecondition
 
           val userAnswers = emptyUserAnswers.set(VerifyPage, radio).success.value
@@ -153,7 +153,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
     s"when the user selects $YesRegister" - {
       "should update the session with the value and set business address as rosm address and redirect to the Organisation Type controller" - {
         "when the session contains no data for page" in {
-          `given`
+          build
             .commonPrecondition
 
           setAnswers(emptyUserAnswers)
@@ -175,7 +175,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
         }
 
         "when the session already contains data for page" in {
-          `given`
+          build
             .commonPrecondition
 
           val userAnswers = {
@@ -205,7 +205,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
     s"when the user selects $YesNewAddress" - {
       "should update the session with the new value and redirect to the ALF" - {
         "when the session contains no data for page" in {
-          `given`
+          build
             .commonPrecondition
             .alf.getSuccessResponseFromALFInit("foo")
 
@@ -229,7 +229,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
         }
 
         "when the session already contains data for page" in {
-          `given`
+          build
             .commonPrecondition
             .alf.getSuccessResponseFromALFInit("foo")
 
@@ -259,7 +259,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
     }
     s"when the user selects $No" - {
       "should NOT update the session with the new value and redirect to the Auth sign out controller" in {
-        `given`
+        build
             .commonPrecondition
 
           setAnswers(emptyUserAnswers)
@@ -280,7 +280,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
 
     "when the user does not select an option" - {
       "should return 400 with required error" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -315,7 +315,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
       s"when the user selects $YesRegister" - {
         "should update the session with the new value and wipe the business address and redirect to the checkAnswers controller" - {
           "when the session contains no data for page" in {
-            `given`
+            build
               .commonPrecondition
 
             setAnswers(emptyUserAnswers)
@@ -338,7 +338,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
           }
 
           "when the session already contains data for page" in {
-            `given`
+            build
               .commonPrecondition
 
             val userAnswers = emptyUserAnswers.set(VerifyPage, YesRegister).success.value
@@ -365,7 +365,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
     s"when the user selects $YesNewAddress" - {
       "should update the session with the new value and redirect to the ALF" - {
         "when the session contains no data for page" in {
-          `given`
+          build
             .commonPrecondition
             .alf.getSuccessResponseFromALFInit("foo")
 
@@ -389,7 +389,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
         }
 
         "when the session already contains data for page" in {
-          `given`
+          build
             .commonPrecondition
             .alf.getSuccessResponseFromALFInit("foo")
 
@@ -419,7 +419,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
     }
     s"when the user selects $No" - {
       "should NOT update the session with the new value and redirect to the Auth sign out controller" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -439,7 +439,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
 
     "when the user does not select and option" - {
       "should return 400 with required error" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)

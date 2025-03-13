@@ -19,7 +19,7 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
   "GET " + normalRoutePath - {
     "when the userAnswers contains no data" - {
       "should return SEE_OTHER and redirect to Ask Secondary Warehouse page" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -38,7 +38,7 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
     userAnswersForWarehouseDetailsPage.foreach { case (key, userAnswers) =>
       s"when the userAnswers contains data for the page with " + key + " selected" - {
         s"should return OK and render the page with " + key + " radio unchecked" in {
-          `given`
+          build
             .commonPrecondition
 
           setAnswers(userAnswers)
@@ -69,7 +69,7 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
   s"GET " + checkRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the Ask Secondary Warehouse page with no data populated" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -88,7 +88,7 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
     userAnswersForWarehouseDetailsPage.foreach { case (key, userAnswers) =>
       s"when the userAnswers contains data for the page with " + key + " selected" - {
         s"should return OK and render the page with " + key + " radio unchecked" in {
-          `given`
+          build
             .commonPrecondition
 
           setAnswers(userAnswers)
@@ -119,7 +119,7 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
   }
 
   "Get should return redirect to AskSecondaryWarehouses page when 0 warehouses listed" in {
-    `given`
+    build
       .commonPrecondition
 
     setAnswers(emptyUserAnswers
@@ -137,7 +137,7 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
   }
 
   "Get should return the correct title and header when 1 warehouse listed on page" in {
-    `given`
+    build
       .commonPrecondition
     setAnswers(userAnswersWith1Warehouse)
     WsTestClient.withClient { client =>
@@ -152,7 +152,7 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
   }
 
   "Get should return the correct title and header when 2 warehouses listed on page" in {
-    `given`
+    build
       .commonPrecondition
     setAnswers(userAnswersWith2Warehouses)
     WsTestClient.withClient { client =>
@@ -175,7 +175,7 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
             setAnswers(emptyUserAnswers
               .set(WarehouseDetailsPage, true).success.value
               )
-            `given`
+            build
               .commonPrecondition
               .alf.getSuccessResponseFromALFInit(alfOnRampURL)
 
@@ -199,7 +199,7 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
             setAnswers(emptyUserAnswers
               .set(WarehouseDetailsPage, true).success.value
             )
-            `given`
+            build
               .commonPrecondition
               .alf.getSuccessResponseFromALFInit(alfOnRampURL)
 
@@ -224,7 +224,7 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
 
     "when the user does not select yes or no" - {
       "should return 400 with required error" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -258,7 +258,7 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
       val alfOnRampURL: String = "http://onramp.com"
       setAnswers(emptyUserAnswers.set(WarehouseDetailsPage, true).success.value
         .copy(warehouseList = warehouseListWith1))
-      `given`
+      build
         .commonPrecondition
         .alf.getSuccessResponseFromALFInit(alfOnRampURL)
       WsTestClient.withClient { client =>
@@ -280,7 +280,7 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
       val alfOnRampURL: String = "http://onramp.com"
       setAnswers(emptyUserAnswers.set(WarehouseDetailsPage, true).success.value
         .copy(warehouseList = warehouseListWith1))
-      `given`
+      build
         .commonPrecondition
         .alf.getSuccessResponseFromALFInit(alfOnRampURL)
       WsTestClient.withClient { client =>
@@ -305,7 +305,7 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
             val alfOnRampURL: String = "http://onramp.com"
             setAnswers(emptyUserAnswers.set(WarehouseDetailsPage, true).success.value
               .copy(warehouseList = warehouseListWith1))
-            `given`
+            build
               .commonPrecondition
               .alf.getSuccessResponseFromALFInit(alfOnRampURL)
             WsTestClient.withClient { client =>
@@ -325,7 +325,7 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
 
           "when the session already contains data for page" in {
             val alfOnRampURL: String = "http://onramp.com"
-            `given`
+            build
               .commonPrecondition
               .alf.getSuccessResponseFromALFInit(alfOnRampURL)
 
@@ -350,7 +350,7 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
 
     "when the user does not select yes or no" - {
       "should return 400 with required error" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)

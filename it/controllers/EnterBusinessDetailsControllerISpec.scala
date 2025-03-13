@@ -43,7 +43,7 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
   "GET " + path - {
     "when the userAnswers contains no data" - {
       "should return OK and render the EnterBusinessDetails page with no data populated" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers.copy(registerState = RegisterState.RequiresBusinessDetails))
@@ -70,10 +70,10 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
           s"and subscription status of $subscriptionState" - {
             s"should redirect to $expectedUrl" - {
               "when the session contains no data for the page" in {
-                `given`
+                build
                   .user.isAuthorisedButNotEnrolled()
-                `given`.sdilBackend.retrieveRosm("0000000437")
-                `given`.sdilBackend.checkPendingQueue("0000000437", subscriptionState)
+                build.sdilBackend.retrieveRosm("0000000437")
+                build.sdilBackend.checkPendingQueue("0000000437", subscriptionState)
 
                 setAnswers(emptyUserAnswers.copy(registerState = RegisterState.RequiresBusinessDetails))
                 WsTestClient.withClient { client =>
@@ -95,10 +95,10 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
               }
 
               "when the session already contains data for the page which is different" in {
-                `given`
+                build
                   .user.isAuthorisedButNotEnrolled()
-                `given`.sdilBackend.retrieveRosm("0000000437")
-                `given`.sdilBackend.checkPendingQueue("0000000437", subscriptionState)
+                build.sdilBackend.retrieveRosm("0000000437")
+                build.sdilBackend.checkPendingQueue("0000000437", subscriptionState)
 
                 val userAnswersWithNonIdenticalData = {
                   emptyUserAnswers
@@ -153,7 +153,7 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
               submittedOn = None
             )
         }
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(userAnswersWithIdenticalData)
@@ -178,7 +178,7 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
 
     "should return 400 with utr max length error" - {
       "when the question is answered with incorrect data" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers.copy(registerState = RegisterState.RequiresBusinessDetails))

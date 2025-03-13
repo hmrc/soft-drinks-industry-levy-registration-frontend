@@ -25,7 +25,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
   "GET " + normalRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the AskSecondaryWarehouses page with no data populated" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -51,7 +51,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
     userAnswersForAskSecondaryWarehousesPage.foreach { case (key, userAnswers) =>
       s"when the userAnswers contains data for the page with " + key + " selected" - {
         s"should return OK and render the page with " + key + " radio checked" in {
-          `given`
+          build
             .commonPrecondition
 
           setAnswers(userAnswers)
@@ -83,7 +83,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
   s"GET " + checkRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the AskSecondaryWarehouses page with no data populated" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -109,7 +109,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
     userAnswersForAskSecondaryWarehousesPage.foreach { case (key, userAnswers) =>
       s"when the userAnswers contains data for the page with " + key + " selected" - {
         s"should return OK and render the page with " + key + " radio checked" in {
-          `given`
+          build
             .commonPrecondition
 
           setAnswers(userAnswers)
@@ -145,7 +145,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
     "when the user select no" - {
       "should update the session with the new value and redirect to the contact details page" - {
         "when the session contains no data for page" in {
-          `given`
+          build
             .commonPrecondition
 
           setAnswers(emptyUserAnswers)
@@ -165,7 +165,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
         }
 
         "when the session already contains data for page" in {
-          `given`
+          build
             .commonPrecondition
 
           setAnswers(userAnswersForAskSecondaryWarehousesPage.get("yes").get)
@@ -259,7 +259,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
         ))
       val alfOnRampURL: String = "http://onramp.com"
 
-      `given`
+      build
         .commonPrecondition
         .alf.getSuccessResponseFromALFInit(alfOnRampURL)
 
@@ -291,7 +291,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
           .set(AskSecondaryWarehousesPage, true).success.value
       )
 
-      `given`
+      build
         .commonPrecondition
 
       val expectedResult: Some[JsObject] = Some(Json.obj("askSecondaryWarehouses" -> true))
@@ -319,7 +319,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
       val warehouseToBeWiped = Map("foo" -> Warehouse(aTradingName, UkAddress(List.empty, "", None)))
       setAnswers(emptyUserAnswers.copy(warehouseList = warehouseToBeWiped))
 
-      `given`
+      build
         .commonPrecondition
 
       val expectedResult: Some[JsObject] = Some(
@@ -348,7 +348,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
 
     "when the user does not select yes or no" - {
       "should return 400 with required error" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -383,7 +383,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
       val warehouseToBeWiped = Map("foo" -> Warehouse(aTradingName, UkAddress(List.empty, "", None)))
       setAnswers(emptyUserAnswers.copy(warehouseList = warehouseToBeWiped))
 
-      `given`
+      build
         .commonPrecondition
 
       val expectedResult: Some[JsObject] = Some(
@@ -410,7 +410,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
     "when the user selects no" - {
       "should update the session with the new value and redirect to the checkAnswers controller" - {
         "when the session already contains data for page" in {
-          `given`
+          build
             .commonPrecondition
 
           setAnswers(userAnswersForAskSecondaryWarehousesPage.get("yes").get)
@@ -504,7 +504,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
         ))
       val alfOnRampURL: String = "http://onramp.com"
 
-      `given`
+      build
         .commonPrecondition
         .alf.getSuccessResponseFromALFInit(alfOnRampURL)
 
@@ -536,7 +536,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
           .set(AskSecondaryWarehousesPage, true).success.value
       )
 
-      `given`
+      build
         .commonPrecondition
 
       val expectedResult: Some[JsObject] = Some(Json.obj("askSecondaryWarehouses" -> true))
@@ -562,7 +562,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
 
     "when the user does not select yes or no" - {
       "should return 400 with required error" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)

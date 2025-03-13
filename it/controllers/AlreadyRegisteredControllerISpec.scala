@@ -12,7 +12,7 @@ class AlreadyRegisteredControllerISpec extends ControllerITTestHelper {
 
   "GET " + normalRoutePath - {
     "should return OK and render the AlreadyRegistered page" in {
-      `given`
+      build
         .authorisedWithBothSDILandUTRInEnrolmentsAndHasROSM
 
       setAnswers(emptyUserAnswers.copy(registerState = RegisterState.AlreadyRegistered))

@@ -21,7 +21,7 @@ class HowManyLitresGloballyControllerISpec extends ControllerITTestHelper {
   "GET " + normalRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the HowManyLitresGlobally page with no data populated" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -48,7 +48,7 @@ class HowManyLitresGloballyControllerISpec extends ControllerITTestHelper {
     HowManyLitresGlobally.values.zipWithIndex.foreach { case (radio, index) =>
       s"when the userAnswers contains data for the page with " + radio.toString + " selected" - {
         s"should return OK and render the page with " + radio.toString + " radio checked" in {
-          `given`
+          build
             .commonPrecondition
 
           val userAnswers = emptyUserAnswers.set(HowManyLitresGloballyPage, radio).success.value
@@ -83,7 +83,7 @@ class HowManyLitresGloballyControllerISpec extends ControllerITTestHelper {
   s"GET " + checkRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the HowManyLitresGlobally page with no data populated" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -110,7 +110,7 @@ class HowManyLitresGloballyControllerISpec extends ControllerITTestHelper {
     HowManyLitresGlobally.values.zipWithIndex.foreach { case (radio, index) =>
       s"when the userAnswers contains data for the page with " + radio.toString + " selected" - {
         s"should return OK and render the page with " + radio.toString + " radio checked" in {
-          `given`
+          build
             .commonPrecondition
 
           val userAnswers = emptyUserAnswers.set(HowManyLitresGloballyPage, radio).success.value
@@ -150,7 +150,7 @@ class HowManyLitresGloballyControllerISpec extends ControllerITTestHelper {
       "when the user selects " + radio.toString - {
         "should update the session with the new value and redirect to the operate packaging sites" - {
           "when the session contains no data for page" in {
-            `given`
+            build
               .commonPrecondition
 
             setAnswers(emptyUserAnswers)
@@ -170,7 +170,7 @@ class HowManyLitresGloballyControllerISpec extends ControllerITTestHelper {
           }
 
           "when the session already contains data for page" in {
-            `given`
+            build
               .commonPrecondition
 
             val userAnswers = emptyUserAnswers.set(HowManyLitresGloballyPage, radio).success.value
@@ -196,7 +196,7 @@ class HowManyLitresGloballyControllerISpec extends ControllerITTestHelper {
         "when the user selects " + radio.toString - {
           "should update the session with the new value and redirect to the operate packaging sites" - {
             "when the session contains no data for page" in {
-              `given`
+              build
                 .commonPrecondition
 
               setAnswers(emptyUserAnswers)
@@ -216,7 +216,7 @@ class HowManyLitresGloballyControllerISpec extends ControllerITTestHelper {
             }
 
             "when the session already contains data for page" in {
-              `given`
+              build
                 .commonPrecondition
 
               val userAnswers = emptyUserAnswers.set(HowManyLitresGloballyPage, radio).success.value
@@ -242,7 +242,7 @@ class HowManyLitresGloballyControllerISpec extends ControllerITTestHelper {
         "when the user selects " + radio.toString - {
           "should update the session with the new value and redirect to the operate packaging sites" - {
             "when the session contains no data for page" in {
-              `given`
+              build
                 .commonPrecondition
 
               setAnswers(emptyUserAnswers)
@@ -262,7 +262,7 @@ class HowManyLitresGloballyControllerISpec extends ControllerITTestHelper {
             }
 
             "when the session already contains data for page" in {
-              `given`
+              build
                 .commonPrecondition
 
               val userAnswers = emptyUserAnswers.set(HowManyLitresGloballyPage, radio).success.value
@@ -288,7 +288,7 @@ class HowManyLitresGloballyControllerISpec extends ControllerITTestHelper {
 
     "when the user does not select an option" - {
       "should return 400 with required error" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -323,7 +323,7 @@ class HowManyLitresGloballyControllerISpec extends ControllerITTestHelper {
           if (previousSelectedValue == selectedValue) {
             s"that is the same as the answer stored in useranswers" - {
               "should update the database and redirect to check your answers" in {
-                `given`
+                build
                   .commonPrecondition
 
                 val userAnswers = emptyUserAnswers.set(HowManyLitresGloballyPage, previousSelectedValue).success.value
@@ -352,7 +352,7 @@ class HowManyLitresGloballyControllerISpec extends ControllerITTestHelper {
                 case _ => routes.ContractPackingController.onPageLoad(NormalMode).url
               }
               s"should update the database and redirect to $expectedUrl " in {
-                `given`
+                build
                   .commonPrecondition
 
                 val userAnswers = emptyUserAnswers.set(HowManyLitresGloballyPage, previousSelectedValue).success.value
@@ -381,7 +381,7 @@ class HowManyLitresGloballyControllerISpec extends ControllerITTestHelper {
           case _ => routes.ContractPackingController.onPageLoad(NormalMode).url
         }
         s"should update the database and redirect to $expectedUrl when no producerType in useranswers" in {
-          `given`
+          build
             .commonPrecondition
 
           val userAnswers = emptyUserAnswers

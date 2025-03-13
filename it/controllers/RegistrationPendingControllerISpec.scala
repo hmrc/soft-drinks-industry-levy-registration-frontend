@@ -17,7 +17,7 @@ class RegistrationPendingControllerISpec extends ControllerITTestHelper {
   
   "GET " + normalRoutePath - {
     s"should return OK and render the RegistrationPending page when $EnterBusinessDetailsPage UTR IS NOT Populated" in {
-      `given`
+      build
         .authorisedWithoutSdilSubscriptionPendingQueueContainsRecordOfPending
 
       setAnswers(emptyUserAnswers.copy(registerState = RegisterState.RegistrationPending))
@@ -44,7 +44,7 @@ class RegistrationPendingControllerISpec extends ControllerITTestHelper {
         address = UkAddress(List("bang", "BANG2", "bang3", "bang4"), "wollop")
       )
 
-      `given`
+      build
         .authorisedButNoEnrolmentsPrecondition
         .sdilBackend.checkPendingQueueDoesntExist(utr)
         .sdilBackend.retrieveRosm(utr, rosmReg)

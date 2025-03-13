@@ -12,7 +12,7 @@ class ApplicationAlreadySubmittedControllerISpec extends ControllerITTestHelper 
 
   "GET " + normalRoutePath - {
     "should return OK and render the ApplicationAlreadySubmitted page" in {
-      `given`
+      build
         .commonPrecondition
 
       setAnswers(emptyUserAnswers.copy(registerState = RegisterState.RegisterApplicationAccepted))

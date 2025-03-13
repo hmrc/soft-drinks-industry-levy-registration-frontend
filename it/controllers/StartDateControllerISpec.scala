@@ -21,7 +21,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
   "GET " + normalRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the StartDate page with no data populated" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -45,7 +45,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
 
     s"when the userAnswers contains a date for the page" - {
       s"should return OK and render the page with the date populated" in {
-        `given`
+        build
           .commonPrecondition
 
         val userAnswers = emptyUserAnswers.set(StartDatePage, date).success.value
@@ -81,7 +81,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
   "GET " + checkRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the StartDate page with no data populated" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -105,7 +105,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
 
     s"when the userAnswers contains a date for the page" - {
       s"should return OK and render the page with the date populated" in {
-        `given`
+        build
           .commonPrecondition
 
         val userAnswers = emptyUserAnswers.set(StartDatePage, date).success.value
@@ -143,7 +143,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
     "when the user inserts a valid day, month and year" - {
       "should update the session with the new value and redirect" - {
         "when the session contains no data for page" in {
-          `given`
+          build
             .commonPrecondition
 
           setAnswers(largeProducerImportsTrueUserAnswers)
@@ -163,7 +163,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
         }
 
         "when the session already contains data for page" in {
-          `given`
+          build
             .commonPrecondition
 
           val userAnswers = emptyUserAnswers.set(StartDatePage, date).success.value
@@ -192,7 +192,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
         val otherFields = dateMapExculdingField.keys.toArray
 
         "when only the " + field + "is populated" in {
-          `given`
+          build
             .commonPrecondition
 
           val invalidJson = Json.obj("startDate." + field -> value.toString)
@@ -219,7 +219,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
         }
 
         "when " + field + "is missing" in {
-          `given`
+          build
             .commonPrecondition
 
           val invalidJson = dateMapExculdingField.foldLeft(Json.obj()) { (a, b) =>
@@ -249,7 +249,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
       }
 
       "when all fields are missing" in {
-        `given`
+        build
           .commonPrecondition
 
         val invalidJson = dateMap.foldLeft(Json.obj()) { (a, b) =>
@@ -278,7 +278,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
       }
 
       "when all fields are present but not a valid date" in {
-        `given`
+        build
           .commonPrecondition
 
         val invalidJson = dateMap.foldLeft(Json.obj()) { (a, b) =>
@@ -314,7 +314,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
     "when the user inserts a valid day, month and year" - {
       "should update the session with the new value and redirect to Check your answers" - {
         "when the session contains no data for page" in {
-          `given`
+          build
             .commonPrecondition
 
           setAnswers(emptyUserAnswers)
@@ -335,7 +335,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
         }
 
         "when the session already contains data for page" in {
-          `given`
+          build
             .commonPrecondition
 
           val userAnswers = emptyUserAnswers.set(StartDatePage, date).success.value
@@ -364,7 +364,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
         val otherFields = dateMapExculdingField.keys.toArray
 
         "when only the " + field + "is populated" in {
-          `given`
+          build
             .commonPrecondition
 
           val invalidJson = Json.obj("startDate." + field -> value.toString)
@@ -391,7 +391,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
         }
 
         "when " + field + "is missing" in {
-          `given`
+          build
             .commonPrecondition
 
           val invalidJson = dateMapExculdingField.foldLeft(Json.obj()) { (a, b) =>
@@ -421,7 +421,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
       }
 
       "when all fields are missing" in {
-        `given`
+        build
           .commonPrecondition
 
         val invalidJson = dateMap.foldLeft(Json.obj()) { (a, b) =>
@@ -450,7 +450,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
       }
 
       "when all fields are present but not a valid date" in {
-        `given`
+        build
           .commonPrecondition
 
         val invalidJson = dateMap.foldLeft(Json.obj()) { (a, b) =>
@@ -484,7 +484,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
   "Post in normal mode" - {
     "Should redirect to the Pack-At-Business address controller when the user is a large producer and has answered Yes " +
       "to either Operate Packaging Sites or Contract Packer" in {
-      `given`
+      build
         .commonPrecondition
 
       setAnswers(largeProducerImportsTrueUserAnswers)
@@ -506,7 +506,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
 
     "Should redirect to the Pack-At-Business address controller when the user is a small producer and has answered Yes " +
       "to Contract Packer" in {
-      `given`
+      build
         .commonPrecondition
 
       setAnswers(smallProducerUserAnswers)
@@ -528,7 +528,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
 
     "Should redirect to the Pack-At-Business address controller when the user is a non producer and has answered Yes " +
       "to Contract Packer" in {
-      `given`
+      build
         .commonPrecondition
 
       setAnswers(smallProducerUserAnswers)
@@ -550,7 +550,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
 
     "Should redirect to the Ask secondary warehouse controller when the user is a large producer and has answered No " +
       "to both Operate Packaging Sites and Contract Packer" in {
-      `given`
+      build
         .commonPrecondition
 
       setAnswers(largeProducerNoPackagingRouteUserAnswers)
@@ -572,7 +572,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
 
     "Should redirect to the Ask Secondary Warehouse controller when the user is a small producer and has answered No " +
       "to Contract Packer" in {
-      `given`
+      build
         .commonPrecondition
 
       setAnswers(nonProducerNoPackagingRouteUserAnswers)
@@ -594,7 +594,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
 
     "Should redirect to the Ask Secondary Warehouse controller when the user is a non producer and has answered No " +
       "to Contract Packer" in {
-      `given`
+      build
         .commonPrecondition
 
       setAnswers(nonProducerNoPackagingRouteUserAnswers)
@@ -619,7 +619,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
     "should redirect to check your answers" - {
       "when the user is a large producer and has answered Yes " +
         "to either Operate Packaging Sites or Contract Packer" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(largeProducerImportsTrueUserAnswers)
@@ -641,7 +641,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
 
       "when the user is a small producer and has answered Yes " +
         "to Contract Packer" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(smallProducerUserAnswers)
@@ -663,7 +663,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
 
       "when the user is a non producer and has answered Yes " +
         "to Contract Packer" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(smallProducerUserAnswers)
@@ -685,7 +685,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
 
       "when the user is a large producer and has answered No " +
         "to both Operate Packaging Sites and Contract Packer" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(largeProducerNoPackagingRouteUserAnswers)
@@ -707,7 +707,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
 
       "when the user is a small producer and has answered No " +
         "to Contract Packer" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(nonProducerNoPackagingRouteUserAnswers)
@@ -729,7 +729,7 @@ class StartDateControllerISpec extends ControllerITTestHelper {
 
       "when the user is a non producer and has answered No " +
         "to Contract Packer" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(nonProducerNoPackagingRouteUserAnswers)

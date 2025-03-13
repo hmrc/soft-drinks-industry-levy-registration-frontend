@@ -26,7 +26,7 @@ class HowManyContractPackingControllerISpec extends LitresISpecHelper {
     "GET " + path - {
       "when the userAnswers contains no data" - {
         "should return OK and render the litres page for ContractPacking with no data populated" in {
-          `given`
+          build
             .commonPrecondition
 
           setAnswers(emptyUserAnswers)
@@ -46,7 +46,7 @@ class HowManyContractPackingControllerISpec extends LitresISpecHelper {
 
       s"when the userAnswers contains data for the page" - {
         s"should return OK and render the page with fields populated" in {
-          `given`
+          build
             .commonPrecondition
 
           setAnswers(userAnswers)
@@ -73,7 +73,7 @@ class HowManyContractPackingControllerISpec extends LitresISpecHelper {
       "when the user populates all litres fields" - {
         "should update the session with the new values and redirect to " + redirectLocation - {
           "when the session contains no data for page" in {
-            `given`
+            build
               .commonPrecondition
 
             setAnswers(emptyUserAnswers)
@@ -93,7 +93,7 @@ class HowManyContractPackingControllerISpec extends LitresISpecHelper {
           }
 
           "when the session already contains data for page" in {
-            `given`
+            build
               .commonPrecondition
 
             setAnswers(userAnswers)
@@ -118,7 +118,7 @@ class HowManyContractPackingControllerISpec extends LitresISpecHelper {
         val errorTitle = "Error: " + Messages("howManyContractPacking.title")
 
         "when no questions are answered" in {
-          `given`
+          build
             .commonPrecondition
 
           setAnswers(emptyUserAnswers)
@@ -136,7 +136,7 @@ class HowManyContractPackingControllerISpec extends LitresISpecHelper {
         }
 
         "when the user answers with no numeric answers" in {
-          `given`
+          build
             .commonPrecondition
 
           setAnswers(emptyUserAnswers)
@@ -154,7 +154,7 @@ class HowManyContractPackingControllerISpec extends LitresISpecHelper {
         }
 
         "when the user answers with negative numbers" in {
-          `given`
+          build
             .commonPrecondition
 
           setAnswers(emptyUserAnswers)
@@ -172,7 +172,7 @@ class HowManyContractPackingControllerISpec extends LitresISpecHelper {
         }
 
         "when the user answers with decimal numbers" in {
-          `given`
+          build
             .commonPrecondition
 
           setAnswers(emptyUserAnswers)
@@ -190,7 +190,7 @@ class HowManyContractPackingControllerISpec extends LitresISpecHelper {
         }
 
         "when the user answers with out of max range numbers" in {
-          `given`
+          build
             .commonPrecondition
 
           setAnswers(emptyUserAnswers)

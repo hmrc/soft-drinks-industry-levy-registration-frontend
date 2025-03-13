@@ -19,7 +19,7 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
   "GET " + normalRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the ThirdPartyPackagers page with no data populated" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -45,7 +45,7 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
     userAnswersForThirdPartyPackagersPage.foreach { case (key, userAnswers) =>
       s"when the userAnswers contains data for the page with " + key + " selected" - {
         s"should return OK and render the page with " + key + " radio checked" in {
-          `given`
+          build
             .commonPrecondition
 
           setAnswers(userAnswers)
@@ -76,7 +76,7 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
   s"GET " + checkRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the ThirdPartyPackagers page with no data populated" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -102,7 +102,7 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
     userAnswersForThirdPartyPackagersPage.foreach { case (key, userAnswers) =>
       s"when the userAnswers contains data for the page with " + key + " selected" - {
         s"should return OK and render the page with " + key + " radio checked" in {
-          `given`
+          build
             .commonPrecondition
 
           setAnswers(userAnswers)
@@ -137,7 +137,7 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
       "when the user selects " + key - {
         "should update the session with the new value and redirect to operate packaging sites controller" - {
           "when the session contains no data for page" in {
-            `given`
+            build
               .commonPrecondition
 
             setAnswers(emptyUserAnswers)
@@ -158,7 +158,7 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
           }
 
           "when the session already contains data for page" in {
-            `given`
+            build
               .commonPrecondition
 
             setAnswers(userAnswers)
@@ -183,7 +183,7 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
 
     "when the user does not select yes or no" - {
       "should return 400 with required error" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -216,7 +216,7 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
       "when the user selects " + key - {
         "should update the session with the new value and redirect to the checkAnswers controller" - {
           "when the session contains no data for page" in {
-            `given`
+            build
               .commonPrecondition
 
             setAnswers(emptyUserAnswers)
@@ -237,7 +237,7 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
           }
 
           "when the session already contains data for page" in {
-            `given`
+            build
               .commonPrecondition
 
             setAnswers(userAnswers)
@@ -262,7 +262,7 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
 
     "when the user does not select yes or no" - {
       "should return 400 with required error" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)

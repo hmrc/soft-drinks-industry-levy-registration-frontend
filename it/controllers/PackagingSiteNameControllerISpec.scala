@@ -34,7 +34,7 @@ class PackagingSiteNameControllerISpec extends ControllerITTestHelper {
     "GET " + path - {
       "when the userAnswers contains alfResponseWithLookupState for the reference number" - {
         "should return OK and render the PackagingSiteName page with no data populated" in {
-          `given`
+          build
             .commonPrecondition
 
           setAnswers(userAnswersWithAlfResponseForSdilId)
@@ -57,7 +57,7 @@ class PackagingSiteNameControllerISpec extends ControllerITTestHelper {
 
       "when the userAnswers contains no alfResponseWithLookupState but contains a packaging site for the reference number" - {
         "should return OK and render the PackagingSiteName page with data populated" in {
-          `given`
+          build
             .commonPrecondition
 
           setAnswers(userAnswersWithNoAlfResponseButPackingSiteWithSdilRef)
@@ -81,7 +81,7 @@ class PackagingSiteNameControllerISpec extends ControllerITTestHelper {
 
       "when the useranswers contains packaging sites but none with sdilId and has no alfAddres" - {
         "must redirect to packagingSiteDetails" in {
-          `given`
+          build
             .commonPrecondition
 
           setAnswers(userAnswersWithPackagingSitesButNotForSdilRef)
@@ -99,7 +99,7 @@ class PackagingSiteNameControllerISpec extends ControllerITTestHelper {
 
       "when the useranswers contains no packaging sites or alfAddres" - {
         "must redirect to packAtBusinessAddress" in {
-          `given`
+          build
             .commonPrecondition
 
           setAnswers(emptyUserAnswers)
@@ -122,7 +122,7 @@ class PackagingSiteNameControllerISpec extends ControllerITTestHelper {
       "should add the packaging site and remove alfResponse from user answers if present and redirect to packaging site details" - {
         "when the user populates the trading name field with a valid value" - {
           "and the userAnswers contains alfResponseWithLookupState for the reference number" in {
-            `given`
+            build
               .commonPrecondition
 
             setAnswers(userAnswersWithAlfResponseForSdilId)
@@ -141,7 +141,7 @@ class PackagingSiteNameControllerISpec extends ControllerITTestHelper {
           }
 
           "and the userAnswers contains no alfResponseWithLookupState but has a packaging site for the reference number" in {
-            `given`
+            build
               .commonPrecondition
 
             setAnswers(userAnswersWithNoAlfResponseButPackingSiteWithSdilRef)
@@ -163,7 +163,7 @@ class PackagingSiteNameControllerISpec extends ControllerITTestHelper {
 
       "should not update the database and redirect to packaging site details" - {
         "when the useranswers contains packaging sites but none with sdilId and has no alfAddress" in {
-          `given`
+          build
             .commonPrecondition
 
           setAnswers(userAnswersWithPackagingSitesButNotForSdilRef)
@@ -181,7 +181,7 @@ class PackagingSiteNameControllerISpec extends ControllerITTestHelper {
 
       "should not update the database and redirect to pack at business address" - {
         "when the useranswers contains no packaging sites or alfAddress" in {
-          `given`
+          build
             .commonPrecondition
 
           setAnswers(emptyUserAnswers)
@@ -199,7 +199,7 @@ class PackagingSiteNameControllerISpec extends ControllerITTestHelper {
 
       "should return 400 with required error" - {
         "when no questions are answered" in {
-          `given`
+          build
             .commonPrecondition
 
           setAnswers(userAnswersWithAlfResponseForSdilId)
@@ -227,7 +227,7 @@ class PackagingSiteNameControllerISpec extends ControllerITTestHelper {
         }
         packagingSiteNameMap.zipWithIndex.foreach { case ((fieldName, _), index) =>
           "when no answer is given for field" + fieldName in {
-            `given`
+            build
               .commonPrecondition
 
             setAnswers(userAnswersWithAlfResponseForSdilId)

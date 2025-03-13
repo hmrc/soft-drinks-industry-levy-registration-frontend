@@ -20,7 +20,7 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
   "GET " + normalRoutePath - {
     "when the userAnswers contains 0 packaging sites" - {
       s"must redirect to $PackAtBusinessAddressPage on a GET if the packaging site list is empty" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -37,7 +37,7 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
 
     "when the userAnswers contains 1 packaging site and no data" - {
       "should return OK and render the PackagingSiteDetails page with no radio items selected" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(userAnswersWith1PackingSite)
@@ -67,7 +67,7 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
 
     "when the userAnswers contains more than 1 packaging site and no data" - {
       "should return OK and render the PackagingSiteDetails page with no data populated" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers.copy(packagingSiteList = packagingSiteListWith3))
@@ -101,7 +101,7 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
     userAnswersForPackagingSiteDetailsPage.foreach { case (key, userAnswers) =>
       s"when the userAnswers contains data for the page with " + key + " selected" - {
         s"should return OK and render the page with " + key + " radio unchecked" in {
-          `given`
+          build
             .commonPrecondition
 
           setAnswers(userAnswers)
@@ -132,7 +132,7 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
   s"GET " + checkRoutePath - {
     "when the userAnswers contains 1 packaging site and no data" - {
       "should return OK and render the PackagingSiteDetails page with no data populated" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(userAnswersWith1PackingSite)
@@ -163,7 +163,7 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
 
     "when the userAnswers contains more than 1 packaging site and no data" - {
       "should return OK and render the PackagingSiteDetails page with no data populated" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers.copy(packagingSiteList = packagingSiteListWith3))
@@ -197,7 +197,7 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
     userAnswersForPackagingSiteDetailsPage.foreach { case (key, userAnswers) =>
       s"when the userAnswers contains data for the page with " + key + " selected" - {
         s"should return OK and render the page with " + key + " radio unchecked" in {
-          `given`
+          build
             .commonPrecondition
 
           setAnswers(userAnswers)
@@ -239,7 +239,7 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
       val alfOnRampURL: String = "https://onramp.com"
       setAnswers(emptyUserAnswers.set(PackagingSiteDetailsPage, true).success.value
         .copy(packagingSiteList = packagingSiteListWith1))
-      `given`
+      build
         .commonPrecondition
         .alf.getSuccessResponseFromALFInit(alfOnRampURL)
       WsTestClient.withClient { client =>
@@ -261,7 +261,7 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
       val alfOnRampURL: String = "https://onramp.com"
       setAnswers(emptyUserAnswers.set(PackagingSiteDetailsPage, true).success.value
         .copy(packagingSiteList = packagingSiteListWith1))
-      `given`
+      build
         .commonPrecondition
         .alf.getSuccessResponseFromALFInit(alfOnRampURL)
       WsTestClient.withClient { client =>
@@ -284,7 +284,7 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
         "should update the session with the new value and redirect to the index controller" - {
           "when the session contains no data for page" in {
             val alfOnRampURL: String = "https://onramp.com"
-            `given`
+            build
               .commonPrecondition
               .alf.getSuccessResponseFromALFInit(alfOnRampURL)
 
@@ -306,7 +306,7 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
 
           "when the session already contains data for page" in {
             val alfOnRampURL: String = "https://onramp.com"
-            `given`
+            build
               .commonPrecondition
               .alf.getSuccessResponseFromALFInit(alfOnRampURL)
 
@@ -331,7 +331,7 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
 
     "when the user does not select yes or no" - {
       "should return 400 with required error" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(userAnswersWith1PackingSite)
@@ -364,7 +364,7 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
       val alfOnRampURL: String = "https://onramp.com"
       setAnswers(emptyUserAnswers.set(PackagingSiteDetailsPage, true).success.value
         .copy(packagingSiteList = packagingSiteListWith1))
-      `given`
+      build
         .commonPrecondition
         .alf.getSuccessResponseFromALFInit(alfOnRampURL)
       WsTestClient.withClient { client =>
@@ -386,7 +386,7 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
       val alfOnRampURL: String = "https://onramp.com"
       setAnswers(emptyUserAnswers.set(PackagingSiteDetailsPage, true).success.value
         .copy(packagingSiteList = packagingSiteListWith1))
-      `given`
+      build
         .commonPrecondition
         .alf.getSuccessResponseFromALFInit(alfOnRampURL)
       WsTestClient.withClient { client =>
@@ -409,7 +409,7 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
         "should update the session with the new value and redirect to the index controller" - {
           "when the session contains no data for page" in {
             val alfOnRampURL: String = "https://onramp.com"
-            `given`
+            build
               .commonPrecondition
               .alf.getSuccessResponseFromALFInit(alfOnRampURL)
 
@@ -431,7 +431,7 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
 
           "when the session already contains data for page" in {
             val alfOnRampURL: String = "https://onramp.com"
-            `given`
+            build
               .commonPrecondition
               .alf.getSuccessResponseFromALFInit(alfOnRampURL)
 
@@ -455,7 +455,7 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
     }
     "when the user does not select yes or no" - {
       "should return 400 with required error" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(userAnswersWith1PackingSite)

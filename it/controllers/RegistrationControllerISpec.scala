@@ -36,7 +36,7 @@ class RegistrationControllerISpec extends ControllerITTestHelper {
             expectedRedirectUrlForSubscriptionStatus.foreach { case (subscriptionState, expectedUrl) =>
               s"and has a subscription status of $subscriptionState" - {
                 s"should create new user answers including the registered state and redirect to $expectedUrl" in {
-                  `given`
+                  build
                     .user.isAuthorisedAndEnrolled
                     .sdilBackend.retrieveSubscriptionNone("utr", "0000001611")
                     .sdilBackend.retrieveRosm("0000001611")
@@ -60,7 +60,7 @@ class RegistrationControllerISpec extends ControllerITTestHelper {
 
           "has no rosm data associated with the utr" - {
             "should create new useranswers and redirect the EnterBusinessDetails" in {
-              `given`
+              build
                 .user.isAuthorisedAndEnrolled
                 .sdilBackend.retrieveSubscriptionNone("utr", "0000001611")
                 .sdilBackend.retrieveRosmNone("0000001611")
@@ -84,7 +84,7 @@ class RegistrationControllerISpec extends ControllerITTestHelper {
             expectedRedirectUrlForSubscriptionStatus.foreach { case (subscriptionState, expectedUrl) =>
               s"and has a subscription status of $subscriptionState" - {
                 s"should create new user answers including the registered state and redirect to $expectedUrl" in {
-                  `given`
+                  build
                     .user.isAuthorisedAndEnrolled
                     .sdilBackend.retrieveSubscriptionWithDeRegDate("utr", "0000001611")
                     .sdilBackend.retrieveRosm("0000001611")
@@ -108,7 +108,7 @@ class RegistrationControllerISpec extends ControllerITTestHelper {
 
           "has no rosm data associated with the utr" - {
             "should create new useranswers and redirect the EnterBusinessDetails" in {
-              `given`
+              build
                 .user.isAuthorisedAndEnrolled
                 .sdilBackend.retrieveSubscriptionWithDeRegDate("utr", "0000001611")
                 .sdilBackend.retrieveRosmNone("0000001611")
@@ -130,7 +130,7 @@ class RegistrationControllerISpec extends ControllerITTestHelper {
 
         "has a subscription with no deregistered date" - {
           "should redirect to sdilHome" in {
-            `given`
+            build
               .user.isAuthorisedAndEnrolled
               .sdilBackend.retrieveSubscription("utr", "0000001611")
 
@@ -154,7 +154,7 @@ class RegistrationControllerISpec extends ControllerITTestHelper {
             expectedRedirectUrlForSubscriptionStatus.foreach { case (subscriptionState, expectedUrl) =>
               s"and has a subscription status of $subscriptionState" - {
                 s"should create new user answers including the registered state and redirect to $expectedUrl" in {
-                  `given`
+                  build
                     .user.isAuthorisedAndEnrolledBoth
                     .sdilBackend.retrieveSubscriptionNone("utr", "0000001611")
                     .sdilBackend.retrieveRosm("0000001611")
@@ -178,7 +178,7 @@ class RegistrationControllerISpec extends ControllerITTestHelper {
 
           "has no rosm data associated with the utr" - {
             "should create new useranswers and redirect the EnterBusinessDetails" in {
-              `given`
+              build
                 .user.isAuthorisedAndEnrolledBoth
                 .sdilBackend.retrieveSubscriptionNone("utr", "0000001611")
                 .sdilBackend.retrieveRosmNone("0000001611")
@@ -203,7 +203,7 @@ class RegistrationControllerISpec extends ControllerITTestHelper {
             expectedRedirectUrlForSubscriptionStatus.foreach { case (subscriptionState, expectedUrl) =>
               s"and has a subscription status of $subscriptionState" - {
                 s"should create new user answers including the registered state and redirect to $expectedUrl" in {
-                  `given`
+                  build
                     .user.isAuthorisedAndEnrolledBoth
                     .sdilBackend.retrieveSubscriptionWithDeRegDate("utr", "0000001611")
                     .sdilBackend.retrieveRosm("0000001611")
@@ -227,7 +227,7 @@ class RegistrationControllerISpec extends ControllerITTestHelper {
 
           "has no rosm data associated with the utr" - {
             "should create new useranswers and redirect the EnterBusinessDetails" in {
-              `given`
+              build
                 .user.isAuthorisedAndEnrolledBoth
                 .sdilBackend.retrieveSubscriptionWithDeRegDate("utr", "0000001611")
                 .sdilBackend.retrieveRosmNone("0000001611")
@@ -250,7 +250,7 @@ class RegistrationControllerISpec extends ControllerITTestHelper {
         "has a subscription with no deregistered date" - {
           "and has rosm data associated with the utr" - {
             "should create new useranswers and redirect the AlreadyRegistered page" in {
-              `given`
+              build
                 .user.isAuthorisedAndEnrolledBoth
                 .sdilBackend.retrieveSubscription("utr", "0000001611")
                 .sdilBackend.retrieveRosm("0000001611")
@@ -271,7 +271,7 @@ class RegistrationControllerISpec extends ControllerITTestHelper {
 
           "and has no rosm data associated with the utr" - {
             "should redirect the user to gg signin" in {
-              `given`
+              build
                 .user.isAuthorisedAndEnrolledBoth
                 .sdilBackend.retrieveSubscription("utr", "0000001611")
                 .sdilBackend.retrieveRosmNone("0000001611")
@@ -294,7 +294,7 @@ class RegistrationControllerISpec extends ControllerITTestHelper {
       "when a user has a sdilRef but no utr in the auth session," - {
         "should redirect to sdilHome" - {
           "when the user has a subscription" in {
-            `given`
+            build
               .user.isAuthorisedAndEnrolledSdilEnrolment
               .sdilBackend.retrieveSubscription("sdil", "XKSDIL000000022")
 
@@ -313,7 +313,7 @@ class RegistrationControllerISpec extends ControllerITTestHelper {
 
         "should redirect to enter business details" - {
           "when the user has a subscription with a deregistered date" in {
-            `given`
+            build
               .user.isAuthorisedAndEnrolledSdilEnrolment
               .sdilBackend.retrieveSubscriptionWithDeRegDate("sdil", "XKSDIL000000022")
 
@@ -331,7 +331,7 @@ class RegistrationControllerISpec extends ControllerITTestHelper {
           }
 
           "when the user has no subscription" in {
-            `given`
+            build
               .user.isAuthorisedAndEnrolledSdilEnrolment
               .sdilBackend.retrieveSubscriptionNone("sdil", "XKSDIL000000022")
 
@@ -352,7 +352,7 @@ class RegistrationControllerISpec extends ControllerITTestHelper {
 
       "when the user has no utr or sdilRef in auth session" - {
         "should redirect to enter business details" in {
-          `given`
+          build
             .user.isAuthorisedButNotEnrolled()
 
           WsTestClient.withClient { client =>
@@ -373,7 +373,7 @@ class RegistrationControllerISpec extends ControllerITTestHelper {
     "the user has already started a registration journey" - {
       "and has user answers that contains the submittedOn date" - {
         "should redirect to registration confirmation" in {
-          `given`
+          build
             .user.isAuthorisedAndEnrolled
             .sdilBackend.retrieveSubscriptionNone("utr", "0000001611")
             .sdilBackend.retrieveRosm("0000001611")
@@ -399,7 +399,7 @@ class RegistrationControllerISpec extends ControllerITTestHelper {
           s"a registerState of $registerState" - {
             "and has previously entered business details" - {
               "should redirect to EnterBusinessDetails" in {
-                `given`
+                build
                   .user.isAuthorisedAndEnrolled
                   .sdilBackend.retrieveSubscriptionNone("utr", "0000001611")
                   .sdilBackend.retrieveRosm("0000001611")
@@ -422,7 +422,7 @@ class RegistrationControllerISpec extends ControllerITTestHelper {
             "and has not previously been on the EnterBusinessDetails page" - {
               val expectedLocation = expectedLocationForRegState(registerState)
               s"should redirect to $expectedLocation" in {
-                `given`
+                build
                   .user.isAuthorisedAndEnrolled
                   .sdilBackend.retrieveSubscriptionNone("utr", "0000001611")
                   .sdilBackend.retrieveRosm("0000001611")

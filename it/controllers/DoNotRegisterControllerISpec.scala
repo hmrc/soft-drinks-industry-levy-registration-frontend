@@ -14,7 +14,7 @@ class DoNotRegisterControllerISpec extends ControllerITTestHelper {
   
   "GET " + normalRoutePath - {
     "should return OK and render the DoNotRegister page" in {
-      `given`
+      build
         .commonPrecondition
 
       setAnswers(emptyUserAnswers)

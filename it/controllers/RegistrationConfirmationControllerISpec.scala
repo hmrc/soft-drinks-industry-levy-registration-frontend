@@ -28,7 +28,7 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                 .copy(submittedOn = Some(submittedDate))
               val createdSubscriptionAndAmountProducedGlobally = CreatedSubscriptionAndAmountProducedGlobally(
                 Subscription.generate(userAnswers, RosmWithUtr("0000001611", rosmRegistration)), HowManyLitresGlobally.Large)
-              `given`
+              build
                 .commonPrecondition
 
               setAnswers(userAnswers)
@@ -83,7 +83,7 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                 .copy(submittedOn = Some(submittedDate))
               val createdSubscriptionAndAmountProducedGlobally = CreatedSubscriptionAndAmountProducedGlobally(
                 Subscription.generate(userAnswers, RosmWithUtr("0000001611", rosmRegistration)), HowManyLitresGlobally.Large)
-              `given`
+              build
                 .commonPrecondition
 
               setAnswers(userAnswers)
@@ -138,7 +138,7 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                 .copy(submittedOn = Some(submittedDate))
               val createdSubscriptionAndAmountProducedGlobally = CreatedSubscriptionAndAmountProducedGlobally(
                 Subscription.generate(userAnswers, RosmWithUtr("0000001611", rosmRegistration)), HowManyLitresGlobally.Small)
-              `given`
+              build
                 .commonPrecondition
 
               setAnswers(userAnswers)
@@ -195,7 +195,7 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                 .copy(submittedOn = Some(submittedDate))
               val createdSubscriptionAndAmountProducedGlobally = CreatedSubscriptionAndAmountProducedGlobally(
                 Subscription.generate(userAnswers, RosmWithUtr("0000001611", rosmRegistration)), HowManyLitresGlobally.Small)
-              `given`
+              build
                 .commonPrecondition
 
               setAnswers(userAnswers)
@@ -248,7 +248,7 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                 .copy(submittedOn = Some(submittedDate))
               val createdSubscriptionAndAmountProducedGlobally = CreatedSubscriptionAndAmountProducedGlobally(
                 Subscription.generate(userAnswers, RosmWithUtr("0000001611", rosmRegistration)), HowManyLitresGlobally.None)
-              `given`
+              build
                 .commonPrecondition
 
               setAnswers(userAnswers)
@@ -296,7 +296,7 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
                 .copy(submittedOn = Some(submittedDate))
               val createdSubscriptionAndAmountProducedGlobally = CreatedSubscriptionAndAmountProducedGlobally(
                 Subscription.generate(userAnswers, RosmWithUtr("0000001611", rosmRegistration)), HowManyLitresGlobally.None)
-              `given`
+              build
                 .commonPrecondition
 
               setAnswers(userAnswers)
@@ -346,7 +346,7 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
 
     "the user has not submitted a registration request" - {
       "should redirect to registration start" in {
-        `given`
+        build
           .commonPrecondition
 
         val userAnswers = userAnswersWithLitres.copy(submittedOn = None)

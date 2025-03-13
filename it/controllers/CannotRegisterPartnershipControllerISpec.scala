@@ -12,7 +12,7 @@ class CannotRegisterPartnershipControllerISpec extends ControllerITTestHelper {
 
   "GET " + normalRoutePath - {
     "should return OK and render the CannotRegisterPartnership page" in {
-      `given`.commonPrecondition
+      build.commonPrecondition
 
       val userAnswers = emptyUserAnswers.set(StartDatePage, date).success.value
       setAnswers(userAnswers)

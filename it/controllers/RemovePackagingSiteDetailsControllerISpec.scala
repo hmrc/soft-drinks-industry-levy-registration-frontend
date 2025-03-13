@@ -26,7 +26,7 @@ class RemovePackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
   "GET " + normalRoutePath("ref") - {
     "when there is 1 or few packaging sites in the packaging site list" - {
       s"should redirect to the $PackagingSiteDetailsPage" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers.copy(packagingSiteList = packagingSite))
@@ -44,7 +44,7 @@ class RemovePackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
 
     "when the userAnswers contains no data" - {
       "should return OK and render the RemovePackagingSiteDetails page with no data populated" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(updatedUserAnswers)
@@ -76,7 +76,7 @@ class RemovePackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
   s"POST " + normalRoutePath - {
     "when the user selects true" - {
       "should remove the packaging site details associated with the ref" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(updatedUserAnswers)
@@ -97,7 +97,7 @@ class RemovePackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
     }
     "when the user selects false" - {
       "should NOT remove the packaging site details associated with the ref" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(updatedUserAnswers)
@@ -122,7 +122,7 @@ class RemovePackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
 
   "when the user does not select yes or no" - {
     "should return 400 with required error" in {
-      `given`
+      build
         .commonPrecondition
 
       setAnswers(updatedUserAnswers)

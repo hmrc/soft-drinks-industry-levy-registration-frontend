@@ -20,7 +20,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
   "GET " + normalRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the ContractPacking page with no data populated" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -46,7 +46,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
     userAnswersForContractPackingPage.foreach { case (key, userAnswers) =>
       s"when the userAnswers contains data for the page with " + key + " selected" - {
         s"should return OK and render the page with " + key + " radio checked" in {
-          `given`
+          build
             .commonPrecondition
 
           setAnswers(userAnswers)
@@ -78,7 +78,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
   s"GET " + checkRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the ContractPacking page with no data populated" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -104,7 +104,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
     userAnswersForContractPackingPage.foreach { case (key, userAnswers) =>
       s"when the userAnswers contains data for the page with " + key + " selected" - {
         s"should return OK and render the page with " + key + " radio checked" in {
-          `given`
+          build
             .commonPrecondition
 
           setAnswers(userAnswers)
@@ -139,7 +139,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
       "when the user selects " + key - {
         "should update the session with the new value and redirect to the index controller" - {
           "when the session contains no data for page" in {
-            `given`
+            build
               .commonPrecondition
 
             setAnswers(emptyUserAnswers)
@@ -165,7 +165,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
           }
 
           "when the session already contains data for page" in {
-            `given`
+            build
               .commonPrecondition
 
             setAnswers(userAnswers)
@@ -195,7 +195,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
 
     "when the user does not select yes or no" - {
       "should return 400 with required error" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -229,7 +229,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
         val yesSelected = key == "yes"
         "should update the session with the new value and redirect to the checkAnswers controller" - {
           "when the session contains no data for page" in {
-            `given`
+            build
               .commonPrecondition
 
             setAnswers(emptyUserAnswers)
@@ -254,7 +254,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
           }
 
           "when the session already contains data for page" in {
-            `given`
+            build
               .commonPrecondition
 
             setAnswers(userAnswers)
@@ -284,7 +284,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
 
     "when the user does not select yes or no" - {
       "should return 400 with required error" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -313,7 +313,7 @@ class ContractPackingControllerISpec extends ControllerITTestHelper {
   }
 
   "POST must clear litres data when the session already contained data but no is selected" in {
-    `given`
+    build
       .commonPrecondition
 
     val previouslyFilledAnswers =

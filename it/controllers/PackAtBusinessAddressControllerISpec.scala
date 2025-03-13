@@ -20,7 +20,7 @@ class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
   "GET " + normalRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the PackAtBusinessAddress page with no data populated" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -46,7 +46,7 @@ class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
     userAnswersForPackAtBusinessAddressPage.foreach { case (key, userAnswers) =>
       s"when the userAnswers contains data for the page with " + key + " selected" - {
         s"should return OK and render the page with " + key + " radio checked" in {
-          `given`
+          build
             .commonPrecondition
 
           setAnswers(userAnswers)
@@ -77,7 +77,7 @@ class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
   s"GET " + checkRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the PackAtBusinessAddress page with no data populated" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -103,7 +103,7 @@ class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
     userAnswersForPackAtBusinessAddressPage.foreach { case (key, userAnswers) =>
       s"when the userAnswers contains data for the page with " + key + " selected" - {
         s"should return OK and render the page with " + key + " radio checked" in {
-          `given`
+          build
             .commonPrecondition
 
           setAnswers(userAnswers)
@@ -137,7 +137,7 @@ class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
 
     "when user selects yes with user answers, set trading name to organisation name" in {
       setAnswers(emptyUserAnswers)
-      `given`
+      build
         .commonPrecondition
 
       WsTestClient.withClient { client =>
@@ -156,7 +156,7 @@ class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
 
     "when the user does not select yes or no" - {
       "should return 400 with required error" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -190,7 +190,7 @@ class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
       val alfOnRampURL: String = "http://onramp.com"
       setAnswers(emptyUserAnswers.set(PackAtBusinessAddressPage, false).success.value
         .copy(warehouseList = warehouseListWith1))
-      `given`
+      build
         .commonPrecondition
         .alf.getSuccessResponseFromALFInit(alfOnRampURL)
       WsTestClient.withClient { client =>
@@ -211,7 +211,7 @@ class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
     "when user selects yes with user answers" in {
       setAnswers(emptyUserAnswers.set(PackAtBusinessAddressPage, true).success.value
         .copy(warehouseList = warehouseListWith1))
-      `given`
+      build
         .commonPrecondition
       WsTestClient.withClient { client =>
         emptyUserAnswers
@@ -231,7 +231,7 @@ class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
     "when user selects no without user answers" in {
       val alfOnRampURL: String = "http://onramp.com"
       setAnswers(emptyUserAnswers)
-      `given`
+      build
         .commonPrecondition
         .alf.getSuccessResponseFromALFInit(alfOnRampURL)
       WsTestClient.withClient { client =>
@@ -251,7 +251,7 @@ class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
 
     "when user selects yes without user answers" in {
       setAnswers(emptyUserAnswers)
-      `given`
+      build
         .commonPrecondition
       WsTestClient.withClient { client =>
         emptyUserAnswers
@@ -270,7 +270,7 @@ class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
 
     "when the user does not select yes or no" - {
       "should return 400 with required error" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)

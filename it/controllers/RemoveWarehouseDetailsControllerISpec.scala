@@ -19,7 +19,7 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
   "GET " + normalRoutePath("indexDoesntExist") - {
     "when the userAnswers contains no data" - {
       "should redirect away when no data exists" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -38,7 +38,7 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
     userAnswersForUpdateRegisteredDetailsRemoveWarehouseDetailsPage(indexOfWarehouseToBeRemoved).foreach { case (key, userAnswers) =>
       s"when the userAnswers contains data for the page with " + key + " selected" - {
         s"should return OK and render the page without the " + key + " radio checked" in {
-          `given`
+          build
             .commonPrecondition
 
           setAnswers(userAnswers)
@@ -69,7 +69,7 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
   s"GET " + checkRoutePath(indexOfWarehouseToBeRemoved) - {
     "when the userAnswers contains no data" - {
       "should redirect away when no data exists" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -88,7 +88,7 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
     userAnswersForUpdateRegisteredDetailsRemoveWarehouseDetailsPage(indexOfWarehouseToBeRemoved).foreach { case (key, userAnswers) =>
       s"when the userAnswers contains data for the page with " + key + " selected" - {
         s"should return OK and render the page without the " + key + " radio checked" in {
-          `given`
+          build
             .commonPrecondition
 
           setAnswers(userAnswers)
@@ -123,7 +123,7 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
       "when the user selects " + key - {
         "should update the session with the new value and redirect to the Warehouse details controller" - {
           "when the session contains no data for page" in {
-            `given`
+            build
               .commonPrecondition
 
             setAnswers(emptyUserAnswers)
@@ -141,7 +141,7 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
           }
 
           "when the session already contains data for page" in {
-            `given`
+            build
               .commonPrecondition
 
             setAnswers(userAnswers)
@@ -173,7 +173,7 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
 
     "when the user does not select yes or no" - {
       "should return 400 with required error" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(
@@ -212,7 +212,7 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
       "when the user selects " + key - {
         "should update the session with the new value and redirect to the Warehouse details controller" - {
           "when the session contains no data for page" in {
-            `given`
+            build
               .commonPrecondition
 
             setAnswers(emptyUserAnswers)
@@ -230,7 +230,7 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
           }
 
           "when the session already contains data for page" in {
-            `given`
+            build
               .commonPrecondition
 
             setAnswers(userAnswers)
@@ -262,7 +262,7 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
 
     "when the user does not select yes or no" - {
       "should return 400 with required error" in {
-        `given`
+        build
           .commonPrecondition
 
         setAnswers(
