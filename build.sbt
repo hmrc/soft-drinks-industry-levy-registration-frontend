@@ -35,7 +35,7 @@ lazy val root = (project in file("."))
     PlayKeys.playDefaultPort := 8706,
     ScoverageKeys.coverageExcludedFiles := "<empty>;Reverse.*;.*handlers.*;.*components.*;" +
       ".*Routes.*;.*viewmodels.govuk.*;",
-    ScoverageKeys.coverageMinimumStmtTotal := 85,
+    ScoverageKeys.coverageMinimumStmtTotal := 88,
     ScoverageKeys.coverageFailOnMinimum := true,
     ScoverageKeys.coverageHighlighting := true,
     scalacOptions ++= Seq(
@@ -43,14 +43,11 @@ lazy val root = (project in file("."))
       "-rootdir",
       baseDirectory.value.getCanonicalPath,
       "-Wconf:msg=Flag.*repeatedly:s",
-      "-Wconf:msg=unused import*:s",
       "-Wconf:msg=unused explicit parameter*:s",
       "-Wconf:msg=unused private member*:s",
       "-Wconf:msg=unused implicit parameter*:s",
       "-Wconf:msg=unused local definition*:s",
-      "-Wconf:msg=unused-patterns&src=routes/.*:s",
-      "-Wconf:msg=exhaustive*:s",
-      "-Wconf:msg=deprecation:silent"
+      "-Wconf:msg=unused-patterns&src=routes/.*:s"
     ),
     libraryDependencies ++= AppDependencies.all(),
     retrieveManaged := true,

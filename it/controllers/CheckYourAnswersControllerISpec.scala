@@ -158,7 +158,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
             .set(ImportsPage, false).success.value
             .remove(HowManyImportsPage).success.value
 
-         `given`
+          `given`
             .commonPrecondition
 
           setAnswers(userAnswers)
