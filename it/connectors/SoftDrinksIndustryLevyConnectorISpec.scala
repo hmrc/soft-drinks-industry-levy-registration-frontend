@@ -2,7 +2,7 @@ package connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock.{get, serverError, stubFor, urlPathMatching}
 import errors.UnexpectedResponseFromSDIL
-import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
+import org.scalatest.matchers.should.Matchers._
 import play.api.http.Status.{ACCEPTED, NOT_FOUND, OK}
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 import testSupport.{ITCoreTestData, Specifications, TestConfiguration}
@@ -15,7 +15,7 @@ class SoftDrinksIndustryLevyConnectorISpec extends Specifications with TestConfi
 
   "checkPendingQueue" - {
     s"should return $Registered when $OK returned" in {
-      given.sdilBackend.checkPendingQueueRegistered("utr")
+      build.sdilBackend.checkPendingQueueRegistered("utr")
 
       val response = connector.checkPendingQueue("utr")
       whenReady(response.value) { res =>
@@ -23,7 +23,7 @@ class SoftDrinksIndustryLevyConnectorISpec extends Specifications with TestConfi
       }
     }
     s"should return $Pending when $ACCEPTED returned" in {
-      given.sdilBackend.checkPendingQueuePending("utr")
+      build.sdilBackend.checkPendingQueuePending("utr")
 
       val response = connector.checkPendingQueue("utr")
       whenReady(response.value) { res =>
@@ -31,7 +31,7 @@ class SoftDrinksIndustryLevyConnectorISpec extends Specifications with TestConfi
       }
     }
     s"should return $DoesNotExist when $NOT_FOUND in" in {
-      given.sdilBackend.checkPendingQueueDoesntExist("utr")
+      build.sdilBackend.checkPendingQueueDoesntExist("utr")
 
       val response = connector.checkPendingQueue("utr")
       whenReady(response.value) { res =>

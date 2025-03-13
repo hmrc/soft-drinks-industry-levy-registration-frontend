@@ -22,7 +22,7 @@ import models.Verify.YesRegister
 import models.backend.{Subscription, UkAddress}
 import models.{CheckMode, ContactDetails, HowManyLitresGlobally, IndividualDetails, LitresInBands, OrganisationDetails, RosmRegistration, RosmWithUtr, Verify}
 import org.jsoup.nodes.{Document, Element}
-import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
+import org.scalatest.matchers.must.Matchers._
 import pages._
 
 import java.time.format.DateTimeFormatter

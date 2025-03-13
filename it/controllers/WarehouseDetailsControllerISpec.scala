@@ -2,22 +2,24 @@ package controllers
 
 import models.{CheckMode, NormalMode}
 import org.jsoup.Jsoup
-import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
+import org.scalatest.matchers.must.Matchers._
 import pages.{AskSecondaryWarehousesPage, WarehouseDetailsPage}
 import play.api.http.HeaderNames
-import play.api.i18n.Messages
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.libs.json.Json
-import play.api.test.WsTestClient
+import play.api.test.{FakeRequest, WsTestClient}
 
 class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
-
+  given messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  given messages: Messages = messagesApi.preferred(FakeRequest())
+  
   val normalRoutePath = "/warehouses"
   val checkRoutePath = "/change-warehouses"
 
   "GET " + normalRoutePath - {
     "when the userAnswers contains no data" - {
       "should return SEE_OTHER and redirect to Ask Secondary Warehouse page" in {
-        given
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -36,7 +38,7 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
     userAnswersForWarehouseDetailsPage.foreach { case (key, userAnswers) =>
       s"when the userAnswers contains data for the page with " + key + " selected" - {
         s"should return OK and render the page with " + key + " radio unchecked" in {
-          given
+          build
             .commonPrecondition
 
           setAnswers(userAnswers)
@@ -47,7 +49,7 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include(Messages("warehouseDetails.title.heading","1",""))
+              page.title must include(messages("warehouseDetails.title.heading","1",""))
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe 2
               radioInputs.get(0).attr("value") mustBe "true"
@@ -67,7 +69,7 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
   s"GET " + checkRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the Ask Secondary Warehouse page with no data populated" in {
-        given
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -86,7 +88,7 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
     userAnswersForWarehouseDetailsPage.foreach { case (key, userAnswers) =>
       s"when the userAnswers contains data for the page with " + key + " selected" - {
         s"should return OK and render the page with " + key + " radio unchecked" in {
-          given
+          build
             .commonPrecondition
 
           setAnswers(userAnswers)
@@ -97,7 +99,7 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include(Messages("warehouseDetails.title.heading","1",""))
+              page.title must include(messages("warehouseDetails.title.heading","1",""))
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe 2
               radioInputs.get(0).attr("value") mustBe "true"
@@ -117,7 +119,7 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
   }
 
   "Get should return redirect to AskSecondaryWarehouses page when 0 warehouses listed" in {
-    given
+    build
       .commonPrecondition
 
     setAnswers(emptyUserAnswers
@@ -135,7 +137,7 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
   }
 
   "Get should return the correct title and header when 1 warehouse listed on page" in {
-    given
+    build
       .commonPrecondition
     setAnswers(userAnswersWith1Warehouse)
     WsTestClient.withClient { client =>
@@ -143,14 +145,14 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
       whenReady(result) { res =>
         res.status mustBe 200
         val page = Jsoup.parse(res.body)
-        page.title must include(Messages("warehouseDetails.title.heading", "1", ""))
+        page.title must include(messages("warehouseDetails.title.heading", "1", ""))
         page.getElementsByClass("remove-link").size() mustEqual 1
       }
     }
   }
 
   "Get should return the correct title and header when 2 warehouses listed on page" in {
-    given
+    build
       .commonPrecondition
     setAnswers(userAnswersWith2Warehouses)
     WsTestClient.withClient { client =>
@@ -158,7 +160,7 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
       whenReady(result) { res =>
         res.status mustBe 200
         val page = Jsoup.parse(res.body)
-        page.title must include(Messages("warehouseDetails.title.heading", "2", "s"))
+        page.title must include(messages("warehouseDetails.title.heading", "2", "s"))
         page.getElementsByClass("remove-link").size() mustEqual 2
       }
     }
@@ -173,7 +175,7 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
             setAnswers(emptyUserAnswers
               .set(WarehouseDetailsPage, true).success.value
               )
-            given
+            build
               .commonPrecondition
               .alf.getSuccessResponseFromALFInit(alfOnRampURL)
 
@@ -197,7 +199,7 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
             setAnswers(emptyUserAnswers
               .set(WarehouseDetailsPage, true).success.value
             )
-            given
+            build
               .commonPrecondition
               .alf.getSuccessResponseFromALFInit(alfOnRampURL)
 
@@ -222,7 +224,7 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
 
     "when the user does not select yes or no" - {
       "should return 400 with required error" in {
-        given
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -234,13 +236,13 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + Messages("warehouseDetails.title.heading","0","s"))
+            page.title must include("Error: " + messages("warehouseDetails.title.heading","0","s"))
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")
               .attr("href") mustBe "#value"
-            errorSummary.text() mustBe Messages("warehouseDetails" + ".error.required")
+            errorSummary.text() mustBe messages("warehouseDetails" + ".error.required")
           }
         }
       }
@@ -256,7 +258,7 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
       val alfOnRampURL: String = "http://onramp.com"
       setAnswers(emptyUserAnswers.set(WarehouseDetailsPage, true).success.value
         .copy(warehouseList = warehouseListWith1))
-      given
+      build
         .commonPrecondition
         .alf.getSuccessResponseFromALFInit(alfOnRampURL)
       WsTestClient.withClient { client =>
@@ -278,7 +280,7 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
       val alfOnRampURL: String = "http://onramp.com"
       setAnswers(emptyUserAnswers.set(WarehouseDetailsPage, true).success.value
         .copy(warehouseList = warehouseListWith1))
-      given
+      build
         .commonPrecondition
         .alf.getSuccessResponseFromALFInit(alfOnRampURL)
       WsTestClient.withClient { client =>
@@ -303,7 +305,7 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
             val alfOnRampURL: String = "http://onramp.com"
             setAnswers(emptyUserAnswers.set(WarehouseDetailsPage, true).success.value
               .copy(warehouseList = warehouseListWith1))
-            given
+            build
               .commonPrecondition
               .alf.getSuccessResponseFromALFInit(alfOnRampURL)
             WsTestClient.withClient { client =>
@@ -323,7 +325,7 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
 
           "when the session already contains data for page" in {
             val alfOnRampURL: String = "http://onramp.com"
-            given
+            build
               .commonPrecondition
               .alf.getSuccessResponseFromALFInit(alfOnRampURL)
 
@@ -348,7 +350,7 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
 
     "when the user does not select yes or no" - {
       "should return 400 with required error" in {
-        given
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -360,13 +362,13 @@ class WarehouseDetailsControllerISpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + Messages("warehouseDetails.title.heading","0","s"))
+            page.title must include("Error: " + messages("warehouseDetails.title.heading","0","s"))
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")
               .attr("href") mustBe "#value"
-            errorSummary.text() mustBe Messages("warehouseDetails" + ".error.required")
+            errorSummary.text() mustBe messages("warehouseDetails" + ".error.required")
           }
         }
       }

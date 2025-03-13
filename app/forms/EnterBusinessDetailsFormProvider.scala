@@ -29,7 +29,7 @@ class EnterBusinessDetailsFormProvider @Inject() extends Mappings {
   def apply(): Form[Identify] =
     Form(
       mapping(
-        "utr" -> text("enterBusinessDetails.required.utr").verifying(Constraint { x: String =>
+        "utr" -> text("enterBusinessDetails.required.utr").verifying(Constraint { (x: String) =>
           x.replace(" ", "") match {
             case utr if utr.exists(!_.isDigit) => Invalid("enterBusinessDetails.invalid.utr")
             case utr if utr.length != 10 => Invalid("enterBusinessDetails.invalid.utr.length")

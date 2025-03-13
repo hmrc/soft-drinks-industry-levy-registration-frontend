@@ -18,7 +18,6 @@ package views.summary
 
 import controllers.routes
 import models.CheckMode
-import views.summary.SummaryListRowLitresHelper
 
 object HowManyImportsSummary extends SummaryListRowLitresHelper {
 

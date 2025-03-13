@@ -2,9 +2,9 @@ package controllers
 
 import models.RegisterState
 import org.jsoup.Jsoup
-import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
-import play.api.i18n.Messages
-import play.api.test.WsTestClient
+import org.scalatest.matchers.must.Matchers.*
+import play.api.i18n.{Messages, MessagesApi}
+import play.api.test.{FakeRequest, WsTestClient}
 
 class ApplicationAlreadySubmittedControllerISpec extends ControllerITTestHelper {
 
@@ -12,7 +12,7 @@ class ApplicationAlreadySubmittedControllerISpec extends ControllerITTestHelper 
 
   "GET " + normalRoutePath - {
     "should return OK and render the ApplicationAlreadySubmitted page" in {
-      given
+      build
         .commonPrecondition
 
       setAnswers(emptyUserAnswers.copy(registerState = RegisterState.RegisterApplicationAccepted))
@@ -23,7 +23,11 @@ class ApplicationAlreadySubmittedControllerISpec extends ControllerITTestHelper 
         whenReady(result1) { res =>
           res.status mustBe 200
           val page = Jsoup.parse(res.body)
-          page.title must include(Messages("applicationAlreadySubmitted.heading.title"))
+          
+          given messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+          given messages: Messages = messagesApi.preferred(FakeRequest())
+
+          page.title must include(messages("applicationAlreadySubmitted.heading.title"))
         }
       }
     }

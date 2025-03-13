@@ -123,7 +123,7 @@ class UserTypeCheckModelSpec extends SpecBase with MockitoSugar with DataHelper 
       data mustBe false
     }
 
-   s"importer returns true if $HowManyImportsPage was answered and litres > 1" in {
+    s"importer returns true if $HowManyImportsPage was answered and litres > 1" in {
       val data = UserTypeCheck.importer(largeProducerUserAnswersNoContractPacking)
       data mustBe true
       val data1 = UserTypeCheck.importer(smallProducerUserAnswersNoOperatePackagingSites)

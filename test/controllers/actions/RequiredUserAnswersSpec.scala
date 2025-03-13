@@ -517,14 +517,16 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
         FakeRequest(),"", hasCTEnrolment = false, None, emptyUserAnswers, RosmWithUtr("", RosmRegistration("", None, None, UkAddress(List.empty,"", None)))
       )
       val res = requiredUserAnswers.returnMissingAnswers(requiredUserAnswers.journey)
-      res mustBe
-        List(
-          RequiredPage(VerifyPage, List.empty)(implicitly[Reads[Verify]]),
-          RequiredPage(OrganisationTypePage, List.empty)(implicitly[Reads[OrganisationType]]),
-          RequiredPage(HowManyLitresGloballyPage, List.empty)(implicitly[Reads[HowManyLitresGlobally]]),
-          RequiredPage(ContractPackingPage, List.empty)(implicitly[Reads[Boolean]]),
-          RequiredPage(ImportsPage, List.empty)(implicitly[Reads[Boolean]]),
-        )
+      val pageTypes = res.map(_.pageRequired)
+
+      pageTypes mustBe List(
+        VerifyPage,
+        OrganisationTypePage,
+        HowManyLitresGloballyPage,
+        ContractPackingPage,
+        ImportsPage
+      )
+      res.forall(_.basedOnPreviousPages.isEmpty) mustBe true
     }
 
     "should return all but 1 missing answers when user answers is fully populated apart from 1 answer" in {

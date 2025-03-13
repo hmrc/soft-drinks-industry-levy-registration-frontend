@@ -3,21 +3,24 @@ package controllers
 import models.OrganisationType.Partnership
 import models.{NormalMode, OrganisationType}
 import org.jsoup.Jsoup
-import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
+import org.scalatest.matchers.must.Matchers._
 import pages.OrganisationTypePage
 import play.api.http.HeaderNames
-import play.api.i18n.Messages
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.libs.json.Json
-import play.api.test.WsTestClient
+import play.api.test.{FakeRequest, WsTestClient}
 
 class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
   val normalRoutePath = "/organisation-type"
   val checkRoutePath = "/change-organisation-type"
 
+  given messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  given messages: Messages = messagesApi.preferred(FakeRequest())
+  
   "GET" + normalRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the OrganisationType page with no data populated" in {
-        given
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -28,7 +31,7 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include(Messages("organisationType.title"))
+            page.title must include(messages("organisationType.title"))
             val radioInputs = page.getElementsByClass("govuk-radios__input")
             radioInputs.size() mustBe OrganisationType.values.size
 
@@ -44,7 +47,7 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
     OrganisationType.values.zipWithIndex.foreach { case (radio, index) =>
       s"when the userAnswers contains data for the page with " + radio.toString + " selected" - {
         s"should return OK and render the page with " + radio.toString + " radio checked" in {
-          given
+          build
             .commonPrecondition
 
           val userAnswers = emptyUserAnswers.set(OrganisationTypePage, radio).success.value
@@ -57,7 +60,7 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include(Messages("organisationType.title"))
+              page.title must include(messages("organisationType.title"))
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe OrganisationType.values.size
 
@@ -70,7 +73,7 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
         }
       }
     }
-    testOtherSuccessUserTypes(baseUrl + normalRoutePath, Messages("organisationType.title"))
+    testOtherSuccessUserTypes(baseUrl + normalRoutePath, messages("organisationType.title"))
     testUnauthorisedUser(baseUrl + normalRoutePath)
     testUserWhoIsUnableToRegister(baseUrl + normalRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)
@@ -79,7 +82,7 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
   s"GET " + checkRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the OrganisationType page with no data populated" in {
-        given
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -90,7 +93,7 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include(Messages("organisationType.title"))
+            page.title must include(messages("organisationType.title"))
             val radioInputs = page.getElementsByClass("govuk-radios__input")
             radioInputs.size() mustBe OrganisationType.values.size
 
@@ -106,7 +109,7 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
     OrganisationType.values.zipWithIndex.foreach { case (radio, index) =>
       s"when the userAnswers contains data for the page with " + radio.toString + " selected" - {
         s"should return OK and render the page with " + radio.toString + " radio checked" in {
-          given
+          build
             .commonPrecondition
 
           val userAnswers = emptyUserAnswers.set(OrganisationTypePage, radio).success.value
@@ -120,7 +123,7 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include(Messages("organisationType.title"))
+              page.title must include(messages("organisationType.title"))
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe OrganisationType.values.size
 
@@ -133,7 +136,7 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
         }
       }
     }
-    testOtherSuccessUserTypes(baseUrl + checkRoutePath, Messages("organisationType.title"))
+    testOtherSuccessUserTypes(baseUrl + checkRoutePath, messages("organisationType.title"))
     testUnauthorisedUser(baseUrl + checkRoutePath)
     testUserWhoIsUnableToRegister(baseUrl + checkRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath)
@@ -146,7 +149,7 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
         "when the user selects " + radio.toString - {
           "should update the session with the new value and redirect to the how many litres globally" - {
             "when the session contains no data for page" in {
-              given
+              build
                 .commonPrecondition
 
               setAnswers(emptyUserAnswers)
@@ -166,7 +169,7 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
             }
 
             "when the session already contains data for page" in {
-              given
+              build
                 .commonPrecondition
 
               val userAnswers = emptyUserAnswers.set(OrganisationTypePage, radio).success.value
@@ -192,7 +195,7 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
         "when the user selects " + radio.toString - {
           "should update the session with the new value and redirect to the how many litres globally" - {
             "when the session contains no data for page" in {
-              given
+              build
                 .commonPrecondition
 
               setAnswers(emptyUserAnswers)
@@ -212,7 +215,7 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
             }
 
             "when the session already contains data for page" in {
-              given
+              build
                 .commonPrecondition
 
               val userAnswers = emptyUserAnswers.set(OrganisationTypePage, radio).success.value
@@ -238,7 +241,7 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
 
     "when the user does not select an option" - {
       "should return 400 with required error" in {
-        given
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -250,13 +253,13 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + Messages("organisationType" + ".title"))
+            page.title must include("Error: " + messages("organisationType" + ".title"))
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")
               .attr("href") mustBe "#value_0"
-            errorSummary.text() mustBe Messages("organisationType" + ".error.required")
+            errorSummary.text() mustBe messages("organisationType" + ".error.required")
           }
         }
       }
@@ -272,7 +275,7 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
         "when the user selects " + radio.toString - {
           "should update the session with the new value and redirect to the checkAnswers controller" - {
             "when the session contains no data for page" in {
-              given
+              build
                 .commonPrecondition
 
               setAnswers(emptyUserAnswers)
@@ -291,7 +294,7 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
             }
 
             "when the session already contains data for page" in {
-              given
+              build
                 .commonPrecondition
 
               val userAnswers = emptyUserAnswers.set(OrganisationTypePage, radio).success.value
@@ -317,7 +320,7 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
         "when the user selects " + radio.toString - {
           "should update the session with the new value and redirect to the checkAnswers controller" - {
             "when the session contains no data for page" in {
-              given
+              build
                 .commonPrecondition
 
               setAnswers(emptyUserAnswers)
@@ -336,7 +339,7 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
             }
 
             "when the session already contains data for page" in {
-              given
+              build
                 .commonPrecondition
 
               val userAnswers = emptyUserAnswers.set(OrganisationTypePage, radio).success.value
@@ -362,7 +365,7 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
 
     "when the user does not select an option" - {
       "should return 400 with required error" in {
-        given
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -374,13 +377,13 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + Messages("organisationType" + ".title"))
+            page.title must include("Error: " + messages("organisationType" + ".title"))
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")
               .attr("href") mustBe "#value_0"
-            errorSummary.text() mustBe Messages("organisationType" + ".error.required")
+            errorSummary.text() mustBe messages("organisationType" + ".error.required")
           }
         }
       }

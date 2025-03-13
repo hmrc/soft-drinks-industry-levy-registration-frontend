@@ -5,23 +5,26 @@ import models.OrganisationType.LimitedCompany
 import models.Verify.YesRegister
 import models.{CheckMode, HowManyLitresGlobally}
 import org.jsoup.Jsoup
-import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
-import pages._
+import org.scalatest.matchers.must.Matchers.*
+import pages.*
 import play.api.http.HeaderNames
 import play.api.http.Status.{OK, SEE_OTHER}
-import play.api.i18n.Messages
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.libs.json.Json
-import play.api.test.WsTestClient
+import play.api.test.{FakeRequest, WsTestClient}
 
 
 class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
 
   val route = "/check-your-answers"
 
+  given messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  given messages: Messages = messagesApi.preferred(FakeRequest())
+
   "GET " + routes.CheckYourAnswersController.onPageLoad.url - {
     "when the userAnswers contains no data" - {
       "should redirect to verify controller" in {
-        given
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -42,7 +45,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
       "and they have populated all pages including litres" - {
         "should render the check your answers page with only the required details" in {
           val userAnswers = userAnswerWithLitresForAllPagesIncludingOnesNotRequired(Large)
-          given
+          build
             .commonPrecondition
 
           setAnswers(userAnswers)
@@ -53,7 +56,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
             whenReady(result) { res =>
               res.status mustBe OK
               val page = Jsoup.parse(res.body)
-              page.title must include(Messages("checkYourAnswers.title"))
+              page.title must include(messages("checkYourAnswers.title"))
               page.getElementsByClass("govuk-summary-list").size() mustBe 7
 
               val businessDetails = page.getElementsByClass("govuk-summary-list").first()
@@ -95,7 +98,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
       "and they have only populated the required pages and have no litres" - {
         "should render the check your answers page with expected summary items" in {
           val userAnswers = userAnswerWithAllNoAndNoPagesToFilterOut(Large)
-          given
+          build
             .commonPrecondition
 
           setAnswers(userAnswers)
@@ -106,7 +109,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
             whenReady(result) { res =>
               res.status mustBe OK
               val page = Jsoup.parse(res.body)
-              page.title must include(Messages("checkYourAnswers.title"))
+              page.title must include(messages("checkYourAnswers.title"))
               page.getElementsByClass("govuk-summary-list").size() mustBe 7
 
               val businessDetails = page.getElementsByClass("govuk-summary-list").first()
@@ -155,7 +158,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
             .set(ImportsPage, false).success.value
             .remove(HowManyImportsPage).success.value
 
-        given
+          build
             .commonPrecondition
 
           setAnswers(userAnswers)
@@ -190,7 +193,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
           .set(ImportsPage, true).success.value
           .set(HowManyImportsPage, importsLitres).success.value
 
-        given
+        build
           .commonPrecondition
 
         setAnswers(userAnswers)
@@ -220,7 +223,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
           .set(OperatePackagingSitesPage, false).success.value
           .remove(HowManyOperatePackagingSitesPage).success.value
 
-        given
+        build
           .commonPrecondition
 
         setAnswers(userAnswers)
@@ -252,7 +255,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
           .set(ImportsPage, false).success.value
           .remove(HowManyImportsPage).success.value
 
-        given
+        build
           .commonPrecondition
 
         setAnswers(userAnswers)
@@ -284,7 +287,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
           .set(ImportsPage, false).success.value
           .remove(HowManyImportsPage).success.value
 
-        given
+        build
           .commonPrecondition
 
         setAnswers(userAnswers)
@@ -314,7 +317,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
           .set(ContractPackingPage, false).success.value
           .remove(HowManyContractPackingPage).success.value
 
-        given
+        build
           .commonPrecondition
 
         setAnswers(userAnswers)
@@ -344,7 +347,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
           .set(ImportsPage, false).success.value
           .remove(HowManyImportsPage).success.value
 
-        given
+        build
           .commonPrecondition
 
         setAnswers(userAnswers)
@@ -375,7 +378,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
       "and they have populated all pages including litres" - {
         "should render the check your answers page with only the required details" in {
           val userAnswers = userAnswerWithLitresForAllPagesIncludingOnesNotRequired(Small)
-          given
+          build
             .commonPrecondition
 
           setAnswers(userAnswers)
@@ -386,7 +389,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
             whenReady(result) { res =>
               res.status mustBe OK
               val page = Jsoup.parse(res.body)
-              page.title must include(Messages("checkYourAnswers.title"))
+              page.title must include(messages("checkYourAnswers.title"))
               page.getElementsByClass("govuk-summary-list").size() mustBe 8
 
               val businessDetails = page.getElementsByClass("govuk-summary-list").first()
@@ -432,7 +435,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
         "should redirect to doNotRegister page" in {
           val userAnswers = userAnswerWithAllNoAndNoPagesToFilterOut(Small)
             .set(ThirdPartyPackagersPage, false).success.value
-          given
+          build
             .commonPrecondition
 
           setAnswers(userAnswers)
@@ -459,7 +462,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
           .set(ImportsPage, false).success.value
           .remove(HowManyImportsPage).success.value
 
-        given
+        build
           .commonPrecondition
 
         setAnswers(userAnswers)
@@ -482,7 +485,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
           .set(ContractPackingPage, false).success.value
           .remove(HowManyContractPackingPage).success.value
 
-        given
+        build
           .commonPrecondition
 
         setAnswers(userAnswers)
@@ -514,7 +517,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
           .set(ImportsPage, false).success.value
           .remove(HowManyImportsPage).success.value
 
-        given
+        build
           .commonPrecondition
 
         setAnswers(userAnswers)
@@ -545,7 +548,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
           .set(ImportsPage, false).success.value
           .remove(HowManyImportsPage).success.value
 
-        given
+        build
           .commonPrecondition
 
         setAnswers(userAnswers)
@@ -575,7 +578,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
           .set(ContractPackingPage, false).success.value
           .remove(HowManyContractPackingPage).success.value
 
-        given
+        build
           .commonPrecondition
 
         setAnswers(userAnswers)
@@ -608,7 +611,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
           .set(ImportsPage, false).success.value
           .remove(HowManyImportsPage).success.value
 
-        given
+        build
           .commonPrecondition
 
         setAnswers(userAnswers)
@@ -639,7 +642,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
           .set(OperatePackagingSitesPage, false).success.value
           .remove(HowManyOperatePackagingSitesPage).success.value
 
-        given
+        build
           .commonPrecondition
 
         setAnswers(userAnswers)
@@ -668,7 +671,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
         val userAnswers = userAnswerWithLitresForAllPagesIncludingOnesNotRequired(Small)
           .set(ThirdPartyPackagersPage, false).success.value
 
-        given
+        build
           .commonPrecondition
 
         setAnswers(userAnswers)
@@ -699,7 +702,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
           .set(ImportsPage, false).success.value
           .remove(HowManyImportsPage).success.value
 
-        given
+        build
           .commonPrecondition
 
         setAnswers(userAnswers)
@@ -731,7 +734,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
           .set(ImportsPage, false).success.value
           .remove(HowManyImportsPage).success.value
 
-        given
+        build
           .commonPrecondition
 
         setAnswers(userAnswers)
@@ -761,7 +764,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
           .set(OperatePackagingSitesPage, false).success.value
           .remove(HowManyOperatePackagingSitesPage).success.value
 
-        given
+        build
           .commonPrecondition
 
         setAnswers(userAnswers)
@@ -791,7 +794,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
           .set(ImportsPage, false).success.value
           .remove(HowManyImportsPage).success.value
 
-        given
+        build
           .commonPrecondition
 
         setAnswers(userAnswers)
@@ -822,7 +825,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
           .set(ContractPackingPage, false).success.value
           .remove(HowManyContractPackingPage).success.value
 
-        given
+        build
           .commonPrecondition
 
         setAnswers(userAnswers)
@@ -854,7 +857,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
           .set(OperatePackagingSitesPage, false).success.value
           .remove(HowManyOperatePackagingSitesPage).success.value
 
-        given
+        build
           .commonPrecondition
 
         setAnswers(userAnswers)
@@ -889,7 +892,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
           .set(ImportsPage, false).success.value
           .remove(HowManyImportsPage).success.value
 
-        given
+        build
           .commonPrecondition
 
         setAnswers(userAnswers)
@@ -911,7 +914,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
       "and they have populated all pages including litres" - {
         "should render the check your answers page with only the required details" in {
           val userAnswers = userAnswerWithLitresForAllPagesIncludingOnesNotRequired(HowManyLitresGlobally.None)
-          given
+          build
             .commonPrecondition
 
           setAnswers(userAnswers)
@@ -922,7 +925,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
             whenReady(result) { res =>
               res.status mustBe OK
               val page = Jsoup.parse(res.body)
-              page.title must include(Messages("checkYourAnswers.title"))
+              page.title must include(messages("checkYourAnswers.title"))
               page.getElementsByClass("govuk-summary-list").size() mustBe 6
 
               val businessDetails = page.getElementsByClass("govuk-summary-list").first()
@@ -959,7 +962,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
       "and they have only populated the required pages and have no litres" - {
         "should redirect to doNotRegister page" in {
           val userAnswers = userAnswerWithAllNoAndNoPagesToFilterOut(HowManyLitresGlobally.None)
-          given
+          build
             .commonPrecondition
 
           setAnswers(userAnswers)
@@ -985,7 +988,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
             .set(ImportsPage, true).success.value
             .set(HowManyImportsPage, importsLitres).success.value
 
-          given
+          build
             .commonPrecondition
 
           setAnswers(userAnswers)
@@ -1019,7 +1022,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
             .set(ContractPackingPage, true).success.value
             .set(HowManyContractPackingPage, contractPackingLitres).success.value
 
-          given
+          build
             .commonPrecondition
 
           setAnswers(userAnswers)
@@ -1053,7 +1056,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
             .set(ImportsPage, true).success.value
             .set(HowManyImportsPage, importsLitres).success.value
 
-          given
+          build
             .commonPrecondition
 
           setAnswers(userAnswers)
@@ -1080,7 +1083,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
       }
     }
 
-    testOtherSuccessUserTypes(baseUrl + route, Messages("checkYourAnswers.title"), fullExampleUserAnswers)
+    testOtherSuccessUserTypes(baseUrl + route, messages("checkYourAnswers.title"), fullExampleUserAnswers)
     testUnauthorisedUser(baseUrl + route)
     testUserWhoIsUnableToRegister(baseUrl + route)
     testAuthenticatedUserButNoUserAnswers(baseUrl + route)
@@ -1088,7 +1091,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
 
   "POST " + routes.CheckYourAnswersController.onPageLoad.url - {
     "should redirect to verify controller when user answers empty" in {
-      given
+      build
         .commonPrecondition
 
       setAnswers(emptyUserAnswers)
@@ -1105,7 +1108,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
 
     "should create a subscription and send to back end then redirect to the next page" - {
       "when all required user answers are present" in {
-        given
+        build
           .commonPrecondition
           .sdilBackend.createSubscription("0000001611")
 
@@ -1142,7 +1145,7 @@ class CheckYourAnswersControllerISpec extends RegSummaryISpecHelper {
 
     "should render the error page" - {
       "when the sending of the created subscription fails" in {
-        given
+        build
           .commonPrecondition
           .sdilBackend.createSubscriptionError("0000001611")
 

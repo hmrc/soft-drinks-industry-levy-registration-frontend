@@ -1,27 +1,31 @@
 package controllers
 
-import models.alf.init._
+import models.alf.init.*
 import models.backend.UkAddress
 import models.{CheckMode, NormalMode, Warehouse}
 import org.jsoup.Jsoup
-import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
+import org.scalatest.matchers.must.Matchers.*
 import pages.AskSecondaryWarehousesPage
 import play.api.http.HeaderNames
-import play.api.i18n.Messages
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.libs.json.{JsObject, Json}
 import play.api.libs.ws.DefaultWSCookie
-import play.api.test.WsTestClient
+import play.api.test.{FakeRequest, WsTestClient}
 import testSupport.ALFTestHelper
+import play.api.libs.ws.JsonBodyWritables.writeableOf_JsValue
 
 class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
 
   val normalRoutePath = "/ask-secondary-warehouses"
   val checkRoutePath = "/change-ask-secondary-warehouses"
 
+  given messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  given messages: Messages = messagesApi.preferred(FakeRequest())
+    
   "GET " + normalRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the AskSecondaryWarehouses page with no data populated" in {
-        given
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -32,7 +36,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include(Messages("askSecondaryWarehouses" + ".title"))
+            page.title must include(messages("askSecondaryWarehouses" + ".title"))
             val radioInputs = page.getElementsByClass("govuk-radios__input")
             radioInputs.size() mustBe 2
             radioInputs.get(0).attr("value") mustBe "true"
@@ -47,7 +51,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
     userAnswersForAskSecondaryWarehousesPage.foreach { case (key, userAnswers) =>
       s"when the userAnswers contains data for the page with " + key + " selected" - {
         s"should return OK and render the page with " + key + " radio checked" in {
-          given
+          build
             .commonPrecondition
 
           setAnswers(userAnswers)
@@ -58,7 +62,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include(Messages("askSecondaryWarehouses" + ".title"))
+              page.title must include(messages("askSecondaryWarehouses" + ".title"))
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe 2
               radioInputs.get(0).attr("value") mustBe "true"
@@ -70,7 +74,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
         }
       }
     }
-    testOtherSuccessUserTypes(baseUrl + normalRoutePath, Messages("askSecondaryWarehouses" + ".title"))
+    testOtherSuccessUserTypes(baseUrl + normalRoutePath, messages("askSecondaryWarehouses" + ".title"))
     testUnauthorisedUser(baseUrl + normalRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)
     testUserWhoIsUnableToRegister(baseUrl + normalRoutePath)
@@ -79,7 +83,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
   s"GET " + checkRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the AskSecondaryWarehouses page with no data populated" in {
-        given
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -90,7 +94,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include(Messages("askSecondaryWarehouses" + ".title"))
+            page.title must include(messages("askSecondaryWarehouses" + ".title"))
             val radioInputs = page.getElementsByClass("govuk-radios__input")
             radioInputs.size() mustBe 2
             radioInputs.get(0).attr("value") mustBe "true"
@@ -105,7 +109,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
     userAnswersForAskSecondaryWarehousesPage.foreach { case (key, userAnswers) =>
       s"when the userAnswers contains data for the page with " + key + " selected" - {
         s"should return OK and render the page with " + key + " radio checked" in {
-          given
+          build
             .commonPrecondition
 
           setAnswers(userAnswers)
@@ -116,7 +120,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include(Messages("askSecondaryWarehouses" + ".title"))
+              page.title must include(messages("askSecondaryWarehouses" + ".title"))
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe 2
               radioInputs.get(0).attr("value") mustBe "true"
@@ -129,7 +133,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
       }
     }
 
-    testOtherSuccessUserTypes(baseUrl + checkRoutePath, Messages("askSecondaryWarehouses" + ".title"))
+    testOtherSuccessUserTypes(baseUrl + checkRoutePath, messages("askSecondaryWarehouses" + ".title"))
     testUnauthorisedUser(baseUrl + checkRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath)
     testUserWhoIsUnableToRegister(baseUrl + checkRoutePath)
@@ -141,7 +145,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
     "when the user select no" - {
       "should update the session with the new value and redirect to the contact details page" - {
         "when the session contains no data for page" in {
-          given
+          build
             .commonPrecondition
 
           setAnswers(emptyUserAnswers)
@@ -161,7 +165,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
         }
 
         "when the session already contains data for page" in {
-          given
+          build
             .commonPrecondition
 
           setAnswers(userAnswersForAskSecondaryWarehousesPage.get("yes").get)
@@ -255,7 +259,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
         ))
       val alfOnRampURL: String = "http://onramp.com"
 
-      given
+      build
         .commonPrecondition
         .alf.getSuccessResponseFromALFInit(alfOnRampURL)
 
@@ -287,7 +291,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
           .set(AskSecondaryWarehousesPage, true).success.value
       )
 
-      given
+      build
         .commonPrecondition
 
       val expectedResult: Some[JsObject] = Some(Json.obj("askSecondaryWarehouses" -> true))
@@ -315,7 +319,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
       val warehouseToBeWiped = Map("foo" -> Warehouse(aTradingName, UkAddress(List.empty, "", None)))
       setAnswers(emptyUserAnswers.copy(warehouseList = warehouseToBeWiped))
 
-      given
+      build
         .commonPrecondition
 
       val expectedResult: Some[JsObject] = Some(
@@ -344,7 +348,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
 
     "when the user does not select yes or no" - {
       "should return 400 with required error" in {
-        given
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -356,13 +360,13 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + Messages("askSecondaryWarehouses" + ".title"))
+            page.title must include("Error: " + messages("askSecondaryWarehouses" + ".title"))
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")
               .attr("href") mustBe "#value"
-            errorSummary.text() mustBe Messages("askSecondaryWarehouses" + ".error.required")
+            errorSummary.text() mustBe messages("askSecondaryWarehouses" + ".error.required")
           }
         }
       }
@@ -379,7 +383,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
       val warehouseToBeWiped = Map("foo" -> Warehouse(aTradingName, UkAddress(List.empty, "", None)))
       setAnswers(emptyUserAnswers.copy(warehouseList = warehouseToBeWiped))
 
-      given
+      build
         .commonPrecondition
 
       val expectedResult: Some[JsObject] = Some(
@@ -406,7 +410,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
     "when the user selects no" - {
       "should update the session with the new value and redirect to the checkAnswers controller" - {
         "when the session already contains data for page" in {
-          given
+          build
             .commonPrecondition
 
           setAnswers(userAnswersForAskSecondaryWarehousesPage.get("yes").get)
@@ -500,7 +504,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
         ))
       val alfOnRampURL: String = "http://onramp.com"
 
-      given
+      build
         .commonPrecondition
         .alf.getSuccessResponseFromALFInit(alfOnRampURL)
 
@@ -532,7 +536,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
           .set(AskSecondaryWarehousesPage, true).success.value
       )
 
-      given
+      build
         .commonPrecondition
 
       val expectedResult: Some[JsObject] = Some(Json.obj("askSecondaryWarehouses" -> true))
@@ -558,7 +562,7 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
 
     "when the user does not select yes or no" - {
       "should return 400 with required error" in {
-        given
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -570,13 +574,13 @@ class AskSecondaryWarehousesControllerISpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + Messages("askSecondaryWarehouses" + ".title"))
+            page.title must include("Error: " + messages("askSecondaryWarehouses" + ".title"))
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")
               .attr("href") mustBe "#value"
-            errorSummary.text() mustBe Messages("askSecondaryWarehouses" + ".error.required")
+            errorSummary.text() mustBe messages("askSecondaryWarehouses" + ".error.required")
           }
         }
       }

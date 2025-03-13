@@ -1,10 +1,10 @@
 package controllers
 
 import org.jsoup.Jsoup
-import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
+import org.scalatest.matchers.must.Matchers.*
 import pages.StartDatePage
-import play.api.i18n.Messages
-import play.api.test.WsTestClient
+import play.api.i18n.{Messages, MessagesApi, MessagesProvider}
+import play.api.test.{FakeRequest, WsTestClient}
 
 class CannotRegisterPartnershipControllerISpec extends ControllerITTestHelper {
 
@@ -12,12 +12,14 @@ class CannotRegisterPartnershipControllerISpec extends ControllerITTestHelper {
 
   "GET " + normalRoutePath - {
     "should return OK and render the CannotRegisterPartnership page" in {
-      given.commonPrecondition
+      build.commonPrecondition
 
       val userAnswers = emptyUserAnswers.set(StartDatePage, date).success.value
       setAnswers(userAnswers)
 
-
+      given messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+      given request: FakeRequest[_] = FakeRequest()
+      given messagesProvider: MessagesProvider = messagesApi.preferred(request)
 
       WsTestClient.withClient { client =>
         val result1 = createClientRequestGet(client, baseUrl + normalRoutePath)
@@ -30,7 +32,7 @@ class CannotRegisterPartnershipControllerISpec extends ControllerITTestHelper {
         }
       }
     }
-    testOtherSuccessUserTypes(baseUrl + normalRoutePath, Messages("cannotRegisterPartnership" + ".title"))
+    testOtherSuccessUserTypes(baseUrl + normalRoutePath, Messages("cannotRegisterPartnership" + ".title")(using messagesProvider))
     testUnauthorisedUser(baseUrl + normalRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)
     testUserWhoIsUnableToRegister(baseUrl + normalRoutePath)

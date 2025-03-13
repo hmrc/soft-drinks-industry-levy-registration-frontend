@@ -29,7 +29,6 @@ import utilities.GenericLogger
 import java.time.LocalDate
 import javax.inject.Inject
 import scala.concurrent.{ ExecutionContext, Future }
-import scala.reflect.ClassTag
 
 class RequiredUserAnswers @Inject() (genericLogger: GenericLogger)(implicit val executionContext: ExecutionContext) extends ActionHelpers {
   def requireData(page: Page)(action: => Future[Result])(implicit request: DataRequest[_]): Future[Result] = {
@@ -50,7 +49,7 @@ class RequiredUserAnswers @Inject() (genericLogger: GenericLogger)(implicit val 
     }
   }
 
-  private[controllers] def returnMissingAnswers[A: ClassTag, B: ClassTag](list: List[RequiredPage[_, _, _]])(implicit request: DataRequest[_]): List[RequiredPage[_, _, _]] = {
+  private[controllers] def returnMissingAnswers[A, B](list: List[RequiredPage[_, _, _]])(implicit request: DataRequest[_]): List[RequiredPage[_, _, _]] = {
     list.filterNot { listItem =>
       val currentPageFromUserAnswers: Option[A] = request.userAnswers.get(listItem.pageRequired.asInstanceOf[QuestionPage[A]])(listItem.reads.asInstanceOf[Reads[A]])
       (currentPageFromUserAnswers.isDefined, listItem.basedOnPreviousPages.nonEmpty) match {
