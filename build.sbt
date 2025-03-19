@@ -49,7 +49,7 @@ lazy val root = (project in file("."))
     resolvers ++= Seq(Resolver.jcenterRepo),
     // concatenate js
     Concat.groups := Seq(
-      "javascripts/application.js" ->
+      "javascripts/application.min.js" ->
         group(Seq(
           "javascripts/app.js"
         ))
