@@ -11,7 +11,7 @@ import pages._
 import play.api.libs.json.{JsObject, Json}
 
 import java.time.LocalDate
-import scala.concurrent.duration.DurationInt
+import scala.concurrent.duration.{DurationInt, FiniteDuration}
 
 trait ITCoreTestData extends TryValues {
 
@@ -120,7 +120,7 @@ trait ITCoreTestData extends TryValues {
 
   val defaultCall = routes.RegistrationController.start
 
-  implicit val duration = 5.seconds
+  implicit val duration: FiniteDuration = 5.seconds
   def emptyUserAnswers = UserAnswers(identifier, RegisterState.RegisterWithAuthUTR, Json.obj())
 
   def packagingSite1 = Site(

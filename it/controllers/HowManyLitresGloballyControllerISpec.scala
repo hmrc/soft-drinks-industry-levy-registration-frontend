@@ -3,22 +3,25 @@ package controllers
 import models.HowManyLitresGlobally.{Large, Small}
 import models.{HowManyLitresGlobally, NormalMode}
 import org.jsoup.Jsoup
-import org.scalatest.matchers.must.Matchers.{convertToAnyMustWrapper, include}
+import org.scalatest.matchers.must.Matchers._
 import pages.HowManyLitresGloballyPage
 import play.api.http.HeaderNames
-import play.api.i18n.Messages
+import play.api.i18n.{Messages, MessagesApi}
 import play.api.libs.json.Json
-import play.api.test.WsTestClient
+import play.api.test.{FakeRequest, WsTestClient}
 
 class HowManyLitresGloballyControllerISpec extends ControllerITTestHelper {
 
   val normalRoutePath = "/how-many-litres-globally"
   val checkRoutePath = "/change-how-many-litres-globally"
 
+  given messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+  given messages: Messages = messagesApi.preferred(FakeRequest())
+
   "GET " + normalRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the HowManyLitresGlobally page with no data populated" in {
-        given
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -29,7 +32,7 @@ class HowManyLitresGloballyControllerISpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include(Messages("howManyLitresGlobally" + ".title"))
+            page.title must include(messages("howManyLitresGlobally" + ".title"))
             val radioInputs = page.getElementsByClass("govuk-radios__input")
             radioInputs.size() mustBe HowManyLitresGlobally.values.size
 
@@ -45,7 +48,7 @@ class HowManyLitresGloballyControllerISpec extends ControllerITTestHelper {
     HowManyLitresGlobally.values.zipWithIndex.foreach { case (radio, index) =>
       s"when the userAnswers contains data for the page with " + radio.toString + " selected" - {
         s"should return OK and render the page with " + radio.toString + " radio checked" in {
-          given
+          build
             .commonPrecondition
 
           val userAnswers = emptyUserAnswers.set(HowManyLitresGloballyPage, radio).success.value
@@ -58,7 +61,7 @@ class HowManyLitresGloballyControllerISpec extends ControllerITTestHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include(Messages("howManyLitresGlobally" + ".title"))
+              page.title must include(messages("howManyLitresGlobally" + ".title"))
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe HowManyLitresGlobally.values.size
 
@@ -71,7 +74,7 @@ class HowManyLitresGloballyControllerISpec extends ControllerITTestHelper {
         }
       }
     }
-    testOtherSuccessUserTypes(baseUrl + normalRoutePath, Messages("howManyLitresGlobally" + ".title"))
+    testOtherSuccessUserTypes(baseUrl + normalRoutePath, messages("howManyLitresGlobally" + ".title"))
     testUnauthorisedUser(baseUrl + normalRoutePath)
     testUserWhoIsUnableToRegister(baseUrl + normalRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)
@@ -80,7 +83,7 @@ class HowManyLitresGloballyControllerISpec extends ControllerITTestHelper {
   s"GET " + checkRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the HowManyLitresGlobally page with no data populated" in {
-        given
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -91,7 +94,7 @@ class HowManyLitresGloballyControllerISpec extends ControllerITTestHelper {
           whenReady(result1) { res =>
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
-            page.title must include(Messages("howManyLitresGlobally" + ".title"))
+            page.title must include(messages("howManyLitresGlobally" + ".title"))
             val radioInputs = page.getElementsByClass("govuk-radios__input")
             radioInputs.size() mustBe HowManyLitresGlobally.values.size
 
@@ -107,7 +110,7 @@ class HowManyLitresGloballyControllerISpec extends ControllerITTestHelper {
     HowManyLitresGlobally.values.zipWithIndex.foreach { case (radio, index) =>
       s"when the userAnswers contains data for the page with " + radio.toString + " selected" - {
         s"should return OK and render the page with " + radio.toString + " radio checked" in {
-          given
+          build
             .commonPrecondition
 
           val userAnswers = emptyUserAnswers.set(HowManyLitresGloballyPage, radio).success.value
@@ -121,7 +124,7 @@ class HowManyLitresGloballyControllerISpec extends ControllerITTestHelper {
             whenReady(result1) { res =>
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
-              page.title must include(Messages("howManyLitresGlobally" + ".title"))
+              page.title must include(messages("howManyLitresGlobally" + ".title"))
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe HowManyLitresGlobally.values.size
 
@@ -134,7 +137,7 @@ class HowManyLitresGloballyControllerISpec extends ControllerITTestHelper {
         }
       }
     }
-    testOtherSuccessUserTypes(baseUrl + checkRoutePath, Messages("howManyLitresGlobally" + ".title"))
+    testOtherSuccessUserTypes(baseUrl + checkRoutePath, messages("howManyLitresGlobally" + ".title"))
     testUnauthorisedUser(baseUrl + checkRoutePath)
     testUserWhoIsUnableToRegister(baseUrl + checkRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath)
@@ -147,7 +150,7 @@ class HowManyLitresGloballyControllerISpec extends ControllerITTestHelper {
       "when the user selects " + radio.toString - {
         "should update the session with the new value and redirect to the operate packaging sites" - {
           "when the session contains no data for page" in {
-            given
+            build
               .commonPrecondition
 
             setAnswers(emptyUserAnswers)
@@ -167,7 +170,7 @@ class HowManyLitresGloballyControllerISpec extends ControllerITTestHelper {
           }
 
           "when the session already contains data for page" in {
-            given
+            build
               .commonPrecondition
 
             val userAnswers = emptyUserAnswers.set(HowManyLitresGloballyPage, radio).success.value
@@ -193,7 +196,7 @@ class HowManyLitresGloballyControllerISpec extends ControllerITTestHelper {
         "when the user selects " + radio.toString - {
           "should update the session with the new value and redirect to the operate packaging sites" - {
             "when the session contains no data for page" in {
-              given
+              build
                 .commonPrecondition
 
               setAnswers(emptyUserAnswers)
@@ -213,7 +216,7 @@ class HowManyLitresGloballyControllerISpec extends ControllerITTestHelper {
             }
 
             "when the session already contains data for page" in {
-              given
+              build
                 .commonPrecondition
 
               val userAnswers = emptyUserAnswers.set(HowManyLitresGloballyPage, radio).success.value
@@ -239,7 +242,7 @@ class HowManyLitresGloballyControllerISpec extends ControllerITTestHelper {
         "when the user selects " + radio.toString - {
           "should update the session with the new value and redirect to the operate packaging sites" - {
             "when the session contains no data for page" in {
-              given
+              build
                 .commonPrecondition
 
               setAnswers(emptyUserAnswers)
@@ -259,7 +262,7 @@ class HowManyLitresGloballyControllerISpec extends ControllerITTestHelper {
             }
 
             "when the session already contains data for page" in {
-              given
+              build
                 .commonPrecondition
 
               val userAnswers = emptyUserAnswers.set(HowManyLitresGloballyPage, radio).success.value
@@ -285,7 +288,7 @@ class HowManyLitresGloballyControllerISpec extends ControllerITTestHelper {
 
     "when the user does not select an option" - {
       "should return 400 with required error" in {
-        given
+        build
           .commonPrecondition
 
         setAnswers(emptyUserAnswers)
@@ -297,13 +300,13 @@ class HowManyLitresGloballyControllerISpec extends ControllerITTestHelper {
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
-            page.title must include("Error: " + Messages("howManyLitresGlobally" + ".title"))
+            page.title must include("Error: " + messages("howManyLitresGlobally" + ".title"))
             val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")
               .attr("href") mustBe "#value_0"
-            errorSummary.text() mustBe Messages("howManyLitresGlobally" + ".error.required")
+            errorSummary.text() mustBe messages("howManyLitresGlobally" + ".error.required")
           }
         }
       }
@@ -320,7 +323,7 @@ class HowManyLitresGloballyControllerISpec extends ControllerITTestHelper {
           if (previousSelectedValue == selectedValue) {
             s"that is the same as the answer stored in useranswers" - {
               "should update the database and redirect to check your answers" in {
-                given
+                build
                   .commonPrecondition
 
                 val userAnswers = emptyUserAnswers.set(HowManyLitresGloballyPage, previousSelectedValue).success.value
@@ -349,7 +352,7 @@ class HowManyLitresGloballyControllerISpec extends ControllerITTestHelper {
                 case _ => routes.ContractPackingController.onPageLoad(NormalMode).url
               }
               s"should update the database and redirect to $expectedUrl " in {
-                given
+                build
                   .commonPrecondition
 
                 val userAnswers = emptyUserAnswers.set(HowManyLitresGloballyPage, previousSelectedValue).success.value
@@ -378,7 +381,7 @@ class HowManyLitresGloballyControllerISpec extends ControllerITTestHelper {
           case _ => routes.ContractPackingController.onPageLoad(NormalMode).url
         }
         s"should update the database and redirect to $expectedUrl when no producerType in useranswers" in {
-          given
+          build
             .commonPrecondition
 
           val userAnswers = emptyUserAnswers
@@ -404,4 +407,5 @@ class HowManyLitresGloballyControllerISpec extends ControllerITTestHelper {
     testUserWhoIsUnableToRegister(baseUrl + checkRoutePath, Some(Json.obj("value" -> "true")))
     testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath, Some(Json.obj("value" -> "true")))
   }
+
 }

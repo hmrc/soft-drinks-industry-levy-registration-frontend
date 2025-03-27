@@ -24,7 +24,8 @@ import models.alf.{AlfAddress, AlfResponse}
 import models.core.ErrorModel
 import models.{CheckMode, NormalMode}
 import org.mockito.ArgumentMatchers
-import org.mockito.MockitoSugar.{mock, when}
+import org.mockito.Mockito.when
+import org.scalatestplus.mockito.MockitoSugar.mock
 import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 import services.AddressLookupState._
 

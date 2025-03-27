@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,16 @@
 
 package models
 
-import play.api.libs.json._
+import org.scalatest.funsuite.AnyFunSuite
+import play.api.libs.json.{Json, JsSuccess}
+import models.Producer
 
-case class WarehousesTradingName(warehouseTradingName: String)
+class ProducerSpec extends AnyFunSuite {
 
-object WarehousesTradingName {
-  implicit val format: OFormat[WarehousesTradingName] = Json.format[WarehousesTradingName]
-  def unapply(wtn: WarehousesTradingName): Option[String] = Some(wtn.warehouseTradingName)
+  test("Producer should serialize and deserialize correctly") {
+    val producer = Producer(isProducer = true, isLarge = Some(true))
+    val json = Json.toJson(producer)
+    val deserialized = json.validate[Producer]
+    assert(deserialized == JsSuccess(producer))
+  }
 }

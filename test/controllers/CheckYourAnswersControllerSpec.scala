@@ -28,7 +28,7 @@ import orchestrators.RegistrationOrchestrator
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import org.mockito.MockitoSugar.mock
+import org.scalatestplus.mockito.MockitoSugar.mock
 import pages._
 import play.api.inject.bind
 import play.api.test.FakeRequest

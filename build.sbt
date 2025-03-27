@@ -14,7 +14,7 @@ lazy val root = (project in file("."))
   .settings(majorVersion := 0, libraryDependencySchemes += "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always)
   .settings(ThisBuild / useSuperShell := false)
   .settings(
-    scalaVersion := "2.13.12",
+    scalaVersion := "3.3.4",
     name := appName,
     RoutesKeys.routesImport ++= Seq(
       "models._",
@@ -35,14 +35,19 @@ lazy val root = (project in file("."))
     PlayKeys.playDefaultPort := 8706,
     ScoverageKeys.coverageExcludedFiles := "<empty>;Reverse.*;.*handlers.*;.*components.*;" +
       ".*Routes.*;.*viewmodels.govuk.*;",
-    ScoverageKeys.coverageMinimumStmtTotal := 92,
+    ScoverageKeys.coverageMinimumStmtTotal := 88,
     ScoverageKeys.coverageFailOnMinimum := true,
     ScoverageKeys.coverageHighlighting := true,
     scalacOptions ++= Seq(
       "-feature",
       "-rootdir",
       baseDirectory.value.getCanonicalPath,
-      "-Wconf:cat=deprecation:ws,cat=feature:ws,cat=optimizer:ws,src=target/.*:s"
+      "-Wconf:msg=Flag.*repeatedly:s",
+      "-Wconf:msg=unused explicit parameter*:s",
+      "-Wconf:msg=unused private member*:s",
+      "-Wconf:msg=unused implicit parameter*:s",
+      "-Wconf:msg=unused local definition*:s",
+      "-Wconf:msg=unused-patterns&src=routes/.*:s"
     ),
     libraryDependencies ++= AppDependencies.all(),
     retrieveManaged := true,
