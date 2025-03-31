@@ -40,7 +40,6 @@ lazy val root = (project in file("."))
     ScoverageKeys.coverageHighlighting := true,
     scalacOptions ++= Seq(
       "-feature",
-      baseDirectory.value.getCanonicalPath,
       "-Wconf:msg=Flag.*repeatedly:s",
       "-Wconf:msg=unused explicit parameter*:s",
       "-Wconf:msg=unused private member*:s",
