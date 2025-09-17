@@ -18,7 +18,7 @@ package models.core
 
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.must.Matchers
-import play.api.libs.json.{JsError, JsSuccess, Json}
+import play.api.libs.json.{JsSuccess, Json}
 
 class ErrorModelSpec extends AnyFunSuite with Matchers {
 

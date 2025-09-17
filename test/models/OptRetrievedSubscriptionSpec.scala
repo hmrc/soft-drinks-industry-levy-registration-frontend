@@ -18,7 +18,7 @@ package models
 
 import models.backend.UkAddress
 import org.scalatest.funsuite.AnyFunSuite
-import play.api.libs.json.{JsSuccess, Json, OFormat}
+import play.api.libs.json.{JsSuccess, Json}
 
 import java.time.LocalDate
 

@@ -24,7 +24,6 @@ import play.api.libs.json.Json
 import repositories.{CacheMap, SDILSessionCache}
 import utilities.GenericLogger
 
-import java.net.URL
 import scala.concurrent.Future
 
 class SoftDrinksIndustryLevyConnectorSpec extends HttpClientV2Helper {

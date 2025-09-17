@@ -19,7 +19,6 @@ package models
 import org.scalatest.funsuite.AnyFunSuite
 import play.api.libs.json.{JsSuccess, Json}
 import models.backend.{Activity, Site, Subscription, UkAddress}
-import models.{Contact, CreatedSubscriptionAndAmountProducedGlobally, HowManyLitresGlobally}
 
 import java.time.LocalDate
 

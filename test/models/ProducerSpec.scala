@@ -18,7 +18,6 @@ package models
 
 import org.scalatest.funsuite.AnyFunSuite
 import play.api.libs.json.{Json, JsSuccess}
-import models.Producer
 
 class ProducerSpec extends AnyFunSuite {
 
