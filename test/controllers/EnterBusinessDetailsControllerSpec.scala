@@ -36,10 +36,9 @@ import play.api.mvc.{Call, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.SessionService
-import uk.gov.hmrc.http.HttpClient
 import utilities.GenericLogger
 import views.html.EnterBusinessDetailsView
-
+import uk.gov.hmrc.http.client.HttpClientV2
 import scala.concurrent.Future
 
 class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with LoggerHelper {
@@ -50,7 +49,7 @@ class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with
     def callRefine[A](request: OptionalDataRequest[A]): Future[Either[Result, DataRequest[A]]] = refine(request)
   }
 
-  val mockHttp = mock[HttpClient]
+  val mockHttp = mock[HttpClientV2]
   val mockOrchestrator = mock[RegistrationOrchestrator]
   val mockSessionService = mock[SessionService]
 
