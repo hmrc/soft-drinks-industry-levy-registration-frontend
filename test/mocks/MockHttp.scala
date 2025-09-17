@@ -17,14 +17,10 @@
 package mocks
 
 import connectors.HttpClientV2Helper
-import org.mockito.ArgumentMatchers
 import org.mockito.Mockito._
 import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.freespec.AnyFreeSpec
-import org.scalatestplus.mockito.MockitoSugar
-import play.api.libs.json.Writes
-import uk.gov.hmrc.http.{HttpClient, HttpReads}
 
 import scala.concurrent.Future
 
