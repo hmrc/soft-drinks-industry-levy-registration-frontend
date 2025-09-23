@@ -109,11 +109,8 @@ class SoftDrinksIndustryLevyConnector @Inject() (
           genericLogger.logger.warn(s"[SoftDrinksIndustryLevyConnector][createSubscription] - CONFLICT returned for ${subscription.utr}")
           Right((): Unit)
         case status =>
-          println(s"→ POST $createUrl")
-          println(s"← ${resp.status}\n${resp.body}")
           genericLogger.logger.error(s"[SoftDrinksIndustryLevyConnector][createSubscription] - unexpected response $status for ${subscription.utr}")
           Left(UnexpectedResponseFromSDIL)
-          
       }
     }.recover {
       case _ =>
