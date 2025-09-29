@@ -8,12 +8,12 @@ object AppDependencies {
 
   val compile: Seq[ModuleID] = Seq(
     play.sbt.PlayImport.ws,
-    "uk.gov.hmrc" %% s"play-frontend-hmrc-$playVersion" % "12.12.0",
+    "uk.gov.hmrc" %% s"play-frontend-hmrc-$playVersion" % "12.13.0",
     "uk.gov.hmrc" %% s"bootstrap-frontend-$playVersion" % bootstrapVersion,
     "uk.gov.hmrc" %% s"play-conditional-form-mapping-$playVersion" % "3.3.0",
     "uk.gov.hmrc.mongo" %% s"hmrc-mongo-$playVersion" % hmrcMongoVersion,
     "uk.gov.hmrc" %% s"crypto-json-$playVersion" % "8.3.0",
-    "org.typelevel" %% "cats-core" % "2.12.0"
+    "org.typelevel" %% "cats-core" % "2.13.0"
 
   )
 
@@ -22,8 +22,8 @@ object AppDependencies {
     "uk.gov.hmrc.mongo" %% s"hmrc-mongo-test-$playVersion" % hmrcMongoVersion,
     "org.scalatestplus"       %% "mockito-4-11"    % "3.2.18.0",
     "org.scalatestplus" %% "scalacheck-1-17" % "3.2.18.0",
-    "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.1",
-    "org.jsoup" % "jsoup" % "1.18.1",
+    "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.2",
+    "org.jsoup" % "jsoup" % "1.21.2",
     "io.github.wolfendale" %% "scalacheck-gen-regexp" % "1.1.0"
   ).map(_ % "test, it")
 

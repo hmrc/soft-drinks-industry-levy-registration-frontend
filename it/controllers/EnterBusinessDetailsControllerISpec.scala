@@ -56,7 +56,7 @@ class EnterBusinessDetailsControllerISpec extends ControllerITTestHelper {
             val page = Jsoup.parse(res.body)
             page.title must include(messages("enterBusinessDetails" + ".title"))
             val inputFields = page.getElementsByClass("govuk-input")
-            inputFields.text() mustEqual ""
+            inputFields.text() mustEqual " "
           }
         }
       }
