@@ -40,7 +40,7 @@ class CannotRegisterPartnershipControllerSpec extends SpecBase {
         val view = application.injector.instanceOf[CannotRegisterPartnershipView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(config.helpdeskPhoneNumber)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(config.helpdeskPhoneNumber)(using request, messages(application)).toString
       }
     }
   }

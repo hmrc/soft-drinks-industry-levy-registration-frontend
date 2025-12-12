@@ -8,13 +8,13 @@ lazy val appName: String = "soft-drinks-industry-levy-registration-frontend"
 lazy val root = (project in file("."))
   .enablePlugins(PlayScala, SbtDistributablesPlugin)
   .disablePlugins(JUnitXmlReportPlugin) //Required to prevent https://github.com/scalatest/scalatest/issues/1427
-  .settings(inConfig(Test)(testSettings): _*)
+  .settings(inConfig(Test)(testSettings) *)
   .configs(IntegrationTest)
-  .settings(inConfig(IntegrationTest)(itSettings): _*)
+  .settings(inConfig(IntegrationTest)(itSettings) *)
   .settings(majorVersion := 0, libraryDependencySchemes += "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always)
   .settings(ThisBuild / useSuperShell := false)
   .settings(
-    scalaVersion := "3.3.6",
+    scalaVersion := "3.7.4",
     name := appName,
     RoutesKeys.routesImport ++= Seq(
       "models._",
@@ -45,7 +45,7 @@ lazy val root = (project in file("."))
       "-Wconf:msg=unused private member*:s",
       "-Wconf:msg=unused implicit parameter*:s",
       "-Wconf:msg=unused local definition*:s",
-      "-Wconf:msg=unused-patterns&src=routes/.*:s",
+      "-Wconf:msg=unused patterns*:s",
       "-Wconf:msg=unused import*:s",
       "-Wconf:msg=exhaustive*:s"
     ),

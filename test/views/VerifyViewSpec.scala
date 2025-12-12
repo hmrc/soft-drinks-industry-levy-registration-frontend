@@ -30,7 +30,7 @@ class VerifyViewSpec extends ViewSpecHelper {
   val view = application.injector.instanceOf[VerifyView]
   val formProvider = new VerifyFormProvider
   val form = formProvider.apply()
-  implicit val request: Request[_] = FakeRequest()
+  implicit val request: Request[?] = FakeRequest()
 
   object Selectors {
     val heading = "govuk-fieldset__heading"
@@ -49,7 +49,7 @@ class VerifyViewSpec extends ViewSpecHelper {
   "View" - {
     val address = HtmlContent("foo")
     val utr = "bar"
-    val html = view(form, NormalMode, utr, address)(request, messages(application))
+    val html = view(form, NormalMode, utr, address)(using request, messages(application))
     val document = doc(html)
     "should contain the expected title" in {
       document.title() mustBe "Your business details - Soft Drinks Industry Levy - GOV.UK"
@@ -95,7 +95,7 @@ class VerifyViewSpec extends ViewSpecHelper {
     }
 
     Verify.values.foreach { radio =>
-      val html1 = view(form.fill(radio), NormalMode, utr, address)(request, messages(application))
+      val html1 = view(form.fill(radio), NormalMode, utr, address)(using request, messages(application))
       val document1 = doc(html1)
 
       s"when the form is preoccupied with " + radio.toString + "selected and has no errors" - {
@@ -138,7 +138,7 @@ class VerifyViewSpec extends ViewSpecHelper {
 
     "contains a form with the correct action" - {
       "when in CheckMode" in {
-        val htmlAllSelected = view(form.fill(Verify.values.head), CheckMode, utr, address)(request, messages(application))
+        val htmlAllSelected = view(form.fill(Verify.values.head), CheckMode, utr, address)(using request, messages(application))
         val documentAllSelected = doc(htmlAllSelected)
 
         documentAllSelected.select(Selectors.form)
@@ -146,7 +146,7 @@ class VerifyViewSpec extends ViewSpecHelper {
       }
 
       "when in NormalMode" in {
-        val htmlAllSelected = view(form.fill(Verify.values.head), NormalMode, utr, address)(request, messages(application))
+        val htmlAllSelected = view(form.fill(Verify.values.head), NormalMode, utr, address)(using request, messages(application))
         val documentAllSelected = doc(htmlAllSelected)
 
         documentAllSelected.select(Selectors.form)
@@ -155,7 +155,7 @@ class VerifyViewSpec extends ViewSpecHelper {
     }
 
     "when there are form errors" - {
-      val htmlWithErrors = view(form.bind(Map("value" -> "")), NormalMode, utr, address)(request, messages(application))
+      val htmlWithErrors = view(form.bind(Map("value" -> "")), NormalMode, utr, address)(using request, messages(application))
       val documentWithErrors = doc(htmlWithErrors)
 
       "should have a title containing error" in {

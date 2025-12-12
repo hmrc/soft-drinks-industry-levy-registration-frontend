@@ -32,14 +32,14 @@ object AddressLookupHttpParser {
     override def read(method: String, url: String, response: HttpResponse): HttpResult[AlfResponse] = {
 
       response.status match {
-        case Status.OK => {
-          response.json.validate[AlfResponse](AlfResponse.format).fold(
+        case Status.OK =>
+          response.json.validate[AlfResponse](using AlfResponse.format).fold(
             invalid => {
               Logger(s"[AddressLookupHttpParser][read]: Invalid Json - ${invalid.map(res => res._1)}")
               Left(ErrorModel(Status.INTERNAL_SERVER_ERROR, "Invalid Json returned from Address Lookup"))
             },
             valid => Right(valid))
-        }
+
         case status =>
           Logger(s"[AddressLookupHttpParser][read]: Unexpected Response, Status $status returned")
           Left(ErrorModel(status, "Downstream error returned when retrieving CustomerAddressModel from AddressLookup"))

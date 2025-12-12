@@ -74,7 +74,7 @@ class StartDateControllerSpec extends SpecBase with MockitoSugar with LoggerHelp
         val view = application.injector.instanceOf[StartDateView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(getRequest, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode)(using getRequest, messages(application)).toString
       }
     }
 
@@ -91,7 +91,7 @@ class StartDateControllerSpec extends SpecBase with MockitoSugar with LoggerHelp
         val result = route(application, getRequest).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(validAnswer), NormalMode)(getRequest, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(validAnswer), NormalMode)(using getRequest, messages(application)).toString
       }
     }
 
@@ -99,7 +99,7 @@ class StartDateControllerSpec extends SpecBase with MockitoSugar with LoggerHelp
 
       val mockSessionService = mock[SessionService]
 
-      when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(true)
+      when(mockSessionService.set(any())).thenReturn(createSuccessRegistrationResult(true))
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration)
@@ -134,7 +134,7 @@ class StartDateControllerSpec extends SpecBase with MockitoSugar with LoggerHelp
           val result = route(application, request).value
 
           status(result) mustEqual BAD_REQUEST
-          contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+          contentAsString(result) mustEqual view(boundForm, NormalMode)(using request, messages(application)).toString
         }
       }
     }
@@ -166,7 +166,7 @@ class StartDateControllerSpec extends SpecBase with MockitoSugar with LoggerHelp
     "must fail if the setting of userAnswers fails" in {
       val mockSessionService = mock[SessionService]
 
-      when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(true)
+      when(mockSessionService.set(any())).thenReturn(createSuccessRegistrationResult(true))
 
       val application =
         applicationBuilder(userAnswers = Some(userDetailsWithSetMethodsReturningFailure), rosmRegistration = rosmRegistration)
@@ -187,7 +187,7 @@ class StartDateControllerSpec extends SpecBase with MockitoSugar with LoggerHelp
     "should log an error message when internal server error is returned when user answers are not set in session repository" in {
       val mockSessionService = mock[SessionService]
 
-      when(mockSessionService.set(any())) thenReturn createFailureRegistrationResult(SessionDatabaseInsertError)
+      when(mockSessionService.set(any())).thenReturn(createFailureRegistrationResult(SessionDatabaseInsertError))
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration)

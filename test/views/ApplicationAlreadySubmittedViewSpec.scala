@@ -25,7 +25,7 @@ import views.html.ApplicationAlreadySubmittedView
 class ApplicationAlreadySubmittedViewSpec extends ViewSpecHelper {
 
   val view = application.injector.instanceOf[ApplicationAlreadySubmittedView]
-  implicit val request: Request[_] = FakeRequest()
+  implicit val request: Request[?] = FakeRequest()
 
   object Selectors {
     val heading = "govuk-heading-l"
@@ -34,7 +34,7 @@ class ApplicationAlreadySubmittedViewSpec extends ViewSpecHelper {
   "View" - {
     val registration = rosmRegistration.rosmRegistration
     val formattedAddress = AddressFormattingHelper.formatBusinessAddress(registration.address,Some(registration.organisationName))
-    val html = view(formattedAddress)(request, messages(application))
+    val html = view(formattedAddress)(using request, messages(application))
     val document = doc(html)
     "should contain the expected title" in {
       document.title() must include(Messages("applicationAlreadySubmitted.heading.title"))

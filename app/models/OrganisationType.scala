@@ -59,5 +59,5 @@ object OrganisationType extends Enumerable.Implicits {
   }
 
   implicit val enumerable: Enumerable[OrganisationType] =
-    Enumerable(valuesWithST.map(v => v.toString -> v): _*)
+    Enumerable(valuesWithST.map(v => v.toString -> v) *)
 }

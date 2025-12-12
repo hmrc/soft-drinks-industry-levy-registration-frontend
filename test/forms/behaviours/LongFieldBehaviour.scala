@@ -19,7 +19,7 @@ package forms.behaviours
 import play.api.data.{Form, FormError}
 
 class LongFieldBehaviour extends FieldBehaviours {
-  def longField(form: Form[_],
+  def longField(form: Form[?],
                 fieldName: String,
                 nonNumericError: FormError,
                 negativeNumberError: FormError,
@@ -45,7 +45,7 @@ class LongFieldBehaviour extends FieldBehaviours {
     }
   }
 
-  def longFieldWithMaximum(form: Form[_],
+  def longFieldWithMaximum(form: Form[?],
                           fieldName: String,
                           maximum: Long,
                           expectedError: FormError): Unit = {

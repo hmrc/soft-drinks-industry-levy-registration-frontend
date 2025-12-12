@@ -39,7 +39,7 @@ class DataRetrievalActionImpl @Inject() (
         ))
       case Left(_) =>
         genericLogger.logger.error(s"${getClass.getName} - failed to get session data")
-        errorHandler.internalServerErrorTemplate(request).map(errorView => Left(InternalServerError(errorView)))
+        errorHandler.internalServerErrorTemplate(using request).map(errorView => Left(InternalServerError(errorView)))
     }
   }
 }

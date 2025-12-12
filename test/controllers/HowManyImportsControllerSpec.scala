@@ -58,7 +58,7 @@ class HowManyImportsControllerSpec extends SpecBase with MockitoSugar with Logge
         val view = application.injector.instanceOf[HowManyImportsView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode)(using request, messages(application)).toString
       }
     }
 
@@ -76,7 +76,7 @@ class HowManyImportsControllerSpec extends SpecBase with MockitoSugar with Logge
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(LitresInBands(100, 200)), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(LitresInBands(100, 200)), NormalMode)(using request, messages(application)).toString
       }
     }
 
@@ -84,7 +84,7 @@ class HowManyImportsControllerSpec extends SpecBase with MockitoSugar with Logge
 
       val mockSessionService = mock[SessionService]
 
-      when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(true)
+      when(mockSessionService.set(any())).thenReturn(createSuccessRegistrationResult(true))
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration)
@@ -121,7 +121,7 @@ class HowManyImportsControllerSpec extends SpecBase with MockitoSugar with Logge
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode)(using request, messages(application)).toString
       }
     }
 
@@ -175,7 +175,7 @@ class HowManyImportsControllerSpec extends SpecBase with MockitoSugar with Logge
     "should log an error message when internal server error is returned when user answers are not set in session repository" in {
       val mockSessionService = mock[SessionService]
 
-      when(mockSessionService.set(any())) thenReturn createFailureRegistrationResult(SessionDatabaseInsertError)
+      when(mockSessionService.set(any())).thenReturn(createFailureRegistrationResult(SessionDatabaseInsertError))
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration)

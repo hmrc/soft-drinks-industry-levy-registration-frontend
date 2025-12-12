@@ -69,7 +69,7 @@ class RemovePackagingSiteDetailsControllerSpec extends SpecBase with MockitoSuga
           }.getOrElse(fail("No logging captured"))
 
           result.header.status mustEqual SEE_OTHER
-          result.header.headers.get(LOCATION) mustEqual Some(routes.PackagingSiteDetailsController.onPageLoad(NormalMode).url)
+          result.header.headers.get(LOCATION).mustEqual(Some(routes.PackagingSiteDetailsController.onPageLoad(NormalMode).url))
         }
       }
     }
@@ -94,7 +94,7 @@ class RemovePackagingSiteDetailsControllerSpec extends SpecBase with MockitoSuga
           }.getOrElse(fail("No logging captured"))
 
           result.header.status mustEqual SEE_OTHER
-          result.header.headers.get(LOCATION) mustEqual Some(routes.PackagingSiteDetailsController.onPageLoad(NormalMode).url)
+          result.header.headers.get(LOCATION).mustEqual(Some(routes.PackagingSiteDetailsController.onPageLoad(NormalMode).url))
         }
       }
     }
@@ -119,7 +119,7 @@ class RemovePackagingSiteDetailsControllerSpec extends SpecBase with MockitoSuga
           }.getOrElse(fail("No logging captured"))
 
           result.header.status mustEqual SEE_OTHER
-          result.header.headers.get(LOCATION) mustEqual Some(routes.PackagingSiteDetailsController.onPageLoad(NormalMode).url)
+          result.header.headers.get(LOCATION).mustEqual(Some(routes.PackagingSiteDetailsController.onPageLoad(NormalMode).url))
         }
       }
     }
@@ -128,7 +128,7 @@ class RemovePackagingSiteDetailsControllerSpec extends SpecBase with MockitoSuga
       val ref: String = "12345678"
       val mockSessionRepository = mock[SessionService]
 
-      when(mockSessionRepository.set(any())) thenReturn createSuccessRegistrationResult(true)
+      when(mockSessionRepository.set(any())).thenReturn(createSuccessRegistrationResult(true))
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers.copy(packagingSiteList = packagingSiteListWith3)))
@@ -170,7 +170,7 @@ class RemovePackagingSiteDetailsControllerSpec extends SpecBase with MockitoSuga
           }.getOrElse(fail("No logging captured"))
 
           result.header.status mustEqual SEE_OTHER
-          result.header.headers.get(LOCATION) mustEqual Some(routes.PackagingSiteDetailsController.onPageLoad(NormalMode).url)
+          result.header.headers.get(LOCATION).mustEqual(Some(routes.PackagingSiteDetailsController.onPageLoad(NormalMode).url))
         }
       }
     }
@@ -199,7 +199,7 @@ class RemovePackagingSiteDetailsControllerSpec extends SpecBase with MockitoSuga
 
         status(result) mustEqual BAD_REQUEST
         val contentOfResult: String = contentAsString(result)
-        contentOfResult mustEqual view(boundForm, NormalMode, ref, htmlExpectedInView)(request, messages(application)).toString
+        contentOfResult mustEqual view(boundForm, NormalMode, ref, htmlExpectedInView)(using request, messages(application)).toString
         commonAssertionsForPageLoad(htmlExpectedAfterRender, contentOfResult, ref)
       }
     }
@@ -241,7 +241,7 @@ class RemovePackagingSiteDetailsControllerSpec extends SpecBase with MockitoSuga
         None))
       val mockSessionService = mock[SessionService]
 
-      when(mockSessionService.set(any())) thenReturn createFailureRegistrationResult(SessionDatabaseInsertError)
+      when(mockSessionService.set(any())).thenReturn(createFailureRegistrationResult(SessionDatabaseInsertError))
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers.copy(packagingSiteList = packagingSite)))

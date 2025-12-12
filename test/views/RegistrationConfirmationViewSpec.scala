@@ -28,7 +28,7 @@ import java.time.LocalDateTime
 class RegistrationConfirmationViewSpec extends ViewSpecHelper {
 
   val view = application.injector.instanceOf[RegistrationConfirmationView]
-  implicit val request: Request[_] = FakeRequest()
+  implicit val request: Request[?] = FakeRequest()
   val companyName = "Super Lemonade Lmt"
   val submittedDateTime = LocalDateTime.of(2023, 7, 10, 14, 30)
   val emailAddress = "test@email.com"
@@ -57,7 +57,7 @@ class RegistrationConfirmationViewSpec extends ViewSpecHelper {
   }
 
   "View" - {
-    val html = view(summaryList, submittedDateTime, companyName, emailAddress)(request, messages(application), frontendAppConfig)
+    val html = view(summaryList, submittedDateTime, companyName, emailAddress)(using request, messages(application), frontendAppConfig)
     val document = doc(html)
     "should contain the expected title" in {
       document.title() mustEqual "Application complete - Soft Drinks Industry Levy - GOV.UK"

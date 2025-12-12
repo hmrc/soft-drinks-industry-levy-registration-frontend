@@ -21,7 +21,7 @@ import play.api.data.{ Form, FormError }
 trait BooleanFieldBehaviours extends FieldBehaviours {
 
   def booleanField(
-    form: Form[_],
+    form: Form[?],
     fieldName: String,
     invalidError: FormError): Unit = {
 

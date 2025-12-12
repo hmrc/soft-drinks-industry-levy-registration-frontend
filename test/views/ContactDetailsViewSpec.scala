@@ -33,7 +33,7 @@ class ContactDetailsViewSpec extends ViewSpecHelper {
   val view: ContactDetailsView = application.injector.instanceOf[ContactDetailsView]
   val formProvider = new ContactDetailsFormProvider
   val form: Form[ContactDetails] = formProvider.apply()
-  implicit val request: Request[_] = FakeRequest()
+  implicit val request: Request[?] = FakeRequest()
 
   object Selectors {
     val heading = "govuk-heading-l"
@@ -50,7 +50,7 @@ class ContactDetailsViewSpec extends ViewSpecHelper {
   ContactdetailsJsObject.map { case (fName, fValue) => fName -> fValue.toString }
 
   "View" - {
-    val html = view(form, NormalMode)(request, messages(application))
+    val html = view(form, NormalMode)(using request, messages(application))
     val document = doc(html)
     val questionItems = document.getElementsByClass(Selectors.formGroup)
     "should contain the expected title" in {
@@ -107,7 +107,7 @@ class ContactDetailsViewSpec extends ViewSpecHelper {
 
     "contains a form with the correct action" - {
       "when in CheckMode" in {
-        val htmlAllSelected = view(form.fill(Contactdetails), CheckMode)(request, messages(application))
+        val htmlAllSelected = view(form.fill(Contactdetails), CheckMode)(using request, messages(application))
         val documentAllSelected = doc(htmlAllSelected)
 
         documentAllSelected.select(Selectors.form)
@@ -115,7 +115,7 @@ class ContactDetailsViewSpec extends ViewSpecHelper {
       }
 
       "when in NormalMode" in {
-        val htmlAllSelected = view(form.fill(Contactdetails), NormalMode)(request, messages(application))
+        val htmlAllSelected = view(form.fill(Contactdetails), NormalMode)(using request, messages(application))
         val documentAllSelected = doc(htmlAllSelected)
 
         documentAllSelected.select(Selectors.form)
@@ -126,7 +126,7 @@ class ContactDetailsViewSpec extends ViewSpecHelper {
       "when fullName is empty and valid information is entered" - {
         val fieldWithError = ContactdetailsMap ++ Map(("fullName", ""), ("position", "CEO"), ("phoneNumber", "07700 099 990"),
           ("email", "name@example.com"))
-        val htmlWithErrors = view(form.bind(fieldWithError.toMap), NormalMode)(request, messages(application))
+        val htmlWithErrors = view(form.bind(fieldWithError.toMap), NormalMode)(using request, messages(application))
         val documentWithErrors = doc(htmlWithErrors)
         "should have a title containing error" in {
           documentWithErrors.title mustBe "Error: Contact person details - Soft Drinks Industry Levy - GOV.UK"
@@ -146,7 +146,7 @@ class ContactDetailsViewSpec extends ViewSpecHelper {
     "when position is empty and valid information is entered" - {
       val fieldWithError = ContactdetailsMap ++ Map(("fullName", "Jane Doe"), ("position", ""), ("phoneNumber", "07700 099 990"),
         ("email", "name@example.com"))
-      val htmlWithErrors = view(form.bind(fieldWithError.toMap), NormalMode)(request, messages(application))
+      val htmlWithErrors = view(form.bind(fieldWithError.toMap), NormalMode)(using request, messages(application))
       val documentWithErrors = doc(htmlWithErrors)
 
       "contains a message that links to field with error" in {
@@ -163,7 +163,7 @@ class ContactDetailsViewSpec extends ViewSpecHelper {
     "when phoneNumber is empty and valid information is entered" - {
       val fieldWithError = ContactdetailsMap ++ Map(("fullName", "Jane Doe"), ("position", "CEO"), ("phoneNumber", ""),
         ("email", "name@example.com"))
-      val htmlWithErrors = view(form.bind(fieldWithError.toMap), NormalMode)(request, messages(application))
+      val htmlWithErrors = view(form.bind(fieldWithError.toMap), NormalMode)(using request, messages(application))
       val documentWithErrors = doc(htmlWithErrors)
 
       "contains a message that links to field with error" in {
@@ -180,7 +180,7 @@ class ContactDetailsViewSpec extends ViewSpecHelper {
     "when email is empty and valid information is entered" - {
       val fieldWithError = ContactdetailsMap ++ Map(("fullName", "Jane Doe"), ("position", "CEO"), ("phoneNumber", "07700 099 990"),
         ("email", ""))
-      val htmlWithErrors = view(form.bind(fieldWithError.toMap), NormalMode)(request, messages(application))
+      val htmlWithErrors = view(form.bind(fieldWithError.toMap), NormalMode)(using request, messages(application))
       val documentWithErrors = doc(htmlWithErrors)
 
       "contains a message that links to field with error" in {
@@ -197,7 +197,7 @@ class ContactDetailsViewSpec extends ViewSpecHelper {
     "when fullName has invalid information entered" - {
       val fieldWithError = ContactdetailsMap ++ Map(("fullName", "J@ne Doe2"), ("position", "CEO"), ("phoneNumber", "07700 099 990"),
         ("email", "name@example.com"))
-      val htmlWithErrors = view(form.bind(fieldWithError.toMap), NormalMode)(request, messages(application))
+      val htmlWithErrors = view(form.bind(fieldWithError.toMap), NormalMode)(using request, messages(application))
       val documentWithErrors = doc(htmlWithErrors)
 
       "should display a message that contains a valid error" in {
@@ -211,7 +211,7 @@ class ContactDetailsViewSpec extends ViewSpecHelper {
     "when position has invalid information entered" - {
       val fieldWithError = ContactdetailsMap ++ Map(("fullName", "Jane Doe"), ("position", "The Best 30+ CEO"), ("phoneNumber", "07700 099 990"),
         ("email", "name@example.com"))
-      val htmlWithErrors = view(form.bind(fieldWithError.toMap), NormalMode)(request, messages(application))
+      val htmlWithErrors = view(form.bind(fieldWithError.toMap), NormalMode)(using request, messages(application))
       val documentWithErrors = doc(htmlWithErrors)
 
       "should display a message that contains a valid error" in {
@@ -225,7 +225,7 @@ class ContactDetailsViewSpec extends ViewSpecHelper {
     "when phoneNumber has invalid information entered" - {
       val fieldWithError = ContactdetailsMap ++ Map(("fullName", "Jane Doe"), ("position", "CEO"), ("phoneNumber", "$07700 099 990"),
         ("email", "name@example.com"))
-      val htmlWithErrors = view(form.bind(fieldWithError.toMap), NormalMode)(request, messages(application))
+      val htmlWithErrors = view(form.bind(fieldWithError.toMap), NormalMode)(using request, messages(application))
       val documentWithErrors = doc(htmlWithErrors)
 
       "should display a message that contains a valid error" in {
@@ -239,7 +239,7 @@ class ContactDetailsViewSpec extends ViewSpecHelper {
     "when email has invalid information entered" - {
       val fieldWithError = ContactdetailsMap ++ Map(("fullName", "Jane Doe"), ("position", "CEO"), ("phoneNumber", "07700 099 990"),
         ("email", "name.example.com"))
-      val htmlWithErrors = view(form.bind(fieldWithError.toMap), NormalMode)(request, messages(application))
+      val htmlWithErrors = view(form.bind(fieldWithError.toMap), NormalMode)(using request, messages(application))
       val documentWithErrors = doc(htmlWithErrors)
 
       "should display a message that contains a valid error" in {

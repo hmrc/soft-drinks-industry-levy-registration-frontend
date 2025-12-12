@@ -157,11 +157,11 @@ trait ControllerActionHelper {
       case Some(utr) =>
         sdilConnector.retreiveRosmSubscription(utr, request.internalId).value.flatMap {
           case Right(rosmWithUtr) => Future.successful(Right(rosmWithUtr))
-          case Left(_) => errorHandler.internalServerErrorTemplate(request).map(errorView => Left(InternalServerError(errorView)))
+          case Left(_) => errorHandler.internalServerErrorTemplate(using request).map(errorView => Left(InternalServerError(errorView)))
         }
       case None =>
         genericLogger.logger.error(s"User has no utr when required for register state ${userAnswers.registerState}")
-        errorHandler.internalServerErrorTemplate(request).map(errorView => Left(InternalServerError(errorView)))
+        errorHandler.internalServerErrorTemplate(using request).map(errorView => Left(InternalServerError(errorView)))
     }
   }
 

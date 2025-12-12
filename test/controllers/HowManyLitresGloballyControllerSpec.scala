@@ -58,7 +58,7 @@ class HowManyLitresGloballyControllerSpec extends SpecBase with MockitoSugar wit
         val view = application.injector.instanceOf[HowManyLitresGloballyView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode)(using request, messages(application)).toString
       }
     }
 
@@ -76,7 +76,7 @@ class HowManyLitresGloballyControllerSpec extends SpecBase with MockitoSugar wit
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(HowManyLitresGlobally.values.head), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(HowManyLitresGlobally.values.head), NormalMode)(using request, messages(application)).toString
       }
     }
 
@@ -84,7 +84,7 @@ class HowManyLitresGloballyControllerSpec extends SpecBase with MockitoSugar wit
 
       val mockSessionService = mock[SessionService]
 
-      when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(true)
+      when(mockSessionService.set(any())).thenReturn(createSuccessRegistrationResult(true))
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration)
@@ -122,7 +122,7 @@ class HowManyLitresGloballyControllerSpec extends SpecBase with MockitoSugar wit
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode)(using request, messages(application)).toString
       }
     }
 
@@ -176,7 +176,7 @@ class HowManyLitresGloballyControllerSpec extends SpecBase with MockitoSugar wit
     "should log an error message when internal server error is returned when user answers are not set in session repository" in {
       val mockSessionService = mock[SessionService]
 
-      when(mockSessionService.set(any())) thenReturn createFailureRegistrationResult(SessionDatabaseInsertError)
+      when(mockSessionService.set(any())).thenReturn(createFailureRegistrationResult(SessionDatabaseInsertError))
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration)

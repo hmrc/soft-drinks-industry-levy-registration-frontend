@@ -32,7 +32,7 @@ class WarehousesTradingNameViewSpec extends ViewSpecHelper {
   val view: WarehousesTradingNameView = application.injector.instanceOf[WarehousesTradingNameView]
   val formProvider = new WarehousesTradingNameFormProvider
   val form: Form[WarehousesTradingName] = formProvider.apply()
-  implicit val request: Request[_] = FakeRequest()
+  implicit val request: Request[?] = FakeRequest()
   val sdilId = "foo"
 
   object Selectors {
@@ -49,7 +49,7 @@ class WarehousesTradingNameViewSpec extends ViewSpecHelper {
   warehouseTradingNameJsObject.map { case (fName, fValue) => fName -> fValue.toString }
 
   "View" - {
-    val html = view(form, NormalMode, sdilId)(request, messages(application))
+    val html = view(form, NormalMode, sdilId)(using request, messages(application))
     val document = doc(html)
     val questionItems = document.getElementsByClass(Selectors.formGroup)
     "should contain the expected title" in {
@@ -83,7 +83,7 @@ class WarehousesTradingNameViewSpec extends ViewSpecHelper {
 
     "contains a form with the correct action" - {
       "when in CheckMode" in {
-        val htmlAllSelected = view(form.fill(warehouseTradingName), CheckMode, sdilId)(request, messages(application))
+        val htmlAllSelected = view(form.fill(warehouseTradingName), CheckMode, sdilId)(using request, messages(application))
         val documentAllSelected = doc(htmlAllSelected)
 
         documentAllSelected.select(Selectors.form)
@@ -91,7 +91,7 @@ class WarehousesTradingNameViewSpec extends ViewSpecHelper {
       }
 
       "when in NormalMode" in {
-        val htmlAllSelected = view(form.fill(warehouseTradingName), NormalMode, sdilId)(request, messages(application))
+        val htmlAllSelected = view(form.fill(warehouseTradingName), NormalMode, sdilId)(using request, messages(application))
         val documentAllSelected = doc(htmlAllSelected)
 
         documentAllSelected.select(Selectors.form)
@@ -102,7 +102,7 @@ class WarehousesTradingNameViewSpec extends ViewSpecHelper {
 
     warehouseTradingNameMap.foreach { case (fieldName, _) =>
       val fieldWithError = warehouseTradingNameMap ++ Map(fieldName -> "")
-      val htmlWithErrors = view(form.bind(fieldWithError.toMap), NormalMode, sdilId)(request, messages(application))
+      val htmlWithErrors = view(form.bind(fieldWithError.toMap), NormalMode, sdilId)(using request, messages(application))
       val documentWithErrors = doc(htmlWithErrors)
 
       "when field is empty" - {

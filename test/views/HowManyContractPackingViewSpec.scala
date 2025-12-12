@@ -29,7 +29,7 @@ class HowManyContractPackingViewSpec extends LitresSpecHelper {
 
   val howManyContractPackingView: HowManyContractPackingView = application.injector.instanceOf[HowManyContractPackingView]
 
-  implicit val request: Request[_] = FakeRequest()
+  implicit val request: Request[?] = FakeRequest()
   implicit val config: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
 
   "HowManyContractPackingView" - {

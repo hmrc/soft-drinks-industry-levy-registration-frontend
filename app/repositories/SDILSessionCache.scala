@@ -43,7 +43,7 @@ class SDILSessionCache @Inject() (
   def remove(_id: String, key: String): Future[Boolean] = {
     sdilSessionCacheRepository.get(_id).flatMap { optionalCacheMap =>
       optionalCacheMap.fold(Future(false)) { cacheMap =>
-        val newCacheMap = cacheMap copy (data = cacheMap.data - key)
+        val newCacheMap = cacheMap.copy(data = cacheMap.data - key)
         sdilSessionCacheRepository.upsert(newCacheMap)
       }
     }

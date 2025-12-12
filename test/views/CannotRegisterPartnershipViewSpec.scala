@@ -26,7 +26,7 @@ class CannotRegisterPartnershipViewSpec extends ViewSpecHelper {
 
   val view = application.injector.instanceOf[CannotRegisterPartnershipView]
   val config = application.injector.instanceOf[FrontendAppConfig]
-  implicit val request: Request[_] = FakeRequest()
+  implicit val request: Request[?] = FakeRequest()
 
   object Selectors {
     val heading = "govuk-heading-l"
@@ -34,7 +34,7 @@ class CannotRegisterPartnershipViewSpec extends ViewSpecHelper {
   }
 
   "View" - {
-    val html = view(config.helpdeskPhoneNumber)(request, messages(application))
+    val html = view(config.helpdeskPhoneNumber)(using request, messages(application))
     val document = doc(html)
     "should contain the expected title" in {
       document.title() must include(Messages("cannotRegisterPartnership" + ".title"))

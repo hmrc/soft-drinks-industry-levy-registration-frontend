@@ -19,7 +19,7 @@
         govukButton: GovukButton
 )
 
-@(phoneNumber: String)(implicit request: Request[_], messages: Messages)
+@(phoneNumber: String)(implicit request: Request[?], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("cannotRegisterPartnership.title"))) {
 

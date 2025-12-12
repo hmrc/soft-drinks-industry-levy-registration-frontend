@@ -35,7 +35,7 @@ trait TestConfiguration
     with SessionDatabaseOperations
     with SDILSessionCacheOperations {
 
-  me: Suite with TestSuite =>
+  me: Suite & TestSuite =>
 
   lazy val frontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
 

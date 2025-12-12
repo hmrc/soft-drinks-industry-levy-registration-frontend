@@ -58,7 +58,7 @@ class OrganisationTypeControllerSpec extends SpecBase with MockitoSugar with Log
         val view = application.injector.instanceOf[OrganisationTypeView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, withoutSoleTrader = true)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, withoutSoleTrader = true)(using request, messages(application)).toString
       }
     }
 
@@ -74,7 +74,7 @@ class OrganisationTypeControllerSpec extends SpecBase with MockitoSugar with Log
         val view = application.injector.instanceOf[OrganisationTypeView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, withoutSoleTrader = false)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, withoutSoleTrader = false)(using request, messages(application)).toString
       }
     }
 
@@ -92,7 +92,7 @@ class OrganisationTypeControllerSpec extends SpecBase with MockitoSugar with Log
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(OrganisationType.values.head), NormalMode, withoutSoleTrader)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(OrganisationType.values.head), NormalMode, withoutSoleTrader)(using request, messages(application)).toString
       }
     }
 
@@ -100,7 +100,7 @@ class OrganisationTypeControllerSpec extends SpecBase with MockitoSugar with Log
 
       val mockSessionService = mock[SessionService]
 
-      when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(true)
+      when(mockSessionService.set(any())).thenReturn(createSuccessRegistrationResult(true))
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration)
@@ -138,7 +138,7 @@ class OrganisationTypeControllerSpec extends SpecBase with MockitoSugar with Log
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, withoutSoleTrader)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, withoutSoleTrader)(using request, messages(application)).toString
       }
     }
 
@@ -194,7 +194,7 @@ class OrganisationTypeControllerSpec extends SpecBase with MockitoSugar with Log
     "should log an error message when internal server error is returned when user answers are not set in session repository" in {
       val mockSessionService = mock[SessionService]
 
-      when(mockSessionService.set(any())) thenReturn createFailureRegistrationResult(SessionDatabaseInsertError)
+      when(mockSessionService.set(any())).thenReturn(createFailureRegistrationResult(SessionDatabaseInsertError))
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration)

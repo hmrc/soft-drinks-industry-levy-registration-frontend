@@ -51,7 +51,7 @@ class DataRetrievalActionSpec extends SpecBase with MockitoSugar {
 
         val sessionService = mock[SessionService]
         val errorHandler = mock[ErrorHandler]
-        when(sessionService.get("id")) thenReturn createSuccessRegistrationResult(None)
+        when(sessionService.get("id")).thenReturn(createSuccessRegistrationResult(None))
         val action = new Harness(sessionService, errorHandler, logger)
 
         val result = action.callRefine(IdentifierRequest(FakeRequest(), "id")).futureValue
@@ -66,7 +66,7 @@ class DataRetrievalActionSpec extends SpecBase with MockitoSugar {
 
         val sessionService = mock[SessionService]
         val errorHandler = mock[ErrorHandler]
-        when(sessionService.get("id")) thenReturn createSuccessRegistrationResult(Some(UserAnswers("id", RegisterState.RegisterWithAuthUTR)))
+        when(sessionService.get("id")).thenReturn(createSuccessRegistrationResult(Some(UserAnswers("id", RegisterState.RegisterWithAuthUTR))))
         val action = new Harness(sessionService, errorHandler, logger)
 
         val result = action.callRefine(new IdentifierRequest(FakeRequest(), "id")).futureValue
@@ -79,8 +79,8 @@ class DataRetrievalActionSpec extends SpecBase with MockitoSugar {
       "must render the internal error page" in {
         val sessionService = mock[SessionService]
         val errorHandler = mock[ErrorHandler]
-        when(sessionService.get("id")) thenReturn createFailureRegistrationResult(SessionDatabaseGetError)
-        when(errorHandler.internalServerErrorTemplate(any())) thenReturn(Future.successful(Html("error")))
+        when(sessionService.get("id")).thenReturn(createFailureRegistrationResult(SessionDatabaseGetError))
+        when(errorHandler.internalServerErrorTemplate(using any())).thenReturn(Future.successful(Html("error")))
         val action = new Harness(sessionService, errorHandler, logger)
 
         val result = action.callRefine(new IdentifierRequest(FakeRequest(), "id")).futureValue

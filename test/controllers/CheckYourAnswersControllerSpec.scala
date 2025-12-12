@@ -128,7 +128,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(headingAndSummaryItems,
-          routes.CheckYourAnswersController.onSubmit)(request, messages(application)).toString
+          routes.CheckYourAnswersController.onSubmit)(using request, messages(application)).toString
       }
     }
     "must redirect to Journey Recovery for a GET if no existing data is found" in {
@@ -170,7 +170,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
         .overrides(bind[RegistrationOrchestrator].to(mockRegistrationOrchestrator)).build()
 
       running(application) {
-        when(mockRegistrationOrchestrator.createSubscriptionAndUpdateUserAnswers(any(), any(), any())) thenReturn(createSuccessRegistrationResult((): Unit))
+        when(mockRegistrationOrchestrator.createSubscriptionAndUpdateUserAnswers(using any(), any(), any())).thenReturn(createSuccessRegistrationResult((): Unit))
 
         val request = FakeRequest(POST, CheckYourAnswersController.onSubmit.url).withFormUrlEncodedBody()
 
@@ -205,7 +205,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
         .overrides(bind[RegistrationOrchestrator].to(mockRegistrationOrchestrator)).build()
 
       running(application) {
-        when(mockRegistrationOrchestrator.createSubscriptionAndUpdateUserAnswers(any(), any(), any())) thenReturn (createFailureRegistrationResult(MissingRequiredUserAnswers))
+        when(mockRegistrationOrchestrator.createSubscriptionAndUpdateUserAnswers(using any(), any(), any())).thenReturn(createFailureRegistrationResult(MissingRequiredUserAnswers))
 
         val request = FakeRequest(POST, CheckYourAnswersController.onSubmit.url).withFormUrlEncodedBody()
 
@@ -298,7 +298,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
         .overrides(bind[RegistrationOrchestrator].to(mockRegistrationOrchestrator)).build()
 
       running(application) {
-        when(mockRegistrationOrchestrator.createSubscriptionAndUpdateUserAnswers(any(), any(), any())) thenReturn (createFailureRegistrationResult(UnexpectedResponseFromSDIL))
+        when(mockRegistrationOrchestrator.createSubscriptionAndUpdateUserAnswers(using any(), any(), any())).thenReturn(createFailureRegistrationResult(UnexpectedResponseFromSDIL))
 
         val request = FakeRequest(POST, CheckYourAnswersController.onSubmit.url).withFormUrlEncodedBody()
 

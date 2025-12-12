@@ -43,7 +43,7 @@ class AlreadyRegisteredControllerSpec extends SpecBase {
         ).build()
 
       running(application) {
-        when(mockSdilConnector.retreiveRosmSubscription(any(), any())(any())).thenReturn(createSuccessRegistrationResult(rosmRegistration))
+        when(mockSdilConnector.retreiveRosmSubscription(any(), any())(using any())).thenReturn(createSuccessRegistrationResult(rosmRegistration))
 
         val request = FakeRequest(GET, routes.AlreadyRegisteredController.onPageLoad.url)
 
@@ -58,7 +58,7 @@ class AlreadyRegisteredControllerSpec extends SpecBase {
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual
-          view(rosmRegistration.utr, formattedAddress)(request, messages(application)).toString
+          view(rosmRegistration.utr, formattedAddress)(using request, messages(application)).toString
       }
     }
 

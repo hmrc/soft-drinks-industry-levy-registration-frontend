@@ -80,7 +80,7 @@ class AuthenticatedIdentifierAction @Inject() (
         Future.successful(Right(IdentifierRequest(request, internalId, hasCTEnrolment, Some(utr))))
       case Left(_) =>
         genericLogger.logger.error(s"${getClass.getName} - failed to handle user with UTR")
-        errorHandler.internalServerErrorTemplate(request).map(errorView => Left(InternalServerError(errorView)))
+        errorHandler.internalServerErrorTemplate(using request).map(errorView => Left(InternalServerError(errorView)))
     }
   }
 
@@ -90,7 +90,7 @@ class AuthenticatedIdentifierAction @Inject() (
       case Right(_) => Future.successful(Right(IdentifierRequest(request, internalId, hasCTEnrolment, None)))
       case Left(_) =>
         genericLogger.logger.error(s"${getClass.getName} - failed to handle user with no UTR and SDIL enrolment")
-        errorHandler.internalServerErrorTemplate(request).map(errorView => Left(InternalServerError(errorView)))
+        errorHandler.internalServerErrorTemplate(using request).map(errorView => Left(InternalServerError(errorView)))
     }
   }
 }

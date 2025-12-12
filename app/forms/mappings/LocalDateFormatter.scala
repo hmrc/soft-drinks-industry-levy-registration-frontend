@@ -73,10 +73,10 @@ private[mappings] class LocalDateFormatter(
     val bindedYear: Either[Seq[FormError], Int] = intYear.bind(s"$key.year", data)
 
     (bindedDay, bindedMonth, bindedYear) match {
-      case (Left(dayError), Left(monthError), Left(yearError)) => Left(Seq(FormError(key, s"$key.error.invalid", args)))
-      case (Left(dayError), Left(monthError), Right(_)) => Left(Seq(FormError(key, s"$key.error.dayMonth.invalid", args)))
-      case (Right(_), Left(monthError), Left(yearError)) => Left(Seq(FormError(key, s"$key.error.monthYear.invalid", args)))
-      case (Left(dayError), Right(_), Left(yearError)) => Left(Seq(FormError(key, s"$key.error.dayYear.invalid", args)))
+      case (Left(_), Left(_), Left(_)) => Left(Seq(FormError(key, s"$key.error.invalid", args)))
+      case (Left(_), Left(_), Right(_)) => Left(Seq(FormError(key, s"$key.error.dayMonth.invalid", args)))
+      case (Right(_), Left(_), Left(_)) => Left(Seq(FormError(key, s"$key.error.monthYear.invalid", args)))
+      case (Left(_), Right(_), Left(_)) => Left(Seq(FormError(key, s"$key.error.dayYear.invalid", args)))
       case (Left(dayError), Right(_), Right(_)) => Left(dayError)
       case (Right(_), Left(monthError), Right(_)) => Left(monthError)
       case (Right(_), Right(_), Left(yearError)) => Left(yearError)

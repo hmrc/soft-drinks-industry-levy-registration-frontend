@@ -25,7 +25,7 @@ import views.html.RegistrationPendingView
 class RegistrationPendingViewSpec extends ViewSpecHelper {
 
   val view = application.injector.instanceOf[RegistrationPendingView]
-  implicit val request: Request[_] = FakeRequest()
+  implicit val request: Request[?] = FakeRequest()
 
   object Selectors {
     val heading = "govuk-heading-l"
@@ -35,7 +35,7 @@ class RegistrationPendingViewSpec extends ViewSpecHelper {
     val utr = "foo"
     val address = HtmlContent("bar")
     val helpLineNumber = "wizz"
-    val html = view(utr, address, helpLineNumber)(request, messages(application))
+    val html = view(utr, address, helpLineNumber)(using request, messages(application))
     val document = doc(html)
     "should contain the expected title" in {
       document.title() must include(Messages("registrationPending" + ".title"))

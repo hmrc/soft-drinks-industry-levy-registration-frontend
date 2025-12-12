@@ -38,7 +38,7 @@ object DatedCacheMap {
       (
         (__ \ "id").read[String] and
         (__ \ "data").read[Map[String, EncryptedValue]] and
-        (__ \ "lastUpdated").read[Instant])(ModelEncryption.decryptDatedCacheMap _)
+        (__ \ "lastUpdated").read[Instant])(ModelEncryption.decryptDatedCacheMap)
     }
 
     def writes(implicit encryption: Encryption): OWrites[DatedCacheMap] = new OWrites[DatedCacheMap] {

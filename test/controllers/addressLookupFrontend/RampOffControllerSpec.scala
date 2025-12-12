@@ -87,7 +87,7 @@ class RampOffControllerSpec extends SpecBase with MockitoSugar {
 
             val updatedUserAnswers = emptyUserAnswers.copy(address = Some(ukAddress))
 
-            when(mockAddressLookupService.getAddress(ArgumentMatchers.eq(alfId))(ArgumentMatchers.any(), ArgumentMatchers.any()))
+            when(mockAddressLookupService.getAddress(ArgumentMatchers.eq(alfId))(using ArgumentMatchers.any(), ArgumentMatchers.any()))
               .thenReturn(Future.successful(alfResponseWithNoTradingName))
             when(mockAddressLookupService.addressChecker(
               ArgumentMatchers.eq(alfResponseWithNoTradingName.address),
@@ -121,7 +121,7 @@ class RampOffControllerSpec extends SpecBase with MockitoSugar {
               .build()
 
             val updatedUserAnswers = emptyUserAnswers.copy(address = Some(ukAddress))
-            when(mockAddressLookupService.getAddress(ArgumentMatchers.eq(alfId))(ArgumentMatchers.any(), ArgumentMatchers.any()))
+            when(mockAddressLookupService.getAddress(ArgumentMatchers.eq(alfId))(using ArgumentMatchers.any(), ArgumentMatchers.any()))
               .thenReturn(Future.successful(alfResponseWithTradingName))
             when(mockAddressLookupService.addressChecker(
               ArgumentMatchers.eq(alfResponseWithTradingName.address),
@@ -152,7 +152,7 @@ class RampOffControllerSpec extends SpecBase with MockitoSugar {
             )
             .build()
 
-          when(mockAddressLookupService.getAddress(ArgumentMatchers.eq(alfId))(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          when(mockAddressLookupService.getAddress(ArgumentMatchers.eq(alfId))(using ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.failed(new Exception("woopsie")))
 
           running(application) {
@@ -169,7 +169,7 @@ class RampOffControllerSpec extends SpecBase with MockitoSugar {
             )
             .build()
 
-          when(mockAddressLookupService.getAddress(ArgumentMatchers.eq(alfId))(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          when(mockAddressLookupService.getAddress(ArgumentMatchers.eq(alfId))(using ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(alfResponseEmpty))
           when(mockAddressLookupService.addressChecker(
             ArgumentMatchers.eq(alfResponseEmpty.address),
@@ -190,7 +190,7 @@ class RampOffControllerSpec extends SpecBase with MockitoSugar {
             )
             .build()
           val updatedUserAnswers = emptyUserAnswers.copy(address = Some(ukAddress))
-          when(mockAddressLookupService.getAddress(ArgumentMatchers.eq(alfId))(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          when(mockAddressLookupService.getAddress(ArgumentMatchers.eq(alfId))(using ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(alfResponseWithTradingName))
           when(mockAddressLookupService.addressChecker(
             ArgumentMatchers.eq(alfResponseWithTradingName.address),
@@ -218,7 +218,7 @@ class RampOffControllerSpec extends SpecBase with MockitoSugar {
 
             val updatedUserAnswers = emptyUserAnswers.copy(warehouseList = Map(sdilId -> Warehouse(tradingName, ukAddress)))
 
-            when(mockAddressLookupService.getAddress(ArgumentMatchers.eq(alfId))(ArgumentMatchers.any(), ArgumentMatchers.any()))
+            when(mockAddressLookupService.getAddress(ArgumentMatchers.eq(alfId))(using ArgumentMatchers.any(), ArgumentMatchers.any()))
               .thenReturn(Future.successful(alfResponseWithTradingName))
             when(mockAddressLookupService.addressChecker(
               ArgumentMatchers.eq(alfResponseWithTradingName.address),
@@ -248,7 +248,7 @@ class RampOffControllerSpec extends SpecBase with MockitoSugar {
 
             val updatedUserAnswers = emptyUserAnswers.copy(alfResponseForLookupState = Some(AddressResponseForLookupState(ukAddress, WarehouseDetails, sdilId)))
 
-            when(mockAddressLookupService.getAddress(ArgumentMatchers.eq(alfId))(ArgumentMatchers.any(), ArgumentMatchers.any()))
+            when(mockAddressLookupService.getAddress(ArgumentMatchers.eq(alfId))(using ArgumentMatchers.any(), ArgumentMatchers.any()))
               .thenReturn(Future.successful(alfResponseWithNoTradingName))
             when(mockAddressLookupService.addressChecker(
               ArgumentMatchers.eq(alfResponseWithNoTradingName.address),
@@ -275,7 +275,7 @@ class RampOffControllerSpec extends SpecBase with MockitoSugar {
             )
             .build()
 
-          when(mockAddressLookupService.getAddress(ArgumentMatchers.eq(alfId))(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          when(mockAddressLookupService.getAddress(ArgumentMatchers.eq(alfId))(using ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.failed(new Exception("woopsie")))
 
           running(application) {
@@ -292,7 +292,7 @@ class RampOffControllerSpec extends SpecBase with MockitoSugar {
             )
             .build()
 
-          when(mockAddressLookupService.getAddress(ArgumentMatchers.eq(alfId))(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          when(mockAddressLookupService.getAddress(ArgumentMatchers.eq(alfId))(using ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(alfResponseEmpty))
           when(mockAddressLookupService.addressChecker(
             ArgumentMatchers.eq(alfResponseEmpty.address),
@@ -313,7 +313,7 @@ class RampOffControllerSpec extends SpecBase with MockitoSugar {
             )
             .build()
 
-          when(mockAddressLookupService.getAddress(ArgumentMatchers.eq(alfId))(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          when(mockAddressLookupService.getAddress(ArgumentMatchers.eq(alfId))(using ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(alfResponseWithNoTradingName))
           when(mockAddressLookupService.addressChecker(
             ArgumentMatchers.eq(alfResponseWithNoTradingName.address),
@@ -341,7 +341,7 @@ class RampOffControllerSpec extends SpecBase with MockitoSugar {
 
             val updatedUserAnswers = emptyUserAnswers.copy(packagingSiteList = Map(sdilId -> Site(ukAddress, None, tradingName, None)))
 
-            when(mockAddressLookupService.getAddress(ArgumentMatchers.eq(alfId))(ArgumentMatchers.any(), ArgumentMatchers.any()))
+            when(mockAddressLookupService.getAddress(ArgumentMatchers.eq(alfId))(using ArgumentMatchers.any(), ArgumentMatchers.any()))
               .thenReturn(Future.successful(alfResponseWithTradingName))
             when(mockAddressLookupService.addressChecker(
               ArgumentMatchers.eq(alfResponseWithTradingName.address),
@@ -371,7 +371,7 @@ class RampOffControllerSpec extends SpecBase with MockitoSugar {
 
             val updatedUserAnswers = emptyUserAnswers.copy(alfResponseForLookupState = Some(AddressResponseForLookupState(ukAddress, PackingDetails, sdilId)))
 
-            when(mockAddressLookupService.getAddress(ArgumentMatchers.eq(alfId))(ArgumentMatchers.any(), ArgumentMatchers.any()))
+            when(mockAddressLookupService.getAddress(ArgumentMatchers.eq(alfId))(using ArgumentMatchers.any(), ArgumentMatchers.any()))
               .thenReturn(Future.successful(alfResponseWithNoTradingName))
             when(mockAddressLookupService.addressChecker(
               ArgumentMatchers.eq(alfResponseWithNoTradingName.address),
@@ -398,7 +398,7 @@ class RampOffControllerSpec extends SpecBase with MockitoSugar {
             )
             .build()
 
-          when(mockAddressLookupService.getAddress(ArgumentMatchers.eq(alfId))(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          when(mockAddressLookupService.getAddress(ArgumentMatchers.eq(alfId))(using ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.failed(new Exception("woopsie")))
 
           running(application) {
@@ -415,7 +415,7 @@ class RampOffControllerSpec extends SpecBase with MockitoSugar {
             )
             .build()
 
-          when(mockAddressLookupService.getAddress(ArgumentMatchers.eq(alfId))(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          when(mockAddressLookupService.getAddress(ArgumentMatchers.eq(alfId))(using ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(alfResponseEmpty))
           when(mockAddressLookupService.addressChecker(
             ArgumentMatchers.eq(alfResponseEmpty.address),
@@ -436,7 +436,7 @@ class RampOffControllerSpec extends SpecBase with MockitoSugar {
             )
             .build()
 
-          when(mockAddressLookupService.getAddress(ArgumentMatchers.eq(alfId))(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          when(mockAddressLookupService.getAddress(ArgumentMatchers.eq(alfId))(using ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(alfResponseWithNoTradingName))
           when(mockAddressLookupService.addressChecker(
             ArgumentMatchers.eq(alfResponseWithNoTradingName.address),

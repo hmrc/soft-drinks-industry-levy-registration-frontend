@@ -29,7 +29,7 @@ class HowManyOperatePackagingSitesViewSpec extends LitresSpecHelper {
 
   val howManyOperatePackagingSitesView: HowManyOperatePackagingSitesView = application.injector.instanceOf[HowManyOperatePackagingSitesView]
 
-  implicit val request: Request[_] = FakeRequest()
+  implicit val request: Request[?] = FakeRequest()
   implicit val config: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
 
   "HowManyOperatePackagingSitesView" - {

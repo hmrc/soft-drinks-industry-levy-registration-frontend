@@ -93,7 +93,7 @@ class SessionRepositoryISpec
         Json.parse(encryption.crypto.decrypt((resultParsedToJson \ "data").as[EncryptedValue],userAnswersBefore.id)).as[JsObject]
       }
       val businessAddressDecrypted = {
-        Json.fromJson[Option[UkAddress]](Json.parse(encryption.crypto.decrypt((resultParsedToJson \ "address").as[EncryptedValue],userAnswersBefore.id)))(Reads.optionWithNull[UkAddress]).get
+        Json.fromJson[Option[UkAddress]](Json.parse(encryption.crypto.decrypt((resultParsedToJson \ "address").as[EncryptedValue],userAnswersBefore.id)))(using Reads.optionWithNull[UkAddress]).get
       }
       val packagingSiteListDecrypted = {
         val json = (resultParsedToJson \ "packagingSiteList").as[Map[String, EncryptedValue]]

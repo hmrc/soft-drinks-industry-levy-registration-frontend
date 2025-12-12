@@ -31,7 +31,7 @@ import javax.inject.Inject
 import scala.concurrent.{ ExecutionContext, Future }
 
 class RequiredUserAnswers @Inject() (genericLogger: GenericLogger)(implicit val executionContext: ExecutionContext) extends ActionHelpers {
-  def requireData(page: Page)(action: => Future[Result])(implicit request: DataRequest[_]): Future[Result] = {
+  def requireData(page: Page)(action: => Future[Result])(implicit request: DataRequest[?]): Future[Result] = {
     page match {
       case CheckYourAnswersPage if UserTypeCheck.doesNotNeedToRegister(request.userAnswers) => Future.successful(Redirect(routes.DoNotRegisterController.onPageLoad))
       case CheckYourAnswersPage => checkYourAnswersRequiredData(action)
@@ -39,8 +39,8 @@ class RequiredUserAnswers @Inject() (genericLogger: GenericLogger)(implicit val 
     }
   }
 
-  private[controllers] def checkYourAnswersRequiredData(action: => Future[Result])(implicit request: DataRequest[_]): Future[Result] = {
-    val userAnswersMissing: List[RequiredPage[_, _, _]] = returnMissingAnswers(journey)
+  private[controllers] def checkYourAnswersRequiredData(action: => Future[Result])(implicit request: DataRequest[?]): Future[Result] = {
+    val userAnswersMissing: List[RequiredPage[?, ?, ?]] = returnMissingAnswers(journey)
     if (userAnswersMissing.nonEmpty) {
       genericLogger.logger.warn(s"${request.userAnswers.id} has hit CYA and is missing $userAnswersMissing, user will be redirected to ${userAnswersMissing.head.pageRequired}")
       Future.successful(Redirect(userAnswersMissing.head.pageRequired.asInstanceOf[Page].url(CheckMode)))
@@ -49,14 +49,14 @@ class RequiredUserAnswers @Inject() (genericLogger: GenericLogger)(implicit val 
     }
   }
 
-  private[controllers] def returnMissingAnswers[A, B](list: List[RequiredPage[_, _, _]])(implicit request: DataRequest[_]): List[RequiredPage[_, _, _]] = {
+  private[controllers] def returnMissingAnswers[A, B](list: List[RequiredPage[?, ?, ?]])(implicit request: DataRequest[?]): List[RequiredPage[?, ?, ?]] = {
     list.filterNot { listItem =>
-      val currentPageFromUserAnswers: Option[A] = request.userAnswers.get(listItem.pageRequired.asInstanceOf[QuestionPage[A]])(listItem.reads.asInstanceOf[Reads[A]])
+      val currentPageFromUserAnswers: Option[A] = request.userAnswers.get(listItem.pageRequired.asInstanceOf[QuestionPage[A]])(using listItem.reads.asInstanceOf[Reads[A]])
       (currentPageFromUserAnswers.isDefined, listItem.basedOnPreviousPages.nonEmpty) match {
         case (false, true) =>
           val previousUserAnswersMatchedToResultInCurrentPageRequired: List[Boolean] = listItem.basedOnPreviousPages.map { previousListItem =>
             val previousPageRequired: PreviousPage[QuestionPage[B], B] = previousListItem.asInstanceOf[PreviousPage[QuestionPage[B], B]]
-            val previousPageAnswer: Option[B] = request.userAnswers.get(previousPageRequired.page)(previousPageRequired.reads)
+            val previousPageAnswer: Option[B] = request.userAnswers.get(previousPageRequired.page)(using previousPageRequired.reads)
             previousPageRequired.previousPageAnswerRequired match {
               case Nil => previousPageAnswer.isEmpty
               case _ => !previousPageAnswer.exists(i => previousPageRequired.previousPageAnswerRequired.contains(i))
@@ -73,7 +73,7 @@ class RequiredUserAnswers @Inject() (genericLogger: GenericLogger)(implicit val 
     }
   }
 
-  private[controllers] def journey: List[RequiredPage[_, _, _]] = {
+  private[controllers] def journey: List[RequiredPage[?, ?, ?]] = {
     val previousPageSmallOrNonProducer = PreviousPage(HowManyLitresGloballyPage, List(
       HowManyLitresGlobally.enumerable.withName("small").get,
       HowManyLitresGlobally.enumerable.withName("xnot").get))(implicitly[Reads[HowManyLitresGlobally]])
@@ -115,5 +115,5 @@ class RequiredUserAnswers @Inject() (genericLogger: GenericLogger)(implicit val 
   }
 }
 
-case class RequiredPage[+A >: QuestionPage[C], +B >: PreviousPage[_, _], C](pageRequired: A, basedOnPreviousPages: List[B])(val reads: Reads[C])
+case class RequiredPage[+A >: QuestionPage[C], +B >: PreviousPage[?, ?], C](pageRequired: A, basedOnPreviousPages: List[B])(val reads: Reads[C])
 case class PreviousPage[+B >: QuestionPage[C], C](page: B, previousPageAnswerRequired: List[C])(val reads: Reads[C])

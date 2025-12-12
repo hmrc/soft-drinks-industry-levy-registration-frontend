@@ -61,7 +61,7 @@ class DataRequiredActionSpec extends SpecBase with MockitoSugar {
                 .set(EnterBusinessDetailsPage, Identify(utr, postcode)).success.value
               "should return success" - {
                 "when the utr has rosmData" in {
-                  when(connector.retreiveRosmSubscription(ArgumentMatchers.eq(utr), ArgumentMatchers.eq(identifier))(ArgumentMatchers.any()))
+                  when(connector.retreiveRosmSubscription(ArgumentMatchers.eq(utr), ArgumentMatchers.eq(identifier))(using ArgumentMatchers.any()))
                     .thenReturn(createSuccessRegistrationResult(rosmRegistration))
                   val action = new Harness(connector)
                   val result = action.callRefine(OptionalDataRequest(request, identifier, authUtr = None, userAnswers = Some(userAnswers))).futureValue
@@ -74,7 +74,7 @@ class DataRequiredActionSpec extends SpecBase with MockitoSugar {
               }
               "should render the error page" - {
                 "when the utr does not contain rosmData" in {
-                  when(connector.retreiveRosmSubscription(ArgumentMatchers.eq(utr), ArgumentMatchers.eq(identifier))(ArgumentMatchers.any()))
+                  when(connector.retreiveRosmSubscription(ArgumentMatchers.eq(utr), ArgumentMatchers.eq(identifier))(using ArgumentMatchers.any()))
                     .thenReturn(createFailureRegistrationResult(NoROSMRegistration))
                   val action = new Harness(connector)
                   val result = action.callRefine(OptionalDataRequest(request, identifier, authUtr = None, userAnswers = Some(userAnswers))).futureValue
@@ -92,7 +92,7 @@ class DataRequiredActionSpec extends SpecBase with MockitoSugar {
               "when the user has a utr in auth" - {
                 "should return success" - {
                   "when the utr has rosmData" in {
-                    when(connector.retreiveRosmSubscription(ArgumentMatchers.eq(utr), ArgumentMatchers.eq(identifier))(ArgumentMatchers.any()))
+                    when(connector.retreiveRosmSubscription(ArgumentMatchers.eq(utr), ArgumentMatchers.eq(identifier))(using ArgumentMatchers.any()))
                       .thenReturn(createSuccessRegistrationResult(rosmRegistration))
                     val action = new Harness(connector)
                     val result = action.callRefine(OptionalDataRequest(request, identifier, authUtr = Some(utr), userAnswers = Some(userAnswers))).futureValue
@@ -107,7 +107,7 @@ class DataRequiredActionSpec extends SpecBase with MockitoSugar {
 
               "should render the error page" - {
                 "when the utr from auth does not contain rosmData" in {
-                  when(connector.retreiveRosmSubscription(ArgumentMatchers.eq(utr), ArgumentMatchers.eq(identifier))(ArgumentMatchers.any()))
+                  when(connector.retreiveRosmSubscription(ArgumentMatchers.eq(utr), ArgumentMatchers.eq(identifier))(using ArgumentMatchers.any()))
                     .thenReturn(createFailureRegistrationResult(NoROSMRegistration))
                   val action = new Harness(connector)
                   val result = action.callRefine(OptionalDataRequest(request, identifier, authUtr = Some(utr), userAnswers = Some(userAnswers))).futureValue

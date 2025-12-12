@@ -44,7 +44,7 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
   )
   "requireData" - {
     "should return result passed in when not a page matched in function" in {
-      contentAsString(requiredUserAnswers.requireData(VerifyPage)(exampleSuccessAction)(dataRequest(emptyUserAnswers))) mustBe exampleSuccessActionResult
+      contentAsString(requiredUserAnswers.requireData(VerifyPage)(exampleSuccessAction)(using dataRequest(emptyUserAnswers))) mustBe exampleSuccessActionResult
     }
     s"should return result passed in when page is $CheckYourAnswersPage" - {
       s"when HowManyLitresGlobally is $Large and all answers are answered" in {
@@ -66,7 +66,7 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
             .set(WarehouseDetailsPage, true).success.value
             .set(ContactDetailsPage, ContactDetails("", "", "", "")).success.value
         }
-        contentAsString(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(dataRequest(userAnswers))) mustBe exampleSuccessActionResult
+        contentAsString(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(using dataRequest(userAnswers))) mustBe exampleSuccessActionResult
       }
     }
 
@@ -86,7 +86,7 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
               .set(WarehouseDetailsPage, true).success.value
               .set(ContactDetailsPage, ContactDetails("", "", "", "")).success.value
           }
-          contentAsString(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(dataRequest(userAnswers))) mustBe exampleSuccessActionResult
+          contentAsString(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(using dataRequest(userAnswers))) mustBe exampleSuccessActionResult
         }
 
         s"when $HowManyLitresGlobally is $Small contract packing is false and pack at business address is not answered" in {
@@ -106,7 +106,7 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
               .set(WarehouseDetailsPage, true).success.value
               .set(ContactDetailsPage, ContactDetails("", "", "", "")).success.value
           }
-          contentAsString(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(dataRequest(userAnswers))) mustBe exampleSuccessActionResult
+          contentAsString(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(using dataRequest(userAnswers))) mustBe exampleSuccessActionResult
         }
 
         s"when $HowManyLitresGlobally is $None and all answers are answered" in {
@@ -126,7 +126,7 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
               .set(WarehouseDetailsPage, true).success.value
               .set(ContactDetailsPage, ContactDetails("", "", "", "")).success.value
           }
-          contentAsString(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(dataRequest(userAnswers))) mustBe exampleSuccessActionResult
+          contentAsString(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(using dataRequest(userAnswers))) mustBe exampleSuccessActionResult
         }
 
         s"when $HowManyLitresGlobally is $None, contract packing is false and pack at business address is not answered" in {
@@ -143,7 +143,7 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
               .set(WarehouseDetailsPage, true).success.value
               .set(ContactDetailsPage, ContactDetails("", "", "", "")).success.value
           }
-          contentAsString(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(dataRequest(userAnswers))) mustBe exampleSuccessActionResult
+          contentAsString(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(using dataRequest(userAnswers))) mustBe exampleSuccessActionResult
         }
 
         s"when all $LitresInBands are not required" in {
@@ -163,7 +163,7 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
               .set(WarehouseDetailsPage, true).success.value
               .set(ContactDetailsPage, ContactDetails("", "", "", "")).success.value
           }
-          contentAsString(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(dataRequest(userAnswers))) mustBe exampleSuccessActionResult
+          contentAsString(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(using dataRequest(userAnswers))) mustBe exampleSuccessActionResult
         }
         "when warehouses are not required" in {
           val userAnswers = {
@@ -184,7 +184,7 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
               .set(AskSecondaryWarehousesPage, false).success.value
               .set(ContactDetailsPage, ContactDetails("", "", "", "")).success.value
           }
-          contentAsString(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(dataRequest(userAnswers))) mustBe exampleSuccessActionResult
+          contentAsString(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(using dataRequest(userAnswers))) mustBe exampleSuccessActionResult
         }
 
         s"when HowManyLitresGlobally is $Small, $ThirdPartyPackagersPage is true, $ContractPackingPage is false, $OperatePackagingSitesPage " +
@@ -200,7 +200,7 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
               .set(ImportsPage, false).success.value
               .set(ContactDetailsPage, ContactDetails("aaa", "aaa", "123", "a@a.com")).success.value
           }
-          contentAsString(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(dataRequest(userAnswers))) mustBe exampleSuccessActionResult
+          contentAsString(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(using dataRequest(userAnswers))) mustBe exampleSuccessActionResult
         }
 
         s"when HowManyLitresGlobally is $Small, $ThirdPartyPackagersPage is true, $OperatePackagingSitesPage is true, $ContractPackingPage " +
@@ -217,13 +217,13 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
               .set(ImportsPage, false).success.value
               .set(ContactDetailsPage, ContactDetails("", "", "", "")).success.value
           }
-          contentAsString(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(dataRequest(userAnswers))) mustBe exampleSuccessActionResult
+          contentAsString(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(using dataRequest(userAnswers))) mustBe exampleSuccessActionResult
         }
       }
 
     s"should redirect to verify controller when missing answers for $CheckYourAnswersPage" - {
       "with no answers" in {
-        val res = redirectLocation(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(dataRequest(emptyUserAnswers)))
+        val res = redirectLocation(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(using dataRequest(emptyUserAnswers)))
         res.get mustBe controllers.routes.VerifyController.onPageLoad(CheckMode).url
       }
       "with missing selection of pages and verify is not answered" in {
@@ -242,7 +242,7 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
             .set(AskSecondaryWarehousesPage, false).success.value
             .set(ContactDetailsPage, ContactDetails("", "", "", "")).success.value
         }
-        val res = redirectLocation(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(dataRequest(userAnswers)))
+        val res = redirectLocation(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(using dataRequest(userAnswers)))
         res.get mustBe controllers.routes.VerifyController.onPageLoad(CheckMode).url
       }
     }
@@ -264,7 +264,7 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
             .set(WarehouseDetailsPage, true).success.value
             .set(ContactDetailsPage, ContactDetails("", "", "", "")).success.value
         }
-        val res = redirectLocation(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(dataRequest(userAnswers)))
+        val res = redirectLocation(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(using dataRequest(userAnswers)))
         res.get mustBe controllers.routes.PackAtBusinessAddressController.onPageLoad(CheckMode).url
       }
 
@@ -284,7 +284,7 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
             .set(WarehouseDetailsPage, true).success.value
             .set(ContactDetailsPage, ContactDetails("", "", "", "")).success.value
         }
-        val res = redirectLocation(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(dataRequest(userAnswers)))
+        val res = redirectLocation(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(using dataRequest(userAnswers)))
         res.get mustBe controllers.routes.PackAtBusinessAddressController.onPageLoad(CheckMode).url
       }
 
@@ -307,7 +307,7 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
             .set(WarehouseDetailsPage, true).success.value
             .set(ContactDetailsPage, ContactDetails("", "", "", "")).success.value
         }
-        val res = redirectLocation(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(dataRequest(userAnswers)))
+        val res = redirectLocation(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(using dataRequest(userAnswers)))
         res.get mustBe controllers.routes.PackAtBusinessAddressController.onPageLoad(CheckMode).url
       }
 
@@ -326,10 +326,10 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
             .set(WarehouseDetailsPage, true).success.value
             .set(ContactDetailsPage, ContactDetails("", "", "", "")).success.value
         }
-        val res = redirectLocation(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(dataRequest(userAnswers)))
+        val res = redirectLocation(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(using dataRequest(userAnswers)))
         res.get mustBe controllers.routes.PackAtBusinessAddressController.onPageLoad(CheckMode).url
       }
-      List[QuestionPage[_]](VerifyPage, OrganisationTypePage,
+      List[QuestionPage[?]](VerifyPage, OrganisationTypePage,
         HowManyLitresGloballyPage, ContractPackingPage,
         HowManyContractPackingPage,
         OperatePackagingSitesPage, HowManyOperatePackagingSitesPage,
@@ -357,11 +357,11 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
               .set(WarehouseDetailsPage, true).success.value
               .set(ContactDetailsPage, ContactDetails("", "", "", "")).success.value
           }.remove(eachPage).success.value
-          val res = redirectLocation(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(dataRequest(userAnswers)))
+          val res = redirectLocation(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(using dataRequest(userAnswers)))
           res.get mustBe eachPage.url(CheckMode)
         }
       }
-      List[QuestionPage[_]](VerifyPage, OrganisationTypePage,
+      List[QuestionPage[?]](VerifyPage, OrganisationTypePage,
         HowManyLitresGloballyPage,
         OperatePackagingSitesPage,
         ImportsPage,
@@ -383,11 +383,11 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
               .set(AskSecondaryWarehousesPage, false).success.value
               .set(ContactDetailsPage, ContactDetails("", "", "", "")).success.value
           }.remove(eachPage).success.value
-          val res = redirectLocation(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(dataRequest(userAnswers)))
+          val res = redirectLocation(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(using dataRequest(userAnswers)))
           res.get mustBe eachPage.url(CheckMode)
         }
       }
-        List[QuestionPage[_]](VerifyPage, OrganisationTypePage,
+        List[QuestionPage[?]](VerifyPage, OrganisationTypePage,
           HowManyLitresGloballyPage, ContractPackingPage,
           HowManyContractPackingPage, ThirdPartyPackagersPage,
           OperatePackagingSitesPage, HowManyOperatePackagingSitesPage,
@@ -415,11 +415,11 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
                 .set(WarehouseDetailsPage, true).success.value
                 .set(ContactDetailsPage, ContactDetails("", "", "", "")).success.value
             }.remove(eachPage).success.value
-            val res = redirectLocation(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(dataRequest(userAnswers)))
+            val res = redirectLocation(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(using dataRequest(userAnswers)))
             res.get mustBe eachPage.url(CheckMode)
           }
    }
-      List[QuestionPage[_]](VerifyPage, OrganisationTypePage,
+      List[QuestionPage[?]](VerifyPage, OrganisationTypePage,
         HowManyLitresGloballyPage, ContractPackingPage,
          ThirdPartyPackagersPage,
         OperatePackagingSitesPage,
@@ -446,11 +446,11 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
               .set(WarehouseDetailsPage, false).success.value
               .set(ContactDetailsPage, ContactDetails("", "", "", "")).success.value
           }.remove(eachPage).success.value
-          val res = redirectLocation(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(dataRequest(userAnswers)))
+          val res = redirectLocation(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(using dataRequest(userAnswers)))
           res.get mustBe eachPage.url(CheckMode)
         }
       }
-      List[QuestionPage[_]](VerifyPage, OrganisationTypePage,
+      List[QuestionPage[?]](VerifyPage, OrganisationTypePage,
         HowManyLitresGloballyPage, ContractPackingPage,
         HowManyContractPackingPage,
         ImportsPage, HowManyImportsPage,
@@ -476,11 +476,11 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
               .set(WarehouseDetailsPage, true).success.value
               .set(ContactDetailsPage, ContactDetails("", "", "", "")).success.value
           }.remove(eachPage).success.value
-          val res = redirectLocation(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(dataRequest(userAnswers)))
+          val res = redirectLocation(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(using dataRequest(userAnswers)))
           res.get mustBe eachPage.url(CheckMode)
         }
       }
-      List[QuestionPage[_]](VerifyPage, OrganisationTypePage,
+      List[QuestionPage[?]](VerifyPage, OrganisationTypePage,
         HowManyLitresGloballyPage, ContractPackingPage,
         ImportsPage, HowManyImportsPage,
         StartDatePage, AskSecondaryWarehousesPage,
@@ -505,7 +505,7 @@ class RequiredUserAnswersSpec extends SpecBase with DefaultAwaitTimeout {
               .set(WarehouseDetailsPage, false).success.value
               .set(ContactDetailsPage, ContactDetails("", "", "", "")).success.value
           }.remove(eachPage).success.value
-          val res = redirectLocation(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(dataRequest(userAnswers)))
+          val res = redirectLocation(requiredUserAnswers.requireData(CheckYourAnswersPage)(exampleSuccessAction)(using dataRequest(userAnswers)))
           res.get mustBe eachPage.url(CheckMode)
         }
       }

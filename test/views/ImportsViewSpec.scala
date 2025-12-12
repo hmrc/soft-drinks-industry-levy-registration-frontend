@@ -30,7 +30,7 @@ class ImportsViewSpec extends ViewSpecHelper {
   val view: ImportsView = application.injector.instanceOf[ImportsView]
   val formProvider = new ImportsFormProvider
   val form: Form[Boolean] = formProvider.apply()
-  implicit val request: Request[_] = FakeRequest()
+  implicit val request: Request[?] = FakeRequest()
 
   object Selectors {
     val heading = "govuk-fieldset__heading"
@@ -46,7 +46,7 @@ class ImportsViewSpec extends ViewSpecHelper {
   }
 
   "View" - {
-    val html = view(form, NormalMode)(request, messages(application))
+    val html = view(form, NormalMode)(using request, messages(application))
     val document = doc(html)
     "should contain the expected title" in {
       document.title() mustBe "Do you bring liable drinks into the UK from anywhere outside of the UK? - Soft Drinks Industry Levy - GOV.UK"
@@ -94,7 +94,7 @@ class ImportsViewSpec extends ViewSpecHelper {
     }
 
     "when the form is preoccupied with yes and has no errors" - {
-      val html1 = view(form.fill(true), NormalMode)(request, messages(application))
+      val html1 = view(form.fill(true), NormalMode)(using request, messages(application))
       val document1 = doc(html1)
       "should have radio buttons" - {
         val radioButtons = document1.getElementsByClass(Selectors.radios)
@@ -129,7 +129,7 @@ class ImportsViewSpec extends ViewSpecHelper {
     }
 
     "when the form is preoccupied with no and has no errors" - {
-      val html1 = view(form.fill(false), NormalMode)(request, messages(application))
+      val html1 = view(form.fill(false), NormalMode)(using request, messages(application))
       val document1 = doc(html1)
       "should have radio buttons" - {
         val radioButtons = document1.getElementsByClass(Selectors.radios)
@@ -169,10 +169,10 @@ class ImportsViewSpec extends ViewSpecHelper {
 
     "contains a form with the correct action" - {
       "when in CheckMode" - {
-        val htmlYesSelected = view(form.fill(true), CheckMode)(request, messages(application))
+        val htmlYesSelected = view(form.fill(true), CheckMode)(using request, messages(application))
         val documentYesSelected = doc(htmlYesSelected)
 
-        val htmlNoSelected = view(form.fill(false), CheckMode)(request, messages(application))
+        val htmlNoSelected = view(form.fill(false), CheckMode)(using request, messages(application))
         val documentNoSelected = doc(htmlNoSelected)
         "and yes is selected" in {
           documentYesSelected.select(Selectors.form)
@@ -186,10 +186,10 @@ class ImportsViewSpec extends ViewSpecHelper {
       }
 
       "when in NormalMode" - {
-        val htmlYesSelected = view(form.fill(true), NormalMode)(request, messages(application))
+        val htmlYesSelected = view(form.fill(true), NormalMode)(using request, messages(application))
         val documentYesSelected = doc(htmlYesSelected)
 
-        val htmlNoSelected = view(form.fill(false), NormalMode)(request, messages(application))
+        val htmlNoSelected = view(form.fill(false), NormalMode)(using request, messages(application))
         val documentNoSelected = doc(htmlNoSelected)
         "and yes is selected" in {
           documentYesSelected.select(Selectors.form)
@@ -204,7 +204,7 @@ class ImportsViewSpec extends ViewSpecHelper {
     }
 
     "when there are form errors" - {
-      val htmlWithErrors = view(form.bind(Map("value" -> "")), NormalMode)(request, messages(application))
+      val htmlWithErrors = view(form.bind(Map("value" -> "")), NormalMode)(using request, messages(application))
       val documentWithErrors = doc(htmlWithErrors)
 
       "should have a title containing error" in {

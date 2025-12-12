@@ -58,7 +58,7 @@ class ContractPackingControllerSpec extends SpecBase with MockitoSugar with Logg
         val view = application.injector.instanceOf[ContractPackingView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode)(using request, messages(application)).toString
       }
     }
 
@@ -76,7 +76,7 @@ class ContractPackingControllerSpec extends SpecBase with MockitoSugar with Logg
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(true), NormalMode)(using request, messages(application)).toString
       }
     }
 
@@ -84,7 +84,7 @@ class ContractPackingControllerSpec extends SpecBase with MockitoSugar with Logg
 
       val mockSessionService = mock[SessionService]
 
-      when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(true)
+      when(mockSessionService.set(any())).thenReturn(createSuccessRegistrationResult(true))
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration)
@@ -122,7 +122,7 @@ class ContractPackingControllerSpec extends SpecBase with MockitoSugar with Logg
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode)(using request, messages(application)).toString
       }
     }
 
@@ -177,7 +177,7 @@ class ContractPackingControllerSpec extends SpecBase with MockitoSugar with Logg
     "should log an error message when internal server error is returned when user answers are not set in session repository" in {
       val mockSessionService = mock[SessionService]
 
-      when(mockSessionService.set(any())) thenReturn createFailureRegistrationResult(SessionDatabaseInsertError)
+      when(mockSessionService.set(any())).thenReturn(createFailureRegistrationResult(SessionDatabaseInsertError))
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration)

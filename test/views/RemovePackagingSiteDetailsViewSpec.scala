@@ -30,7 +30,7 @@ class RemovePackagingSiteDetailsViewSpec extends ViewSpecHelper {
   val view = application.injector.instanceOf[RemovePackagingSiteDetailsView]
   val formProvider = new RemovePackagingSiteDetailsFormProvider
   val form = formProvider.apply()
-  implicit val request: Request[_] = FakeRequest()
+  implicit val request: Request[?] = FakeRequest()
 
   object Selectors {
     val heading = "govuk-fieldset__heading"
@@ -50,7 +50,7 @@ class RemovePackagingSiteDetailsViewSpec extends ViewSpecHelper {
       s"In ${mode.toString}" - {
         val ref = "foo"
         val address = Html("bar")
-        val html = view(form, mode, ref, address)(request, messages(application))
+        val html = view(form, mode, ref, address)(using request, messages(application))
         val document = doc(html)
         "should contain the expected title" in {
           document.title() must include(Messages("removePackagingSiteDetails" + ".title"))
@@ -101,7 +101,7 @@ class RemovePackagingSiteDetailsViewSpec extends ViewSpecHelper {
         }
 
         "when the form is preoccupied with yes and has no errors" - {
-          val html1 = view(form.fill(true), mode, ref, address)(request, messages(application))
+          val html1 = view(form.fill(true), mode, ref, address)(using request, messages(application))
           val document1 = doc(html1)
           "should have radio buttons" - {
             val radioButtons = document1.getElementsByClass(Selectors.radios)
@@ -136,7 +136,7 @@ class RemovePackagingSiteDetailsViewSpec extends ViewSpecHelper {
         }
 
         "when the form is preoccupied with no and has no errors" - {
-          val html1 = view(form.fill(false), mode, ref, address)(request, messages(application))
+          val html1 = view(form.fill(false), mode, ref, address)(using request, messages(application))
           val document1 = doc(html1)
           "should have radio buttons" - {
             val radioButtons = document1.getElementsByClass(Selectors.radios)
@@ -175,10 +175,10 @@ class RemovePackagingSiteDetailsViewSpec extends ViewSpecHelper {
         }
 
         "contains a form with the correct action" - {
-          val htmlYesSelected = view(form.fill(true), mode, ref, address)(request, messages(application))
+          val htmlYesSelected = view(form.fill(true), mode, ref, address)(using request, messages(application))
           val documentYesSelected = doc(htmlYesSelected)
 
-          val htmlNoSelected = view(form.fill(false), mode, ref, address)(request, messages(application))
+          val htmlNoSelected = view(form.fill(false), mode, ref, address)(using request, messages(application))
           val documentNoSelected = doc(htmlNoSelected)
           "and yes is selected" in {
             documentYesSelected.select(Selectors.form)
@@ -192,7 +192,7 @@ class RemovePackagingSiteDetailsViewSpec extends ViewSpecHelper {
         }
 
         "when there are form errors" - {
-          val htmlWithErrors = view(form.bind(Map("value" -> "")), mode, ref, address)(request, messages(application))
+          val htmlWithErrors = view(form.bind(Map("value" -> "")), mode, ref, address)(using request, messages(application))
           val documentWithErrors = doc(htmlWithErrors)
 
           "should have a title containing error" in {

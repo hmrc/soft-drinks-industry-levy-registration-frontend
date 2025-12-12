@@ -74,15 +74,15 @@ class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with
         val view = application.injector.instanceOf[EnterBusinessDetailsView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form)(request, messages(application), frontendAppConfig).toString
+        contentAsString(result) mustEqual view(form)(using request, messages(application), frontendAppConfig).toString
       }
     }
 
     "must redirect to the next page when valid data is submitted" in {
 
-      when(mockOrchestrator.checkEnteredBusinessDetailsAreValidAndUpdateUserAnswers(any(), any())(any(), any()))
+      when(mockOrchestrator.checkEnteredBusinessDetailsAreValidAndUpdateUserAnswers(any(), any())(using any(), any()))
         .thenReturn(createSuccessRegistrationResult(RegisterState.RegisterWithOtherUTR))
-      when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(true)
+      when(mockSessionService.set(any())).thenReturn(createSuccessRegistrationResult(true))
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswersForEnterBusinessDetails))
@@ -132,9 +132,9 @@ class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with
 
     "must return a Bad Request and errors when utr or postcode is found from rosm data when submitted" in {
 
-      when(mockOrchestrator.checkEnteredBusinessDetailsAreValidAndUpdateUserAnswers(any(), any())(any(), any()))
+      when(mockOrchestrator.checkEnteredBusinessDetailsAreValidAndUpdateUserAnswers(any(), any())(using any(), any()))
         .thenReturn(createFailureRegistrationResult(EnteredBusinessDetailsDoNotMatch))
-      when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(true)
+      when(mockSessionService.set(any())).thenReturn(createSuccessRegistrationResult(true))
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswersForEnterBusinessDetails))
@@ -156,15 +156,15 @@ class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with
 
         status(result) mustEqual BAD_REQUEST
         contentAsString(result) mustEqual  view(form.fill(Identify(utr = "0000000436", postcode = "GU14 8NL"))
-          .withError("utr", "enterBusinessDetails.no-record.utr"))(request, messages(application), frontendAppConfig).toString
+          .withError("utr", "enterBusinessDetails.no-record.utr"))(using request, messages(application), frontendAppConfig).toString
       }
     }
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      when(mockOrchestrator.checkEnteredBusinessDetailsAreValidAndUpdateUserAnswers(any(), any())(any(), any()))
+      when(mockOrchestrator.checkEnteredBusinessDetailsAreValidAndUpdateUserAnswers(any(), any())(using any(), any()))
         .thenReturn(createFailureRegistrationResult(NoROSMRegistration))
-      when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(true)
+      when(mockSessionService.set(any())).thenReturn(createSuccessRegistrationResult(true))
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswersForEnterBusinessDetails))
@@ -187,15 +187,15 @@ class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm)(request, messages(application), frontendAppConfig).toString
+        contentAsString(result) mustEqual view(boundForm)(using request, messages(application), frontendAppConfig).toString
       }
     }
 
     "should log an error message when internal server error is returned when user answers are not set in session repository" in {
 
-      when(mockOrchestrator.checkEnteredBusinessDetailsAreValidAndUpdateUserAnswers(any(), any())(any(), any()))
+      when(mockOrchestrator.checkEnteredBusinessDetailsAreValidAndUpdateUserAnswers(any(), any())(using any(), any()))
         .thenReturn(createSuccessRegistrationResult(RegisterState.RegisterWithOtherUTR))
-      when(mockSessionService.set(any())) thenReturn createFailureRegistrationResult(SessionDatabaseInsertError)
+      when(mockSessionService.set(any())).thenReturn(createFailureRegistrationResult(SessionDatabaseInsertError))
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswersForEnterBusinessDetails))

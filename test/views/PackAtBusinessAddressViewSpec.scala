@@ -30,7 +30,7 @@ class PackAtBusinessAddressViewSpec extends ViewSpecHelper {
   val view: PackAtBusinessAddressView = application.injector.instanceOf[PackAtBusinessAddressView]
   val formProvider = new PackAtBusinessAddressFormProvider
   val form: Form[Boolean] = formProvider.apply()
-  implicit val request: Request[_] = FakeRequest()
+  implicit val request: Request[?] = FakeRequest()
 
   object Selectors {
     val heading = "govuk-heading-l"
@@ -46,7 +46,7 @@ class PackAtBusinessAddressViewSpec extends ViewSpecHelper {
   }
 
   "View" - {
-    val html = view(form, HtmlContent(""), NormalMode)(request, messages(application))
+    val html = view(form, HtmlContent(""), NormalMode)(using request, messages(application))
     val document = doc(html)
     "should contain the expected title" in {
       document.title() mustBe "Your business address - Soft Drinks Industry Levy - GOV.UK"
@@ -96,7 +96,7 @@ class PackAtBusinessAddressViewSpec extends ViewSpecHelper {
     }
 
     "when the form is preoccupied with yes and has no errors" - {
-      val html1 = view(form.fill(true), HtmlContent(""), NormalMode)(request, messages(application))
+      val html1 = view(form.fill(true), HtmlContent(""), NormalMode)(using request, messages(application))
       val document1 = doc(html1)
       "should have radio buttons" - {
         val radioButtons = document1.getElementsByClass(Selectors.radios)
@@ -131,7 +131,7 @@ class PackAtBusinessAddressViewSpec extends ViewSpecHelper {
     }
 
     "when the form is preoccupied with no and has no errors" - {
-      val html1 = view(form.fill(false), HtmlContent(""), NormalMode)(request, messages(application))
+      val html1 = view(form.fill(false), HtmlContent(""), NormalMode)(using request, messages(application))
       val document1 = doc(html1)
       "should have radio buttons" - {
         val radioButtons = document1.getElementsByClass(Selectors.radios)
@@ -171,10 +171,10 @@ class PackAtBusinessAddressViewSpec extends ViewSpecHelper {
 
     "contains a form with the correct action" - {
       "when in CheckMode" - {
-        val htmlYesSelected = view(form.fill(true), HtmlContent(""), CheckMode)(request, messages(application))
+        val htmlYesSelected = view(form.fill(true), HtmlContent(""), CheckMode)(using request, messages(application))
         val documentYesSelected = doc(htmlYesSelected)
 
-        val htmlNoSelected = view(form.fill(false), HtmlContent(""), CheckMode)(request, messages(application))
+        val htmlNoSelected = view(form.fill(false), HtmlContent(""), CheckMode)(using request, messages(application))
         val documentNoSelected = doc(htmlNoSelected)
         "and yes is selected" in {
           documentYesSelected.select(Selectors.form)
@@ -188,10 +188,10 @@ class PackAtBusinessAddressViewSpec extends ViewSpecHelper {
       }
 
       "when in NormalMode" - {
-        val htmlYesSelected = view(form.fill(true), HtmlContent(""), NormalMode)(request, messages(application))
+        val htmlYesSelected = view(form.fill(true), HtmlContent(""), NormalMode)(using request, messages(application))
         val documentYesSelected = doc(htmlYesSelected)
 
-        val htmlNoSelected = view(form.fill(false), HtmlContent(""), NormalMode)(request, messages(application))
+        val htmlNoSelected = view(form.fill(false), HtmlContent(""), NormalMode)(using request, messages(application))
         val documentNoSelected = doc(htmlNoSelected)
         "and yes is selected" in {
           documentYesSelected.select(Selectors.form)
@@ -206,7 +206,7 @@ class PackAtBusinessAddressViewSpec extends ViewSpecHelper {
     }
 
     "when there are form errors" - {
-      val htmlWithErrors = view(form.bind(Map("value" -> "")), HtmlContent(""), NormalMode)(request, messages(application))
+      val htmlWithErrors = view(form.bind(Map("value" -> "")), HtmlContent(""), NormalMode)(using request, messages(application))
       val documentWithErrors = doc(htmlWithErrors)
 
       "should have a title containing error" in {

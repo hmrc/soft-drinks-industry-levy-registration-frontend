@@ -54,7 +54,7 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
 
   "getAddress" - {
     "return an address when Connector returns success" in {
-      when(mockALFConnector.getAddress("123456789")(hc, implicitly)).thenReturn(Future.successful(Right(customerAddressMax)))
+      when(mockALFConnector.getAddress("123456789")(using hc, implicitly)).thenReturn(Future.successful(Right(customerAddressMax)))
 
       val res = service.getAddress("123456789")
 
@@ -63,7 +63,7 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
       }
     }
     "return an exception when Connector returns error" in {
-      when(mockALFConnector.getAddress("123456789")(hc, implicitly)).thenReturn(Future.successful(Left(ErrorModel(1, "foo"))))
+      when(mockALFConnector.getAddress("123456789")(using hc, implicitly)).thenReturn(Future.successful(Left(ErrorModel(1, "foo"))))
 
       val res = intercept[Exception](await(service.getAddress("123456789")))
       res.getMessage mustBe "Error returned from ALF for 123456789 1 foo for None"
@@ -73,7 +73,7 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
   "initJourney" - {
     "should return response from connector" in {
       val journeyConfig = JourneyConfig(1, JourneyOptions(""), None, None)
-      when(mockALFConnector.initJourney(ArgumentMatchers.eq(journeyConfig))(ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockALFConnector.initJourney(ArgumentMatchers.eq(journeyConfig))(using ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(Right("foo")))
 
       whenReady(service.initJourney(journeyConfig)) {
@@ -152,9 +152,9 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
             requestedVersion = None
           )
 
-          when(mockALFConnector.initJourney(ArgumentMatchers.eq(expectedJourneyConfigToBePassedToConnector))(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          when(mockALFConnector.initJourney(ArgumentMatchers.eq(expectedJourneyConfigToBePassedToConnector))(using ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(Right("foo")))
-          whenReady(service.initJourneyAndReturnOnRampUrl(PackingDetails, sdilId, mode)(implicitly, implicitly, implicitly)) {
+          whenReady(service.initJourneyAndReturnOnRampUrl(PackingDetails, sdilId, mode)(using implicitly, implicitly, implicitly)) {
             res => res mustBe "foo"
           }
         }
@@ -224,9 +224,9 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
             requestedVersion = None
           )
 
-          when(mockALFConnector.initJourney(ArgumentMatchers.eq(expectedJourneyConfigToBePassedToConnector))(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          when(mockALFConnector.initJourney(ArgumentMatchers.eq(expectedJourneyConfigToBePassedToConnector))(using ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(Right("foo")))
-          whenReady(service.initJourneyAndReturnOnRampUrl(WarehouseDetails, sdilId, mode)(implicitly, implicitly, implicitly)) {
+          whenReady(service.initJourneyAndReturnOnRampUrl(WarehouseDetails, sdilId, mode)(using implicitly, implicitly, implicitly)) {
             res => res mustBe "foo"
           }
         }
@@ -298,17 +298,17 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
             requestedVersion = None
           )
 
-          when(mockALFConnector.initJourney(ArgumentMatchers.eq(expectedJourneyConfigToBePassedToConnector))(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          when(mockALFConnector.initJourney(ArgumentMatchers.eq(expectedJourneyConfigToBePassedToConnector))(using ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(Right("foo")))
-          whenReady(service.initJourneyAndReturnOnRampUrl(BusinessAddress, sdilId, mode)(implicitly, implicitly, implicitly)) {
+          whenReady(service.initJourneyAndReturnOnRampUrl(BusinessAddress, sdilId, mode)(using implicitly, implicitly, implicitly)) {
             res => res mustBe "foo"
           }
         }
 
         "should return Exception if connector returns left" in {
-          when(mockALFConnector.initJourney(ArgumentMatchers.any())(ArgumentMatchers.any(), ArgumentMatchers.any()))
+          when(mockALFConnector.initJourney(ArgumentMatchers.any())(using ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(Future.successful(Left(ErrorModel(1, "foo"))))
-          val res = intercept[Exception](await(service.initJourneyAndReturnOnRampUrl(PackingDetails, mode = mode)(implicitly, implicitly, implicitly)))
+          val res = intercept[Exception](await(service.initJourneyAndReturnOnRampUrl(PackingDetails, mode = mode)(using implicitly, implicitly, implicitly)))
           res.getMessage mustBe "Failed to init ALF foo with status 1 for None"
         }
       }
@@ -316,7 +316,7 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
       "createJourneyConfig" - {
         s"should return a journey config for $WarehouseDetails" in {
           val exampleSdilIdWeGenerate: String = "wizz"
-          val res = service.createJourneyConfig(WarehouseDetails, exampleSdilIdWeGenerate, mode)(implicitly)
+          val res = service.createJourneyConfig(WarehouseDetails, exampleSdilIdWeGenerate, mode)(using implicitly)
           val expected = JourneyConfig(
             version = 2,
             options = JourneyOptions(
@@ -387,7 +387,7 @@ class AddressLookupServiceSpec extends SpecBase with FutureAwaits with DefaultAw
 
         s"should return a journey config for $PackingDetails" in {
           val exampleSdilIdWeGenerate: String = "wizz"
-          val res = service.createJourneyConfig(PackingDetails, exampleSdilIdWeGenerate, mode)(implicitly)
+          val res = service.createJourneyConfig(PackingDetails, exampleSdilIdWeGenerate, mode)(using implicitly)
           val expected = JourneyConfig(
             version = 2,
             options = JourneyOptions(

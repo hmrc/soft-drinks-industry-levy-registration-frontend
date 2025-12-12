@@ -32,7 +32,7 @@ class PackagingSiteDetailsViewSpec extends ViewSpecHelper {
   val view: PackagingSiteDetailsView = application.injector.instanceOf[PackagingSiteDetailsView]
   val formProvider = new PackagingSiteDetailsFormProvider
   val form: Form[Boolean] = formProvider.apply()
-  implicit val request: Request[_] = FakeRequest()
+  implicit val request: Request[?] = FakeRequest()
 
   val PackagingSite1: Site = Site(
     UkAddress(List("33 Rhes Priordy", "East London"), "E73 2RP"),
@@ -80,7 +80,7 @@ class PackagingSiteDetailsViewSpec extends ViewSpecHelper {
   }
 
   def getDocument(packagingSites: Map[String, Site], mode: Mode) = {
-    val html = view(form, mode, packagingSites)(request, messages(application))
+    val html = view(form, mode, packagingSites)(using request, messages(application))
     doc(html)
   }
 
@@ -183,7 +183,7 @@ class PackagingSiteDetailsViewSpec extends ViewSpecHelper {
             }
 
             "when the form is not preoccupied with yes and has no errors" - {
-              val html1 = view(form, mode, packagingSiteListWith1)(request, messages(application))
+              val html1 = view(form, mode, packagingSiteListWith1)(using request, messages(application))
               val document1 = doc(html1)
               "should have radio buttons" - {
                 val radioButtons = document1.getElementsByClass(Selectors.radios)
@@ -218,7 +218,7 @@ class PackagingSiteDetailsViewSpec extends ViewSpecHelper {
             }
 
             "when the form is not preoccupied with no and has no errors" - {
-              val html1 = view(form, mode, packagingSiteListWith1)(request, messages(application))
+              val html1 = view(form, mode, packagingSiteListWith1)(using request, messages(application))
               val document1 = doc(html1)
               "should have radio buttons" - {
                 val radioButtons = document1.getElementsByClass(Selectors.radios)
@@ -258,7 +258,7 @@ class PackagingSiteDetailsViewSpec extends ViewSpecHelper {
 
             "contains a form with the correct action" - {
               "when in CheckMode" - {
-                val html = view(form, CheckMode, packagingSiteListWith1)(request, messages(application))
+                val html = view(form, CheckMode, packagingSiteListWith1)(using request, messages(application))
                 val document = doc(html)
 
                 "and yes is selected" in {
@@ -273,7 +273,7 @@ class PackagingSiteDetailsViewSpec extends ViewSpecHelper {
               }
 
               "when in mode" - {
-                val html = view(form, mode, packagingSiteListWith1)(request, messages(application))
+                val html = view(form, mode, packagingSiteListWith1)(using request, messages(application))
                 val document = doc(html)
 
                 "and yes is selected" in {
@@ -289,7 +289,7 @@ class PackagingSiteDetailsViewSpec extends ViewSpecHelper {
             }
 
             "when there are form errors" - {
-              val htmlWithErrors = view(form.bind(Map("value" -> "")), mode, packagingSiteListWith1)(request, messages(application))
+              val htmlWithErrors = view(form.bind(Map("value" -> "")), mode, packagingSiteListWith1)(using request, messages(application))
               val documentWithErrors = doc(htmlWithErrors)
 
               "should have a title containing error" in {

@@ -75,7 +75,7 @@ class WarehousesTradingNameControllerSpec extends SpecBase with MockitoSugar wit
           val view = application.injector.instanceOf[WarehousesTradingNameView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form, NormalMode, sdilId)(request, messages(application)).toString
+          contentAsString(result) mustEqual view(form, NormalMode, sdilId)(using request, messages(application)).toString
         }
       }
 
@@ -83,7 +83,7 @@ class WarehousesTradingNameControllerSpec extends SpecBase with MockitoSugar wit
 
         val mockSessionService = mock[SessionService]
 
-        when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(true)
+        when(mockSessionService.set(any())).thenReturn(createSuccessRegistrationResult(true))
 
         val application =
           applicationBuilder(userAnswers = Some(userAnswersWithAlfResponseForSdilId))
@@ -117,7 +117,7 @@ class WarehousesTradingNameControllerSpec extends SpecBase with MockitoSugar wit
           val view = application.injector.instanceOf[WarehousesTradingNameView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form.fill(WarehousesTradingName(tradingName)), NormalMode, sdilId)(request, messages(application)).toString
+          contentAsString(result) mustEqual view(form.fill(WarehousesTradingName(tradingName)), NormalMode, sdilId)(using request, messages(application)).toString
         }
       }
 
@@ -125,7 +125,7 @@ class WarehousesTradingNameControllerSpec extends SpecBase with MockitoSugar wit
 
         val mockSessionService = mock[SessionService]
 
-        when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(true)
+        when(mockSessionService.set(any())).thenReturn(createSuccessRegistrationResult(true))
 
         val application =
           applicationBuilder(userAnswers = Some(userAnswersWithNoAlfResponseButWarehouseWithSdilRef))
@@ -205,7 +205,7 @@ class WarehousesTradingNameControllerSpec extends SpecBase with MockitoSugar wit
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, sdilId)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, sdilId)(using request, messages(application)).toString
       }
     }
 
@@ -243,7 +243,7 @@ class WarehousesTradingNameControllerSpec extends SpecBase with MockitoSugar wit
     "should log an error message when internal server error is returned when user answers are not set in session repository" in {
       val mockSessionService = mock[SessionService]
 
-      when(mockSessionService.set(any())) thenReturn createFailureRegistrationResult(errors.SessionDatabaseInsertError)
+      when(mockSessionService.set(any())).thenReturn(createFailureRegistrationResult(errors.SessionDatabaseInsertError))
 
       val application =
         applicationBuilder(userAnswers = Some(userAnswersWithAlfResponseForSdilId))

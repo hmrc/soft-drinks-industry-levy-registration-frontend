@@ -66,7 +66,7 @@ class RemoveWarehouseDetailsControllerSpec extends SpecBase with MockitoSugar wi
         status(result) mustEqual OK
         contentAsString(result) mustEqual
           view(form, NormalMode, AddressFormattingHelper.addressFormatting(addressOfWarehouse, aTradingName),
-            indexOfWarehouseToBeRemoved)(request, messages(application)).toString
+            indexOfWarehouseToBeRemoved)(using request, messages(application)).toString
       }
     }
 
@@ -94,7 +94,7 @@ class RemoveWarehouseDetailsControllerSpec extends SpecBase with MockitoSugar wi
 
       val mockSessionService = mock[SessionService]
 
-      when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(true)
+      when(mockSessionService.set(any())).thenReturn(createSuccessRegistrationResult(true))
 
       val application =
         applicationBuilder(userAnswers = Some(userAnswersWithWarehouse))
@@ -154,7 +154,7 @@ class RemoveWarehouseDetailsControllerSpec extends SpecBase with MockitoSugar wi
         status(result) mustEqual BAD_REQUEST
         contentAsString(result) mustEqual
           view(boundForm, NormalMode, AddressFormattingHelper.addressFormatting(addressOfWarehouse, aTradingName),
-            indexOfWarehouseToBeRemoved)(request, messages(application)).toString
+            indexOfWarehouseToBeRemoved)(using request, messages(application)).toString
       }
     }
 
@@ -190,7 +190,7 @@ class RemoveWarehouseDetailsControllerSpec extends SpecBase with MockitoSugar wi
     "should log an error message when internal server error is returned when user answers are not set in session repository" in {
       val mockSessionService = mock[SessionService]
 
-      when(mockSessionService.set(any())) thenReturn createFailureRegistrationResult(SessionDatabaseInsertError)
+      when(mockSessionService.set(any())).thenReturn(createFailureRegistrationResult(SessionDatabaseInsertError))
 
       val application =
         applicationBuilder(userAnswers = Some(userAnswersWithWarehouse))

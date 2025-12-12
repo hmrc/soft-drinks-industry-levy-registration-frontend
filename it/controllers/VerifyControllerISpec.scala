@@ -13,8 +13,9 @@ import play.api.test.{FakeRequest, WsTestClient}
 
 class VerifyControllerISpec extends ControllerITTestHelper {
   given messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
+
   given messages: Messages = messagesApi.preferred(FakeRequest())
-  
+
   val normalRoutePath = "/verify"
   val checkRoutePath = "/change-verify"
 
@@ -180,7 +181,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
 
           val userAnswers = {
             emptyUserAnswers.set(VerifyPage, YesNewAddress).success.value
-              .copy(address = Some(UkAddress(List.empty,"")))
+              .copy(address = Some(UkAddress(List.empty, "")))
           }
 
           setAnswers(userAnswers)
@@ -235,7 +236,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
 
           val userAnswers = {
             emptyUserAnswers.set(VerifyPage, YesRegister).success.value
-              .copy(address = Some(UkAddress(List.empty,"")))
+              .copy(address = Some(UkAddress(List.empty, "")))
           }
 
           setAnswers(userAnswers)
@@ -260,20 +261,20 @@ class VerifyControllerISpec extends ControllerITTestHelper {
     s"when the user selects $No" - {
       "should NOT update the session with the new value and redirect to the Auth sign out controller" in {
         build
-            .commonPrecondition
+          .commonPrecondition
 
-          setAnswers(emptyUserAnswers)
-          WsTestClient.withClient { client =>
-            val result = createClientRequestPOST(
-              client, baseUrl + normalRoutePath, Json.obj("value" -> Json.toJson(No.toString))
-            )
+        setAnswers(emptyUserAnswers)
+        WsTestClient.withClient { client =>
+          val result = createClientRequestPOST(
+            client, baseUrl + normalRoutePath, Json.obj("value" -> Json.toJson(No.toString))
+          )
 
-            whenReady(result) { res =>
-              res.status mustBe 303
-              res.header(HeaderNames.LOCATION) mustBe Some(auth.routes.AuthController.signOutNoSurvey.url)
+          whenReady(result) { res =>
+            res.status mustBe 303
+            res.header(HeaderNames.LOCATION) mustBe Some(auth.routes.AuthController.signOutNoSurvey.url)
 
-            }
           }
+        }
 
       }
     }
@@ -312,56 +313,56 @@ class VerifyControllerISpec extends ControllerITTestHelper {
 
   s"POST " + checkRoutePath - {
 
-      s"when the user selects $YesRegister" - {
-        "should update the session with the new value and wipe the business address and redirect to the checkAnswers controller" - {
-          "when the session contains no data for page" in {
-            build
-              .commonPrecondition
+    s"when the user selects $YesRegister" - {
+      "should update the session with the new value and wipe the business address and redirect to the checkAnswers controller" - {
+        "when the session contains no data for page" in {
+          build
+            .commonPrecondition
 
-            setAnswers(emptyUserAnswers)
-            WsTestClient.withClient { client =>
-              val result = createClientRequestPOST(
-                client, baseUrl + checkRoutePath, Json.obj("value" -> Json.toJson(YesRegister.toString))
-              )
+          setAnswers(emptyUserAnswers)
+          WsTestClient.withClient { client =>
+            val result = createClientRequestPOST(
+              client, baseUrl + checkRoutePath, Json.obj("value" -> Json.toJson(YesRegister.toString))
+            )
 
-              whenReady(result) { res =>
-                res.status mustBe 303
-                res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
-                val userAnswersAfterPOST = getAnswers(identifier)
-                val dataStoredForPage = userAnswersAfterPOST.fold[Option[Verify]](None)(_.get(VerifyPage))
-                dataStoredForPage.nonEmpty mustBe true
-                dataStoredForPage.get mustBe YesRegister
-                userAnswersAfterPOST.get.address.get mustBe UkAddress(List("105B Godfrey Marchant Grove", "Guildford"), "GU14 8NL", None)
+            whenReady(result) { res =>
+              res.status mustBe 303
+              res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
+              val userAnswersAfterPOST = getAnswers(identifier)
+              val dataStoredForPage = userAnswersAfterPOST.fold[Option[Verify]](None)(_.get(VerifyPage))
+              dataStoredForPage.nonEmpty mustBe true
+              dataStoredForPage.get mustBe YesRegister
+              userAnswersAfterPOST.get.address.get mustBe UkAddress(List("105B Godfrey Marchant Grove", "Guildford"), "GU14 8NL", None)
 
-              }
             }
           }
+        }
 
-          "when the session already contains data for page" in {
-            build
-              .commonPrecondition
+        "when the session already contains data for page" in {
+          build
+            .commonPrecondition
 
-            val userAnswers = emptyUserAnswers.set(VerifyPage, YesRegister).success.value
+          val userAnswers = emptyUserAnswers.set(VerifyPage, YesRegister).success.value
 
-            setAnswers(userAnswers)
-            WsTestClient.withClient { client =>
-              val result = createClientRequestPOST(
-                client, baseUrl + checkRoutePath, Json.obj("value" -> Json.toJson(YesRegister.toString))
-              )
+          setAnswers(userAnswers)
+          WsTestClient.withClient { client =>
+            val result = createClientRequestPOST(
+              client, baseUrl + checkRoutePath, Json.obj("value" -> Json.toJson(YesRegister.toString))
+            )
 
-              whenReady(result) { res =>
-                res.status mustBe 303
-                res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
-                val userAnswersAfterPOST = getAnswers(identifier)
-                val dataStoredForPage = userAnswersAfterPOST.fold[Option[Verify]](None)(_.get(VerifyPage))
-                dataStoredForPage.nonEmpty mustBe true
-                dataStoredForPage.get mustBe YesRegister
-                userAnswersAfterPOST.get.address.get mustBe UkAddress(List("105B Godfrey Marchant Grove", "Guildford"), "GU14 8NL", None)
-              }
+            whenReady(result) { res =>
+              res.status mustBe 303
+              res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
+              val userAnswersAfterPOST = getAnswers(identifier)
+              val dataStoredForPage = userAnswersAfterPOST.fold[Option[Verify]](None)(_.get(VerifyPage))
+              dataStoredForPage.nonEmpty mustBe true
+              dataStoredForPage.get mustBe YesRegister
+              userAnswersAfterPOST.get.address.get mustBe UkAddress(List("105B Godfrey Marchant Grove", "Guildford"), "GU14 8NL", None)
             }
           }
         }
       }
+    }
     s"when the user selects $YesNewAddress" - {
       "should update the session with the new value and redirect to the ALF" - {
         "when the session contains no data for page" in {
@@ -395,7 +396,7 @@ class VerifyControllerISpec extends ControllerITTestHelper {
 
           val userAnswers = {
             emptyUserAnswers.set(VerifyPage, YesRegister).success.value
-              .copy(address = Some(UkAddress(List.empty,"")))
+              .copy(address = Some(UkAddress(List.empty, "")))
           }
 
           setAnswers(userAnswers)

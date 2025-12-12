@@ -60,7 +60,7 @@ class AskSecondaryWarehousesControllerSpec extends SpecBase with MockitoSugar wi
         val view = application.injector.instanceOf[AskSecondaryWarehousesView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode)(using request, messages(application)).toString
       }
     }
 
@@ -78,7 +78,7 @@ class AskSecondaryWarehousesControllerSpec extends SpecBase with MockitoSugar wi
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(true), NormalMode)(using request, messages(application)).toString
       }
     }
 
@@ -88,10 +88,10 @@ class AskSecondaryWarehousesControllerSpec extends SpecBase with MockitoSugar wi
       val mockAddressLookupService = mock[AddressLookupService]
       val onwardUrlForALF = "foobarwizz"
 
-      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+      when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
       when(mockAddressLookupService.initJourneyAndReturnOnRampUrl(
         ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any(), ArgumentMatchers.any())(
-          ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        using ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(onwardUrlForALF))
 
       val application =
@@ -114,7 +114,7 @@ class AskSecondaryWarehousesControllerSpec extends SpecBase with MockitoSugar wi
 
         verify(mockAddressLookupService, times(1)).initJourneyAndReturnOnRampUrl(
           ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any(), ArgumentMatchers.any())(
-            ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+          using ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
       }
     }
     "must redirect to contact details when valid data is submitted (false), verifying ALF is not called" in {
@@ -123,10 +123,10 @@ class AskSecondaryWarehousesControllerSpec extends SpecBase with MockitoSugar wi
       val mockAddressLookupService = mock[AddressLookupService]
       val onwardUrlForALF = "foobarwizz"
 
-      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+      when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
       when(mockAddressLookupService.initJourneyAndReturnOnRampUrl(
         ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any(), ArgumentMatchers.any())(
-          ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        using ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(onwardUrlForALF))
 
       val application =
@@ -149,16 +149,16 @@ class AskSecondaryWarehousesControllerSpec extends SpecBase with MockitoSugar wi
 
         verify(mockAddressLookupService, times(0)).initJourneyAndReturnOnRampUrl(
           ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any(), ArgumentMatchers.any())(
-            ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+          using ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
       }
     }
     "must return error if ALF on ramp call returns error" in {
       val mockSessionRepository = mock[SessionRepository]
       val mockAddressLookupService = mock[AddressLookupService]
-      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+      when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
       when(mockAddressLookupService.initJourneyAndReturnOnRampUrl(
         ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any(), ArgumentMatchers.any())(
-          ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        using ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.failed(new Exception("uh oh spaghetio")))
 
       val application =
@@ -178,7 +178,7 @@ class AskSecondaryWarehousesControllerSpec extends SpecBase with MockitoSugar wi
 
         verify(mockAddressLookupService, times(1)).initJourneyAndReturnOnRampUrl(
           ArgumentMatchers.eq(WarehouseDetails), ArgumentMatchers.any(), ArgumentMatchers.any())(
-            ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+          using ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
       }
     }
 
@@ -198,7 +198,7 @@ class AskSecondaryWarehousesControllerSpec extends SpecBase with MockitoSugar wi
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode)(using request, messages(application)).toString
       }
     }
 

@@ -27,7 +27,7 @@ import views.html.AlreadyRegisteredView
 class AlreadyRegisteredViewSpec extends ViewSpecHelper with SpecBase {
 
   val view = application.injector.instanceOf[AlreadyRegisteredView]
-  implicit val request: Request[_] = FakeRequest()
+  implicit val request: Request[?] = FakeRequest()
 
   object Selectors {
     val heading = "govuk-heading-l"
@@ -36,7 +36,7 @@ class AlreadyRegisteredViewSpec extends ViewSpecHelper with SpecBase {
   "View" - {
     val registration = rosmRegistration.rosmRegistration
     val formattedAddress = AddressFormattingHelper.formatBusinessAddress(registration.address,Some(registration.organisationName))
-    val html = view(utr, formattedAddress)(request, messages(application))
+    val html = view(utr, formattedAddress)(using request, messages(application))
     val document = doc(html)
 
     "should contain the expected title" in {

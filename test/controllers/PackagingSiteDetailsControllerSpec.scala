@@ -75,7 +75,7 @@ class PackagingSiteDetailsControllerSpec extends SpecBase with MockitoSugar with
         val view = application.injector.instanceOf[PackagingSiteDetailsView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, packagingSiteListWith1)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, packagingSiteListWith1)(using request, messages(application)).toString
       }
     }
 
@@ -93,7 +93,7 @@ class PackagingSiteDetailsControllerSpec extends SpecBase with MockitoSugar with
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, packagingSiteListWith1)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, packagingSiteListWith1)(using request, messages(application)).toString
       }
     }
 
@@ -114,10 +114,10 @@ class PackagingSiteDetailsControllerSpec extends SpecBase with MockitoSugar with
       val onwardUrlForALF = "foobarwizz"
 
 
-      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+      when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
       when(mockAddressLookupService.initJourneyAndReturnOnRampUrl(
         ArgumentMatchers.eq(PackingDetails), ArgumentMatchers.any(), ArgumentMatchers.any())(
-        ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        using ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(onwardUrlForALF))
 
       val application =
@@ -141,14 +141,14 @@ class PackagingSiteDetailsControllerSpec extends SpecBase with MockitoSugar with
 
         verify(mockAddressLookupService, times(1)).initJourneyAndReturnOnRampUrl(
           ArgumentMatchers.eq(PackingDetails), ArgumentMatchers.any(), ArgumentMatchers.any())(
-          ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+          using ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
       }
     }
 
     "must redirect to the next page when valid data is submitted (false)" in {
       val mockSessionService = mock[SessionService]
 
-      when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(true)
+      when(mockSessionService.set(any())).thenReturn(createSuccessRegistrationResult(true))
 
       val application =
         applicationBuilder(userAnswers = Some(userAnswersWithPackagingSite), rosmRegistration = rosmRegistration)
@@ -186,7 +186,7 @@ class PackagingSiteDetailsControllerSpec extends SpecBase with MockitoSugar with
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, packagingSiteListWith1)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, packagingSiteListWith1)(using request, messages(application)).toString
       }
     }
 

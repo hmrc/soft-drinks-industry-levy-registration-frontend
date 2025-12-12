@@ -53,7 +53,7 @@ trait Mappings extends Formatters with Constraints {
         invalidCharactersFailure = "enterBusinessDetails.postcode.special"))
 
   protected def text(errorKey: String = "error.required", args: Seq[String] = Seq.empty): FieldMapping[String] =
-    of(stringFormatter(errorKey, args))
+    of(using stringFormatter(errorKey, args))
 
   protected def int(
     requiredKey: String = "error.required",
@@ -61,25 +61,25 @@ trait Mappings extends Formatters with Constraints {
     nonNumericKey: String = "error.nonNumeric",
     invalidLength: String = "error.length",
     args: Seq[String] = Seq.empty): FieldMapping[Int] =
-    of(intFormatter(requiredKey, wholeNumberKey, nonNumericKey, invalidLength, args))
+    of(using intFormatter(requiredKey, wholeNumberKey, nonNumericKey, invalidLength, args))
 
   protected def litres(
     band: String,
     args: Seq[String] = Seq.empty): Mapping[Long] =
-    of(litresFormatter(band, args))
+    of(using litresFormatter(band, args))
       .verifying(maximumValueNotEqual(100000000000000L, s"litres.error.$band.outOfMaxVal"))
 
   protected def boolean(
     requiredKey: String = "error.required",
     invalidKey: String = "error.boolean",
     args: Seq[String] = Seq.empty): FieldMapping[Boolean] =
-    of(booleanFormatter(requiredKey, invalidKey, args))
+    of(using booleanFormatter(requiredKey, invalidKey, args))
 
   protected def enumerable[A](
     requiredKey: String = "error.required",
     invalidKey: String = "error.invalid",
     args: Seq[String] = Seq.empty)(implicit ev: Enumerable[A]): FieldMapping[A] =
-    of(enumerableFormatter[A](requiredKey, invalidKey, args))
+    of(using enumerableFormatter[A](requiredKey, invalidKey, args))
 
   protected def localDate(
     invalidKey: String,
@@ -93,7 +93,7 @@ trait Mappings extends Formatters with Constraints {
     invalidYear: String,
     invalidYearLength: String,
     args: Seq[String] = Seq.empty): FieldMapping[LocalDate] =
-    of(new LocalDateFormatter(
+    of(using new LocalDateFormatter(
       invalidKey,
       allRequiredKey,
       twoRequiredKey,

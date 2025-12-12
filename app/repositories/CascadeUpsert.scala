@@ -29,5 +29,5 @@ class CascadeUpsert {
     funcMap.get(key).fold(store(key, value, originalCacheMap)) { fn => fn(Json.toJson(value), originalCacheMap) }
 
   private def store[A](key: String, value: A, cacheMap: CacheMap)(implicit fmt: Format[A]): CacheMap =
-    cacheMap copy (data = cacheMap.data + (key -> Json.toJson(value)))
+    cacheMap.copy(data = cacheMap.data + (key -> Json.toJson(value)))
 }

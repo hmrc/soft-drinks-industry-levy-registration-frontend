@@ -66,7 +66,7 @@ class PackAtBusinessAddressControllerSpec extends SpecBase with MockitoSugar wit
         val view = application.injector.instanceOf[PackAtBusinessAddressView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, HtmlContent(formattedAddress), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, HtmlContent(formattedAddress), NormalMode)(using request, messages(application)).toString
       }
     }
 
@@ -84,7 +84,7 @@ class PackAtBusinessAddressControllerSpec extends SpecBase with MockitoSugar wit
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), HtmlContent(formattedAddress), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(true), HtmlContent(formattedAddress), NormalMode)(using request, messages(application)).toString
       }
     }
 
@@ -92,7 +92,7 @@ class PackAtBusinessAddressControllerSpec extends SpecBase with MockitoSugar wit
 
       val mockSessionService = mock[SessionService]
 
-      when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(true)
+      when(mockSessionService.set(any())).thenReturn(createSuccessRegistrationResult(true))
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration)
@@ -117,10 +117,10 @@ class PackAtBusinessAddressControllerSpec extends SpecBase with MockitoSugar wit
       val mockAddressLookupService = mock[AddressLookupService]
       val onwardUrlForALF = "foobarwizz"
 
-      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+      when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
       when(mockAddressLookupService.initJourneyAndReturnOnRampUrl(
         ArgumentMatchers.eq(PackingDetails), ArgumentMatchers.any(), ArgumentMatchers.any())(
-          ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+        using ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
         .thenReturn(Future.successful(onwardUrlForALF))
 
       val application =
@@ -143,7 +143,7 @@ class PackAtBusinessAddressControllerSpec extends SpecBase with MockitoSugar wit
 
         verify(mockAddressLookupService, times(1)).initJourneyAndReturnOnRampUrl(
           ArgumentMatchers.eq(PackingDetails), ArgumentMatchers.any(), ArgumentMatchers.any())(
-            ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+          using ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
       }
     }
 
@@ -163,7 +163,7 @@ class PackAtBusinessAddressControllerSpec extends SpecBase with MockitoSugar wit
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, HtmlContent(formattedAddress), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, HtmlContent(formattedAddress), NormalMode)(using request, messages(application)).toString
       }
     }
 
@@ -200,7 +200,7 @@ class PackAtBusinessAddressControllerSpec extends SpecBase with MockitoSugar wit
     "should log an error message when internal server error is returned when user answers are not set in session repository" in {
       val mockSessionService = mock[SessionService]
 
-      when(mockSessionService.set(any())) thenReturn createFailureRegistrationResult(SessionDatabaseInsertError)
+      when(mockSessionService.set(any())).thenReturn(createFailureRegistrationResult(SessionDatabaseInsertError))
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration)

@@ -73,7 +73,7 @@ class AddressLookupConnectorSpec extends MockHttp {
 
     "getAddress" - {
 
-      def getAddressResult: Future[HttpResult[AlfResponse]] = testAddressLookupConnector.getAddress(id)(implicitly,implicitly)
+      def getAddressResult: Future[HttpResult[AlfResponse]] = testAddressLookupConnector.getAddress(id)(using implicitly,implicitly)
 
       "return an AlfResponse Model" in {
         setupMockHttpGet(Right(customerAddressMax))

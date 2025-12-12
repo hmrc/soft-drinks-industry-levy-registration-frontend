@@ -51,13 +51,13 @@ class TestConnectorSpec extends AnyFlatSpec with Matchers with MockitoSugar with
     val connector = new TestConnector(mockHttpClient, mockConfig)
     val mockResponse = HttpResponse(200, "")
 
-    when(mockHttpClient.get(any())(any())).thenReturn(mockRequestBuilder)
-    when(mockRequestBuilder.execute[HttpResponse](any(), any())).thenReturn(Future.successful(mockResponse))
+    when(mockHttpClient.get(any())(using any())).thenReturn(mockRequestBuilder)
+    when(mockRequestBuilder.execute[HttpResponse](using any(), any())).thenReturn(Future.successful(mockResponse))
     val result = connector.resetPending
     whenReady(result) { response =>
       response shouldBe mockResponse
     }
-    verify(mockHttpClient).get(any())(any())
+    verify(mockHttpClient).get(any())(using any())
   }
 
   it should "call resetSubscriptions endpoint correctly" in {
@@ -66,13 +66,13 @@ class TestConnectorSpec extends AnyFlatSpec with Matchers with MockitoSugar with
     val connector = new TestConnector(localMockHttpClient, mockConfig)
     val mockResponse = HttpResponse(200, "")
 
-    when(localMockHttpClient.get(any())(any())).thenReturn(localMockRequestBuilder)
-    when(localMockRequestBuilder.execute[HttpResponse](any(), any())).thenReturn(Future.successful(mockResponse))
+    when(localMockHttpClient.get(any())(using any())).thenReturn(localMockRequestBuilder)
+    when(localMockRequestBuilder.execute[HttpResponse](using any(), any())).thenReturn(Future.successful(mockResponse))
     val result = connector.resetSubscriptions
     whenReady(result) { response =>
       response shouldBe mockResponse
     }
-    verify(localMockHttpClient).get(any())(any())
+    verify(localMockHttpClient).get(any())(using any())
   }
 
   it should "construct the base URL correctly" in {

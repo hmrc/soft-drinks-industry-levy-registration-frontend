@@ -29,7 +29,7 @@ class HowManyImportsViewSpec extends LitresSpecHelper {
 
   val howManyImportsView: HowManyImportsView = application.injector.instanceOf[HowManyImportsView]
 
-  implicit val request: Request[_] = FakeRequest()
+  implicit val request: Request[?] = FakeRequest()
   implicit val config: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
 
   "HowManyImportsView" - {

@@ -19,7 +19,7 @@ package forms.behaviours
 import play.api.data.{Form, FormError}
 
 class LitresFieldBehaviour extends FieldBehaviours {
-  def litresField(form: Form[_],
+  def litresField(form: Form[?],
                 fieldName: String): Unit = {
 
     val nonNumericError = FormError(fieldName, s"litres.error.$fieldName.nonNumeric")
@@ -49,7 +49,7 @@ class LitresFieldBehaviour extends FieldBehaviours {
     }
   }
 
-  def litresFieldWithMaximum(form: Form[_],
+  def litresFieldWithMaximum(form: Form[?],
                           fieldName: String,
                           maximum: Long,
                           expectedError: FormError): Unit = {

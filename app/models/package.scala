@@ -45,7 +45,7 @@ package object models {
           setKeyNode(n, jsValue, value)
 
         case (first :: second :: rest, oldValue) =>
-          Reads.optionNoError(Reads.at[JsValue](JsPath(first :: Nil)))
+          Reads.optionNoError(using Reads.at[JsValue](JsPath(first :: Nil)))
             .reads(oldValue).flatMap {
               opt =>
 
@@ -119,7 +119,7 @@ package object models {
         case ((_: KeyPathNode) :: Nil, _) => JsError(s"cannot remove a key on $jsValue")
         case (first :: second :: rest, oldValue) =>
 
-          Reads.optionNoError(Reads.at[JsValue](JsPath(first :: Nil)))
+          Reads.optionNoError(using Reads.at[JsValue](JsPath(first :: Nil)))
             .reads(oldValue).flatMap {
               (opt: Option[JsValue]) =>
 

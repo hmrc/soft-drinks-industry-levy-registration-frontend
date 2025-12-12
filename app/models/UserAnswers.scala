@@ -40,7 +40,7 @@ case class UserAnswers(
   lastUpdated: Instant = Instant.now) {
 
   def get[A](page: Gettable[A])(implicit rds: Reads[A]): Option[A] =
-    Reads.optionNoError(Reads.at(page.path)).reads(data).getOrElse(None)
+    Reads.optionNoError(using Reads.at(page.path)).reads(data).getOrElse(None)
 
   def set[A](page: Settable[A], value: A)(implicit writes: Writes[A]): Try[UserAnswers] = {
 
@@ -136,7 +136,7 @@ object UserAnswers {
         (__ \ "warehouseList").read[Map[String, EncryptedValue]] and
         (__ \ "alfResponseForLookupState").readNullable[EncryptedValue] and
         (__ \ "submittedOn").readNullable[Instant] and
-        (__ \ "lastUpdated").read[Instant])(ModelEncryption.decryptUserAnswers _)
+        (__ \ "lastUpdated").read[Instant])(ModelEncryption.decryptUserAnswers)
     }
 
     def writes(implicit encryption: Encryption): OWrites[UserAnswers] = new OWrites[UserAnswers] {

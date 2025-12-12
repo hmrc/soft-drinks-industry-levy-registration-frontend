@@ -66,7 +66,7 @@ class RegistrationControllerSpec extends SpecBase with SummaryListFluency with M
             val userAnswers = emptyUserAnswers.copy(registerState = registerState)
 
             val application = applicationBuilderForHome().build()
-            when(mockOrchestrator.handleRegistrationRequest(any(), any(), any())) thenReturn createSuccessRegistrationResult(userAnswers)
+            when(mockOrchestrator.handleRegistrationRequest(using any(), any(), any())).thenReturn(createSuccessRegistrationResult(userAnswers))
 
             running(application) {
               val request = FakeRequest(GET, routes.RegistrationController.start.url)
@@ -74,7 +74,7 @@ class RegistrationControllerSpec extends SpecBase with SummaryListFluency with M
               val result = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
-              redirectLocation(result) mustEqual Some(expectedLocationForRegState(registerState))
+              redirectLocation(result).mustEqual(Some(expectedLocationForRegState(registerState)))
             }
           }
         }
@@ -91,7 +91,7 @@ class RegistrationControllerSpec extends SpecBase with SummaryListFluency with M
               .set(EnterBusinessDetailsPage, Identify(utr, "TF4 32d")).success.value
 
             val application = applicationBuilderForHome().build()
-            when(mockOrchestrator.handleRegistrationRequest(any(), any(), any())) thenReturn createSuccessRegistrationResult(userAnswers)
+            when(mockOrchestrator.handleRegistrationRequest(using any(), any(), any())).thenReturn(createSuccessRegistrationResult(userAnswers))
 
             running(application) {
               val request = FakeRequest(GET, routes.RegistrationController.start.url)
@@ -99,7 +99,7 @@ class RegistrationControllerSpec extends SpecBase with SummaryListFluency with M
               val result = route(application, request).value
 
               status(result) mustEqual SEE_OTHER
-              redirectLocation(result) mustEqual Some(routes.EnterBusinessDetailsController.onPageLoad.url)
+              redirectLocation(result).mustEqual(Some(routes.EnterBusinessDetailsController.onPageLoad.url))
 
             }
           }
@@ -110,7 +110,7 @@ class RegistrationControllerSpec extends SpecBase with SummaryListFluency with M
     "should redirect to register confirmation page" - {
       "when the application has been submitted" in {
         val application = applicationBuilderForHome().build()
-        when(mockOrchestrator.handleRegistrationRequest(any(), any(), any())) thenReturn createFailureRegistrationResult(RegistrationAlreadySubmitted)
+        when(mockOrchestrator.handleRegistrationRequest(using any(), any(), any())).thenReturn(createFailureRegistrationResult(RegistrationAlreadySubmitted))
 
         running(application) {
           val request = FakeRequest(GET, routes.RegistrationController.start.url)
@@ -118,7 +118,7 @@ class RegistrationControllerSpec extends SpecBase with SummaryListFluency with M
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result) mustEqual Some(routes.RegistrationConfirmationController.onPageLoad.url)
+          redirectLocation(result).mustEqual(Some(routes.RegistrationConfirmationController.onPageLoad.url))
         }
       }
     }
@@ -126,7 +126,7 @@ class RegistrationControllerSpec extends SpecBase with SummaryListFluency with M
     "should render the error page" - {
       "when a backend call fails" in {
         val application = applicationBuilderForHome().build()
-        when(mockOrchestrator.handleRegistrationRequest(any(), any(), any())) thenReturn createFailureRegistrationResult(UnexpectedResponseFromSDIL)
+        when(mockOrchestrator.handleRegistrationRequest(using any(), any(), any())).thenReturn(createFailureRegistrationResult(UnexpectedResponseFromSDIL))
 
         running(application) {
           val request = FakeRequest(GET, routes.RegistrationController.start.url)
@@ -141,7 +141,7 @@ class RegistrationControllerSpec extends SpecBase with SummaryListFluency with M
 
       "when the database call fails" in {
         val application = applicationBuilderForHome().build()
-        when(mockOrchestrator.handleRegistrationRequest(any(), any(), any())) thenReturn createFailureRegistrationResult(SessionDatabaseInsertError)
+        when(mockOrchestrator.handleRegistrationRequest(using any(), any(), any())).thenReturn(createFailureRegistrationResult(SessionDatabaseInsertError))
 
         running(application) {
           val request = FakeRequest(GET, routes.RegistrationController.start.url)

@@ -48,7 +48,7 @@ class ModelEncryptionSpec extends SpecBase {
       result._1 mustBe userAnswers.id
       result._2 mustBe userAnswers.registerState
       Json.parse(encryption.crypto.decrypt(result._3, userAnswers.id)).as[JsObject] mustBe userAnswers.data
-      Json.fromJson[Option[UkAddress]](Json.parse(encryption.crypto.decrypt(result._4, userAnswers.id)))(Reads.optionWithNull[UkAddress]).get mustBe userAnswers.address
+      Json.fromJson[Option[UkAddress]](Json.parse(encryption.crypto.decrypt(result._4, userAnswers.id)))(using Reads.optionWithNull[UkAddress]).get mustBe userAnswers.address
       Json.parse(encryption.crypto.decrypt(result._5.head._2, userAnswers.id)).as[Site] mustBe userAnswers.packagingSiteList.head._2
       result._6.head._1 mustBe userAnswers.packagingSiteList.head._1
       Json.parse(encryption.crypto.decrypt(result._5.head._2, userAnswers.id)).as[Warehouse] mustBe userAnswers.warehouseList.head._2

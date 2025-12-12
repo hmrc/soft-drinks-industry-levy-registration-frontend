@@ -76,7 +76,7 @@ class RegistrationConfirmationControllerSpec extends SpecBase {
           bind[SoftDrinksIndustryLevyConnector].toInstance(mockSdilConnector)).build()
 
       running(application) {
-        when(mockSdilConnector.retreiveRosmSubscription(any(), any())(any())).thenReturn(createSuccessRegistrationResult(rosmRegistration))
+        when(mockSdilConnector.retreiveRosmSubscription(any(), any())(using any())).thenReturn(createSuccessRegistrationResult(rosmRegistration))
         when(mockSdilSessionCache.fetchEntry[CreatedSubscriptionAndAmountProducedGlobally](userAnswers.id, SDILSessionKeys.CREATED_SUBSCRIPTION_AND_AMOUNT_PRODUCED_GLOBALLY))
           .thenReturn(Future.successful(Some(CreatedSubscriptionAndAmountProducedGlobally(subscription, Large))))
         val request = FakeRequest(GET, routes.RegistrationConfirmationController.onPageLoad.url)
@@ -89,7 +89,7 @@ class RegistrationConfirmationControllerSpec extends SpecBase {
         val headingAndSummaryItems = RegistrationSummary.summaryList(CreatedSubscriptionAndAmountProducedGlobally(subscription, Large), false)
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(headingAndSummaryItems, submittedDateTime, rosmRegistration.rosmRegistration.organisationName, "bang")(request, messages(application), config).toString
+        contentAsString(result) mustEqual view(headingAndSummaryItems, submittedDateTime, rosmRegistration.rosmRegistration.organisationName, "bang")(using request, messages(application), config).toString
       }
     }
 
@@ -104,7 +104,7 @@ class RegistrationConfirmationControllerSpec extends SpecBase {
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result) mustEqual Some(routes.RegistrationController.start.url)
+          redirectLocation(result).mustEqual(Some(routes.RegistrationController.start.url))
         }
       }
 
@@ -116,14 +116,14 @@ class RegistrationConfirmationControllerSpec extends SpecBase {
             bind[SoftDrinksIndustryLevyConnector].toInstance(mockSdilConnector)).build()
 
         running(application) {
-          when(mockSdilConnector.retreiveRosmSubscription(any(), any())(any())).thenReturn(createSuccessRegistrationResult(rosmRegistration))
+          when(mockSdilConnector.retreiveRosmSubscription(any(), any())(using any())).thenReturn(createSuccessRegistrationResult(rosmRegistration))
           when(mockSdilSessionCache.fetchEntry[CreatedSubscriptionAndAmountProducedGlobally](emptyUserAnswers.id, SDILSessionKeys.CREATED_SUBSCRIPTION_AND_AMOUNT_PRODUCED_GLOBALLY))
             .thenReturn(Future.successful(None))
           val request = FakeRequest(GET, routes.RegistrationConfirmationController.onPageLoad.url)
 
           val result = route(application, request).value
           status(result) mustEqual SEE_OTHER
-          redirectLocation(result) mustEqual Some(routes.RegistrationController.start.url)
+          redirectLocation(result).mustEqual(Some(routes.RegistrationController.start.url))
         }
       }
     }

@@ -36,7 +36,7 @@ class StartDateViewSpec extends ViewSpecHelper {
   val appConfig = application.injector.instanceOf[FrontendAppConfig]
   val formProvider = new StartDateFormProvider(appConfig)
   val form = formProvider.apply()
-  implicit val request: Request[_] = FakeRequest()
+  implicit val request: Request[?] = FakeRequest()
 
   object Selectors {
     val heading = "govuk-fieldset__heading"
@@ -49,7 +49,7 @@ class StartDateViewSpec extends ViewSpecHelper {
   }
 
   "View" - {
-    val html = view(form, NormalMode)(request, messages(application))
+    val html = view(form, NormalMode)(using request, messages(application))
     val document = doc(html)
     "should contain the expected title" in {
       document.title() must include(Messages("startDate" + ".title"))
@@ -99,7 +99,7 @@ class StartDateViewSpec extends ViewSpecHelper {
 
     "contains a form with the correct action" - {
       "when in CheckMode" in {
-        val htmlAllSelected = view(form.fill(LocalDate.now()), CheckMode)(request, messages(application))
+        val htmlAllSelected = view(form.fill(LocalDate.now()), CheckMode)(using request, messages(application))
         val documentAllSelected = doc(htmlAllSelected)
 
         documentAllSelected.select(Selectors.form)
@@ -107,7 +107,7 @@ class StartDateViewSpec extends ViewSpecHelper {
       }
 
       "when in NormalMode" in {
-        val htmlAllSelected = view(form.fill(LocalDate.now()), NormalMode)(request, messages(application))
+        val htmlAllSelected = view(form.fill(LocalDate.now()), NormalMode)(using request, messages(application))
         val documentAllSelected = doc(htmlAllSelected)
 
         documentAllSelected.select(Selectors.form)
@@ -116,7 +116,7 @@ class StartDateViewSpec extends ViewSpecHelper {
     }
 
     "when there are form errors" - {
-      val htmlWithErrors = view(form.bind(Map("value" -> "")), NormalMode)(request, messages(application))
+      val htmlWithErrors = view(form.bind(Map("value" -> "")), NormalMode)(using request, messages(application))
       val documentWithErrors = doc(htmlWithErrors)
 
       "should have a title containing error" in {

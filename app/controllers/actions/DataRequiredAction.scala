@@ -50,11 +50,11 @@ class DataRequiredActionImpl @Inject() (
               case Right(rosmWithUtr) => Future.successful(
                 Right(DataRequest(request, request.internalId, request.hasCTEnrolment, request.authUtr, useranswers, rosmWithUtr))
               )
-              case Left(_) => errorHandler.internalServerErrorTemplate(request).map(errorView => Left(InternalServerError(errorView)))
+              case Left(_) => errorHandler.internalServerErrorTemplate(using request).map(errorView => Left(InternalServerError(errorView)))
             }
           case None =>
             genericLogger.logger.error(s"User has no utr when required for register state ${useranswers.registerState}")
-            errorHandler.internalServerErrorTemplate(request).map(errorView => Left(InternalServerError(errorView)))
+            errorHandler.internalServerErrorTemplate(using request).map(errorView => Left(InternalServerError(errorView)))
         }
       case Some(useranswers) =>
         val call = ActionHelpers.getRouteForRegisterState(useranswers.registerState)

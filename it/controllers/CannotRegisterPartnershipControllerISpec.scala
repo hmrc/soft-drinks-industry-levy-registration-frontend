@@ -18,7 +18,7 @@ class CannotRegisterPartnershipControllerISpec extends ControllerITTestHelper {
       setAnswers(userAnswers)
 
       given messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-      given request: FakeRequest[_] = FakeRequest()
+      given request: FakeRequest[?] = FakeRequest()
       given messagesProvider: MessagesProvider = messagesApi.preferred(request)
 
       WsTestClient.withClient { client =>

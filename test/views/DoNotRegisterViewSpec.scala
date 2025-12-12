@@ -24,7 +24,7 @@ import views.html.DoNotRegisterView
 class DoNotRegisterViewSpec extends ViewSpecHelper {
 
   val view = application.injector.instanceOf[DoNotRegisterView]
-  implicit val request: Request[_] = FakeRequest()
+  implicit val request: Request[?] = FakeRequest()
 
   object Selectors {
     val heading = "govuk-heading-l"
@@ -33,7 +33,7 @@ class DoNotRegisterViewSpec extends ViewSpecHelper {
   }
 
   "View" - {
-    val html = view()(request, messages(application))
+    val html = view()(using request, messages(application))
     val document = doc(html)
     "should contain the expected title" in {
       document.title() must include("You do not need to register")

@@ -30,7 +30,7 @@ class HowManyLitresGloballyViewSpec extends ViewSpecHelper {
   val view: HowManyLitresGloballyView = application.injector.instanceOf[HowManyLitresGloballyView]
   val formProvider = new HowManyLitresGloballyFormProvider
   val form: Form[HowManyLitresGlobally] = formProvider.apply()
-  implicit val request: Request[_] = FakeRequest()
+  implicit val request: Request[?] = FakeRequest()
 
   object Selectors {
     val heading = "govuk-fieldset__heading"
@@ -47,7 +47,7 @@ class HowManyLitresGloballyViewSpec extends ViewSpecHelper {
   }
 
   "View" - {
-    val html = view(form, NormalMode)(request, messages(application))
+    val html = view(form, NormalMode)(using request, messages(application))
     val document = doc(html)
     "should contain the expected title" in {
       document.title() must include("How many litres of your own brands of liable drinks have been packaged globally in the past 12 months?")
@@ -123,7 +123,7 @@ class HowManyLitresGloballyViewSpec extends ViewSpecHelper {
     }
 
     HowManyLitresGlobally.values.foreach { radio =>
-      val html1 = view(form.fill(radio), NormalMode)(request, messages(application))
+      val html1 = view(form.fill(radio), NormalMode)(using request, messages(application))
       val document1 = doc(html1)
 
       s"when the form is preoccupied with " + radio.toString + " selected and has no errors" - {
@@ -166,7 +166,7 @@ class HowManyLitresGloballyViewSpec extends ViewSpecHelper {
 
     "contains a form with the correct action" - {
       "when in CheckMode" in {
-        val htmlAllSelected = view(form.fill(HowManyLitresGlobally.values.head), CheckMode)(request, messages(application))
+        val htmlAllSelected = view(form.fill(HowManyLitresGlobally.values.head), CheckMode)(using request, messages(application))
         val documentAllSelected = doc(htmlAllSelected)
 
         documentAllSelected.select(Selectors.form)
@@ -174,7 +174,7 @@ class HowManyLitresGloballyViewSpec extends ViewSpecHelper {
       }
 
       "when in NormalMode" in {
-        val htmlAllSelected = view(form.fill(HowManyLitresGlobally.values.head), NormalMode)(request, messages(application))
+        val htmlAllSelected = view(form.fill(HowManyLitresGlobally.values.head), NormalMode)(using request, messages(application))
         val documentAllSelected = doc(htmlAllSelected)
 
         documentAllSelected.select(Selectors.form)
@@ -183,7 +183,7 @@ class HowManyLitresGloballyViewSpec extends ViewSpecHelper {
     }
 
     "when there are form errors" - {
-      val htmlWithErrors = view(form.bind(Map("value" -> "")), NormalMode)(request, messages(application))
+      val htmlWithErrors = view(form.bind(Map("value" -> "")), NormalMode)(using request, messages(application))
       val documentWithErrors = doc(htmlWithErrors)
 
       "should have a title containing error" in {

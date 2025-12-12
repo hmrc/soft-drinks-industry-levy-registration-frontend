@@ -26,7 +26,7 @@ import views.html.CheckYourAnswersView
 class CheckYourAnswersViewSpec extends ViewSpecHelper {
 
   val view = application.injector.instanceOf[CheckYourAnswersView]
-  implicit val request: Request[_] = FakeRequest()
+  implicit val request: Request[?] = FakeRequest()
 
   object Selectors {
     val heading = "govuk-heading-l"
@@ -44,7 +44,7 @@ class CheckYourAnswersViewSpec extends ViewSpecHelper {
         "wizz" -> SummaryList(Seq(SummaryListRow(value = Value(content = HtmlContent("bang"))))))
     }
     val call = Call("GET", "/foo")
-    val html = view(summaryList, call)(request, messages(application))
+    val html = view(summaryList, call)(using request, messages(application))
     val document = doc(html)
     "should have the expected heading" in {
       document.getElementsByClass(Selectors.heading).text() mustEqual "Check your answers before sending your application"

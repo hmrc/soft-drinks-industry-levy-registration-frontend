@@ -32,7 +32,7 @@ class EnterBusinessDetailsViewSpec extends ViewSpecHelper {
   val view = application.injector.instanceOf[EnterBusinessDetailsView]
   val formProvider = new EnterBusinessDetailsFormProvider
   val form = formProvider.apply()
-  implicit val request: Request[_] = FakeRequest()
+  implicit val request: Request[?] = FakeRequest()
 
   object Selectors {
     val formGroup = "govuk-form-group"
@@ -46,7 +46,7 @@ class EnterBusinessDetailsViewSpec extends ViewSpecHelper {
   }
 
   "View" - {
-    val html = view(form)(request, messages(application), frontendAppConfig)
+    val html = view(form)(using request, messages(application), frontendAppConfig)
     val document = doc(html)
     val formGroup = document.getElementsByClass(Selectors.formGroup)
     "should contain the expected title" in {
@@ -82,7 +82,7 @@ class EnterBusinessDetailsViewSpec extends ViewSpecHelper {
     }
 
     "contains a form with the correct action" in {
-        val htmlAllSelected = view(form.fill(Identify("testing", "testing")))(request, messages(application), frontendAppConfig)
+        val htmlAllSelected = view(form.fill(Identify("testing", "testing")))(using request, messages(application), frontendAppConfig)
         val documentAllSelected = doc(htmlAllSelected)
 
         documentAllSelected.select(Selectors.form)
@@ -92,7 +92,7 @@ class EnterBusinessDetailsViewSpec extends ViewSpecHelper {
     "when a form error exists (utr invalid characters + no postcode)" - {
       val valueOutOfMaxRange = Random.nextString(10 + 1)
 
-      val htmlWithErrors = view(form.bind(Map("utr" -> valueOutOfMaxRange)))(request, messages(application), frontendAppConfig)
+      val htmlWithErrors = view(form.bind(Map("utr" -> valueOutOfMaxRange)))(using request, messages(application), frontendAppConfig)
       val documentWithErrors = doc(htmlWithErrors)
       "should have a title containing error" in {
         val titleMessage = Messages("enterBusinessDetails.title")

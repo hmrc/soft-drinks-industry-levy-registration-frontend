@@ -32,7 +32,7 @@ class PackagingSiteNameViewSpec extends ViewSpecHelper {
   val view: PackagingSiteNameView = application.injector.instanceOf[PackagingSiteNameView]
   val formProvider = new PackagingSiteNameFormProvider
   val form: Form[PackagingSiteName] = formProvider.apply()
-  implicit val request: Request[_] = FakeRequest()
+  implicit val request: Request[?] = FakeRequest()
   val sdilId = "foo"
 
   object Selectors {
@@ -49,7 +49,7 @@ class PackagingSiteNameViewSpec extends ViewSpecHelper {
   packagingSiteNameJsObject.map { case (fName, fValue) => fName -> fValue.toString }
 
   "View" - {
-    val html = view(form, NormalMode, sdilId)(request, messages(application))
+    val html = view(form, NormalMode, sdilId)(using request, messages(application))
     val document = doc(html)
     val questionItems = document.getElementsByClass(Selectors.formGroup)
     "should contain the expected title" in {
@@ -83,7 +83,7 @@ class PackagingSiteNameViewSpec extends ViewSpecHelper {
 
     "contains a form with the correct action" - {
       "when in CheckMode" in {
-        val htmlAllSelected = view(form.fill(packagingSiteName), CheckMode, sdilId)(request, messages(application))
+        val htmlAllSelected = view(form.fill(packagingSiteName), CheckMode, sdilId)(using request, messages(application))
         val documentAllSelected = doc(htmlAllSelected)
 
         documentAllSelected.select(Selectors.form)
@@ -91,7 +91,7 @@ class PackagingSiteNameViewSpec extends ViewSpecHelper {
       }
 
       "when in NormalMode" in {
-        val htmlAllSelected = view(form.fill(packagingSiteName), NormalMode, sdilId)(request, messages(application))
+        val htmlAllSelected = view(form.fill(packagingSiteName), NormalMode, sdilId)(using request, messages(application))
         val documentAllSelected = doc(htmlAllSelected)
 
         documentAllSelected.select(Selectors.form)
@@ -99,7 +99,7 @@ class PackagingSiteNameViewSpec extends ViewSpecHelper {
       }
     }
 
-    val htmlWithErrors = view(form.bind(Map("packagingSiteName" -> "")), NormalMode, sdilId)(request, messages(application))
+    val htmlWithErrors = view(form.bind(Map("packagingSiteName" -> "")), NormalMode, sdilId)(using request, messages(application))
     val documentWithErrors = doc(htmlWithErrors)
 
     "when site name is empty" - {

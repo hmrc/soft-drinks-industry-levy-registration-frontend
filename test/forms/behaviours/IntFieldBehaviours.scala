@@ -21,7 +21,7 @@ import play.api.data.{ Form, FormError }
 trait IntFieldBehaviours extends FieldBehaviours {
 
   def intField(
-    form: Form[_],
+    form: Form[?],
     fieldName: String,
     nonNumericError: FormError,
     wholeNumberError: FormError): Unit = {
@@ -64,7 +64,7 @@ trait IntFieldBehaviours extends FieldBehaviours {
   }
 
   def intFieldWithMinimum(
-    form: Form[_],
+    form: Form[?],
     fieldName: String,
     minimum: Int,
     expectedError: FormError): Unit = {
@@ -80,7 +80,7 @@ trait IntFieldBehaviours extends FieldBehaviours {
   }
 
   def intFieldWithMaximum(
-    form: Form[_],
+    form: Form[?],
     fieldName: String,
     maximum: Int,
     expectedError: FormError): Unit = {
@@ -96,7 +96,7 @@ trait IntFieldBehaviours extends FieldBehaviours {
   }
 
   def intFieldWithRange(
-    form: Form[_],
+    form: Form[?],
     fieldName: String,
     minimum: Int,
     maximum: Int,
