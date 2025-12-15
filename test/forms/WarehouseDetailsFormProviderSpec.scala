@@ -22,7 +22,7 @@ import play.api.data.FormError
 class WarehouseDetailsFormProviderSpec extends BooleanFieldBehaviours {
 
   val requiredKey = "warehouseDetails.error.required"
-  val invalidKey = "error.boolean"
+  val invalidKey  = "error.boolean"
 
   val form = new WarehouseDetailsFormProvider()()
 

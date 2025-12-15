@@ -32,10 +32,8 @@ class VerifySpec extends AnyFreeSpec with Matchers with ScalaCheckPropertyChecks
 
       val gen = Gen.oneOf(Verify.values.toSeq)
 
-      forAll(gen) {
-        verify =>
-
-          JsString(verify.toString).validate[Verify].asOpt.value mustEqual verify
+      forAll(gen) { verify =>
+        JsString(verify.toString).validate[Verify].asOpt.value mustEqual verify
       }
     }
 
@@ -43,10 +41,8 @@ class VerifySpec extends AnyFreeSpec with Matchers with ScalaCheckPropertyChecks
 
       val gen = arbitrary[String] suchThat (!Verify.values.map(_.toString).contains(_))
 
-      forAll(gen) {
-        invalidValue =>
-
-          JsString(invalidValue).validate[Verify] mustEqual JsError("error.invalid")
+      forAll(gen) { invalidValue =>
+        JsString(invalidValue).validate[Verify] mustEqual JsError("error.invalid")
       }
     }
 
@@ -54,10 +50,8 @@ class VerifySpec extends AnyFreeSpec with Matchers with ScalaCheckPropertyChecks
 
       val gen = Gen.oneOf(Verify.values.toSeq)
 
-      forAll(gen) {
-        verify =>
-
-          Json.toJson(verify) mustEqual JsString(verify.toString)
+      forAll(gen) { verify =>
+        Json.toJson(verify) mustEqual JsString(verify.toString)
       }
     }
   }

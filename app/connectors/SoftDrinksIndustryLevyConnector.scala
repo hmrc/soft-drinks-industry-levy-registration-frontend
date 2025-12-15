@@ -34,88 +34,116 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import play.api.libs.ws.JsonBodyWritables.writeableOf_JsValue
 class SoftDrinksIndustryLevyConnector @Inject() (
-                                                  val http: HttpClientV2,
-                                                  frontendAppConfig: FrontendAppConfig,
-                                                  sdilSessionCache: SDILSessionCache,
-                                                  genericLogger: GenericLogger)(implicit ec: ExecutionContext) {
+  val http: HttpClientV2,
+  frontendAppConfig: FrontendAppConfig,
+  sdilSessionCache: SDILSessionCache,
+  genericLogger: GenericLogger
+)(implicit ec: ExecutionContext) {
 
   lazy val sdilUrl: String = frontendAppConfig.sdilBaseUrl
 
   private def getRosmRegistration(utr: String): String = s"$sdilUrl/rosm-registration/lookup/$utr"
 
-  def retreiveRosmSubscription(utr: String, internalId: String)(implicit hc: HeaderCarrier): RegistrationResult[RosmWithUtr] = EitherT {
+  def retreiveRosmSubscription(utr: String, internalId: String)(implicit
+    hc: HeaderCarrier
+  ): RegistrationResult[RosmWithUtr] = EitherT {
     sdilSessionCache.fetchEntry[RosmWithUtr](internalId, SDILSessionKeys.ROSM_REGISTRATION).flatMap {
       case Some(rosmReg) if rosmReg.utr == utr => Future.successful(Right(rosmReg))
-      case _ =>
-        http.get(url"${getRosmRegistration(utr)}")
+      case _                                   =>
+        http
+          .get(url"${getRosmRegistration(utr)}")
           .execute[Option[RosmRegistration]]
           .flatMap {
-          case Some(rosmReg) =>
-            val rosmWithUtr = RosmWithUtr(utr, RosmRegistration(rosmReg.safeId, rosmReg.organisation, rosmReg.individual, rosmReg.address))
-            sdilSessionCache.save(internalId, SDILSessionKeys.ROSM_REGISTRATION, rosmWithUtr).map { _ => Right(rosmWithUtr) }
-          case None => Future.successful(Left(NoROSMRegistration))
-        }.recover {
-          case _ =>
-            genericLogger.logger.error(s"[SoftDrinksIndustryLevyConnector][retreiveRosmSubscription] - unexpected response for ${utr}")
+            case Some(rosmReg) =>
+              val rosmWithUtr = RosmWithUtr(
+                utr,
+                RosmRegistration(rosmReg.safeId, rosmReg.organisation, rosmReg.individual, rosmReg.address)
+              )
+              sdilSessionCache.save(internalId, SDILSessionKeys.ROSM_REGISTRATION, rosmWithUtr).map { _ =>
+                Right(rosmWithUtr)
+              }
+            case None          => Future.successful(Left(NoROSMRegistration))
+          }
+          .recover { case _ =>
+            genericLogger.logger
+              .error(s"[SoftDrinksIndustryLevyConnector][retreiveRosmSubscription] - unexpected response for $utr")
             Left(UnexpectedResponseFromSDIL)
-        }
+          }
     }
   }
 
-  private def getSubscriptionUrl(identifierValue: String, identifierType: String): String = s"$sdilUrl/subscription/$identifierType/$identifierValue"
+  private def getSubscriptionUrl(identifierValue: String, identifierType: String): String =
+    s"$sdilUrl/subscription/$identifierType/$identifierValue"
 
   def checkPendingQueue(utr: String)(implicit hc: HeaderCarrier): RegistrationResult[SubscriptionStatus] = EitherT {
     val pendingQueueUrl = s"$sdilUrl/check-enrolment-status/$utr"
-    http.get(url"$pendingQueueUrl")
+    http
+      .get(url"$pendingQueueUrl")
       .execute[HttpResponse]
       .map(_.status match {
-      case OK => Right(Registered)
-      case ACCEPTED => Right(Pending)
-      case NOT_FOUND => Right(DoesNotExist)
-      case status =>
-        genericLogger.logger.warn(s"Returned unexpected status $status for ${hc.requestId} when attempting to check pending queue")
-        Left(UnexpectedResponseFromSDIL)
-    })
+        case OK        => Right(Registered)
+        case ACCEPTED  => Right(Pending)
+        case NOT_FOUND => Right(DoesNotExist)
+        case status    =>
+          genericLogger.logger
+            .warn(s"Returned unexpected status $status for ${hc.requestId} when attempting to check pending queue")
+          Left(UnexpectedResponseFromSDIL)
+      })
   }
 
-  def retrieveSubscription(identifierValue: String, identifierType: String, internalId: String)(implicit hc: HeaderCarrier): RegistrationResult[Option[RetrievedSubscription]] = EitherT {
+  def retrieveSubscription(identifierValue: String, identifierType: String, internalId: String)(implicit
+    hc: HeaderCarrier
+  ): RegistrationResult[Option[RetrievedSubscription]] = EitherT {
     sdilSessionCache.fetchEntry[OptRetrievedSubscription](internalId, SDILSessionKeys.SUBSCRIPTION).flatMap {
       case Some(optSubscription) => Future.successful(Right(optSubscription.optRetrievedSubscription))
-      case None =>
-        http.get(url"${getSubscriptionUrl(identifierValue: String, identifierType)}")
-          .execute[Option[RetrievedSubscription]].flatMap {
-          optRetrievedSubscription =>
-            sdilSessionCache.save(internalId, SDILSessionKeys.SUBSCRIPTION, OptRetrievedSubscription(optRetrievedSubscription))
+      case None                  =>
+        http
+          .get(url"${getSubscriptionUrl(identifierValue: String, identifierType)}")
+          .execute[Option[RetrievedSubscription]]
+          .flatMap { optRetrievedSubscription =>
+            sdilSessionCache
+              .save(internalId, SDILSessionKeys.SUBSCRIPTION, OptRetrievedSubscription(optRetrievedSubscription))
               .map { _ =>
                 Right(optRetrievedSubscription)
               }
-        }.recover {
-          case _ =>
-            genericLogger.logger.error(s"[SoftDrinksIndustryLevyConnector][retrieveSubscription] - unexpected response for ${identifierValue}")
+          }
+          .recover { case _ =>
+            genericLogger.logger.error(
+              s"[SoftDrinksIndustryLevyConnector][retrieveSubscription] - unexpected response for $identifierValue"
+            )
             Left(UnexpectedResponseFromSDIL)
-        }
+          }
     }
   }
 
-  def createSubscription(subscription: Subscription, safeId: String)(implicit hc: HeaderCarrier): RegistrationResult[Unit] = EitherT {
+  def createSubscription(subscription: Subscription, safeId: String)(implicit
+    hc: HeaderCarrier
+  ): RegistrationResult[Unit] = EitherT {
     val createUrl = s"$sdilUrl/subscription/utr/${subscription.utr}/$safeId"
-    http.post(url"$createUrl")
+    http
+      .post(url"$createUrl")
       .withBody(Json.toJson(subscription))
       .execute[HttpResponse]
       .map { resp =>
-      resp.status match {
-        case OK => Right((): Unit)
-        case CONFLICT =>
-          genericLogger.logger.warn(s"[SoftDrinksIndustryLevyConnector][createSubscription] - CONFLICT returned for ${subscription.utr}")
-          Right((): Unit)
-        case status =>
-          genericLogger.logger.error(s"[SoftDrinksIndustryLevyConnector][createSubscription] - unexpected response $status for ${subscription.utr}")
-          Left(UnexpectedResponseFromSDIL)
+        resp.status match {
+          case OK       => Right((): Unit)
+          case CONFLICT =>
+            genericLogger.logger.warn(
+              s"[SoftDrinksIndustryLevyConnector][createSubscription] - CONFLICT returned for ${subscription.utr}"
+            )
+            Right((): Unit)
+          case status   =>
+            genericLogger.logger.error(
+              s"[SoftDrinksIndustryLevyConnector][createSubscription] - unexpected response $status for ${subscription.utr}"
+            )
+            Left(UnexpectedResponseFromSDIL)
+        }
       }
-    }.recover {
-      case _ =>
-        genericLogger.logger.error(s"[SoftDrinksIndustryLevyConnector][createSubscription] - unexpected response for ${subscription.utr}")
+      .recover { case _ =>
+        genericLogger.logger.error(
+          s"[SoftDrinksIndustryLevyConnector][createSubscription] - unexpected response for ${subscription.utr}"
+        )
         Left(UnexpectedResponseFromSDIL)
-    }
+      }
   }
 }

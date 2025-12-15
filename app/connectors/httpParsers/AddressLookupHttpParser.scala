@@ -29,36 +29,39 @@ object AddressLookupHttpParser {
 
   implicit object AddressLookupGetAddressReads extends HttpReads[HttpResult[AlfResponse]] {
 
-    override def read(method: String, url: String, response: HttpResponse): HttpResult[AlfResponse] = {
-
+    override def read(method: String, url: String, response: HttpResponse): HttpResult[AlfResponse] =
       response.status match {
         case Status.OK =>
-          response.json.validate[AlfResponse](using AlfResponse.format).fold(
-            invalid => {
-              Logger(s"[AddressLookupHttpParser][read]: Invalid Json - ${invalid.map(res => res._1)}")
-              Left(ErrorModel(Status.INTERNAL_SERVER_ERROR, "Invalid Json returned from Address Lookup"))
-            },
-            valid => Right(valid))
+          response.json
+            .validate[AlfResponse](using AlfResponse.format)
+            .fold(
+              invalid => {
+                Logger(s"[AddressLookupHttpParser][read]: Invalid Json - ${invalid.map(res => res._1)}")
+                Left(ErrorModel(Status.INTERNAL_SERVER_ERROR, "Invalid Json returned from Address Lookup"))
+              },
+              valid => Right(valid)
+            )
 
         case status =>
           Logger(s"[AddressLookupHttpParser][read]: Unexpected Response, Status $status returned")
           Left(ErrorModel(status, "Downstream error returned when retrieving CustomerAddressModel from AddressLookup"))
       }
-    }
   }
 
   implicit object AddressLookupInitJourneyReads extends HttpReads[HttpResult[String]] {
 
-    override def read(method: String, url: String, response: HttpResponse): HttpResult[String] = {
+    override def read(method: String, url: String, response: HttpResponse): HttpResult[String] =
       response.status match {
-        case Status.ACCEPTED =>
+        case Status.ACCEPTED    =>
           response.header(HeaderNames.LOCATION) match {
             case Some(location) => Right(location)
-            case None => Left(ErrorModel(Status.ACCEPTED, s"No ${HeaderNames.LOCATION} key in response from init response from ALF"))
+            case None           =>
+              Left(
+                ErrorModel(Status.ACCEPTED, s"No ${HeaderNames.LOCATION} key in response from init response from ALF")
+              )
           }
         case Status.BAD_REQUEST => Left(ErrorModel(Status.BAD_REQUEST, s"${response.body} returned from ALF"))
-        case status => Left(ErrorModel(status, "Unexpected error occurred when init journey from ALF"))
+        case status             => Left(ErrorModel(status, "Unexpected error occurred when init journey from ALF"))
       }
-    }
   }
 }

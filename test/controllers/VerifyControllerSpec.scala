@@ -20,9 +20,9 @@ import base.SpecBase
 import errors.SessionDatabaseInsertError
 import forms.VerifyFormProvider
 import helpers.LoggerHelper
-import models.Verify.{ No, YesNewAddress, YesRegister }
-import models.{ NormalMode, RegisterState, UserAnswers, Verify }
-import navigation.{ FakeNavigator, Navigator }
+import models.Verify.{No, YesNewAddress, YesRegister}
+import models.{NormalMode, RegisterState, UserAnswers, Verify}
+import navigation.{FakeNavigator, Navigator}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.any
@@ -34,7 +34,7 @@ import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.AddressLookupState.BusinessAddress
-import services.{ AddressLookupService, SessionService }
+import services.{AddressLookupService, SessionService}
 import utilities.GenericLogger
 import viewmodels.AddressFormattingHelper
 import views.html.VerifyView
@@ -46,7 +46,7 @@ class VerifyControllerSpec extends SpecBase with MockitoSugar with LoggerHelper 
   def onwardRoute = Call("GET", "/foo")
 
   val formProvider = new VerifyFormProvider()
-  val form = formProvider()
+  val form         = formProvider()
 
   lazy val verifyRoute = routes.VerifyController.onPageLoad(NormalMode).url
 
@@ -65,13 +65,22 @@ class VerifyControllerSpec extends SpecBase with MockitoSugar with LoggerHelper 
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual
-          view(form, NormalMode, rosmRegistration.utr, AddressFormattingHelper.formatBusinessAddress(rosmRegistration.rosmRegistration.address, Some(rosmRegistration.rosmRegistration.organisationName)))(using request, messages(application)).toString
+          view(
+            form,
+            NormalMode,
+            rosmRegistration.utr,
+            AddressFormattingHelper.formatBusinessAddress(
+              rosmRegistration.rosmRegistration.address,
+              Some(rosmRegistration.rosmRegistration.organisationName)
+            )
+          )(using request, messages(application)).toString
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(identifier, RegisterState.RegisterWithAuthUTR).set(VerifyPage, Verify.values.head).success.value
+      val userAnswers =
+        UserAnswers(identifier, RegisterState.RegisterWithAuthUTR).set(VerifyPage, Verify.values.head).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
@@ -84,7 +93,15 @@ class VerifyControllerSpec extends SpecBase with MockitoSugar with LoggerHelper 
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual
-          view(form.fill(Verify.values.head), NormalMode, rosmRegistration.utr, AddressFormattingHelper.formatBusinessAddress(rosmRegistration.rosmRegistration.address, Some(rosmRegistration.rosmRegistration.organisationName)))(using request, messages(application)).toString
+          view(
+            form.fill(Verify.values.head),
+            NormalMode,
+            rosmRegistration.utr,
+            AddressFormattingHelper.formatBusinessAddress(
+              rosmRegistration.rosmRegistration.address,
+              Some(rosmRegistration.rosmRegistration.organisationName)
+            )
+          )(using request, messages(application)).toString
       }
     }
 
@@ -98,7 +115,8 @@ class VerifyControllerSpec extends SpecBase with MockitoSugar with LoggerHelper 
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionService].toInstance(mockSessionService))
+            bind[SessionService].toInstance(mockSessionService)
+          )
           .build()
 
       running(application) {
@@ -115,11 +133,13 @@ class VerifyControllerSpec extends SpecBase with MockitoSugar with LoggerHelper 
     s"must onboard to ALF when valid data is submitted $YesNewAddress" in {
 
       val mockSessionService = mock[SessionService]
-      val mockAlfService = mock[AddressLookupService]
+      val mockAlfService     = mock[AddressLookupService]
 
       when(mockSessionService.set(any())).thenReturn(createSuccessRegistrationResult(true))
-      when(mockAlfService
-        .initJourneyAndReturnOnRampUrl(ArgumentMatchers.eq(BusinessAddress), any(), any())(using any(), any(), any()))
+      when(
+        mockAlfService
+          .initJourneyAndReturnOnRampUrl(ArgumentMatchers.eq(BusinessAddress), any(), any())(using any(), any(), any())
+      )
         .thenReturn(Future.successful("alfOnRamp"))
 
       val application =
@@ -127,7 +147,8 @@ class VerifyControllerSpec extends SpecBase with MockitoSugar with LoggerHelper 
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionService].toInstance(mockSessionService),
-            bind[AddressLookupService].toInstance(mockAlfService))
+            bind[AddressLookupService].toInstance(mockAlfService)
+          )
           .build()
 
       running(application) {
@@ -152,7 +173,8 @@ class VerifyControllerSpec extends SpecBase with MockitoSugar with LoggerHelper 
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionService].toInstance(mockSessionService))
+            bind[SessionService].toInstance(mockSessionService)
+          )
           .build()
 
       running(application) {
@@ -184,7 +206,15 @@ class VerifyControllerSpec extends SpecBase with MockitoSugar with LoggerHelper 
 
         status(result) mustEqual BAD_REQUEST
         contentAsString(result) mustEqual
-          view(boundForm, NormalMode, rosmRegistration.utr, AddressFormattingHelper.formatBusinessAddress(rosmRegistration.rosmRegistration.address, Some(rosmRegistration.rosmRegistration.organisationName)))(using request, messages(application)).toString
+          view(
+            boundForm,
+            NormalMode,
+            rosmRegistration.utr,
+            AddressFormattingHelper.formatBusinessAddress(
+              rosmRegistration.rosmRegistration.address,
+              Some(rosmRegistration.rosmRegistration.organisationName)
+            )
+          )(using request, messages(application)).toString
       }
     }
 
@@ -260,7 +290,8 @@ class VerifyControllerSpec extends SpecBase with MockitoSugar with LoggerHelper 
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionService].toInstance(mockSessionService))
+            bind[SessionService].toInstance(mockSessionService)
+          )
           .build()
 
       running(application) {
@@ -270,11 +301,12 @@ class VerifyControllerSpec extends SpecBase with MockitoSugar with LoggerHelper 
               .withFormUrlEncodedBody(("value", Verify.values.head.toString))
 
           await(route(application, request).value)
-          events.collectFirst {
-            case event =>
+          events
+            .collectFirst { case event =>
               event.getLevel.levelStr mustBe "ERROR"
               event.getMessage mustEqual "Failed to set value in session repository while attempting set on verify"
-          }.getOrElse(fail("No logging captured"))
+            }
+            .getOrElse(fail("No logging captured"))
         }
       }
     }

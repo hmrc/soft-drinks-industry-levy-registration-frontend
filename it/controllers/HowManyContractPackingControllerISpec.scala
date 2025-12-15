@@ -12,12 +12,12 @@ import org.scalatest.matchers.must.Matchers._
 class HowManyContractPackingControllerISpec extends LitresISpecHelper {
 
   val normalRoutePath = "/how-many-contract-packing-next-12-months"
-  val checkRoutePath = "/change-how-many-contract-packing-next-12-months"
+  val checkRoutePath  = "/change-how-many-contract-packing-next-12-months"
 
   val userAnswers = emptyUserAnswers.set(HowManyContractPackingPage, litresInBands).success.value
 
   List(NormalMode, CheckMode).foreach { mode =>
-    val (path, redirectLocation) = if(mode == NormalMode) {
+    val (path, redirectLocation) = if (mode == NormalMode) {
       (normalRoutePath, routes.ImportsController.onPageLoad(NormalMode).url)
     } else {
       (checkRoutePath, routes.CheckYourAnswersController.onPageLoad.url)
@@ -26,8 +26,7 @@ class HowManyContractPackingControllerISpec extends LitresISpecHelper {
     "GET " + path - {
       "when the userAnswers contains no data" - {
         "should return OK and render the litres page for ContractPacking with no data populated" in {
-          build
-            .commonPrecondition
+          build.commonPrecondition
 
           setAnswers(emptyUserAnswers)
 
@@ -46,8 +45,7 @@ class HowManyContractPackingControllerISpec extends LitresISpecHelper {
 
       s"when the userAnswers contains data for the page" - {
         s"should return OK and render the page with fields populated" in {
-          build
-            .commonPrecondition
+          build.commonPrecondition
 
           setAnswers(userAnswers)
 
@@ -73,19 +71,21 @@ class HowManyContractPackingControllerISpec extends LitresISpecHelper {
       "when the user populates all litres fields" - {
         "should update the session with the new values and redirect to " + redirectLocation - {
           "when the session contains no data for page" in {
-            build
-              .commonPrecondition
+            build.commonPrecondition
 
             setAnswers(emptyUserAnswers)
             WsTestClient.withClient { client =>
               val result = createClientRequestPOST(
-                client, baseUrl + path, Json.toJson(litresInBands)
+                client,
+                baseUrl + path,
+                Json.toJson(litresInBands)
               )
 
               whenReady(result) { res =>
                 res.status mustBe 303
                 res.header(HeaderNames.LOCATION) mustBe Some(redirectLocation)
-                val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[LitresInBands]](None)(_.get(HowManyContractPackingPage))
+                val dataStoredForPage =
+                  getAnswers(userAnswers.id).fold[Option[LitresInBands]](None)(_.get(HowManyContractPackingPage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe litresInBands
               }
@@ -93,19 +93,21 @@ class HowManyContractPackingControllerISpec extends LitresISpecHelper {
           }
 
           "when the session already contains data for page" in {
-            build
-              .commonPrecondition
+            build.commonPrecondition
 
             setAnswers(userAnswers)
             WsTestClient.withClient { client =>
               val result = createClientRequestPOST(
-                client, baseUrl + path, Json.toJson(litresInBandsDiff)
+                client,
+                baseUrl + path,
+                Json.toJson(litresInBandsDiff)
               )
 
               whenReady(result) { res =>
                 res.status mustBe 303
                 res.header(HeaderNames.LOCATION) mustBe Some(redirectLocation)
-                val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[LitresInBands]](None)(_.get(HowManyContractPackingPage))
+                val dataStoredForPage =
+                  getAnswers(userAnswers.id).fold[Option[LitresInBands]](None)(_.get(HowManyContractPackingPage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe litresInBandsDiff
               }
@@ -118,13 +120,14 @@ class HowManyContractPackingControllerISpec extends LitresISpecHelper {
         val errorTitle = "Error: " + Messages("howManyContractPacking.title")
 
         "when no questions are answered" in {
-          build
-            .commonPrecondition
+          build.commonPrecondition
 
           setAnswers(emptyUserAnswers)
           WsTestClient.withClient { client =>
             val result = createClientRequestPOST(
-              client, baseUrl + path, emptyJson
+              client,
+              baseUrl + path,
+              emptyJson
             )
 
             whenReady(result) { res =>
@@ -136,13 +139,14 @@ class HowManyContractPackingControllerISpec extends LitresISpecHelper {
         }
 
         "when the user answers with no numeric answers" in {
-          build
-            .commonPrecondition
+          build.commonPrecondition
 
           setAnswers(emptyUserAnswers)
           WsTestClient.withClient { client =>
             val result = createClientRequestPOST(
-              client, baseUrl + path, jsonWithNoNumeric
+              client,
+              baseUrl + path,
+              jsonWithNoNumeric
             )
 
             whenReady(result) { res =>
@@ -154,13 +158,14 @@ class HowManyContractPackingControllerISpec extends LitresISpecHelper {
         }
 
         "when the user answers with negative numbers" in {
-          build
-            .commonPrecondition
+          build.commonPrecondition
 
           setAnswers(emptyUserAnswers)
           WsTestClient.withClient { client =>
             val result = createClientRequestPOST(
-              client, baseUrl + path, jsonWithNegativeNumber
+              client,
+              baseUrl + path,
+              jsonWithNegativeNumber
             )
 
             whenReady(result) { res =>
@@ -172,13 +177,14 @@ class HowManyContractPackingControllerISpec extends LitresISpecHelper {
         }
 
         "when the user answers with decimal numbers" in {
-          build
-            .commonPrecondition
+          build.commonPrecondition
 
           setAnswers(emptyUserAnswers)
           WsTestClient.withClient { client =>
             val result = createClientRequestPOST(
-              client, baseUrl + path, jsonWithDecimalNumber
+              client,
+              baseUrl + path,
+              jsonWithDecimalNumber
             )
 
             whenReady(result) { res =>
@@ -190,13 +196,14 @@ class HowManyContractPackingControllerISpec extends LitresISpecHelper {
         }
 
         "when the user answers with out of max range numbers" in {
-          build
-            .commonPrecondition
+          build.commonPrecondition
 
           setAnswers(emptyUserAnswers)
           WsTestClient.withClient { client =>
             val result = createClientRequestPOST(
-              client, baseUrl + path, jsonWithOutOfRangeNumber
+              client,
+              baseUrl + path,
+              jsonWithOutOfRangeNumber
             )
 
             whenReady(result) { res =>

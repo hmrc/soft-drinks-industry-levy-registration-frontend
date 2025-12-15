@@ -20,8 +20,8 @@ import base.SpecBase
 import errors.SessionDatabaseInsertError
 import forms.OperatePackagingSitesFormProvider
 import helpers.LoggerHelper
-import models.{ NormalMode, RegisterState, UserAnswers }
-import navigation.{ FakeNavigator, Navigator }
+import models.{NormalMode, RegisterState, UserAnswers}
+import navigation.{FakeNavigator, Navigator}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -40,7 +40,7 @@ class OperatePackagingSitesControllerSpec extends SpecBase with MockitoSugar wit
   def onwardRoute = Call("GET", "/foo")
 
   val formProvider = new OperatePackagingSitesFormProvider()
-  val form = formProvider()
+  val form         = formProvider()
 
   lazy val operatePackagingSitesRoute = routes.OperatePackagingSitesController.onPageLoad(NormalMode).url
 
@@ -48,7 +48,8 @@ class OperatePackagingSitesControllerSpec extends SpecBase with MockitoSugar wit
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration).build()
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration).build()
 
       running(application) {
         val request = FakeRequest(GET, operatePackagingSitesRoute)
@@ -64,7 +65,8 @@ class OperatePackagingSitesControllerSpec extends SpecBase with MockitoSugar wit
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(identifier, RegisterState.RegisterWithAuthUTR).set(OperatePackagingSitesPage, true).success.value
+      val userAnswers =
+        UserAnswers(identifier, RegisterState.RegisterWithAuthUTR).set(OperatePackagingSitesPage, true).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers), rosmRegistration = rosmRegistration).build()
 
@@ -76,7 +78,10 @@ class OperatePackagingSitesControllerSpec extends SpecBase with MockitoSugar wit
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode)(using request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(true), NormalMode)(using
+          request,
+          messages(application)
+        ).toString
       }
     }
 
@@ -90,7 +95,8 @@ class OperatePackagingSitesControllerSpec extends SpecBase with MockitoSugar wit
         applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration)
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionService].toInstance(mockSessionService))
+            bind[SessionService].toInstance(mockSessionService)
+          )
           .build()
 
       running(application) {
@@ -107,7 +113,8 @@ class OperatePackagingSitesControllerSpec extends SpecBase with MockitoSugar wit
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration).build()
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration).build()
 
       running(application) {
         val request =
@@ -157,7 +164,10 @@ class OperatePackagingSitesControllerSpec extends SpecBase with MockitoSugar wit
 
     "must fail if the setting of userAnswers fails" in {
 
-      val application = applicationBuilder(userAnswers = Some(userDetailsWithSetMethodsReturningFailure), rosmRegistration = rosmRegistration).build()
+      val application = applicationBuilder(
+        userAnswers = Some(userDetailsWithSetMethodsReturningFailure),
+        rosmRegistration = rosmRegistration
+      ).build()
 
       running(application) {
         val request =
@@ -181,7 +191,8 @@ class OperatePackagingSitesControllerSpec extends SpecBase with MockitoSugar wit
         applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration)
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionService].toInstance(mockSessionService))
+            bind[SessionService].toInstance(mockSessionService)
+          )
           .build()
 
       running(application) {
@@ -191,11 +202,12 @@ class OperatePackagingSitesControllerSpec extends SpecBase with MockitoSugar wit
               .withFormUrlEncodedBody(("value", "true"))
 
           await(route(application, request).value)
-          events.collectFirst {
-            case event =>
+          events
+            .collectFirst { case event =>
               event.getLevel.levelStr mustBe "ERROR"
               event.getMessage mustEqual "Failed to set value in session repository while attempting set on operatePackagingSites"
-          }.getOrElse(fail("No logging captured"))
+            }
+            .getOrElse(fail("No logging captured"))
         }
       }
     }

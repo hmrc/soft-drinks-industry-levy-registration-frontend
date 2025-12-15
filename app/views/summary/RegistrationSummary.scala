@@ -24,19 +24,32 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 object RegistrationSummary {
-  def summaryList(createdSubscriptionAndAmountProducedGlobally: CreatedSubscriptionAndAmountProducedGlobally, isCheckYourAnswers: Boolean = true)(implicit messages: Messages): Seq[(String, SummaryList)] = {
+  def summaryList(
+    createdSubscriptionAndAmountProducedGlobally: CreatedSubscriptionAndAmountProducedGlobally,
+    isCheckYourAnswers: Boolean = true
+  )(implicit messages: Messages): Seq[(String, SummaryList)] = {
 
-    val subscription = createdSubscriptionAndAmountProducedGlobally.subscription
+    val subscription          = createdSubscriptionAndAmountProducedGlobally.subscription
     val howManyLitresGlobally = createdSubscriptionAndAmountProducedGlobally.howManyLitresGlobally
 
-    val businessDetails: (String, SummaryList) = BusinessDetailsSummary.headingAndSummary(howManyLitresGlobally, subscription, isCheckYourAnswers)
-    val thirdPartyPackersSummary: Option[(String, SummaryList)] = ThirdPartyPackersSummary.getOptHeadingAndSummary(subscription, howManyLitresGlobally, isCheckYourAnswers)
-    val operatePackagingSites: Option[(String, SummaryList)] = OperatePackagingSitesSummary.getOptHeadingAndSummary(subscription, howManyLitresGlobally, isCheckYourAnswers)
-    val contractPacking: (String, SummaryList) = ContractPackingSummary.getOptHeadingAndSummary(subscription, isCheckYourAnswers)
-    val imports: (String, SummaryList) = ImportsSummary.getOptHeadingAndSummary(subscription, isCheckYourAnswers)
-    val startDate: Option[(String, SummaryList)] = StartDateSummary.optHeadingAndSummary(subscription, howManyLitresGlobally, isCheckYourAnswers)
-    val contactDetails: (String, SummaryList) = ContactDetailsSummary.headingAndSummary(subscription, isCheckYourAnswers)
-    val packingDetails: Option[(String, SummaryList)] = UKSitesSummary.getHeadingAndSummary(subscription, createdSubscriptionAndAmountProducedGlobally.howManyLitresGlobally, isCheckYourAnswers)
+    val businessDetails: (String, SummaryList)                  =
+      BusinessDetailsSummary.headingAndSummary(howManyLitresGlobally, subscription, isCheckYourAnswers)
+    val thirdPartyPackersSummary: Option[(String, SummaryList)] =
+      ThirdPartyPackersSummary.getOptHeadingAndSummary(subscription, howManyLitresGlobally, isCheckYourAnswers)
+    val operatePackagingSites: Option[(String, SummaryList)]    =
+      OperatePackagingSitesSummary.getOptHeadingAndSummary(subscription, howManyLitresGlobally, isCheckYourAnswers)
+    val contractPacking: (String, SummaryList)                  =
+      ContractPackingSummary.getOptHeadingAndSummary(subscription, isCheckYourAnswers)
+    val imports: (String, SummaryList)                          = ImportsSummary.getOptHeadingAndSummary(subscription, isCheckYourAnswers)
+    val startDate: Option[(String, SummaryList)]                =
+      StartDateSummary.optHeadingAndSummary(subscription, howManyLitresGlobally, isCheckYourAnswers)
+    val contactDetails: (String, SummaryList)                   =
+      ContactDetailsSummary.headingAndSummary(subscription, isCheckYourAnswers)
+    val packingDetails: Option[(String, SummaryList)]           = UKSitesSummary.getHeadingAndSummary(
+      subscription,
+      createdSubscriptionAndAmountProducedGlobally.howManyLitresGlobally,
+      isCheckYourAnswers
+    )
     Seq(
       Some(businessDetails),
       thirdPartyPackersSummary,
@@ -45,7 +58,8 @@ object RegistrationSummary {
       Some(imports),
       startDate,
       Some(contactDetails),
-      packingDetails).flatten
+      packingDetails
+    ).flatten
   }
 
   def applicationSentFormattedDateTime(dateTime: LocalDateTime): String = {

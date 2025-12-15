@@ -26,10 +26,9 @@ import javax.inject.Inject
 class HowManyLitresFormProvider @Inject() extends Mappings {
 
   def apply(): Form[LitresInBands] = Form(
-    mapping(
-      "lowBand" -> litres(
-        "lowBand"),
-      "highBand" -> litres(
-        "highBand"))(LitresInBands.apply)(LitresInBands.unapply))
+    mapping("lowBand" -> litres("lowBand"), "highBand" -> litres("highBand"))(LitresInBands.apply)(
+      LitresInBands.unapply
+    )
+  )
 
 }

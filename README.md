@@ -28,6 +28,29 @@ Run the code from source using
 Run other services required for running this service via the service manager. (*You need to be on the VPN*)
 `sm2 --start SDIL_ALL`
 
+### Scalafmt
+
+This repository uses [Scalafmt](https://scalameta.org/scalafmt/), a code formatter for Scala. The formatting rules
+configured for this repository are defined within [.scalafmt.conf](.scalafmt.conf).
+
+To apply formatting to this repository using the configured rules in [.scalafmt.conf](.scalafmt.conf) execute:
+
+ ```
+ sbt scalafmtAll
+ ```
+
+ ```
+ sbt scalafmtSbt
+ ```
+
+To check files have been formatted as expected execute:
+
+ ```
+ sbt scalafmtCheckAll scalafmtSbtCheck
+ ```
+
+[Visit the official Scalafmt documentation to view a complete list of tasks which can be run.](https://scalameta.org/scalafmt/docs/installation.html#task-keys)
+
 ### License
 
 This code is open source software licensed under the [Apache 2.0 License]("http://www.apache.org/licenses/LICENSE-2.0.html").

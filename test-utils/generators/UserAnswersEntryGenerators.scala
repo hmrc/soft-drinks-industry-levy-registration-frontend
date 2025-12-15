@@ -24,7 +24,8 @@ import play.api.libs.json.{JsValue, Json}
 
 trait UserAnswersEntryGenerators extends PageGenerators with ModelGenerators {
 
-  implicit lazy val arbitraryWarehousesTradingNameUserAnswersEntry: Arbitrary[(WarehousesTradingNamePage.type, JsValue)] =
+  implicit lazy val arbitraryWarehousesTradingNameUserAnswersEntry
+    : Arbitrary[(WarehousesTradingNamePage.type, JsValue)] =
     Arbitrary {
       for {
         page  <- arbitrary[WarehousesTradingNamePage.type]
@@ -48,7 +49,8 @@ trait UserAnswersEntryGenerators extends PageGenerators with ModelGenerators {
       } yield (page, value)
     }
 
-  implicit lazy val arbitraryRemovePackagingSiteDetailsUserAnswersEntry: Arbitrary[(RemovePackagingSiteDetailsPage.type, JsValue)] =
+  implicit lazy val arbitraryRemovePackagingSiteDetailsUserAnswersEntry
+    : Arbitrary[(RemovePackagingSiteDetailsPage.type, JsValue)] =
     Arbitrary {
       for {
         page  <- arbitrary[RemovePackagingSiteDetailsPage.type]
@@ -64,10 +66,11 @@ trait UserAnswersEntryGenerators extends PageGenerators with ModelGenerators {
       } yield (page, value)
     }
 
-  implicit lazy val arbitraryUpdateRegisteredDetailsRemoveWarehouseDetailsUserAnswersEntry: Arbitrary[(RemoveWarehouseDetailsPage.type, JsValue)] =
+  implicit lazy val arbitraryUpdateRegisteredDetailsRemoveWarehouseDetailsUserAnswersEntry
+    : Arbitrary[(RemoveWarehouseDetailsPage.type, JsValue)] =
     Arbitrary {
       for {
-        page <- arbitrary[RemoveWarehouseDetailsPage.type]
+        page  <- arbitrary[RemoveWarehouseDetailsPage.type]
         value <- arbitrary[Boolean].map(Json.toJson(_))
       } yield (page, value)
     }
@@ -75,7 +78,7 @@ trait UserAnswersEntryGenerators extends PageGenerators with ModelGenerators {
   implicit lazy val arbitraryVerifyUserAnswersEntry: Arbitrary[(VerifyPage.type, JsValue)] =
     Arbitrary {
       for {
-        page <- arbitrary[VerifyPage.type]
+        page  <- arbitrary[VerifyPage.type]
         value <- arbitrary[Verify].map(Json.toJson(_))
       } yield (page, value)
     }
@@ -88,7 +91,8 @@ trait UserAnswersEntryGenerators extends PageGenerators with ModelGenerators {
       } yield (page, value)
     }
 
-  implicit lazy val arbitraryPackAtBusinessAddressUserAnswersEntry: Arbitrary[(PackAtBusinessAddressPage.type, JsValue)] =
+  implicit lazy val arbitraryPackAtBusinessAddressUserAnswersEntry
+    : Arbitrary[(PackAtBusinessAddressPage.type, JsValue)] =
     Arbitrary {
       for {
         page  <- arbitrary[PackAtBusinessAddressPage.type]
@@ -112,7 +116,8 @@ trait UserAnswersEntryGenerators extends PageGenerators with ModelGenerators {
       } yield (page, value)
     }
 
-  implicit lazy val arbitraryOperatePackagingSitesUserAnswersEntry: Arbitrary[(OperatePackagingSitesPage.type, JsValue)] =
+  implicit lazy val arbitraryOperatePackagingSitesUserAnswersEntry
+    : Arbitrary[(OperatePackagingSitesPage.type, JsValue)] =
     Arbitrary {
       for {
         page  <- arbitrary[OperatePackagingSitesPage.type]
@@ -123,12 +128,13 @@ trait UserAnswersEntryGenerators extends PageGenerators with ModelGenerators {
   implicit lazy val arbitraryPackagingSiteDetailsUserAnswersEntry: Arbitrary[(PackagingSiteDetailsPage.type, JsValue)] =
     Arbitrary {
       for {
-        page <- arbitrary[PackagingSiteDetailsPage.type]
+        page  <- arbitrary[PackagingSiteDetailsPage.type]
         value <- arbitrary[Boolean].map(Json.toJson(_))
       } yield (page, value)
     }
 
-  implicit lazy val arbitraryHowManyLitresGloballyUserAnswersEntry: Arbitrary[(HowManyLitresGloballyPage.type, JsValue)] =
+  implicit lazy val arbitraryHowManyLitresGloballyUserAnswersEntry
+    : Arbitrary[(HowManyLitresGloballyPage.type, JsValue)] =
     Arbitrary {
       for {
         page  <- arbitrary[HowManyLitresGloballyPage.type]
@@ -136,7 +142,8 @@ trait UserAnswersEntryGenerators extends PageGenerators with ModelGenerators {
       } yield (page, value)
     }
 
-  implicit lazy val arbitraryAskSecondaryWarehousesUserAnswersEntry: Arbitrary[(AskSecondaryWarehousesPage.type, JsValue)] =
+  implicit lazy val arbitraryAskSecondaryWarehousesUserAnswersEntry
+    : Arbitrary[(AskSecondaryWarehousesPage.type, JsValue)] =
     Arbitrary {
       for {
         page  <- arbitrary[AskSecondaryWarehousesPage.type]

@@ -11,16 +11,15 @@ import play.api.test.{FakeRequest, WsTestClient}
 
 class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
   given messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-  given messages: Messages = messagesApi.preferred(FakeRequest())
-  
+  given messages: Messages       = messagesApi.preferred(FakeRequest())
+
   val normalRoutePath = "/third-party-packagers"
-  val checkRoutePath = "/change-third-party-packagers"
+  val checkRoutePath  = "/change-third-party-packagers"
 
   "GET " + normalRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the ThirdPartyPackagers page with no data populated" in {
-        build
-          .commonPrecondition
+        build.commonPrecondition
 
         setAnswers(emptyUserAnswers)
 
@@ -45,8 +44,7 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
     userAnswersForThirdPartyPackagersPage.foreach { case (key, userAnswers) =>
       s"when the userAnswers contains data for the page with " + key + " selected" - {
         s"should return OK and render the page with " + key + " radio checked" in {
-          build
-            .commonPrecondition
+          build.commonPrecondition
 
           setAnswers(userAnswers)
 
@@ -71,13 +69,13 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
     testOtherSuccessUserTypes(baseUrl + normalRoutePath, messages("thirdPartyPackagers" + ".title"))
     testUnauthorisedUser(baseUrl + normalRoutePath)
     testUserWhoIsUnableToRegister(baseUrl + normalRoutePath)
-    testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)  }
+    testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)
+  }
 
   s"GET " + checkRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the ThirdPartyPackagers page with no data populated" in {
-        build
-          .commonPrecondition
+        build.commonPrecondition
 
         setAnswers(emptyUserAnswers)
 
@@ -102,8 +100,7 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
     userAnswersForThirdPartyPackagersPage.foreach { case (key, userAnswers) =>
       s"when the userAnswers contains data for the page with " + key + " selected" - {
         s"should return OK and render the page with " + key + " radio checked" in {
-          build
-            .commonPrecondition
+          build.commonPrecondition
 
           setAnswers(userAnswers)
 
@@ -137,20 +134,24 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
       "when the user selects " + key - {
         "should update the session with the new value and redirect to operate packaging sites controller" - {
           "when the session contains no data for page" in {
-            build
-              .commonPrecondition
+            build.commonPrecondition
 
             setAnswers(emptyUserAnswers)
             WsTestClient.withClient { client =>
               val yesSelected = key == "yes"
-              val result = createClientRequestPOST(
-                client, baseUrl + normalRoutePath, Json.obj("value" -> yesSelected.toString)
+              val result      = createClientRequestPOST(
+                client,
+                baseUrl + normalRoutePath,
+                Json.obj("value" -> yesSelected.toString)
               )
 
               whenReady(result) { res =>
                 res.status mustBe 303
-                res.header(HeaderNames.LOCATION) mustBe Some(routes.OperatePackagingSitesController.onPageLoad(NormalMode).url)
-                val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(ThirdPartyPackagersPage))
+                res.header(HeaderNames.LOCATION) mustBe Some(
+                  routes.OperatePackagingSitesController.onPageLoad(NormalMode).url
+                )
+                val dataStoredForPage =
+                  getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(ThirdPartyPackagersPage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe yesSelected
               }
@@ -158,20 +159,24 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
           }
 
           "when the session already contains data for page" in {
-            build
-              .commonPrecondition
+            build.commonPrecondition
 
             setAnswers(userAnswers)
             WsTestClient.withClient { client =>
               val yesSelected = key == "yes"
-              val result = createClientRequestPOST(
-                client, baseUrl + normalRoutePath, Json.obj("value" -> yesSelected.toString)
+              val result      = createClientRequestPOST(
+                client,
+                baseUrl + normalRoutePath,
+                Json.obj("value" -> yesSelected.toString)
               )
 
               whenReady(result) { res =>
                 res.status mustBe 303
-                res.header(HeaderNames.LOCATION) mustBe Some(routes.OperatePackagingSitesController.onPageLoad(NormalMode).url)
-                val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(ThirdPartyPackagersPage))
+                res.header(HeaderNames.LOCATION) mustBe Some(
+                  routes.OperatePackagingSitesController.onPageLoad(NormalMode).url
+                )
+                val dataStoredForPage =
+                  getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(ThirdPartyPackagersPage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe yesSelected
               }
@@ -183,20 +188,22 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
 
     "when the user does not select yes or no" - {
       "should return 400 with required error" in {
-        build
-          .commonPrecondition
+        build.commonPrecondition
 
         setAnswers(emptyUserAnswers)
         WsTestClient.withClient { client =>
           val result = createClientRequestPOST(
-            client, baseUrl + normalRoutePath, Json.obj("value" -> "")
+            client,
+            baseUrl + normalRoutePath,
+            Json.obj("value" -> "")
           )
 
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
             page.title must include("Error: " + messages("thirdPartyPackagers" + ".title"))
-            val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
+            val errorSummary = page
+              .getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")
@@ -216,20 +223,22 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
       "when the user selects " + key - {
         "should update the session with the new value and redirect to the checkAnswers controller" - {
           "when the session contains no data for page" in {
-            build
-              .commonPrecondition
+            build.commonPrecondition
 
             setAnswers(emptyUserAnswers)
             WsTestClient.withClient { client =>
               val yesSelected = key == "yes"
-              val result = createClientRequestPOST(
-                client, baseUrl + checkRoutePath, Json.obj("value" -> yesSelected.toString)
+              val result      = createClientRequestPOST(
+                client,
+                baseUrl + checkRoutePath,
+                Json.obj("value" -> yesSelected.toString)
               )
 
               whenReady(result) { res =>
                 res.status mustBe 303
                 res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
-                val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(ThirdPartyPackagersPage))
+                val dataStoredForPage =
+                  getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(ThirdPartyPackagersPage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe yesSelected
               }
@@ -237,20 +246,22 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
           }
 
           "when the session already contains data for page" in {
-            build
-              .commonPrecondition
+            build.commonPrecondition
 
             setAnswers(userAnswers)
             WsTestClient.withClient { client =>
               val yesSelected = key == "yes"
-              val result = createClientRequestPOST(
-                client, baseUrl + checkRoutePath, Json.obj("value" -> yesSelected.toString)
+              val result      = createClientRequestPOST(
+                client,
+                baseUrl + checkRoutePath,
+                Json.obj("value" -> yesSelected.toString)
               )
 
               whenReady(result) { res =>
                 res.status mustBe 303
                 res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
-                val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(ThirdPartyPackagersPage))
+                val dataStoredForPage =
+                  getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(ThirdPartyPackagersPage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe yesSelected
               }
@@ -262,20 +273,22 @@ class ThirdPartyPackagersControllerISpec extends ControllerITTestHelper {
 
     "when the user does not select yes or no" - {
       "should return 400 with required error" in {
-        build
-          .commonPrecondition
+        build.commonPrecondition
 
         setAnswers(emptyUserAnswers)
         WsTestClient.withClient { client =>
           val result = createClientRequestPOST(
-            client, baseUrl + checkRoutePath, Json.obj("value" -> "")
+            client,
+            baseUrl + checkRoutePath,
+            Json.obj("value" -> "")
           )
 
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
             page.title must include("Error: " + messages("thirdPartyPackagers" + ".title"))
-            val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
+            val errorSummary = page
+              .getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")

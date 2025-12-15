@@ -16,7 +16,7 @@
 
 package pages
 
-import models.{ CheckMode, NormalMode, OrganisationType }
+import models.{CheckMode, NormalMode, OrganisationType}
 import pages.behaviours.PageBehaviours
 
 class OrganisationTypePageSpec extends PageBehaviours {
@@ -30,7 +30,8 @@ class OrganisationTypePageSpec extends PageBehaviours {
     beRemovable[OrganisationType](OrganisationTypePage)
 
     s"url should be correct for $NormalMode" in {
-      OrganisationTypePage.url(NormalMode) mustBe controllers.routes.OrganisationTypeController.onPageLoad(NormalMode).url
+      OrganisationTypePage
+        .url(NormalMode) mustBe controllers.routes.OrganisationTypeController.onPageLoad(NormalMode).url
     }
     s"url should be correct for $CheckMode" in {
       OrganisationTypePage.url(CheckMode) mustBe controllers.routes.OrganisationTypeController.onPageLoad(CheckMode).url

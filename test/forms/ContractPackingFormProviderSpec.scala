@@ -22,7 +22,7 @@ import play.api.data.FormError
 class ContractPackingFormProviderSpec extends BooleanFieldBehaviours {
 
   val requiredKey = "contractPacking.error.required"
-  val invalidKey = "error.boolean"
+  val invalidKey  = "error.boolean"
 
   val form = new ContractPackingFormProvider()()
 
@@ -30,14 +30,8 @@ class ContractPackingFormProviderSpec extends BooleanFieldBehaviours {
 
     val fieldName = "value"
 
-    behave like booleanField(
-      form,
-      fieldName,
-      invalidError = FormError(fieldName, invalidKey))
+    behave like booleanField(form, fieldName, invalidError = FormError(fieldName, invalidKey))
 
-    behave like mandatoryField(
-      form,
-      fieldName,
-      requiredError = FormError(fieldName, requiredKey))
+    behave like mandatoryField(form, fieldName, requiredError = FormError(fieldName, requiredKey))
   }
 }

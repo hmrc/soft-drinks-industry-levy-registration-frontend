@@ -33,7 +33,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import viewmodels.govuk.SummaryListFluency
 
-class RegistrationControllerSpec extends SpecBase with SummaryListFluency with MockitoSugar{
+class RegistrationControllerSpec extends SpecBase with SummaryListFluency with MockitoSugar {
 
   val mockOrchestrator = mock[RegistrationOrchestrator]
 
@@ -46,27 +46,26 @@ class RegistrationControllerSpec extends SpecBase with SummaryListFluency with M
       )
   }
 
-  def expectedLocationForRegState(regState: RegisterState): String = {
+  def expectedLocationForRegState(regState: RegisterState): String =
     regState match {
-      case AlreadyRegistered => routes.AlreadyRegisteredController.onPageLoad.url
-      case RegistrationPending => routes.RegistrationPendingController.onPageLoad.url
-      case RequiresBusinessDetails => routes.EnterBusinessDetailsController.onPageLoad.url
+      case AlreadyRegistered           => routes.AlreadyRegisteredController.onPageLoad.url
+      case RegistrationPending         => routes.RegistrationPendingController.onPageLoad.url
+      case RequiresBusinessDetails     => routes.EnterBusinessDetailsController.onPageLoad.url
       case RegisterApplicationAccepted => routes.ApplicationAlreadySubmittedController.onPageLoad.url
-      case _ => routes.VerifyController.onPageLoad(NormalMode).url
+      case _                           => routes.VerifyController.onPageLoad(NormalMode).url
     }
-  }
-
 
   "RegistrationController.start" - {
     "when a valid user who is visiting for first time" - {
-      RegisterState.values.foreach{registerState =>
+      RegisterState.values.foreach { registerState =>
         s"that is found to have a register state of $registerState" - {
           "should redirect to the expected location" in {
 
             val userAnswers = emptyUserAnswers.copy(registerState = registerState)
 
             val application = applicationBuilderForHome().build()
-            when(mockOrchestrator.handleRegistrationRequest(using any(), any(), any())).thenReturn(createSuccessRegistrationResult(userAnswers))
+            when(mockOrchestrator.handleRegistrationRequest(using any(), any(), any()))
+              .thenReturn(createSuccessRegistrationResult(userAnswers))
 
             running(application) {
               val request = FakeRequest(GET, routes.RegistrationController.start.url)
@@ -81,17 +80,20 @@ class RegistrationControllerSpec extends SpecBase with SummaryListFluency with M
       }
     }
 
-
     s"when the user has already started a registration that required them to enter business details" - {
       RegisterState.values.foreach { registerState =>
         s"and is in a registerState of $registerState" - {
           "should redirect to EnterBusinessDetails" in {
 
-            val userAnswers = emptyUserAnswers.copy(registerState = registerState)
-              .set(EnterBusinessDetailsPage, Identify(utr, "TF4 32d")).success.value
+            val userAnswers = emptyUserAnswers
+              .copy(registerState = registerState)
+              .set(EnterBusinessDetailsPage, Identify(utr, "TF4 32d"))
+              .success
+              .value
 
             val application = applicationBuilderForHome().build()
-            when(mockOrchestrator.handleRegistrationRequest(using any(), any(), any())).thenReturn(createSuccessRegistrationResult(userAnswers))
+            when(mockOrchestrator.handleRegistrationRequest(using any(), any(), any()))
+              .thenReturn(createSuccessRegistrationResult(userAnswers))
 
             running(application) {
               val request = FakeRequest(GET, routes.RegistrationController.start.url)
@@ -110,7 +112,8 @@ class RegistrationControllerSpec extends SpecBase with SummaryListFluency with M
     "should redirect to register confirmation page" - {
       "when the application has been submitted" in {
         val application = applicationBuilderForHome().build()
-        when(mockOrchestrator.handleRegistrationRequest(using any(), any(), any())).thenReturn(createFailureRegistrationResult(RegistrationAlreadySubmitted))
+        when(mockOrchestrator.handleRegistrationRequest(using any(), any(), any()))
+          .thenReturn(createFailureRegistrationResult(RegistrationAlreadySubmitted))
 
         running(application) {
           val request = FakeRequest(GET, routes.RegistrationController.start.url)
@@ -126,7 +129,8 @@ class RegistrationControllerSpec extends SpecBase with SummaryListFluency with M
     "should render the error page" - {
       "when a backend call fails" in {
         val application = applicationBuilderForHome().build()
-        when(mockOrchestrator.handleRegistrationRequest(using any(), any(), any())).thenReturn(createFailureRegistrationResult(UnexpectedResponseFromSDIL))
+        when(mockOrchestrator.handleRegistrationRequest(using any(), any(), any()))
+          .thenReturn(createFailureRegistrationResult(UnexpectedResponseFromSDIL))
 
         running(application) {
           val request = FakeRequest(GET, routes.RegistrationController.start.url)
@@ -141,7 +145,8 @@ class RegistrationControllerSpec extends SpecBase with SummaryListFluency with M
 
       "when the database call fails" in {
         val application = applicationBuilderForHome().build()
-        when(mockOrchestrator.handleRegistrationRequest(using any(), any(), any())).thenReturn(createFailureRegistrationResult(SessionDatabaseInsertError))
+        when(mockOrchestrator.handleRegistrationRequest(using any(), any(), any()))
+          .thenReturn(createFailureRegistrationResult(SessionDatabaseInsertError))
 
         running(application) {
           val request = FakeRequest(GET, routes.RegistrationController.start.url)

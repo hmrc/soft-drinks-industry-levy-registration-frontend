@@ -18,7 +18,7 @@ package views
 
 import config.FrontendAppConfig
 import controllers.routes
-import models.{ CheckMode, NormalMode }
+import models.{CheckMode, NormalMode}
 import play.api.i18n.Messages
 import play.api.mvc.Request
 import play.api.test.FakeRequest
@@ -27,35 +27,43 @@ import views.html.HowManyOperatePackagingSitesView
 
 class HowManyOperatePackagingSitesViewSpec extends LitresSpecHelper {
 
-  val howManyOperatePackagingSitesView: HowManyOperatePackagingSitesView = application.injector.instanceOf[HowManyOperatePackagingSitesView]
+  val howManyOperatePackagingSitesView: HowManyOperatePackagingSitesView =
+    application.injector.instanceOf[HowManyOperatePackagingSitesView]
 
-  implicit val request: Request[?] = FakeRequest()
+  implicit val request: Request[?]       = FakeRequest()
   implicit val config: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
 
   "HowManyOperatePackagingSitesView" - {
     List(NormalMode, CheckMode).foreach { mode =>
       "when in " + mode + " mode" - {
-        val html: HtmlFormat.Appendable = howManyOperatePackagingSitesView(form, mode)
-        val document = doc(html)
-        val htmlWithValidData: HtmlFormat.Appendable = howManyOperatePackagingSitesView(formWithHighAndLowBands, mode)
-        val documentWithValidData = doc(htmlWithValidData)
-        val htmlFormErrorsEmpty: HtmlFormat.Appendable = howManyOperatePackagingSitesView(emptyForm, mode)
-        val documentFormErrorsEmpty = doc(htmlFormErrorsEmpty)
-        val htmlFormErrorsNegative: HtmlFormat.Appendable = howManyOperatePackagingSitesView(formWithNegativeNumber, mode)
-        val documentFormErrorsNegative = doc(htmlFormErrorsNegative)
+        val html: HtmlFormat.Appendable                      = howManyOperatePackagingSitesView(form, mode)
+        val document                                         = doc(html)
+        val htmlWithValidData: HtmlFormat.Appendable         = howManyOperatePackagingSitesView(formWithHighAndLowBands, mode)
+        val documentWithValidData                            = doc(htmlWithValidData)
+        val htmlFormErrorsEmpty: HtmlFormat.Appendable       = howManyOperatePackagingSitesView(emptyForm, mode)
+        val documentFormErrorsEmpty                          = doc(htmlFormErrorsEmpty)
+        val htmlFormErrorsNegative: HtmlFormat.Appendable    =
+          howManyOperatePackagingSitesView(formWithNegativeNumber, mode)
+        val documentFormErrorsNegative                       = doc(htmlFormErrorsNegative)
         val htmlFormErrorsNoneNumeric: HtmlFormat.Appendable = howManyOperatePackagingSitesView(formWithNoNumeric, mode)
-        val documentFormErrorsNoneNumeric = doc(htmlFormErrorsNoneNumeric)
-        val htmlFormErrorsNotWhole: HtmlFormat.Appendable = howManyOperatePackagingSitesView(formWithDecimalNumber, mode)
-        val documentFormErrorsNotWhole = doc(htmlFormErrorsNotWhole)
-        val htmlFormErrorsOutOfRange: HtmlFormat.Appendable = howManyOperatePackagingSitesView(formWithOutOfRangeNumber, mode)
-        val documentFormErrorsOutOfRange = doc(htmlFormErrorsOutOfRange)
+        val documentFormErrorsNoneNumeric                    = doc(htmlFormErrorsNoneNumeric)
+        val htmlFormErrorsNotWhole: HtmlFormat.Appendable    =
+          howManyOperatePackagingSitesView(formWithDecimalNumber, mode)
+        val documentFormErrorsNotWhole                       = doc(htmlFormErrorsNotWhole)
+        val htmlFormErrorsOutOfRange: HtmlFormat.Appendable  =
+          howManyOperatePackagingSitesView(formWithOutOfRangeNumber, mode)
+        val documentFormErrorsOutOfRange                     = doc(htmlFormErrorsOutOfRange)
 
         "should have the expected title" in {
-          document.title() must include(Messages("How many litres of your own brands will you package in the next 12 months?"))
+          document.title() must include(
+            Messages("How many litres of your own brands will you package in the next 12 months?")
+          )
         }
 
         "should have the expected heading" in {
-          document.getElementsByClass(Selectors.heading).text() mustBe Messages("How many litres of your own brands will you package in the next 12 months?")
+          document.getElementsByClass(Selectors.heading).text() mustBe Messages(
+            "How many litres of your own brands will you package in the next 12 months?"
+          )
         }
 
         "should include a govuk body with the expected content" in {

@@ -30,10 +30,12 @@ class ThirdPartyPackagersPageSpec extends PageBehaviours {
     beRemovable[Boolean](ThirdPartyPackagersPage)
 
     s"url should be correct for $NormalMode" in {
-      ThirdPartyPackagersPage.url(NormalMode) mustBe controllers.routes.ThirdPartyPackagersController.onPageLoad(NormalMode).url
+      ThirdPartyPackagersPage
+        .url(NormalMode) mustBe controllers.routes.ThirdPartyPackagersController.onPageLoad(NormalMode).url
     }
     s"url should be correct for $CheckMode" in {
-      ThirdPartyPackagersPage.url(CheckMode) mustBe controllers.routes.ThirdPartyPackagersController.onPageLoad(CheckMode).url
+      ThirdPartyPackagersPage
+        .url(CheckMode) mustBe controllers.routes.ThirdPartyPackagersController.onPageLoad(CheckMode).url
     }
   }
 }

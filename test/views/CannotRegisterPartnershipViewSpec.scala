@@ -24,17 +24,17 @@ import views.html.CannotRegisterPartnershipView
 
 class CannotRegisterPartnershipViewSpec extends ViewSpecHelper {
 
-  val view = application.injector.instanceOf[CannotRegisterPartnershipView]
-  val config = application.injector.instanceOf[FrontendAppConfig]
+  val view                         = application.injector.instanceOf[CannotRegisterPartnershipView]
+  val config                       = application.injector.instanceOf[FrontendAppConfig]
   implicit val request: Request[?] = FakeRequest()
 
   object Selectors {
     val heading = "govuk-heading-l"
-    val body = "govuk-body"
+    val body    = "govuk-body"
   }
 
   "View" - {
-    val html = view(config.helpdeskPhoneNumber)(using request, messages(application))
+    val html     = view(config.helpdeskPhoneNumber)(using request, messages(application))
     val document = doc(html)
     "should contain the expected title" in {
       document.title() must include(Messages("cannotRegisterPartnership" + ".title"))
@@ -45,7 +45,10 @@ class CannotRegisterPartnershipViewSpec extends ViewSpecHelper {
     }
 
     "should have the expected body" in {
-      document.getElementsByClass(Selectors.body).text() mustEqual Messages("cannotRegisterPartnership" + ".subText", config.helpdeskPhoneNumber)
+      document.getElementsByClass(Selectors.body).text() mustEqual Messages(
+        "cannotRegisterPartnership" + ".subText",
+        config.helpdeskPhoneNumber
+      )
     }
 
     testBackLink(document)

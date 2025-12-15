@@ -25,25 +25,20 @@ class PackagingSiteNameFormProviderSpec extends StringFieldBehaviours {
 
   "Packaging site name field" - {
 
-    val fieldName = "packagingSiteName"
+    val fieldName   = "packagingSiteName"
     val requiredKey = "packagingSiteName.error.required"
-    val lengthKey = "packagingSiteName.error.length"
-    val maxLength = 160
+    val lengthKey   = "packagingSiteName.error.length"
+    val maxLength   = 160
 
-    behave like fieldThatBindsValidData(
-      form,
-      fieldName,
-      stringsWithMaxLength(maxLength))
+    behave like fieldThatBindsValidData(form, fieldName, stringsWithMaxLength(maxLength))
 
     behave like fieldWithMaxLength(
       form,
       fieldName,
       maxLength = maxLength,
-      lengthError = FormError(fieldName, lengthKey, Seq(maxLength)))
+      lengthError = FormError(fieldName, lengthKey, Seq(maxLength))
+    )
 
-    behave like mandatoryField(
-      form,
-      fieldName,
-      requiredError = FormError(fieldName, requiredKey))
+    behave like mandatoryField(form, fieldName, requiredError = FormError(fieldName, requiredKey))
   }
 }

@@ -43,7 +43,9 @@ class RemoveWarehouseDetailsController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: RemoveWarehouseDetailsView,
   val genericLogger: GenericLogger,
-  val errorHandler: ErrorHandler)(implicit ec: ExecutionContext) extends ControllerHelper {
+  val errorHandler: ErrorHandler
+)(implicit ec: ExecutionContext)
+    extends ControllerHelper {
 
   val form: Form[Boolean] = formProvider()
 
@@ -53,9 +55,11 @@ class RemoveWarehouseDetailsController @Inject() (
         case Some(warehouse) =>
           val formattedAddress = AddressFormattingHelper.addressFormatting(warehouse.address, warehouse.tradingName)
           Ok(view(form, mode, formattedAddress, index))
-        case _ =>
-          genericLogger.logger.warn(s"Warehouse index $index doesn't exist ${request.userAnswers.id} warehouse list length:" +
-            s"${request.userAnswers.warehouseList.size}")
+        case _               =>
+          genericLogger.logger.warn(
+            s"Warehouse index $index doesn't exist ${request.userAnswers.id} warehouse list length:" +
+              s"${request.userAnswers.warehouseList.size}"
+          )
           Redirect(routes.WarehouseDetailsController.onPageLoad(mode))
       }
   }
@@ -64,23 +68,28 @@ class RemoveWarehouseDetailsController @Inject() (
     implicit request =>
       val warehouseToRemove: Option[Warehouse] = request.userAnswers.warehouseList.get(index)
       warehouseToRemove match {
-        case None =>
-          genericLogger.logger.warn(s"Warehouse index $index doesn't exist ${request.userAnswers.id} warehouse list length:" +
-            s"${request.userAnswers.warehouseList.size}")
+        case None            =>
+          genericLogger.logger.warn(
+            s"Warehouse index $index doesn't exist ${request.userAnswers.id} warehouse list length:" +
+              s"${request.userAnswers.warehouseList.size}"
+          )
           Future.successful(Redirect(routes.WarehouseDetailsController.onPageLoad(mode)))
         case Some(warehouse) =>
-          val formattedAddress: Html = AddressFormattingHelper.addressFormatting(warehouse.address, warehouse.tradingName)
-          form.bindFromRequest().fold(
-            formWithErrors =>
-              Future.successful(BadRequest(view(formWithErrors, mode, formattedAddress, index))),
-            value => {
-              val updatedAnswersFinal: UserAnswers = if (value) {
-                request.userAnswers.copy(warehouseList = request.userAnswers.warehouseList.removed(index))
-              } else {
-                request.userAnswers
+          val formattedAddress: Html =
+            AddressFormattingHelper.addressFormatting(warehouse.address, warehouse.tradingName)
+          form
+            .bindFromRequest()
+            .fold(
+              formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, formattedAddress, index))),
+              value => {
+                val updatedAnswersFinal: UserAnswers = if (value) {
+                  request.userAnswers.copy(warehouseList = request.userAnswers.warehouseList.removed(index))
+                } else {
+                  request.userAnswers
+                }
+                updateDatabaseAndRedirect(updatedAnswersFinal, RemoveWarehouseDetailsPage, mode)
               }
-              updateDatabaseAndRedirect(updatedAnswersFinal, RemoveWarehouseDetailsPage, mode)
-            })
+            )
       }
   }
 }

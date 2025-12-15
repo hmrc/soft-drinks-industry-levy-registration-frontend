@@ -7,16 +7,14 @@ import play.api.libs.ws.DefaultBodyWritables.writeableOf_String
 
 class PostCalls(baseUrl: String) {
 
-  def declaration(implicit client: WSClient): Future[WSResponse] = {
-    client.url(s"$baseUrl/submit")
+  def declaration(implicit client: WSClient): Future[WSResponse] =
+    client
+      .url(s"$baseUrl/submit")
       .withFollowRedirects(false)
-      .withHttpHeaders("X-Session-ID" -> "some-id",
-        "Csrf-Token" -> "nocheck",
-        "Content-Type" -> "application/json")
+      .withHttpHeaders("X-Session-ID" -> "some-id", "Csrf-Token" -> "nocheck", "Content-Type" -> "application/json")
       .post(declarationData)
-  }
 
-  private def declarationData = {
+  private def declarationData =
     """{
       |"fullName": "John",
       |"position": "Director",
@@ -24,7 +22,5 @@ class PostCalls(baseUrl: String) {
       |"ggEmail": "user@test.com"
       |}
     """.stripMargin
-  }
 
 }
-

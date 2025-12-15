@@ -17,7 +17,7 @@
 package views.summary
 
 import controllers.routes
-import models.{ CheckMode, HowManyLitresGlobally }
+import models.{CheckMode, HowManyLitresGlobally}
 import models.backend.Subscription
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
@@ -41,33 +41,39 @@ object StartDateSummary {
           Seq(
             ActionItemViewModel("site.change", action)
               .withAttribute(("id", actionId))
-              .withVisuallyHiddenText(messages(s"$hiddenText.change.hidden")))
+              .withVisuallyHiddenText(messages(s"$hiddenText.change.hidden"))
+          )
         } else {
           Seq.empty
-        }))
+        }
+      )
+    )
   }
 
-  def summaryList(startDate: LocalDate, isCheckAnswers: Boolean)(implicit messages: Messages): SummaryList = {
-    SummaryListViewModel(rows =
-      row(startDate, isCheckAnswers))
-  }
+  def summaryList(startDate: LocalDate, isCheckAnswers: Boolean)(implicit messages: Messages): SummaryList =
+    SummaryListViewModel(rows = row(startDate, isCheckAnswers))
 
-  val key: String = "startDate.checkYourAnswersKey"
-  val action: String = routes.StartDateController.onPageLoad(CheckMode).url
-  val actionId: String = "change-startDate"
+  val key: String        = "startDate.checkYourAnswersKey"
+  val action: String     = routes.StartDateController.onPageLoad(CheckMode).url
+  val actionId: String   = "change-startDate"
   val hiddenText: String = "startDate"
-  def optHeadingAndSummary(subscription: Subscription, howManyLitresGlobally: HowManyLitresGlobally, isCheckAnswers: Boolean = true)(implicit messages: Messages): Option[(String, SummaryList)] = {
+  def optHeadingAndSummary(
+    subscription: Subscription,
+    howManyLitresGlobally: HowManyLitresGlobally,
+    isCheckAnswers: Boolean = true
+  )(implicit messages: Messages): Option[(String, SummaryList)] =
     if (subscription.isVoluntary(howManyLitresGlobally)) {
       None
     } else {
       val list = summaryList(subscription.liabilityDate, isCheckAnswers)
-      list.rows.headOption.fold(Option.empty[(String, SummaryList)])(_ => Some("startDate.checkYourAnswersLabel" -> list))
+      list.rows.headOption.fold(Option.empty[(String, SummaryList)])(_ =>
+        Some("startDate.checkYourAnswersLabel" -> list)
+      )
     }
-  }
 
   val startDateHint = {
     val todaysDate = LocalDate.now()
-    val formatter = DateTimeFormatter.ofPattern("d M yyyy")
+    val formatter  = DateTimeFormatter.ofPattern("d M yyyy")
     todaysDate.format(formatter)
   }
 

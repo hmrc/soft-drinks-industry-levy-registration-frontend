@@ -17,7 +17,7 @@
 package services
 
 import cats.data.EitherT
-import com.google.inject.{ Inject, Singleton }
+import com.google.inject.{Inject, Singleton}
 import errors._
 import models.UserAnswers
 import repositories.SessionRepository
@@ -29,34 +29,38 @@ import scala.concurrent.ExecutionContext
 class SessionService @Inject() (sessionRepository: SessionRepository)(implicit ec: ExecutionContext) {
 
   def keepAlive(id: String): RegistrationResult[Boolean] = EitherT {
-    sessionRepository.keepAlive(id)
+    sessionRepository
+      .keepAlive(id)
       .map(Right(_))
-      .recover {
-        case _ => Left(SessionDatabaseInsertError)
+      .recover { case _ =>
+        Left(SessionDatabaseInsertError)
       }
   }
 
   def get(id: String): RegistrationResult[Option[UserAnswers]] = EitherT {
-    sessionRepository.get(id)
+    sessionRepository
+      .get(id)
       .map(Right(_))
-      .recover {
-        case _ => Left(SessionDatabaseGetError)
+      .recover { case _ =>
+        Left(SessionDatabaseGetError)
       }
   }
 
   def set(answers: UserAnswers): RegistrationResult[Boolean] = EitherT {
-    sessionRepository.set(answers)
+    sessionRepository
+      .set(answers)
       .map(Right(_))
-      .recover {
-        case _ => Left(SessionDatabaseInsertError)
+      .recover { case _ =>
+        Left(SessionDatabaseInsertError)
       }
   }
 
   def clear(id: String): RegistrationResult[Boolean] = EitherT {
-    sessionRepository.clear(id)
+    sessionRepository
+      .clear(id)
       .map(Right(_))
-      .recover {
-        case _ => Left(SessionDatabaseDeleteError)
+      .recover { case _ =>
+        Left(SessionDatabaseDeleteError)
       }
   }
 

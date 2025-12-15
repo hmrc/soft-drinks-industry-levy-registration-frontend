@@ -21,6 +21,6 @@ import play.api.libs.json.{Json, OFormat}
 case class LitresInBands(lowBand: Long, highBand: Long)
 
 object LitresInBands {
-  implicit val format: OFormat[LitresInBands] = Json.format[LitresInBands]
+  implicit val format: OFormat[LitresInBands]             = Json.format[LitresInBands]
   def unapply(bands: LitresInBands): Option[(Long, Long)] = Some(bands.lowBand, bands.highBand)
 }

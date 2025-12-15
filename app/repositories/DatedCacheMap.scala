@@ -25,31 +25,22 @@ import uk.gov.hmrc.crypto.json.CryptoFormats
 
 import java.time.Instant
 
-case class DatedCacheMap(
-  id: String,
-  data: Map[String, JsValue],
-  lastUpdated: Instant = Instant.now())
+case class DatedCacheMap(id: String, data: Map[String, JsValue], lastUpdated: Instant = Instant.now())
 
 object DatedCacheMap {
   object MongoFormats {
-    implicit val cryptEncryptedValueFormats: Format[EncryptedValue] = CryptoFormats.encryptedValueFormat
+    implicit val cryptEncryptedValueFormats: Format[EncryptedValue]  = CryptoFormats.encryptedValueFormat
     import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats.Implicits._
-    def reads(implicit encryption: Encryption): Reads[DatedCacheMap] = {
-      (
-        (__ \ "id").read[String] and
+    def reads(implicit encryption: Encryption): Reads[DatedCacheMap] =
+      ((__ \ "id").read[String] and
         (__ \ "data").read[Map[String, EncryptedValue]] and
         (__ \ "lastUpdated").read[Instant])(ModelEncryption.decryptDatedCacheMap)
-    }
 
     def writes(implicit encryption: Encryption): OWrites[DatedCacheMap] = new OWrites[DatedCacheMap] {
       override def writes(datedCacheMap: DatedCacheMap): JsObject = {
-        val encryptedValue: (String, Map[String, EncryptedValue], Instant) = {
+        val encryptedValue: (String, Map[String, EncryptedValue], Instant) =
           ModelEncryption.encryptDatedCacheMap(datedCacheMap)
-        }
-        Json.obj(
-          "id" -> encryptedValue._1,
-          "data" -> encryptedValue._2,
-          "lastUpdated" -> encryptedValue._3)
+        Json.obj("id" -> encryptedValue._1, "data" -> encryptedValue._2, "lastUpdated" -> encryptedValue._3)
       }
     }
 
@@ -58,4 +49,3 @@ object DatedCacheMap {
   }
   def apply(cacheMap: CacheMap): DatedCacheMap = DatedCacheMap(cacheMap.id, cacheMap.data)
 }
-

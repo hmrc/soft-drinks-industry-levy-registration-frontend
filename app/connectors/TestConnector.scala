@@ -25,20 +25,22 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class TestConnector @Inject()(http: HttpClientV2, val configuration: Configuration)(implicit ec: ExecutionContext)
-  extends ServicesConfig(configuration) {
+class TestConnector @Inject() (http: HttpClientV2, val configuration: Configuration)(implicit ec: ExecutionContext)
+    extends ServicesConfig(configuration) {
 
   lazy val testUrl: String = baseUrl("soft-drinks-industry-levy")
 
   def resetPending(implicit hc: HeaderCarrier): Future[HttpResponse] = {
     val pendingUrl = s"$testUrl/test-only/reset-pending"
-    http.get(url"$pendingUrl")
+    http
+      .get(url"$pendingUrl")
       .execute[HttpResponse]
   }
 
   def resetSubscriptions(implicit hc: HeaderCarrier): Future[HttpResponse] = {
     val resetUrl = s"$testUrl/test-only/reset-subscriptions"
-    http.get(url"$resetUrl")
+    http
+      .get(url"$resetUrl")
       .execute[HttpResponse]
   }
 }

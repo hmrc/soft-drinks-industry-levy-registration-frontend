@@ -25,32 +25,30 @@ import play.api.mvc.Request
 import play.api.test.FakeRequest
 import views.html.PackagingSiteNameView
 
-
-
 class PackagingSiteNameViewSpec extends ViewSpecHelper {
 
-  val view: PackagingSiteNameView = application.injector.instanceOf[PackagingSiteNameView]
-  val formProvider = new PackagingSiteNameFormProvider
+  val view: PackagingSiteNameView   = application.injector.instanceOf[PackagingSiteNameView]
+  val formProvider                  = new PackagingSiteNameFormProvider
   val form: Form[PackagingSiteName] = formProvider.apply()
-  implicit val request: Request[?] = FakeRequest()
-  val sdilId = "foo"
+  implicit val request: Request[?]  = FakeRequest()
+  val sdilId                        = "foo"
 
   object Selectors {
-    val formGroup = "govuk-form-group"
-    val label = "govuk-label"
+    val formGroup        = "govuk-form-group"
+    val label            = "govuk-label"
     val errorSummaryList = "govuk-list govuk-error-summary__list"
-    val button = "govuk-button"
-    val form = "form"
+    val button           = "govuk-button"
+    val form             = "form"
   }
 
-  val packagingSiteName: PackagingSiteName = PackagingSiteName("1")
+  val packagingSiteName: PackagingSiteName                       = PackagingSiteName("1")
   val packagingSiteNameJsObject: collection.Map[String, JsValue] = Json.toJson(packagingSiteName).as[JsObject].value
-  val packagingSiteNameMap: collection.Map[String, String] =
-  packagingSiteNameJsObject.map { case (fName, fValue) => fName -> fValue.toString }
+  val packagingSiteNameMap: collection.Map[String, String]       =
+    packagingSiteNameJsObject.map { case (fName, fValue) => fName -> fValue.toString }
 
   "View" - {
-    val html = view(form, NormalMode, sdilId)(using request, messages(application))
-    val document = doc(html)
+    val html          = view(form, NormalMode, sdilId)(using request, messages(application))
+    val document      = doc(html)
     val questionItems = document.getElementsByClass(Selectors.formGroup)
     "should contain the expected title" in {
       document.title() mustBe "What is your UK packaging site name? - Soft Drinks Industry Levy - GOV.UK"
@@ -83,23 +81,28 @@ class PackagingSiteNameViewSpec extends ViewSpecHelper {
 
     "contains a form with the correct action" - {
       "when in CheckMode" in {
-        val htmlAllSelected = view(form.fill(packagingSiteName), CheckMode, sdilId)(using request, messages(application))
+        val htmlAllSelected     =
+          view(form.fill(packagingSiteName), CheckMode, sdilId)(using request, messages(application))
         val documentAllSelected = doc(htmlAllSelected)
 
-        documentAllSelected.select(Selectors.form)
+        documentAllSelected
+          .select(Selectors.form)
           .attr("action") mustEqual routes.PackagingSiteNameController.onSubmit(CheckMode, sdilId).url
       }
 
       "when in NormalMode" in {
-        val htmlAllSelected = view(form.fill(packagingSiteName), NormalMode, sdilId)(using request, messages(application))
+        val htmlAllSelected     =
+          view(form.fill(packagingSiteName), NormalMode, sdilId)(using request, messages(application))
         val documentAllSelected = doc(htmlAllSelected)
 
-        documentAllSelected.select(Selectors.form)
+        documentAllSelected
+          .select(Selectors.form)
           .attr("action") mustEqual routes.PackagingSiteNameController.onSubmit(NormalMode, sdilId).url
       }
     }
 
-    val htmlWithErrors = view(form.bind(Map("packagingSiteName" -> "")), NormalMode, sdilId)(using request, messages(application))
+    val htmlWithErrors     =
+      view(form.bind(Map("packagingSiteName" -> "")), NormalMode, sdilId)(using request, messages(application))
     val documentWithErrors = doc(htmlWithErrors)
 
     "when site name is empty" - {

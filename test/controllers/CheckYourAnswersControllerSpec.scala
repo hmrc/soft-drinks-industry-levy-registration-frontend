@@ -47,7 +47,8 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
 
     "must redirect to verify controller for a GET with empty user answers" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration).build()
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration).build()
 
       running(application) {
         val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad.url)
@@ -59,24 +60,51 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
     }
     "must redirect to missing page for a GET with user answers full apart from 1 missing answer" in {
       val userAnswerDate: LocalDate = LocalDate.of(2023, 6, 1)
-      val userAnswers = {
+      val userAnswers               =
         emptyUserAnswers
-          .set(VerifyPage, YesRegister).success.value
-          .set(OrganisationTypePage, LimitedCompany).success.value
-          .set(HowManyLitresGloballyPage, Large).success.value
-          .set(OperatePackagingSitesPage, true).success.value
-          .set(HowManyOperatePackagingSitesPage, LitresInBands(1, 2)).success.value
-          .set(ContractPackingPage, true).success.value
-          .set(HowManyContractPackingPage, LitresInBands(3, 4)).success.value
-          .set(ImportsPage, true).success.value
-          .set(HowManyImportsPage, LitresInBands(3, 4)).success.value
-          .set(StartDatePage, userAnswerDate).success.value
-          .set(PackAtBusinessAddressPage, true).success.value
-          .set(PackagingSiteDetailsPage, true).success.value
-          .set(AskSecondaryWarehousesPage, true).success.value
-          .set(WarehouseDetailsPage, true).success.value
-      }
-      val application = applicationBuilder(userAnswers = Some(userAnswers), rosmRegistration = rosmRegistration).build()
+          .set(VerifyPage, YesRegister)
+          .success
+          .value
+          .set(OrganisationTypePage, LimitedCompany)
+          .success
+          .value
+          .set(HowManyLitresGloballyPage, Large)
+          .success
+          .value
+          .set(OperatePackagingSitesPage, true)
+          .success
+          .value
+          .set(HowManyOperatePackagingSitesPage, LitresInBands(1, 2))
+          .success
+          .value
+          .set(ContractPackingPage, true)
+          .success
+          .value
+          .set(HowManyContractPackingPage, LitresInBands(3, 4))
+          .success
+          .value
+          .set(ImportsPage, true)
+          .success
+          .value
+          .set(HowManyImportsPage, LitresInBands(3, 4))
+          .success
+          .value
+          .set(StartDatePage, userAnswerDate)
+          .success
+          .value
+          .set(PackAtBusinessAddressPage, true)
+          .success
+          .value
+          .set(PackagingSiteDetailsPage, true)
+          .success
+          .value
+          .set(AskSecondaryWarehousesPage, true)
+          .success
+          .value
+          .set(WarehouseDetailsPage, true)
+          .success
+          .value
+      val application               = applicationBuilder(userAnswers = Some(userAnswers), rosmRegistration = rosmRegistration).build()
 
       running(application) {
         val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad.url)
@@ -88,47 +116,85 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
     }
     "must return OK and the correct view for a GET with full user answers with litres pages yes" in {
       val userAnswerDate: LocalDate = LocalDate.of(2023, 6, 1)
-      val userAnswers = {
+      val userAnswers               =
         emptyUserAnswers
           .copy(packagingSiteList = packagingSiteListWith3)
           .copy(warehouseList = warehouseListWith1)
-          .set(VerifyPage, YesRegister).success.value
-          .set(OrganisationTypePage, LimitedCompany).success.value
-          .set(HowManyLitresGloballyPage, Large).success.value
-          .set(OperatePackagingSitesPage, true).success.value
-          .set(HowManyOperatePackagingSitesPage, LitresInBands(1,2)).success.value
-          .set(ContractPackingPage, true).success.value
-          .set(HowManyContractPackingPage, LitresInBands(3,4)).success.value
-          .set(ImportsPage, true).success.value
-          .set(HowManyImportsPage, LitresInBands(3,4)).success.value
-          .set(StartDatePage, userAnswerDate).success.value
-          .set(PackAtBusinessAddressPage, true).success.value
-          .set(PackagingSiteDetailsPage, true).success.value
-          .set(AskSecondaryWarehousesPage, true).success.value
-          .set(WarehouseDetailsPage, true).success.value
-          .set(ContactDetailsPage, ContactDetails("foo", "bar", "wizz", "bang")).success.value
-      }
-      val subscription = Subscription.generate(userAnswers, rosmRegistration)
+          .set(VerifyPage, YesRegister)
+          .success
+          .value
+          .set(OrganisationTypePage, LimitedCompany)
+          .success
+          .value
+          .set(HowManyLitresGloballyPage, Large)
+          .success
+          .value
+          .set(OperatePackagingSitesPage, true)
+          .success
+          .value
+          .set(HowManyOperatePackagingSitesPage, LitresInBands(1, 2))
+          .success
+          .value
+          .set(ContractPackingPage, true)
+          .success
+          .value
+          .set(HowManyContractPackingPage, LitresInBands(3, 4))
+          .success
+          .value
+          .set(ImportsPage, true)
+          .success
+          .value
+          .set(HowManyImportsPage, LitresInBands(3, 4))
+          .success
+          .value
+          .set(StartDatePage, userAnswerDate)
+          .success
+          .value
+          .set(PackAtBusinessAddressPage, true)
+          .success
+          .value
+          .set(PackagingSiteDetailsPage, true)
+          .success
+          .value
+          .set(AskSecondaryWarehousesPage, true)
+          .success
+          .value
+          .set(WarehouseDetailsPage, true)
+          .success
+          .value
+          .set(ContactDetailsPage, ContactDetails("foo", "bar", "wizz", "bang"))
+          .success
+          .value
+      val subscription              = Subscription.generate(userAnswers, rosmRegistration)
 
-      val application = applicationBuilder(userAnswers = Some(userAnswers), utr = Some("0000000022"), rosmRegistration = rosmRegistration)
-        .overrides(bind[RegistrationOrchestrator].to(mockRegistrationOrchestrator)).build()
-
+      val application = applicationBuilder(
+        userAnswers = Some(userAnswers),
+        utr = Some("0000000022"),
+        rosmRegistration = rosmRegistration
+      )
+        .overrides(bind[RegistrationOrchestrator].to(mockRegistrationOrchestrator))
+        .build()
 
       running(application) {
-        when(mockRegistrationOrchestrator.getSubscriptionAndHowManyLitresGlobally(any(), any())).thenReturn(Right(
-          CreatedSubscriptionAndAmountProducedGlobally(subscription, Large)
-        ))
+        when(mockRegistrationOrchestrator.getSubscriptionAndHowManyLitresGlobally(any(), any())).thenReturn(
+          Right(
+            CreatedSubscriptionAndAmountProducedGlobally(subscription, Large)
+          )
+        )
         val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad.url)
 
         val result = route(application, request).value
 
         val view = application.injector.instanceOf[CheckYourAnswersView]
 
-        val headingAndSummaryItems = RegistrationSummary.summaryList(CreatedSubscriptionAndAmountProducedGlobally(subscription, Large))
+        val headingAndSummaryItems =
+          RegistrationSummary.summaryList(CreatedSubscriptionAndAmountProducedGlobally(subscription, Large))
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(headingAndSummaryItems,
-          routes.CheckYourAnswersController.onSubmit)(using request, messages(application)).toString
+        contentAsString(result) mustEqual view(headingAndSummaryItems, routes.CheckYourAnswersController.onSubmit)(using
+          request,
+          messages(application)
+        ).toString
       }
     }
     "must redirect to Journey Recovery for a GET if no existing data is found" in {
@@ -146,31 +212,62 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
     }
     "must Redirect to confirmation page when full user answers on POST" in {
       val userAnswerDate: LocalDate = LocalDate.of(2023, 6, 1)
-      val userAnswers = {
+      val userAnswers               =
         emptyUserAnswers
           .copy(packagingSiteList = packagingSiteListWith3)
           .copy(warehouseList = warehouseListWith1)
-          .set(VerifyPage, YesRegister).success.value
-          .set(OrganisationTypePage, LimitedCompany).success.value
-          .set(HowManyLitresGloballyPage, Large).success.value
-          .set(OperatePackagingSitesPage, true).success.value
-          .set(HowManyOperatePackagingSitesPage, LitresInBands(1,2)).success.value
-          .set(ContractPackingPage, true).success.value
-          .set(HowManyContractPackingPage, LitresInBands(3,4)).success.value
-          .set(ImportsPage, true).success.value
-          .set(HowManyImportsPage, LitresInBands(3,4)).success.value
-          .set(StartDatePage, userAnswerDate).success.value
-          .set(PackAtBusinessAddressPage, true).success.value
-          .set(PackagingSiteDetailsPage, true).success.value
-          .set(AskSecondaryWarehousesPage, true).success.value
-          .set(WarehouseDetailsPage, true).success.value
-          .set(ContactDetailsPage, ContactDetails("foo", "bar", "wizz", "bang")).success.value
-      }
-      val application = applicationBuilder(userAnswers = Some(userAnswers))
-        .overrides(bind[RegistrationOrchestrator].to(mockRegistrationOrchestrator)).build()
+          .set(VerifyPage, YesRegister)
+          .success
+          .value
+          .set(OrganisationTypePage, LimitedCompany)
+          .success
+          .value
+          .set(HowManyLitresGloballyPage, Large)
+          .success
+          .value
+          .set(OperatePackagingSitesPage, true)
+          .success
+          .value
+          .set(HowManyOperatePackagingSitesPage, LitresInBands(1, 2))
+          .success
+          .value
+          .set(ContractPackingPage, true)
+          .success
+          .value
+          .set(HowManyContractPackingPage, LitresInBands(3, 4))
+          .success
+          .value
+          .set(ImportsPage, true)
+          .success
+          .value
+          .set(HowManyImportsPage, LitresInBands(3, 4))
+          .success
+          .value
+          .set(StartDatePage, userAnswerDate)
+          .success
+          .value
+          .set(PackAtBusinessAddressPage, true)
+          .success
+          .value
+          .set(PackagingSiteDetailsPage, true)
+          .success
+          .value
+          .set(AskSecondaryWarehousesPage, true)
+          .success
+          .value
+          .set(WarehouseDetailsPage, true)
+          .success
+          .value
+          .set(ContactDetailsPage, ContactDetails("foo", "bar", "wizz", "bang"))
+          .success
+          .value
+      val application               = applicationBuilder(userAnswers = Some(userAnswers))
+        .overrides(bind[RegistrationOrchestrator].to(mockRegistrationOrchestrator))
+        .build()
 
       running(application) {
-        when(mockRegistrationOrchestrator.createSubscriptionAndUpdateUserAnswers(using any(), any(), any())).thenReturn(createSuccessRegistrationResult((): Unit))
+        when(mockRegistrationOrchestrator.createSubscriptionAndUpdateUserAnswers(using any(), any(), any()))
+          .thenReturn(createSuccessRegistrationResult((): Unit))
 
         val request = FakeRequest(POST, CheckYourAnswersController.onSubmit.url).withFormUrlEncodedBody()
 
@@ -183,29 +280,60 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
 
     "must Redirect to verify page when creating of subscription model fails" in {
       val userAnswerDate: LocalDate = LocalDate.of(2023, 6, 1)
-      val userAnswers = {
+      val userAnswers               =
         emptyUserAnswers
-          .set(VerifyPage, YesRegister).success.value
-          .set(OrganisationTypePage, LimitedCompany).success.value
-          .set(HowManyLitresGloballyPage, Large).success.value
-          .set(OperatePackagingSitesPage, true).success.value
-          .set(HowManyOperatePackagingSitesPage, LitresInBands(1, 2)).success.value
-          .set(ContractPackingPage, true).success.value
-          .set(HowManyContractPackingPage, LitresInBands(3, 4)).success.value
-          .set(ImportsPage, true).success.value
-          .set(HowManyImportsPage, LitresInBands(3, 4)).success.value
-          .set(StartDatePage, userAnswerDate).success.value
-          .set(PackAtBusinessAddressPage, true).success.value
-          .set(PackagingSiteDetailsPage, true).success.value
-          .set(AskSecondaryWarehousesPage, true).success.value
-          .set(WarehouseDetailsPage, true).success.value
-          .set(ContactDetailsPage, ContactDetails("foo", "bar", "wizz", "bang")).success.value
-      }
-      val application = applicationBuilder(userAnswers = Some(userAnswers))
-        .overrides(bind[RegistrationOrchestrator].to(mockRegistrationOrchestrator)).build()
+          .set(VerifyPage, YesRegister)
+          .success
+          .value
+          .set(OrganisationTypePage, LimitedCompany)
+          .success
+          .value
+          .set(HowManyLitresGloballyPage, Large)
+          .success
+          .value
+          .set(OperatePackagingSitesPage, true)
+          .success
+          .value
+          .set(HowManyOperatePackagingSitesPage, LitresInBands(1, 2))
+          .success
+          .value
+          .set(ContractPackingPage, true)
+          .success
+          .value
+          .set(HowManyContractPackingPage, LitresInBands(3, 4))
+          .success
+          .value
+          .set(ImportsPage, true)
+          .success
+          .value
+          .set(HowManyImportsPage, LitresInBands(3, 4))
+          .success
+          .value
+          .set(StartDatePage, userAnswerDate)
+          .success
+          .value
+          .set(PackAtBusinessAddressPage, true)
+          .success
+          .value
+          .set(PackagingSiteDetailsPage, true)
+          .success
+          .value
+          .set(AskSecondaryWarehousesPage, true)
+          .success
+          .value
+          .set(WarehouseDetailsPage, true)
+          .success
+          .value
+          .set(ContactDetailsPage, ContactDetails("foo", "bar", "wizz", "bang"))
+          .success
+          .value
+      val application               = applicationBuilder(userAnswers = Some(userAnswers))
+        .overrides(bind[RegistrationOrchestrator].to(mockRegistrationOrchestrator))
+        .build()
 
       running(application) {
-        when(mockRegistrationOrchestrator.createSubscriptionAndUpdateUserAnswers(using any(), any(), any())).thenReturn(createFailureRegistrationResult(MissingRequiredUserAnswers))
+        when(mockRegistrationOrchestrator.createSubscriptionAndUpdateUserAnswers(using any(), any(), any()))
+          .thenReturn(createFailureRegistrationResult(MissingRequiredUserAnswers))
 
         val request = FakeRequest(POST, CheckYourAnswersController.onSubmit.url).withFormUrlEncodedBody()
 
@@ -228,38 +356,65 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
         redirectLocation(result).value mustEqual VerifyController.onPageLoad(CheckMode).url
       }
     }
-      "must Redirect to missing page when full user answers 1 missing on POST" in {
-        val userAnswerDate: LocalDate = LocalDate.of(2023, 6, 1)
-        val userAnswers = {
-          emptyUserAnswers
-            .copy(packagingSiteList = packagingSiteListWith3)
-            .set(VerifyPage, YesRegister).success.value
-            .set(OrganisationTypePage, LimitedCompany).success.value
-            .set(HowManyLitresGloballyPage, Large).success.value
-            .set(OperatePackagingSitesPage, true).success.value
-            .set(HowManyOperatePackagingSitesPage, LitresInBands(1,2)).success.value
-            .set(ContractPackingPage, true).success.value
-            .set(HowManyContractPackingPage, LitresInBands(3,4)).success.value
-            .set(ImportsPage, true).success.value
-            .set(HowManyImportsPage, LitresInBands(3,4)).success.value
-            .set(StartDatePage, userAnswerDate).success.value
-            .set(PackAtBusinessAddressPage, true).success.value
-            .set(PackagingSiteDetailsPage, true).success.value
-            .set(AskSecondaryWarehousesPage, true).success.value
-            .set(WarehouseDetailsPage, true).success.value
-        }
-        val application = applicationBuilder(userAnswers = Some(userAnswers))
-          .build()
+    "must Redirect to missing page when full user answers 1 missing on POST" in {
+      val userAnswerDate: LocalDate = LocalDate.of(2023, 6, 1)
+      val userAnswers               =
+        emptyUserAnswers
+          .copy(packagingSiteList = packagingSiteListWith3)
+          .set(VerifyPage, YesRegister)
+          .success
+          .value
+          .set(OrganisationTypePage, LimitedCompany)
+          .success
+          .value
+          .set(HowManyLitresGloballyPage, Large)
+          .success
+          .value
+          .set(OperatePackagingSitesPage, true)
+          .success
+          .value
+          .set(HowManyOperatePackagingSitesPage, LitresInBands(1, 2))
+          .success
+          .value
+          .set(ContractPackingPage, true)
+          .success
+          .value
+          .set(HowManyContractPackingPage, LitresInBands(3, 4))
+          .success
+          .value
+          .set(ImportsPage, true)
+          .success
+          .value
+          .set(HowManyImportsPage, LitresInBands(3, 4))
+          .success
+          .value
+          .set(StartDatePage, userAnswerDate)
+          .success
+          .value
+          .set(PackAtBusinessAddressPage, true)
+          .success
+          .value
+          .set(PackagingSiteDetailsPage, true)
+          .success
+          .value
+          .set(AskSecondaryWarehousesPage, true)
+          .success
+          .value
+          .set(WarehouseDetailsPage, true)
+          .success
+          .value
+      val application               = applicationBuilder(userAnswers = Some(userAnswers))
+        .build()
 
-        running(application) {
-          val request = FakeRequest(POST, CheckYourAnswersController.onSubmit.url).withFormUrlEncodedBody()
+      running(application) {
+        val request = FakeRequest(POST, CheckYourAnswersController.onSubmit.url).withFormUrlEncodedBody()
 
-          val result = route(application, request).value
+        val result = route(application, request).value
 
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual ContactDetailsPage.url(CheckMode)
-        }
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual ContactDetailsPage.url(CheckMode)
       }
+    }
     "must redirect to Journey Recovery for a POST if no existing data is found" in {
 
       val application = applicationBuilder(userAnswers = None).build()
@@ -276,29 +431,60 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
 
     "must fail if the backend call fails" in {
       val userAnswerDate: LocalDate = LocalDate.of(2023, 6, 1)
-      val userAnswers = {
+      val userAnswers               =
         emptyUserAnswers
-          .set(VerifyPage, YesRegister).success.value
-          .set(OrganisationTypePage, LimitedCompany).success.value
-          .set(HowManyLitresGloballyPage, Large).success.value
-          .set(OperatePackagingSitesPage, true).success.value
-          .set(HowManyOperatePackagingSitesPage, LitresInBands(1, 2)).success.value
-          .set(ContractPackingPage, true).success.value
-          .set(HowManyContractPackingPage, LitresInBands(3, 4)).success.value
-          .set(ImportsPage, true).success.value
-          .set(HowManyImportsPage, LitresInBands(3, 4)).success.value
-          .set(StartDatePage, userAnswerDate).success.value
-          .set(PackAtBusinessAddressPage, true).success.value
-          .set(PackagingSiteDetailsPage, true).success.value
-          .set(AskSecondaryWarehousesPage, true).success.value
-          .set(WarehouseDetailsPage, true).success.value
-          .set(ContactDetailsPage, ContactDetails("foo", "bar", "wizz", "bang")).success.value
-      }
-      val application = applicationBuilder(userAnswers = Some(userAnswers))
-        .overrides(bind[RegistrationOrchestrator].to(mockRegistrationOrchestrator)).build()
+          .set(VerifyPage, YesRegister)
+          .success
+          .value
+          .set(OrganisationTypePage, LimitedCompany)
+          .success
+          .value
+          .set(HowManyLitresGloballyPage, Large)
+          .success
+          .value
+          .set(OperatePackagingSitesPage, true)
+          .success
+          .value
+          .set(HowManyOperatePackagingSitesPage, LitresInBands(1, 2))
+          .success
+          .value
+          .set(ContractPackingPage, true)
+          .success
+          .value
+          .set(HowManyContractPackingPage, LitresInBands(3, 4))
+          .success
+          .value
+          .set(ImportsPage, true)
+          .success
+          .value
+          .set(HowManyImportsPage, LitresInBands(3, 4))
+          .success
+          .value
+          .set(StartDatePage, userAnswerDate)
+          .success
+          .value
+          .set(PackAtBusinessAddressPage, true)
+          .success
+          .value
+          .set(PackagingSiteDetailsPage, true)
+          .success
+          .value
+          .set(AskSecondaryWarehousesPage, true)
+          .success
+          .value
+          .set(WarehouseDetailsPage, true)
+          .success
+          .value
+          .set(ContactDetailsPage, ContactDetails("foo", "bar", "wizz", "bang"))
+          .success
+          .value
+      val application               = applicationBuilder(userAnswers = Some(userAnswers))
+        .overrides(bind[RegistrationOrchestrator].to(mockRegistrationOrchestrator))
+        .build()
 
       running(application) {
-        when(mockRegistrationOrchestrator.createSubscriptionAndUpdateUserAnswers(using any(), any(), any())).thenReturn(createFailureRegistrationResult(UnexpectedResponseFromSDIL))
+        when(mockRegistrationOrchestrator.createSubscriptionAndUpdateUserAnswers(using any(), any(), any()))
+          .thenReturn(createFailureRegistrationResult(UnexpectedResponseFromSDIL))
 
         val request = FakeRequest(POST, CheckYourAnswersController.onSubmit.url).withFormUrlEncodedBody()
 

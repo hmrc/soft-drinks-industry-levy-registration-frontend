@@ -29,15 +29,8 @@ trait TextAreaFluency {
 
   object TextAreaViewModel extends ErrorMessageAwareness {
 
-    def apply(
-      field: Field,
-      label: Label)(implicit messages: Messages): Textarea =
-      Textarea(
-        id = field.id,
-        name = field.name,
-        value = field.value,
-        label = label,
-        errorMessage = errorMessage(field))
+    def apply(field: Field, label: Label)(implicit messages: Messages): Textarea =
+      Textarea(id = field.id, name = field.name, value = field.value, label = label, errorMessage = errorMessage(field))
   }
 
   implicit class FluentTextArea(textArea: Textarea) {

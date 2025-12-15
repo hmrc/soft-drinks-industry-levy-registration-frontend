@@ -32,10 +32,8 @@ class OrganisationTypeSpec extends AnyFreeSpec with Matchers with ScalaCheckProp
 
       val gen = Gen.oneOf(OrganisationType.values.toSeq)
 
-      forAll(gen) {
-        organisationType =>
-
-          JsString(organisationType.toString).validate[OrganisationType].asOpt.value mustEqual organisationType
+      forAll(gen) { organisationType =>
+        JsString(organisationType.toString).validate[OrganisationType].asOpt.value mustEqual organisationType
       }
     }
 
@@ -43,10 +41,8 @@ class OrganisationTypeSpec extends AnyFreeSpec with Matchers with ScalaCheckProp
 
       val gen = arbitrary[String] suchThat (!OrganisationType.values.map(_.toString).contains(_))
 
-      forAll(gen) {
-        invalidValue =>
-
-          JsString(invalidValue).validate[OrganisationType] mustEqual JsError("error.invalid")
+      forAll(gen) { invalidValue =>
+        JsString(invalidValue).validate[OrganisationType] mustEqual JsError("error.invalid")
       }
     }
 
@@ -54,10 +50,8 @@ class OrganisationTypeSpec extends AnyFreeSpec with Matchers with ScalaCheckProp
 
       val gen = Gen.oneOf(OrganisationType.values.toSeq)
 
-      forAll(gen) {
-        organisationType =>
-
-          Json.toJson(organisationType) mustEqual JsString(organisationType.toString)
+      forAll(gen) { organisationType =>
+        Json.toJson(organisationType) mustEqual JsString(organisationType.toString)
       }
     }
   }

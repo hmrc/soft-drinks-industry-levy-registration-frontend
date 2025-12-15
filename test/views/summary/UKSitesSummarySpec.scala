@@ -36,13 +36,51 @@ class UKSitesSummarySpec extends RegistrationSubscriptionHelper {
               headingAndSummary mustBe defined
               val (heading, summary) = headingAndSummary.get
               heading mustBe "checkYourAnswers.sites"
-              summary mustBe SummaryList(List(SummaryListRow(Key(Text("You have 1 packaging site"), ""),
-                Value(Empty, ""), "", Some(Actions("", List(ActionItem("/soft-drinks-industry-levy-registration/change-packaging-site-details",
-                  Text("Change"), Some("the UK packaging site that you operate to produce liable drinks"), "",
-                  Map("id" -> "change-packaging-sites")))))), SummaryListRow(Key(Text("You have 1 warehouse"), ""),
-                Value(Empty, ""), "", Some(Actions("", List(ActionItem("/soft-drinks-industry-levy-registration/change-warehouses",
-                  Text("Change"), Some("the UK warehouses you use to store liable drinks"), "",
-                  Map("id" -> "change-warehouse-sites"))))))), None, "", Map())
+              summary mustBe SummaryList(
+                List(
+                  SummaryListRow(
+                    Key(Text("You have 1 packaging site"), ""),
+                    Value(Empty, ""),
+                    "",
+                    Some(
+                      Actions(
+                        "",
+                        List(
+                          ActionItem(
+                            "/soft-drinks-industry-levy-registration/change-packaging-site-details",
+                            Text("Change"),
+                            Some("the UK packaging site that you operate to produce liable drinks"),
+                            "",
+                            Map("id" -> "change-packaging-sites")
+                          )
+                        )
+                      )
+                    )
+                  ),
+                  SummaryListRow(
+                    Key(Text("You have 1 warehouse"), ""),
+                    Value(Empty, ""),
+                    "",
+                    Some(
+                      Actions(
+                        "",
+                        List(
+                          ActionItem(
+                            "/soft-drinks-industry-levy-registration/change-warehouses",
+                            Text("Change"),
+                            Some("the UK warehouses you use to store liable drinks"),
+                            "",
+                            Map("id" -> "change-warehouse-sites")
+                          )
+                        )
+                      )
+                    )
+                  )
+                ),
+                None,
+                "",
+                Map()
+              )
             }
           }
 
@@ -56,13 +94,51 @@ class UKSitesSummarySpec extends RegistrationSubscriptionHelper {
               headingAndSummary mustBe defined
               val (heading, summary) = headingAndSummary.get
               heading mustBe "checkYourAnswers.sites"
-              summary mustBe SummaryList(List(SummaryListRow(Key(Text("You have 1 packaging site"), ""),
-                Value(Empty, ""), "", Some(Actions("", List(ActionItem("/soft-drinks-industry-levy-registration/change-packaging-site-details",
-                  Text("Change"), Some("the UK packaging site that you operate to produce liable drinks"), "",
-                  Map("id" -> "change-packaging-sites")))))), SummaryListRow(Key(Text("You have 0 warehouses"), ""),
-                Value(Empty, ""), "", Some(Actions("", List(ActionItem("/soft-drinks-industry-levy-registration/change-ask-secondary-warehouses",
-                  Text("Change"), Some("the UK warehouses you use to store liable drinks"), "",
-                  Map("id" -> "change-warehouse-sites"))))))), None, "", Map())
+              summary mustBe SummaryList(
+                List(
+                  SummaryListRow(
+                    Key(Text("You have 1 packaging site"), ""),
+                    Value(Empty, ""),
+                    "",
+                    Some(
+                      Actions(
+                        "",
+                        List(
+                          ActionItem(
+                            "/soft-drinks-industry-levy-registration/change-packaging-site-details",
+                            Text("Change"),
+                            Some("the UK packaging site that you operate to produce liable drinks"),
+                            "",
+                            Map("id" -> "change-packaging-sites")
+                          )
+                        )
+                      )
+                    )
+                  ),
+                  SummaryListRow(
+                    Key(Text("You have 0 warehouses"), ""),
+                    Value(Empty, ""),
+                    "",
+                    Some(
+                      Actions(
+                        "",
+                        List(
+                          ActionItem(
+                            "/soft-drinks-industry-levy-registration/change-ask-secondary-warehouses",
+                            Text("Change"),
+                            Some("the UK warehouses you use to store liable drinks"),
+                            "",
+                            Map("id" -> "change-warehouse-sites")
+                          )
+                        )
+                      )
+                    )
+                  )
+                ),
+                None,
+                "",
+                Map()
+              )
             }
           }
 
@@ -76,10 +152,32 @@ class UKSitesSummarySpec extends RegistrationSubscriptionHelper {
               headingAndSummary mustBe defined
               val (heading, summary) = headingAndSummary.get
               heading mustBe "checkYourAnswers.sites"
-              summary mustBe SummaryList(List(SummaryListRow(Key(Text("You have 1 warehouse"), ""),
-                Value(Empty, ""), "", Some(Actions("", List(ActionItem("/soft-drinks-industry-levy-registration/change-warehouses",
-                  Text("Change"), Some("the UK warehouses you use to store liable drinks"), "",
-                  Map("id" -> "change-warehouse-sites"))))))), None, "", Map())
+              summary mustBe SummaryList(
+                List(
+                  SummaryListRow(
+                    Key(Text("You have 1 warehouse"), ""),
+                    Value(Empty, ""),
+                    "",
+                    Some(
+                      Actions(
+                        "",
+                        List(
+                          ActionItem(
+                            "/soft-drinks-industry-levy-registration/change-warehouses",
+                            Text("Change"),
+                            Some("the UK warehouses you use to store liable drinks"),
+                            "",
+                            Map("id" -> "change-warehouse-sites")
+                          )
+                        )
+                      )
+                    )
+                  )
+                ),
+                None,
+                "",
+                Map()
+              )
             }
           }
 
@@ -93,10 +191,32 @@ class UKSitesSummarySpec extends RegistrationSubscriptionHelper {
               headingAndSummary mustBe defined
               val (heading, summary) = headingAndSummary.get
               heading mustBe "checkYourAnswers.sites"
-              summary mustBe SummaryList(List(SummaryListRow(Key(Text("You have 0 warehouses"), ""),
-                Value(Empty, ""), "", Some(Actions("", List(ActionItem("/soft-drinks-industry-levy-registration/change-ask-secondary-warehouses",
-                  Text("Change"), Some("the UK warehouses you use to store liable drinks"), "",
-                  Map("id" -> "change-warehouse-sites"))))))), None, "", Map())
+              summary mustBe SummaryList(
+                List(
+                  SummaryListRow(
+                    Key(Text("You have 0 warehouses"), ""),
+                    Value(Empty, ""),
+                    "",
+                    Some(
+                      Actions(
+                        "",
+                        List(
+                          ActionItem(
+                            "/soft-drinks-industry-levy-registration/change-ask-secondary-warehouses",
+                            Text("Change"),
+                            Some("the UK warehouses you use to store liable drinks"),
+                            "",
+                            Map("id" -> "change-warehouse-sites")
+                          )
+                        )
+                      )
+                    )
+                  )
+                ),
+                None,
+                "",
+                Map()
+              )
             }
           }
         }
@@ -114,15 +234,38 @@ class UKSitesSummarySpec extends RegistrationSubscriptionHelper {
           headingAndSummary mustBe defined
           val (heading, summary) = headingAndSummary.get
           heading mustBe "checkYourAnswers.sites"
-          summary mustBe SummaryList(List(SummaryListRow(Key(Text("You have 1 packaging site"), ""),
-            Value(Empty, ""), "", Some(Actions("", List(ActionItem("/soft-drinks-industry-levy-registration/change-packaging-site-details",
-              Text("Change"), Some("the UK packaging site that you operate to produce liable drinks"), "",
-              Map("id" -> "change-packaging-sites"))))))), None, "", Map())
+          summary mustBe SummaryList(
+            List(
+              SummaryListRow(
+                Key(Text("You have 1 packaging site"), ""),
+                Value(Empty, ""),
+                "",
+                Some(
+                  Actions(
+                    "",
+                    List(
+                      ActionItem(
+                        "/soft-drinks-industry-levy-registration/change-packaging-site-details",
+                        Text("Change"),
+                        Some("the UK packaging site that you operate to produce liable drinks"),
+                        "",
+                        Map("id" -> "change-packaging-sites")
+                      )
+                    )
+                  )
+                )
+              )
+            ),
+            None,
+            "",
+            Map()
+          )
         }
       }
       "and there is no packaging sites or warehouses" - {
         "should return None" in {
-          val headingAndSummary = UKSitesSummary.getHeadingAndSummary(voluntarySubscription, HowManyLitresGlobally.Small, true)
+          val headingAndSummary =
+            UKSitesSummary.getHeadingAndSummary(voluntarySubscription, HowManyLitresGlobally.Small, true)
 
           headingAndSummary mustBe None
         }

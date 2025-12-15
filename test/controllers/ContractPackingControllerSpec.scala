@@ -40,7 +40,7 @@ class ContractPackingControllerSpec extends SpecBase with MockitoSugar with Logg
   def onwardRoute = Call("GET", "/foo")
 
   val formProvider = new ContractPackingFormProvider()
-  val form = formProvider()
+  val form         = formProvider()
 
   lazy val contractPackingRoute = routes.ContractPackingController.onPageLoad(NormalMode).url
 
@@ -48,7 +48,8 @@ class ContractPackingControllerSpec extends SpecBase with MockitoSugar with Logg
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration).build()
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration).build()
 
       running(application) {
         val request = FakeRequest(GET, contractPackingRoute)
@@ -64,7 +65,8 @@ class ContractPackingControllerSpec extends SpecBase with MockitoSugar with Logg
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(identifier, RegisterState.RegisterWithAuthUTR).set(ContractPackingPage, true).success.value
+      val userAnswers =
+        UserAnswers(identifier, RegisterState.RegisterWithAuthUTR).set(ContractPackingPage, true).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers), rosmRegistration = rosmRegistration).build()
 
@@ -76,7 +78,10 @@ class ContractPackingControllerSpec extends SpecBase with MockitoSugar with Logg
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode)(using request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(true), NormalMode)(using
+          request,
+          messages(application)
+        ).toString
       }
     }
 
@@ -108,7 +113,8 @@ class ContractPackingControllerSpec extends SpecBase with MockitoSugar with Logg
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration).build()
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration).build()
 
       running(application) {
         val request =
@@ -158,13 +164,15 @@ class ContractPackingControllerSpec extends SpecBase with MockitoSugar with Logg
 
     "must fail if the setting of userAnswers fails" in {
 
-      val application = applicationBuilder(userAnswers = Some(userDetailsWithSetMethodsReturningFailure), rosmRegistration = rosmRegistration).build()
+      val application = applicationBuilder(
+        userAnswers = Some(userDetailsWithSetMethodsReturningFailure),
+        rosmRegistration = rosmRegistration
+      ).build()
 
       running(application) {
         val request =
-          FakeRequest(POST, contractPackingRoute
-        )
-        .withFormUrlEncodedBody(("value", "true"))
+          FakeRequest(POST, contractPackingRoute)
+            .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
 
@@ -194,11 +202,12 @@ class ContractPackingControllerSpec extends SpecBase with MockitoSugar with Logg
               .withFormUrlEncodedBody(("value", "true"))
 
           await(route(application, request).value)
-          events.collectFirst {
-            case event =>
+          events
+            .collectFirst { case event =>
               event.getLevel.levelStr mustBe "ERROR"
               event.getMessage mustEqual "Failed to set value in session repository while attempting set on contractPacking"
-          }.getOrElse(fail("No logging captured"))
+            }
+            .getOrElse(fail("No logging captured"))
         }
       }
     }

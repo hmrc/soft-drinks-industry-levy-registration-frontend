@@ -19,7 +19,7 @@ package forms
 import forms.behaviours.LongFieldBehaviour
 import models.LitresInBands
 import org.scalatest.matchers.must.Matchers
-import play.api.data.{ Form, FormError }
+import play.api.data.{Form, FormError}
 
 class HowManyLitresFormProviderSpec extends LongFieldBehaviour with Matchers {
 
@@ -27,72 +27,54 @@ class HowManyLitresFormProviderSpec extends LongFieldBehaviour with Matchers {
 
   ".lowBand" - {
 
-    val fieldName = "lowBand"
-    val requiredKey = "litres.error.lowBand.required"
-    val numberKey = "litres.error.lowBand.nonNumeric"
-    val negativeNumberKey = "litres.error.lowBand.negative"
-    val maxValueKey = "litres.error.lowBand.outOfMaxVal"
-    val wholeNumberKey = "litres.error.lowBand.wholeNumber"
-    val maxValue = 100000000000000L
+    val fieldName          = "lowBand"
+    val requiredKey        = "litres.error.lowBand.required"
+    val numberKey          = "litres.error.lowBand.nonNumeric"
+    val negativeNumberKey  = "litres.error.lowBand.negative"
+    val maxValueKey        = "litres.error.lowBand.outOfMaxVal"
+    val wholeNumberKey     = "litres.error.lowBand.wholeNumber"
+    val maxValue           = 100000000000000L
     val validDataGenerator = longInRangeWithCommas(0, maxValue)
 
-    behave like fieldThatBindsValidData(
-      form,
-      fieldName,
-      validDataGenerator)
+    behave like fieldThatBindsValidData(form, fieldName, validDataGenerator)
 
     behave like longField(
       form,
       fieldName,
       nonNumericError = FormError(fieldName, numberKey),
       negativeNumberError = FormError(fieldName, negativeNumberKey),
-      wholeNumberError = FormError(fieldName, wholeNumberKey))
+      wholeNumberError = FormError(fieldName, wholeNumberKey)
+    )
 
-    behave like longFieldWithMaximum(
-      form,
-      fieldName,
-      maxValue,
-      FormError(fieldName, maxValueKey, Seq(maxValue)))
+    behave like longFieldWithMaximum(form, fieldName, maxValue, FormError(fieldName, maxValueKey, Seq(maxValue)))
 
-    behave like mandatoryField(
-      form,
-      fieldName,
-      requiredError = FormError(fieldName, requiredKey))
+    behave like mandatoryField(form, fieldName, requiredError = FormError(fieldName, requiredKey))
   }
 
   ".highBand" - {
 
-    val fieldName = "highBand"
-    val requiredKey = "litres.error.highBand.required"
-    val numberKey = "litres.error.highBand.nonNumeric"
-    val negativeNumberKey = "litres.error.highBand.negative"
-    val maxValueKey = "litres.error.highBand.outOfMaxVal"
-    val wholeNumberKey = "litres.error.highBand.wholeNumber"
-    val maxValue = 100000000000000L
+    val fieldName          = "highBand"
+    val requiredKey        = "litres.error.highBand.required"
+    val numberKey          = "litres.error.highBand.nonNumeric"
+    val negativeNumberKey  = "litres.error.highBand.negative"
+    val maxValueKey        = "litres.error.highBand.outOfMaxVal"
+    val wholeNumberKey     = "litres.error.highBand.wholeNumber"
+    val maxValue           = 100000000000000L
     val validDataGenerator = longInRangeWithCommas(0, maxValue)
 
-    behave like fieldThatBindsValidData(
-      form,
-      fieldName,
-      validDataGenerator)
+    behave like fieldThatBindsValidData(form, fieldName, validDataGenerator)
 
     behave like longField(
       form,
       fieldName,
       nonNumericError = FormError(fieldName, numberKey),
       negativeNumberError = FormError(fieldName, negativeNumberKey),
-      wholeNumberError = FormError(fieldName, wholeNumberKey))
+      wholeNumberError = FormError(fieldName, wholeNumberKey)
+    )
 
-    behave like longFieldWithMaximum(
-      form,
-      fieldName,
-      maxValue,
-      FormError(fieldName, maxValueKey, Seq(maxValue)))
+    behave like longFieldWithMaximum(form, fieldName, maxValue, FormError(fieldName, maxValueKey, Seq(maxValue)))
 
-    behave like mandatoryField(
-      form,
-      fieldName,
-      requiredError = FormError(fieldName, requiredKey))
+    behave like mandatoryField(form, fieldName, requiredError = FormError(fieldName, requiredKey))
   }
 
   "must return total litres less than 1" in {

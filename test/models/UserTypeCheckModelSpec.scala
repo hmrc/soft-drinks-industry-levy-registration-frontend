@@ -21,17 +21,40 @@ import org.scalatestplus.mockito.MockitoSugar
 import pages.{HowManyContractPackingPage, HowManyImportsPage, HowManyLitresGloballyPage, HowManyOperatePackagingSitesPage, ThirdPartyPackagersPage}
 import play.api.libs.json.Json
 
-
 class UserTypeCheckModelSpec extends SpecBase with MockitoSugar with DataHelper {
-  val largeProducerUserAnswersNoContractPacking: UserAnswers = UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj("howManyLitresGlobally" -> "large",
-    "howManyImports" -> Json.obj("lowBand" -> 1,"highBand" -> 1)))
-  val smallProducerUserAnswersNoOperatePackagingSites: UserAnswers = UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj("howManyLitresGlobally" -> "small",
-    "howManyContractPacking" -> Json.obj("lowBand" -> 1,"highBand" -> 1), "thirdPartyPackagers" -> true,
-    "howManyImports" -> Json.obj("lowBand" -> 1,"highBand" -> 1)))
-  val notAProducerUserAnswersNoThirdPartyPackagers: UserAnswers = UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj("howManyLitresGlobally" -> "xnot",
-    "howManyOperatePackagingSites" -> Json.obj("lowBand" -> 1,"highBand" -> 1), "howManyContractPacking" -> Json.obj("lowBand" -> 1,"highBand" -> 1)))
-  val answersNoImports: UserAnswers = UserAnswers("id", RegisterState.RegisterWithAuthUTR, Json.obj("howManyLitresGlobally" -> "xnot",
-    "howManyOperatePackagingSites" -> Json.obj("lowBand" -> 1,"highBand" -> 1), "thirdPartyPackagers" -> false))
+  val largeProducerUserAnswersNoContractPacking: UserAnswers       = UserAnswers(
+    "id",
+    RegisterState.RegisterWithAuthUTR,
+    Json.obj("howManyLitresGlobally" -> "large", "howManyImports" -> Json.obj("lowBand" -> 1, "highBand" -> 1))
+  )
+  val smallProducerUserAnswersNoOperatePackagingSites: UserAnswers = UserAnswers(
+    "id",
+    RegisterState.RegisterWithAuthUTR,
+    Json.obj(
+      "howManyLitresGlobally"  -> "small",
+      "howManyContractPacking" -> Json.obj("lowBand" -> 1, "highBand" -> 1),
+      "thirdPartyPackagers"    -> true,
+      "howManyImports"         -> Json.obj("lowBand" -> 1, "highBand" -> 1)
+    )
+  )
+  val notAProducerUserAnswersNoThirdPartyPackagers: UserAnswers    = UserAnswers(
+    "id",
+    RegisterState.RegisterWithAuthUTR,
+    Json.obj(
+      "howManyLitresGlobally"        -> "xnot",
+      "howManyOperatePackagingSites" -> Json.obj("lowBand" -> 1, "highBand" -> 1),
+      "howManyContractPacking"       -> Json.obj("lowBand" -> 1, "highBand" -> 1)
+    )
+  )
+  val answersNoImports: UserAnswers                                = UserAnswers(
+    "id",
+    RegisterState.RegisterWithAuthUTR,
+    Json.obj(
+      "howManyLitresGlobally"        -> "xnot",
+      "howManyOperatePackagingSites" -> Json.obj("lowBand" -> 1, "highBand" -> 1),
+      "thirdPartyPackagers"          -> false
+    )
+  )
 
   "UserTypeCheckModel" - {
     s"isLarge returns true if $HowManyLitresGloballyPage was answered with > 1 million" in {
@@ -40,8 +63,8 @@ class UserTypeCheckModelSpec extends SpecBase with MockitoSugar with DataHelper 
     }
 
     s"isLarge returns false if $HowManyLitresGloballyPage was answered with < 1 million" in {
-        val data = UserTypeCheck.isLarge(smallProducerUserAnswersNoOperatePackagingSites)
-        data mustBe false
+      val data = UserTypeCheck.isLarge(smallProducerUserAnswersNoOperatePackagingSites)
+      data mustBe false
     }
 
     s"isLarge returns false if $HowManyLitresGloballyPage was answered with None" in {
@@ -80,14 +103,14 @@ class UserTypeCheckModelSpec extends SpecBase with MockitoSugar with DataHelper 
     }
 
     s"operatesPackagingSite returns true if $HowManyOperatePackagingSitesPage was answered and litres > 1" in {
-      val data = UserTypeCheck.operatesPackagingSite(answersNoImports)
+      val data  = UserTypeCheck.operatesPackagingSite(answersNoImports)
       data mustBe true
       val data1 = UserTypeCheck.operatesPackagingSite(notAProducerUserAnswersNoThirdPartyPackagers)
       data1 mustBe true
     }
 
     s"operatesPackagingSite returns false if $HowManyOperatePackagingSitesPage was not answered or litres < 1" in {
-      val data = UserTypeCheck.operatesPackagingSite(smallProducerUserAnswersNoOperatePackagingSites)
+      val data  = UserTypeCheck.operatesPackagingSite(smallProducerUserAnswersNoOperatePackagingSites)
       data mustBe false
       val data1 = UserTypeCheck.operatesPackagingSite(largeProducerUserAnswersNoContractPacking)
       data1 mustBe false
@@ -95,14 +118,14 @@ class UserTypeCheckModelSpec extends SpecBase with MockitoSugar with DataHelper 
     }
 
     s"copackerAll returns true if $HowManyContractPackingPage was answered and litres > 1" in {
-      val data = UserTypeCheck.copackerAll(smallProducerUserAnswersNoOperatePackagingSites)
+      val data  = UserTypeCheck.copackerAll(smallProducerUserAnswersNoOperatePackagingSites)
       data mustBe true
       val data1 = UserTypeCheck.copackerAll(notAProducerUserAnswersNoThirdPartyPackagers)
       data1 mustBe true
     }
 
     s"copackerAll returns false if $HowManyContractPackingPage was not answered or litres < 1" in {
-      val data = UserTypeCheck.copackerAll(largeProducerUserAnswersNoContractPacking)
+      val data  = UserTypeCheck.copackerAll(largeProducerUserAnswersNoContractPacking)
       data mustBe false
       val data1 = UserTypeCheck.copackerAll(answersNoImports)
       data1 mustBe false
@@ -124,14 +147,14 @@ class UserTypeCheckModelSpec extends SpecBase with MockitoSugar with DataHelper 
     }
 
     s"importer returns true if $HowManyImportsPage was answered and litres > 1" in {
-      val data = UserTypeCheck.importer(largeProducerUserAnswersNoContractPacking)
+      val data  = UserTypeCheck.importer(largeProducerUserAnswersNoContractPacking)
       data mustBe true
       val data1 = UserTypeCheck.importer(smallProducerUserAnswersNoOperatePackagingSites)
       data1 mustBe true
     }
 
     s"importer returns false if $HowManyImportsPage was not answered or litres < 1" in {
-      val data = UserTypeCheck.importer(answersNoImports)
+      val data  = UserTypeCheck.importer(answersNoImports)
       data mustBe false
       val data1 = UserTypeCheck.importer(notAProducerUserAnswersNoThirdPartyPackagers)
       data1 mustBe false

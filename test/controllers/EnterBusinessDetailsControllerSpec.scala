@@ -45,20 +45,25 @@ class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with
 
   def onwardRoute = Call("GET", "/foo")
 
-  class Harness(connector: SoftDrinksIndustryLevyConnector) extends DataRequiredActionImpl(connector, application.injector.instanceOf[GenericLogger], application.injector.instanceOf[ErrorHandler]) {
+  class Harness(connector: SoftDrinksIndustryLevyConnector)
+      extends DataRequiredActionImpl(
+        connector,
+        application.injector.instanceOf[GenericLogger],
+        application.injector.instanceOf[ErrorHandler]
+      ) {
     def callRefine[A](request: OptionalDataRequest[A]): Future[Either[Result, DataRequest[A]]] = refine(request)
   }
 
-  val mockHttp = mock[HttpClientV2]
-  val mockOrchestrator = mock[RegistrationOrchestrator]
+  val mockHttp           = mock[HttpClientV2]
+  val mockOrchestrator   = mock[RegistrationOrchestrator]
   val mockSessionService = mock[SessionService]
 
   val formProvider = new EnterBusinessDetailsFormProvider()
-  val form = formProvider()
+  val form         = formProvider()
 
-  lazy val enterBusinessDetailsRoute = routes.EnterBusinessDetailsController.onPageLoad.url
-  val emptyUserAnswersForEnterBusinessDetails = emptyUserAnswers.copy(registerState = RegisterState.RequiresBusinessDetails)
-
+  lazy val enterBusinessDetailsRoute          = routes.EnterBusinessDetailsController.onPageLoad.url
+  val emptyUserAnswersForEnterBusinessDetails =
+    emptyUserAnswers.copy(registerState = RegisterState.RequiresBusinessDetails)
 
   "EnterBusinessDetails Controller" - {
 
@@ -105,12 +110,17 @@ class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with
       }
     }
 
-
     "must redirect to the next page with no updates when answers are the same as previously entered" in {
 
       val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswersForEnterBusinessDetails
-        .set(EnterBusinessDetailsPage, Identify("0000000437", "GU14 8NL")).success.value))
+        applicationBuilder(userAnswers =
+          Some(
+            emptyUserAnswersForEnterBusinessDetails
+              .set(EnterBusinessDetailsPage, Identify("0000000437", "GU14 8NL"))
+              .success
+              .value
+          )
+        )
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionService].toInstance(mockSessionService),
@@ -155,8 +165,11 @@ class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual  view(form.fill(Identify(utr = "0000000436", postcode = "GU14 8NL"))
-          .withError("utr", "enterBusinessDetails.no-record.utr"))(using request, messages(application), frontendAppConfig).toString
+        contentAsString(result) mustEqual view(
+          form
+            .fill(Identify(utr = "0000000436", postcode = "GU14 8NL"))
+            .withError("utr", "enterBusinessDetails.no-record.utr")
+        )(using request, messages(application), frontendAppConfig).toString
       }
     }
 
@@ -187,7 +200,11 @@ class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm)(using request, messages(application), frontendAppConfig).toString
+        contentAsString(result) mustEqual view(boundForm)(using
+          request,
+          messages(application),
+          frontendAppConfig
+        ).toString
       }
     }
 
@@ -210,14 +227,15 @@ class EnterBusinessDetailsControllerSpec extends SpecBase with MockitoSugar with
         withCaptureOfLoggingFrom(application.injector.instanceOf[GenericLogger].logger) { events =>
           val request =
             FakeRequest(POST, enterBusinessDetailsRoute)
-            .withFormUrlEncodedBody(("utr", "0000000437"), ("postcode", "GU14 8NL"))
+              .withFormUrlEncodedBody(("utr", "0000000437"), ("postcode", "GU14 8NL"))
 
           await(route(application, request).value)
-          events.collectFirst {
-            case event =>
+          events
+            .collectFirst { case event =>
               event.getLevel.levelStr mustBe "ERROR"
               event.getMessage mustEqual "Failed to set value in session repository while attempting set on enterBusinessDetails"
-          }.getOrElse(fail("No logging captured"))
+            }
+            .getOrElse(fail("No logging captured"))
         }
       }
     }

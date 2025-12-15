@@ -20,7 +20,7 @@ import models.Litreage
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{ Actions, SummaryListRow }
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Actions, SummaryListRow}
 import viewmodels.govuk.summarylist._
 import viewmodels.implicits._
 
@@ -30,30 +30,38 @@ trait SummaryListRowLitresHelper {
   val bandActionIdKey: String
   val bandHiddenKey: String
 
-  def rows(literage: Litreage, isCheckAnswers: Boolean)(implicit messages: Messages): Seq[SummaryListRow] = {
+  def rows(literage: Litreage, isCheckAnswers: Boolean)(implicit messages: Messages): Seq[SummaryListRow] =
     Seq(
       bandRow(literage.lower, "litresInLowBand", isCheckAnswers),
-      bandRow(literage.upper, "litresInHighBand", isCheckAnswers))
-  }
+      bandRow(literage.upper, "litresInHighBand", isCheckAnswers)
+    )
 
-  private def bandRow(litres: Long, band: String, isCheckAnswers: Boolean)(implicit messages: Messages): SummaryListRow = {
+  private def bandRow(litres: Long, band: String, isCheckAnswers: Boolean)(implicit
+    messages: Messages
+  ): SummaryListRow = {
 
     val value = HtmlFormat.escape(java.text.NumberFormat.getInstance.format(litres)).toString
     SummaryListRow(
       key = band,
       value = ValueViewModel(HtmlContent(value)).withCssClass("sdil-right-align--desktop"),
       classes = "govuk-summary-list__row",
-      actions = action(isCheckAnswers, band))
+      actions = action(isCheckAnswers, band)
+    )
   }
 
-  def action(isCheckAnswers: Boolean, band: String)(implicit messages: Messages): Option[Actions] = if (isCheckAnswers) {
-    Some(Actions(
-      "",
-      items =
-        Seq(
+  def action(isCheckAnswers: Boolean, band: String)(implicit messages: Messages): Option[Actions] = if (
+    isCheckAnswers
+  ) {
+    Some(
+      Actions(
+        "",
+        items = Seq(
           ActionItemViewModel("site.change", actionUrl)
             .withAttribute(("id", s"change-$band-litreage-$bandActionIdKey"))
-            .withVisuallyHiddenText(messages(s"$bandHiddenKey.$band.litres.hidden")))))
+            .withVisuallyHiddenText(messages(s"$bandHiddenKey.$band.litres.hidden"))
+        )
+      )
+    )
   } else {
     None
   }

@@ -17,8 +17,8 @@
 package controllers
 
 import controllers.actions._
-import play.api.i18n.{ I18nSupport, MessagesApi }
-import play.api.mvc.{ Action, AnyContent, MessagesControllerComponents }
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.DoNotRegisterView
 
@@ -28,10 +28,11 @@ class DoNotRegisterController @Inject() (
   override val messagesApi: MessagesApi,
   controllerActions: ControllerActions,
   val controllerComponents: MessagesControllerComponents,
-  view: DoNotRegisterView) extends FrontendBaseController with I18nSupport {
+  view: DoNotRegisterView
+) extends FrontendBaseController
+    with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = controllerActions.withUserWhoCanRegister {
-    implicit request =>
-      Ok(view())
+  def onPageLoad: Action[AnyContent] = controllerActions.withUserWhoCanRegister { implicit request =>
+    Ok(view())
   }
 }

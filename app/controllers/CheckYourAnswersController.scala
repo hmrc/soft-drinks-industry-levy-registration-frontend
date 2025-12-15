@@ -17,20 +17,20 @@
 package controllers
 
 import com.google.inject.Inject
-import controllers.actions.{ ControllerActions, RequiredUserAnswers }
+import controllers.actions.{ControllerActions, RequiredUserAnswers}
 import errors.MissingRequiredUserAnswers
 import handlers.ErrorHandler
 import models.NormalMode
 import orchestrators.RegistrationOrchestrator
 import pages.CheckYourAnswersPage
-import play.api.i18n.{ I18nSupport, MessagesApi }
-import play.api.mvc.{ Action, AnyContent, MessagesControllerComponents }
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utilities.GenericLogger
 import views.html.CheckYourAnswersView
 import views.summary.RegistrationSummary
 
-import scala.concurrent.{ ExecutionContext, Future }
+import scala.concurrent.{ExecutionContext, Future}
 
 class CheckYourAnswersController @Inject() (
   override val messagesApi: MessagesApi,
@@ -40,35 +40,39 @@ class CheckYourAnswersController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: CheckYourAnswersView,
   errorHandler: ErrorHandler,
-  val genericLogger: GenericLogger)(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+  val genericLogger: GenericLogger
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
+    with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = controllerActions.withUserWhoCanRegister.async {
-    implicit request =>
-      requiredUserAnswers.requireData(CheckYourAnswersPage) {
-        registrationOrchestrator.getSubscriptionAndHowManyLitresGlobally(request.userAnswers, request.rosmWithUtr) match {
-          case Right(createdSubscriptionAndAmountProducedGlobally) =>
-            val summaryList = RegistrationSummary.summaryList(createdSubscriptionAndAmountProducedGlobally)
-            Future.successful(Ok(view(summaryList, routes.CheckYourAnswersController.onSubmit)))
-          case Left(_) => Future.successful(Redirect(routes.RegistrationController.start))
-        }
+  def onPageLoad: Action[AnyContent] = controllerActions.withUserWhoCanRegister.async { implicit request =>
+    requiredUserAnswers.requireData(CheckYourAnswersPage) {
+      registrationOrchestrator.getSubscriptionAndHowManyLitresGlobally(request.userAnswers, request.rosmWithUtr) match {
+        case Right(createdSubscriptionAndAmountProducedGlobally) =>
+          val summaryList = RegistrationSummary.summaryList(createdSubscriptionAndAmountProducedGlobally)
+          Future.successful(Ok(view(summaryList, routes.CheckYourAnswersController.onSubmit)))
+        case Left(_)                                             => Future.successful(Redirect(routes.RegistrationController.start))
       }
+    }
   }
 
-  def onSubmit: Action[AnyContent] = controllerActions.withUserWhoCanRegister.async {
-    implicit request =>
-      requiredUserAnswers.requireData(CheckYourAnswersPage) {
-        registrationOrchestrator.createSubscriptionAndUpdateUserAnswers.value.flatMap {
-          case Right(_) => Future.successful(
+  def onSubmit: Action[AnyContent] = controllerActions.withUserWhoCanRegister.async { implicit request =>
+    requiredUserAnswers.requireData(CheckYourAnswersPage) {
+      registrationOrchestrator.createSubscriptionAndUpdateUserAnswers.value.flatMap {
+        case Right(_)                         =>
+          Future.successful(
             Redirect(controllers.routes.RegistrationConfirmationController.onPageLoad.url)
           )
-          case Left(MissingRequiredUserAnswers) => Future.successful(
+        case Left(MissingRequiredUserAnswers) =>
+          Future.successful(
             Redirect(controllers.routes.VerifyController.onPageLoad(NormalMode))
           )
-          case Left(_) =>
-            genericLogger.logger.error(s"${getClass.getName} - ${request.userAnswers.id} - failed to create subscription and create user answers")
-            errorHandler.internalServerErrorTemplate.map(errorView => InternalServerError(errorView))
-        }
+        case Left(_)                          =>
+          genericLogger.logger.error(
+            s"${getClass.getName} - ${request.userAnswers.id} - failed to create subscription and create user answers"
+          )
+          errorHandler.internalServerErrorTemplate.map(errorView => InternalServerError(errorView))
       }
+    }
   }
 }
-

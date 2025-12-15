@@ -21,7 +21,7 @@ import models.Identify
 import org.scalatest.matchers.must.Matchers
 import play.api.data.{Form, FormError}
 
-class EnterBusinessDetailsFormProviderSpec extends  IntFieldBehaviours with Matchers with StringFieldBehaviours{
+class EnterBusinessDetailsFormProviderSpec extends IntFieldBehaviours with Matchers with StringFieldBehaviours {
 
   val lengthKey = "enterBusinessDetails.error.length"
   val maxLength = 10
@@ -30,9 +30,9 @@ class EnterBusinessDetailsFormProviderSpec extends  IntFieldBehaviours with Matc
 
   ".utr" - {
 
-    val fieldName = "utr"
+    val fieldName   = "utr"
     val requiredKey = "enterBusinessDetails.required.utr"
-    val invalidKey = "enterBusinessDetails.invalid.utr"
+    val invalidKey  = "enterBusinessDetails.invalid.utr"
 
     behave like fieldThatBindsValidData(
       form,

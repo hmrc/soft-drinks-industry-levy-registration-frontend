@@ -23,36 +23,36 @@ import play.api.libs.json.{JsBoolean, JsNumber, JsString, Json}
 
 class SubscriptionSpec extends RegistrationSubscriptionHelper {
 
-  def litreageJson(litres: Litreage) = Json.obj(("lower", JsNumber(litres.lower)),("upper", JsNumber(litres.upper)))
+  def litreageJson(litres: Litreage) = Json.obj(("lower", JsNumber(litres.lower)), ("upper", JsNumber(litres.upper)))
 
   val addressJson = Json.obj(
-    ("lines", Json.arr(
-      (JsString("105B Godfrey Marchant Grove")),
-      (JsString("Guildford")))
-    ),
-    ("postCode", JsString("GU14 8NL")))
+    ("lines", Json.arr(JsString("105B Godfrey Marchant Grove"), JsString("Guildford"))),
+    ("postCode", JsString("GU14 8NL"))
+  )
 
   val packagingSiteJson = Json.obj(
-    ("address", Json.obj(
-      ("lines", Json.arr(
-        (JsString("33 Rhes Priordy")),
-        (JsString("East London")))
-      ),
-      ("postCode", JsString("E73 2RP")))),
+    (
+      "address",
+      Json.obj(
+        ("lines", Json.arr(JsString("33 Rhes Priordy"), JsString("East London"))),
+        ("postCode", JsString("E73 2RP"))
+      )
+    ),
     ("tradingName", JsString("Wild Lemonade Group"))
   )
 
   val warehouseJson = Json.obj(
-    ("address", Json.obj(
-      ("lines", Json.arr(
-        (JsString("33 Rhes Priordy")),
-        (JsString("East London")))
-      ),
-      ("postCode", JsString("WR53 7CX")))),
+    (
+      "address",
+      Json.obj(
+        ("lines", Json.arr(JsString("33 Rhes Priordy"), JsString("East London"))),
+        ("postCode", JsString("WR53 7CX"))
+      )
+    ),
     ("tradingName", JsString("ABC Ltd"))
   )
 
-  val activityNoLitresJson = Json.obj(("isLarge", JsBoolean(false)))
+  val activityNoLitresJson   = Json.obj(("isLarge", JsBoolean(false)))
   val activityWithLitresJson = Json.obj(
     ("ProducedOwnBrand", litreageJson(litreage)),
     ("Imported", litreageJson(litreage)),
@@ -61,7 +61,12 @@ class SubscriptionSpec extends RegistrationSubscriptionHelper {
     ("isLarge", JsBoolean(true))
   )
 
-  val contactJson = Json.obj(("name", JsString("foo")), ("positionInCompany", JsString("bar")), ("phoneNumber", JsString("wizz")), ("email", JsString("bang")))
+  val contactJson          = Json.obj(
+    ("name", JsString("foo")),
+    ("positionInCompany", JsString("bar")),
+    ("phoneNumber", JsString("wizz")),
+    ("email", JsString("bang"))
+  )
   val contactNoNameJobJson = Json.obj(("phoneNumber", JsString("wizz")), ("email", JsString("bang")))
 
   val subscriptionOnlyRequiredFieldsJson = Json.obj(
@@ -122,13 +127,13 @@ class SubscriptionSpec extends RegistrationSubscriptionHelper {
           "when the user answers contains the required pages" - {
             s"for a ${orgType.toString} that is a ${litresGlobally.toString} producer" - {
               "that has all litres pages populated, warehouses and packagaing site" in {
-                val userAnswers = getCompletedUserAnswers(orgType, litresGlobally, true)
+                val userAnswers          = getCompletedUserAnswers(orgType, litresGlobally, true)
                 val expectedSubscription = generateSubscription(orgType, litresGlobally, true)
 
                 Subscription.generate(userAnswers, rosmRegistration) mustBe expectedSubscription
               }
               "that has no litres pages populated" in {
-                val userAnswers = getCompletedUserAnswers(orgType, litresGlobally, false)
+                val userAnswers          = getCompletedUserAnswers(orgType, litresGlobally, false)
                 val expectedSubscription = generateSubscription(orgType, litresGlobally, false)
 
                 Subscription.generate(userAnswers, rosmRegistration) mustBe expectedSubscription
@@ -143,7 +148,9 @@ class SubscriptionSpec extends RegistrationSubscriptionHelper {
     "should throw an expection" - {
       "when the user answers doesn't include organisation type" in {
         val userAnswers = getCompletedUserAnswers(OrganisationType.LimitedCompany, HowManyLitresGlobally.Large, false)
-          .remove(OrganisationTypePage).success.value
+          .remove(OrganisationTypePage)
+          .success
+          .value
 
         intercept[Exception](
           Subscription.generate(userAnswers, rosmRegistration)
@@ -152,7 +159,9 @@ class SubscriptionSpec extends RegistrationSubscriptionHelper {
 
       "when the user answers doesn't include contact details" in {
         val userAnswers = getCompletedUserAnswers(OrganisationType.LimitedCompany, HowManyLitresGlobally.Large, false)
-          .remove(ContactDetailsPage).success.value
+          .remove(ContactDetailsPage)
+          .success
+          .value
 
         intercept[Exception](
           Subscription.generate(userAnswers, rosmRegistration)

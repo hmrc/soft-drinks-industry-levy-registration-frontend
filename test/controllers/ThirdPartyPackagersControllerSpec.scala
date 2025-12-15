@@ -40,7 +40,7 @@ class ThirdPartyPackagersControllerSpec extends SpecBase with MockitoSugar with 
   def onwardRoute = Call("GET", "/foo")
 
   val formProvider = new ThirdPartyPackagersFormProvider()
-  val form = formProvider()
+  val form         = formProvider()
 
   lazy val thirdPartyPackagersRoute = routes.ThirdPartyPackagersController.onPageLoad(NormalMode).url
 
@@ -48,7 +48,8 @@ class ThirdPartyPackagersControllerSpec extends SpecBase with MockitoSugar with 
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration).build()
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration).build()
 
       running(application) {
         val request = FakeRequest(GET, thirdPartyPackagersRoute)
@@ -64,7 +65,8 @@ class ThirdPartyPackagersControllerSpec extends SpecBase with MockitoSugar with 
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(identifier, RegisterState.RegisterWithAuthUTR).set(ThirdPartyPackagersPage, true).success.value
+      val userAnswers =
+        UserAnswers(identifier, RegisterState.RegisterWithAuthUTR).set(ThirdPartyPackagersPage, true).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers), rosmRegistration = rosmRegistration).build()
 
@@ -76,7 +78,10 @@ class ThirdPartyPackagersControllerSpec extends SpecBase with MockitoSugar with 
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode)(using request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(true), NormalMode)(using
+          request,
+          messages(application)
+        ).toString
       }
     }
 
@@ -97,7 +102,7 @@ class ThirdPartyPackagersControllerSpec extends SpecBase with MockitoSugar with 
       running(application) {
         val request =
           FakeRequest(POST, thirdPartyPackagersRoute)
-        .withFormUrlEncodedBody(("value", "true"))
+            .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
 
@@ -108,12 +113,13 @@ class ThirdPartyPackagersControllerSpec extends SpecBase with MockitoSugar with 
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration).build()
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration).build()
 
       running(application) {
         val request =
           FakeRequest(POST, thirdPartyPackagersRoute)
-        .withFormUrlEncodedBody(("value", ""))
+            .withFormUrlEncodedBody(("value", ""))
 
         val boundForm = form.bind(Map("value" -> ""))
 
@@ -147,7 +153,7 @@ class ThirdPartyPackagersControllerSpec extends SpecBase with MockitoSugar with 
       running(application) {
         val request =
           FakeRequest(POST, thirdPartyPackagersRoute)
-        .withFormUrlEncodedBody(("value", "true"))
+            .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
 
@@ -158,13 +164,15 @@ class ThirdPartyPackagersControllerSpec extends SpecBase with MockitoSugar with 
 
     "must fail if the setting of userAnswers fails" in {
 
-      val application = applicationBuilder(userAnswers = Some(userDetailsWithSetMethodsReturningFailure), rosmRegistration = rosmRegistration).build()
+      val application = applicationBuilder(
+        userAnswers = Some(userDetailsWithSetMethodsReturningFailure),
+        rosmRegistration = rosmRegistration
+      ).build()
 
       running(application) {
         val request =
-          FakeRequest(POST, thirdPartyPackagersRoute
-        )
-        .withFormUrlEncodedBody(("value", "true"))
+          FakeRequest(POST, thirdPartyPackagersRoute)
+            .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
 
@@ -191,14 +199,15 @@ class ThirdPartyPackagersControllerSpec extends SpecBase with MockitoSugar with 
         withCaptureOfLoggingFrom(application.injector.instanceOf[GenericLogger].logger) { events =>
           val request =
             FakeRequest(POST, thirdPartyPackagersRoute)
-          .withFormUrlEncodedBody(("value", "true"))
+              .withFormUrlEncodedBody(("value", "true"))
 
           await(route(application, request).value)
-          events.collectFirst {
-            case event =>
+          events
+            .collectFirst { case event =>
               event.getLevel.levelStr mustBe "ERROR"
               event.getMessage mustEqual "Failed to set value in session repository while attempting set on thirdPartyPackagers"
-          }.getOrElse(fail("No logging captured"))
+            }
+            .getOrElse(fail("No logging captured"))
         }
       }
     }

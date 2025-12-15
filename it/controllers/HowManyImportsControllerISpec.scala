@@ -8,16 +8,15 @@ import play.api.http.HeaderNames
 import play.api.libs.json.Json
 import play.api.test.WsTestClient
 
-
 class HowManyImportsControllerISpec extends LitresISpecHelper {
 
   val normalRoutePath = "/how-many-imports-next-12-months"
-  val checkRoutePath = "/change-how-many-imports-next-12-months"
+  val checkRoutePath  = "/change-how-many-imports-next-12-months"
 
   val userAnswers = emptyUserAnswers.set(HowManyImportsPage, litresInBands).success.value
 
   List(NormalMode, CheckMode).foreach { mode =>
-    val (path, redirectLocation) = if(mode == NormalMode) {
+    val (path, redirectLocation) = if (mode == NormalMode) {
       (normalRoutePath, routes.StartDateController.onPageLoad(NormalMode).url)
     } else {
       (checkRoutePath, routes.CheckYourAnswersController.onPageLoad.url)
@@ -26,8 +25,7 @@ class HowManyImportsControllerISpec extends LitresISpecHelper {
     "GET " + path - {
       "when the userAnswers contains no data" - {
         "should return OK and render the litres page for Imports with no data populated" in {
-          build
-            .commonPrecondition
+          build.commonPrecondition
 
           setAnswers(largeProducerImportsTrueUserAnswers)
 
@@ -46,8 +44,7 @@ class HowManyImportsControllerISpec extends LitresISpecHelper {
 
       s"when the userAnswers contains data for the page" - {
         s"should return OK and render the page with fields populated" in {
-          build
-            .commonPrecondition
+          build.commonPrecondition
 
           setAnswers(userAnswers)
 
@@ -73,19 +70,21 @@ class HowManyImportsControllerISpec extends LitresISpecHelper {
       "when the user populates all litres fields" - {
         "should update the session with the new values and redirect to " + redirectLocation - {
           "when the session contains no data for page" in {
-            build
-              .commonPrecondition
+            build.commonPrecondition
 
             setAnswers(largeProducerImportsTrueUserAnswers)
             WsTestClient.withClient { client =>
               val result = createClientRequestPOST(
-                client, baseUrl + path, Json.toJson(litresInBands)
+                client,
+                baseUrl + path,
+                Json.toJson(litresInBands)
               )
 
               whenReady(result) { res =>
                 res.status mustBe 303
                 res.header(HeaderNames.LOCATION) mustBe Some(redirectLocation)
-                val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[LitresInBands]](None)(_.get(HowManyImportsPage))
+                val dataStoredForPage =
+                  getAnswers(userAnswers.id).fold[Option[LitresInBands]](None)(_.get(HowManyImportsPage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe litresInBands
               }
@@ -93,19 +92,21 @@ class HowManyImportsControllerISpec extends LitresISpecHelper {
           }
 
           "when the session already contains data for page" in {
-            build
-              .commonPrecondition
+            build.commonPrecondition
 
             setAnswers(smallProducerNoPackagingRouteUserAnswers)
             WsTestClient.withClient { client =>
               val result = createClientRequestPOST(
-                client, baseUrl + path, Json.toJson(litresInBandsDiff)
+                client,
+                baseUrl + path,
+                Json.toJson(litresInBandsDiff)
               )
 
               whenReady(result) { res =>
                 res.status mustBe 303
                 res.header(HeaderNames.LOCATION) mustBe Some(redirectLocation)
-                val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[LitresInBands]](None)(_.get(HowManyImportsPage))
+                val dataStoredForPage =
+                  getAnswers(userAnswers.id).fold[Option[LitresInBands]](None)(_.get(HowManyImportsPage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe litresInBandsDiff
               }
@@ -115,16 +116,18 @@ class HowManyImportsControllerISpec extends LitresISpecHelper {
       }
 
       "should return 400 with required error" - {
-        val errorTitle = "Error: How many litres will you bring into the UK in the next 12 months? - Soft Drinks Industry Levy - GOV.UK"
+        val errorTitle =
+          "Error: How many litres will you bring into the UK in the next 12 months? - Soft Drinks Industry Levy - GOV.UK"
 
         "when no questions are answered" in {
-          build
-            .commonPrecondition
+          build.commonPrecondition
 
           setAnswers(emptyUserAnswers)
           WsTestClient.withClient { client =>
             val result = createClientRequestPOST(
-              client, baseUrl + path, emptyJson
+              client,
+              baseUrl + path,
+              emptyJson
             )
 
             whenReady(result) { res =>
@@ -136,13 +139,14 @@ class HowManyImportsControllerISpec extends LitresISpecHelper {
         }
 
         "when the user answers with no numeric answers" in {
-          build
-            .commonPrecondition
+          build.commonPrecondition
 
           setAnswers(emptyUserAnswers)
           WsTestClient.withClient { client =>
             val result = createClientRequestPOST(
-              client, baseUrl + path, jsonWithNoNumeric
+              client,
+              baseUrl + path,
+              jsonWithNoNumeric
             )
 
             whenReady(result) { res =>
@@ -154,13 +158,14 @@ class HowManyImportsControllerISpec extends LitresISpecHelper {
         }
 
         "when the user answers with negative numbers" in {
-          build
-            .commonPrecondition
+          build.commonPrecondition
 
           setAnswers(emptyUserAnswers)
           WsTestClient.withClient { client =>
             val result = createClientRequestPOST(
-              client, baseUrl + path, jsonWithNegativeNumber
+              client,
+              baseUrl + path,
+              jsonWithNegativeNumber
             )
 
             whenReady(result) { res =>
@@ -172,13 +177,14 @@ class HowManyImportsControllerISpec extends LitresISpecHelper {
         }
 
         "when the user answers with decimal numbers" in {
-          build
-            .commonPrecondition
+          build.commonPrecondition
 
           setAnswers(emptyUserAnswers)
           WsTestClient.withClient { client =>
             val result = createClientRequestPOST(
-              client, baseUrl + path, jsonWithDecimalNumber
+              client,
+              baseUrl + path,
+              jsonWithDecimalNumber
             )
 
             whenReady(result) { res =>
@@ -190,13 +196,14 @@ class HowManyImportsControllerISpec extends LitresISpecHelper {
         }
 
         "when the user answers with out of max range numbers" in {
-          build
-            .commonPrecondition
+          build.commonPrecondition
 
           setAnswers(emptyUserAnswers)
           WsTestClient.withClient { client =>
             val result = createClientRequestPOST(
-              client, baseUrl + path, jsonWithOutOfRangeNumber
+              client,
+              baseUrl + path,
+              jsonWithOutOfRangeNumber
             )
 
             whenReady(result) { res =>

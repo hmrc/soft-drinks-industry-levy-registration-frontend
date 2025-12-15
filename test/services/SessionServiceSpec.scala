@@ -40,7 +40,7 @@ class SessionServiceSpec extends SpecBase with MockitoSugar {
 
         val res = sessionService.set(emptyUserAnswers)
 
-        whenReady(res.value) {result =>
+        whenReady(res.value) { result =>
           result mustBe Right(true)
         }
       }
@@ -75,7 +75,6 @@ class SessionServiceSpec extends SpecBase with MockitoSugar {
         }
       }
     }
-
 
     "must return None" - {
       "when no mongo errors occur and a record doesn't exists" in {

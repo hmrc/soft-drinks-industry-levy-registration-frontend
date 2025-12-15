@@ -17,8 +17,8 @@
 package models.requests
 
 import models.backend.UkAddress
-import models.{ RosmWithUtr, UserAnswers }
-import play.api.mvc.{ Request, WrappedRequest }
+import models.{RosmWithUtr, UserAnswers}
+import play.api.mvc.{Request, WrappedRequest}
 
 import java.time.Instant
 
@@ -27,7 +27,8 @@ case class OptionalDataRequest[A](
   internalId: String,
   hasCTEnrolment: Boolean = false,
   authUtr: Option[String] = None,
-  userAnswers: Option[UserAnswers]) extends WrappedRequest[A](request)
+  userAnswers: Option[UserAnswers]
+) extends WrappedRequest[A](request)
 
 case class DataRequest[A](
   request: Request[A],
@@ -35,21 +36,24 @@ case class DataRequest[A](
   hasCTEnrolment: Boolean = false,
   authUtr: Option[String] = None,
   userAnswers: UserAnswers,
-  rosmWithUtr: RosmWithUtr) extends WrappedRequest[A](request)
+  rosmWithUtr: RosmWithUtr
+) extends WrappedRequest[A](request)
 
 case class DataRequestForEnterBusinessDetails[A](
   request: Request[A],
   internalId: String,
   hasCTEnrolment: Boolean = false,
   authUtr: Option[String] = None,
-  userAnswers: UserAnswers) extends WrappedRequest[A](request)
+  userAnswers: UserAnswers
+) extends WrappedRequest[A](request)
 
 case class DataRequestForApplicationSubmitted[A](
   request: Request[A],
   internalId: String,
   userAnswers: UserAnswers,
   rosmWithUtr: RosmWithUtr,
-  submittedDateTime: Instant) extends WrappedRequest[A](request)
+  submittedDateTime: Instant
+) extends WrappedRequest[A](request)
 
 case class DataRequestForEnterTradingName[A](
   request: Request[A],
@@ -58,4 +62,5 @@ case class DataRequestForEnterTradingName[A](
   authUtr: Option[String] = None,
   userAnswers: UserAnswers,
   aflAddress: UkAddress,
-  tradingName: Option[String]) extends WrappedRequest[A](request)
+  tradingName: Option[String]
+) extends WrappedRequest[A](request)

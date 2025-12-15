@@ -32,10 +32,11 @@ class HowManyLitresGloballySpec extends AnyFreeSpec with Matchers with ScalaChec
 
       val gen = Gen.oneOf(HowManyLitresGlobally.values.toSeq)
 
-      forAll(gen) {
-        howManyLitresGlobally =>
-
-          JsString(howManyLitresGlobally.toString).validate[HowManyLitresGlobally].asOpt.value mustEqual howManyLitresGlobally
+      forAll(gen) { howManyLitresGlobally =>
+        JsString(howManyLitresGlobally.toString)
+          .validate[HowManyLitresGlobally]
+          .asOpt
+          .value mustEqual howManyLitresGlobally
       }
     }
 
@@ -43,10 +44,8 @@ class HowManyLitresGloballySpec extends AnyFreeSpec with Matchers with ScalaChec
 
       val gen = arbitrary[String] suchThat (!HowManyLitresGlobally.values.map(_.toString).contains(_))
 
-      forAll(gen) {
-        invalidValue =>
-
-          JsString(invalidValue).validate[HowManyLitresGlobally] mustEqual JsError("error.invalid")
+      forAll(gen) { invalidValue =>
+        JsString(invalidValue).validate[HowManyLitresGlobally] mustEqual JsError("error.invalid")
       }
     }
 
@@ -54,10 +53,8 @@ class HowManyLitresGloballySpec extends AnyFreeSpec with Matchers with ScalaChec
 
       val gen = Gen.oneOf(HowManyLitresGlobally.values.toSeq)
 
-      forAll(gen) {
-        howManyLitresGlobally =>
-
-          Json.toJson(howManyLitresGlobally) mustEqual JsString(howManyLitresGlobally.toString)
+      forAll(gen) { howManyLitresGlobally =>
+        Json.toJson(howManyLitresGlobally) mustEqual JsString(howManyLitresGlobally.toString)
       }
     }
   }

@@ -30,10 +30,12 @@ class PackagingSiteDetailsPageSpec extends PageBehaviours {
     beRemovable[Boolean](PackagingSiteDetailsPage)
 
     s"url should be correct for $NormalMode" in {
-      PackagingSiteDetailsPage.url(NormalMode) mustBe controllers.routes.PackagingSiteDetailsController.onPageLoad(NormalMode).url
+      PackagingSiteDetailsPage
+        .url(NormalMode) mustBe controllers.routes.PackagingSiteDetailsController.onPageLoad(NormalMode).url
     }
     s"url should be correct for $CheckMode" in {
-      PackagingSiteDetailsPage.url(CheckMode) mustBe controllers.routes.PackagingSiteDetailsController.onPageLoad(CheckMode).url
+      PackagingSiteDetailsPage
+        .url(CheckMode) mustBe controllers.routes.PackagingSiteDetailsController.onPageLoad(CheckMode).url
     }
   }
 }

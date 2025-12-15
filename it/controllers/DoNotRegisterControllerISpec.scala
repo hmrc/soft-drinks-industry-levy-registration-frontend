@@ -10,12 +10,11 @@ class DoNotRegisterControllerISpec extends ControllerITTestHelper {
   val normalRoutePath = "/do-not-register"
 
   given messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-  given messages: Messages = messagesApi.preferred(FakeRequest())
-  
+  given messages: Messages       = messagesApi.preferred(FakeRequest())
+
   "GET " + normalRoutePath - {
     "should return OK and render the DoNotRegister page" in {
-      build
-        .commonPrecondition
+      build.commonPrecondition
 
       setAnswers(emptyUserAnswers)
 
@@ -29,8 +28,7 @@ class DoNotRegisterControllerISpec extends ControllerITTestHelper {
         }
       }
     }
-    testOtherSuccessUserTypes(baseUrl + normalRoutePath, messages("doNotRegister" + ".title"
-    ) )
+    testOtherSuccessUserTypes(baseUrl + normalRoutePath, messages("doNotRegister" + ".title"))
     testUnauthorisedUser(baseUrl + normalRoutePath)
     testUserWhoIsUnableToRegister(baseUrl + normalRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)

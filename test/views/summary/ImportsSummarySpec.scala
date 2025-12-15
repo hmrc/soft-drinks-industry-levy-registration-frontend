@@ -27,10 +27,10 @@ class ImportsSummarySpec extends RegistrationSubscriptionHelper {
       "should return a summary list with Yes and the number of litres" - {
         "with actions when isCheckAnswers" in {
           val subscription = generateSubscription(allFieldsPopulated = true)
-          val res = ImportsSummary.getOptHeadingAndSummary(subscription, isCheckAnswers = true)
-          val heading = res._1
+          val res          = ImportsSummary.getOptHeadingAndSummary(subscription, isCheckAnswers = true)
+          val heading      = res._1
           heading mustBe "imports.checkYourAnswersLabel"
-          val rows = res._2.rows
+          val rows         = res._2.rows
           rows.head.key.content.asHtml mustBe Html("Reporting liable drinks brought into the UK?")
           rows.head.key.classes mustBe ""
           rows.head.value.content.asHtml mustBe Html("Yes")
@@ -60,10 +60,10 @@ class ImportsSummarySpec extends RegistrationSubscriptionHelper {
 
         "with actions when not isCheckAnswers" in {
           val subscription = generateSubscription(allFieldsPopulated = true)
-          val res = ImportsSummary.getOptHeadingAndSummary(subscription, isCheckAnswers = false)
-          val heading = res._1
+          val res          = ImportsSummary.getOptHeadingAndSummary(subscription, isCheckAnswers = false)
+          val heading      = res._1
           heading mustBe "imports.checkYourAnswersLabel"
-          val rows = res._2.rows
+          val rows         = res._2.rows
           rows.head.key.content.asHtml mustBe Html("Reporting liable drinks brought into the UK?")
           rows.head.key.classes mustBe ""
           rows.head.value.content.asHtml mustBe Html("Yes")
@@ -91,10 +91,10 @@ class ImportsSummarySpec extends RegistrationSubscriptionHelper {
       "should return a summary list with No and not include number of litres" - {
         "with action when is checkAnswers" in {
           val subscription = generateSubscription(allFieldsPopulated = false)
-          val res = ImportsSummary.getOptHeadingAndSummary(subscription, isCheckAnswers = true)
-          val heading = res._1
+          val res          = ImportsSummary.getOptHeadingAndSummary(subscription, isCheckAnswers = true)
+          val heading      = res._1
           heading mustBe "imports.checkYourAnswersLabel"
-          val rows = res._2.rows
+          val rows         = res._2.rows
           rows.head.key.content.asHtml mustBe Html("Reporting liable drinks brought into the UK?")
           rows.head.key.classes mustBe ""
           rows.head.value.content.asHtml mustBe Html("No")
@@ -107,10 +107,10 @@ class ImportsSummarySpec extends RegistrationSubscriptionHelper {
         }
         "with no action when not checkAnswers" in {
           val subscription = generateSubscription(allFieldsPopulated = false)
-          val res = ImportsSummary.getOptHeadingAndSummary(subscription, isCheckAnswers = false)
-          val heading = res._1
+          val res          = ImportsSummary.getOptHeadingAndSummary(subscription, isCheckAnswers = false)
+          val heading      = res._1
           heading mustBe "imports.checkYourAnswersLabel"
-          val rows = res._2.rows
+          val rows         = res._2.rows
           rows.head.key.content.asHtml mustBe Html("Reporting liable drinks brought into the UK?")
           rows.head.key.classes mustBe ""
           rows.head.value.content.asHtml mustBe Html("No")

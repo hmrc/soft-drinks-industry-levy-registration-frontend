@@ -16,55 +16,63 @@
 
 package views
 
-import play.api.mvc.{ Call, Request }
+import play.api.mvc.{Call, Request}
 import play.api.test.FakeRequest
 import uk.gov.hmrc.govukfrontend.views.Aliases.Value
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{ SummaryList, SummaryListRow }
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{SummaryList, SummaryListRow}
 import views.html.CheckYourAnswersView
 
 class CheckYourAnswersViewSpec extends ViewSpecHelper {
 
-  val view = application.injector.instanceOf[CheckYourAnswersView]
+  val view                         = application.injector.instanceOf[CheckYourAnswersView]
   implicit val request: Request[?] = FakeRequest()
 
   object Selectors {
-    val heading = "govuk-heading-l"
+    val heading            = "govuk-heading-l"
     val summaryListHeading = "govuk-heading-m"
-    val button = "govuk-button"
-    val summaryList = "govuk-summary-list"
-    val summaryRow = "govuk-summary-list__row"
-    val summaryValue = "govuk-summary-list__value"
-    val form = "form"
+    val button             = "govuk-button"
+    val summaryList        = "govuk-summary-list"
+    val summaryRow         = "govuk-summary-list__row"
+    val summaryValue       = "govuk-summary-list__value"
+    val form               = "form"
   }
   "View" - {
-    val summaryList: Seq[(String, SummaryList)] = {
+    val summaryList: Seq[(String, SummaryList)] =
       Seq(
-        "foo" -> SummaryList(Seq(SummaryListRow(value = Value(content = HtmlContent("bar"))))),
-        "wizz" -> SummaryList(Seq(SummaryListRow(value = Value(content = HtmlContent("bang"))))))
-    }
-    val call = Call("GET", "/foo")
-    val html = view(summaryList, call)(using request, messages(application))
-    val document = doc(html)
+        "foo"  -> SummaryList(Seq(SummaryListRow(value = Value(content = HtmlContent("bar"))))),
+        "wizz" -> SummaryList(Seq(SummaryListRow(value = Value(content = HtmlContent("bang")))))
+      )
+    val call                                    = Call("GET", "/foo")
+    val html                                    = view(summaryList, call)(using request, messages(application))
+    val document                                = doc(html)
     "should have the expected heading" in {
-      document.getElementsByClass(Selectors.heading).text() mustEqual "Check your answers before sending your application"
+      document
+        .getElementsByClass(Selectors.heading)
+        .text() mustEqual "Check your answers before sending your application"
     }
     "contain the correct button" - {
       document.getElementsByClass(Selectors.button).text() mustBe "Confirm details and apply"
     }
     "contain the correct summary lists" - {
       document.getElementsByClass(Selectors.summaryListHeading).first().text() mustBe "foo"
-      document.getElementsByClass(Selectors.summaryList)
+      document
+        .getElementsByClass(Selectors.summaryList)
         .first()
         .getElementsByClass(Selectors.summaryRow)
         .first()
-        .getElementsByClass(Selectors.summaryValue).first().text() mustBe "bar"
+        .getElementsByClass(Selectors.summaryValue)
+        .first()
+        .text() mustBe "bar"
       document.getElementsByClass(Selectors.summaryListHeading).last().text() mustBe "wizz"
-      document.getElementsByClass(Selectors.summaryList)
+      document
+        .getElementsByClass(Selectors.summaryList)
         .last()
         .getElementsByClass(Selectors.summaryRow)
         .first()
-        .getElementsByClass(Selectors.summaryValue).first().text() mustBe "bang"
+        .getElementsByClass(Selectors.summaryValue)
+        .first()
+        .text() mustBe "bang"
     }
     "contains a form with the correct action" - {
       document.select(Selectors.form).attr("action") mustEqual call.url

@@ -21,15 +21,15 @@ import forms.OperatePackagingSitesFormProvider
 import handlers.ErrorHandler
 import models.Mode
 import navigation.Navigator
-import pages.{ HowManyOperatePackagingSitesPage, OperatePackagingSitesPage }
+import pages.{HowManyOperatePackagingSitesPage, OperatePackagingSitesPage}
 import play.api.i18n.MessagesApi
-import play.api.mvc.{ Action, AnyContent, MessagesControllerComponents }
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SessionService
 import utilities.GenericLogger
 import views.html.OperatePackagingSitesView
 
 import javax.inject.Inject
-import scala.concurrent.{ ExecutionContext, Future }
+import scala.concurrent.{ExecutionContext, Future}
 
 class OperatePackagingSitesController @Inject() (
   override val messagesApi: MessagesApi,
@@ -40,31 +40,31 @@ class OperatePackagingSitesController @Inject() (
   formProvider: OperatePackagingSitesFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: OperatePackagingSitesView,
-  val errorHandler: ErrorHandler)(implicit ec: ExecutionContext) extends ControllerHelper {
+  val errorHandler: ErrorHandler
+)(implicit ec: ExecutionContext)
+    extends ControllerHelper {
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = controllerActions.withUserWhoCanRegister {
-    implicit request =>
+  def onPageLoad(mode: Mode): Action[AnyContent] = controllerActions.withUserWhoCanRegister { implicit request =>
+    val preparedForm = request.userAnswers.get(OperatePackagingSitesPage) match {
+      case None        => form
+      case Some(value) => form.fill(value)
+    }
 
-      val preparedForm = request.userAnswers.get(OperatePackagingSitesPage) match {
-        case None => form
-        case Some(value) => form.fill(value)
-      }
-
-      Ok(view(preparedForm, mode))
+    Ok(view(preparedForm, mode))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = controllerActions.withUserWhoCanRegister.async {
-    implicit request =>
-
-      form.bindFromRequest().fold(
-        formWithErrors =>
-          Future.successful(BadRequest(view(formWithErrors, mode))),
-
+  def onSubmit(mode: Mode): Action[AnyContent] = controllerActions.withUserWhoCanRegister.async { implicit request =>
+    form
+      .bindFromRequest()
+      .fold(
+        formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
         value => {
-          val updatedAnswers = request.userAnswers.setAndRemoveLitresIfReq(OperatePackagingSitesPage, HowManyOperatePackagingSitesPage, value)
+          val updatedAnswers = request.userAnswers
+            .setAndRemoveLitresIfReq(OperatePackagingSitesPage, HowManyOperatePackagingSitesPage, value)
           updateDatabaseAndRedirect(updatedAnswers, OperatePackagingSitesPage, mode)
-        })
+        }
+      )
   }
 }

@@ -39,16 +39,15 @@ class WarehousesTradingNameControllerSpec extends SpecBase with MockitoSugar wit
 
   def onwardRoute = Call("GET", "/foo")
 
-  val formProvider = new WarehousesTradingNameFormProvider()
+  val formProvider                      = new WarehousesTradingNameFormProvider()
   val form: Form[WarehousesTradingName] = formProvider()
-  val sdilId = "123456"
-  val tradingName = "Sugary Lemonade"
+  val sdilId                            = "123456"
+  val tradingName                       = "Sugary Lemonade"
 
   lazy val warehouseSiteNameRoute: String = routes.WarehousesTradingNameController.onPageLoad(NormalMode, sdilId).url
-  val ukAddress = UkAddress(List("line 1", "line 2", "line 3", "line 4"), "aa1 1aa", alfId = Some("bar"))
+  val ukAddress                           = UkAddress(List("line 1", "line 2", "line 3", "line 4"), "aa1 1aa", alfId = Some("bar"))
 
   val alfResponseForLookupState = AddressResponseForLookupState(ukAddress, WarehouseDetails, sdilId)
-
 
   val userAnswersWithAlfResponseForSdilId: UserAnswers = emptyUserAnswers.copy(
     alfResponseForLookupState = Some(alfResponseForLookupState)
@@ -75,7 +74,10 @@ class WarehousesTradingNameControllerSpec extends SpecBase with MockitoSugar wit
           val view = application.injector.instanceOf[WarehousesTradingNameView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form, NormalMode, sdilId)(using request, messages(application)).toString
+          contentAsString(result) mustEqual view(form, NormalMode, sdilId)(using
+            request,
+            messages(application)
+          ).toString
         }
       }
 
@@ -107,7 +109,8 @@ class WarehousesTradingNameControllerSpec extends SpecBase with MockitoSugar wit
 
     "when the user has a warehouse for the sdilRef but no alfAddress" - {
       "must render the warehouseTradingName page for a GET with trading name populated" in {
-        val application = applicationBuilder(userAnswers = Some(userAnswersWithNoAlfResponseButWarehouseWithSdilRef)).build()
+        val application =
+          applicationBuilder(userAnswers = Some(userAnswersWithNoAlfResponseButWarehouseWithSdilRef)).build()
 
         running(application) {
           val request = FakeRequest(GET, warehouseSiteNameRoute)
@@ -117,7 +120,11 @@ class WarehousesTradingNameControllerSpec extends SpecBase with MockitoSugar wit
           val view = application.injector.instanceOf[WarehousesTradingNameView]
 
           status(result) mustEqual OK
-          contentAsString(result) mustEqual view(form.fill(WarehousesTradingName(tradingName)), NormalMode, sdilId)(using request, messages(application)).toString
+          contentAsString(result) mustEqual view(form.fill(WarehousesTradingName(tradingName)), NormalMode, sdilId)(
+            using
+            request,
+            messages(application)
+          ).toString
         }
       }
 
@@ -167,7 +174,6 @@ class WarehousesTradingNameControllerSpec extends SpecBase with MockitoSugar wit
       }
     }
 
-
     "when the user answers contains no alfAddress and has no warehouse sites" - {
       "must not render the page and redirect to askSecondaryWarehouse page for GET" in {
         val application =
@@ -194,8 +200,7 @@ class WarehousesTradingNameControllerSpec extends SpecBase with MockitoSugar wit
 
       running(application) {
         val request =
-          FakeRequest(POST, warehouseSiteNameRoute
-          )
+          FakeRequest(POST, warehouseSiteNameRoute)
             .withFormUrlEncodedBody(("value", "invalid value"))
 
         val boundForm = form.bind(Map("value" -> "invalid value"))
@@ -205,7 +210,10 @@ class WarehousesTradingNameControllerSpec extends SpecBase with MockitoSugar wit
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, sdilId)(using request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, sdilId)(using
+          request,
+          messages(application)
+        ).toString
       }
     }
 
@@ -229,8 +237,7 @@ class WarehousesTradingNameControllerSpec extends SpecBase with MockitoSugar wit
 
       running(application) {
         val request =
-          FakeRequest(POST, warehouseSiteNameRoute
-          )
+          FakeRequest(POST, warehouseSiteNameRoute)
             .withFormUrlEncodedBody(("warehouseTradingName", "value 1"))
 
         val result = route(application, request).value
@@ -255,16 +262,16 @@ class WarehousesTradingNameControllerSpec extends SpecBase with MockitoSugar wit
       running(application) {
         withCaptureOfLoggingFrom(application.injector.instanceOf[GenericLogger].logger) { events =>
           val request =
-            FakeRequest(POST, warehouseSiteNameRoute
-            )
+            FakeRequest(POST, warehouseSiteNameRoute)
               .withFormUrlEncodedBody(("warehouseTradingName", "value 1"))
 
           await(route(application, request).value)
-          events.collectFirst {
-            case event =>
+          events
+            .collectFirst { case event =>
               event.getLevel.levelStr mustBe "ERROR"
               event.getMessage mustEqual "Failed to set value in session repository while attempting set on warehousesTradingName"
-          }.getOrElse(fail("No logging captured"))
+            }
+            .getOrElse(fail("No logging captured"))
         }
       }
     }

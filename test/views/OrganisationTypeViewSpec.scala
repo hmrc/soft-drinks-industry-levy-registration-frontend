@@ -27,31 +27,31 @@ import views.html.OrganisationTypeView
 
 class OrganisationTypeViewSpec extends ViewSpecHelper {
 
-  val view: OrganisationTypeView = application.injector.instanceOf[OrganisationTypeView]
-  val formProvider = new OrganisationTypeFormProvider
+  val view: OrganisationTypeView   = application.injector.instanceOf[OrganisationTypeView]
+  val formProvider                 = new OrganisationTypeFormProvider
   val form: Form[OrganisationType] = formProvider.apply()
   implicit val request: Request[?] = FakeRequest()
-  val withoutSoleTrader: Boolean = true
+  val withoutSoleTrader: Boolean   = true
 
   object Selectors {
-    val heading = "govuk-fieldset__heading"
-    val legend = "govuk-fieldset__legend  govuk-fieldset__legend--l"
-    val radios = "govuk-radios"
-    val radiosInput = "govuk-radios__input"
-    val radiosItems = "govuk-radios__item"
-    val radiosLabels = "govuk-label govuk-radios__label"
-    val body = "govuk-body"
+    val heading           = "govuk-fieldset__heading"
+    val legend            = "govuk-fieldset__legend  govuk-fieldset__legend--l"
+    val radios            = "govuk-radios"
+    val radiosInput       = "govuk-radios__input"
+    val radiosItems       = "govuk-radios__item"
+    val radiosLabels      = "govuk-label govuk-radios__label"
+    val body              = "govuk-body"
     val errorSummaryTitle = "govuk-error-summary__title"
-    val errorSummaryList = "govuk-list govuk-error-summary__list"
-    val button = "govuk-button"
-    val form = "form"
+    val errorSummaryList  = "govuk-list govuk-error-summary__list"
+    val button            = "govuk-button"
+    val form              = "form"
   }
 
   "View when withCTEnrollment is false" - {
-    val html = view(form, NormalMode, withoutSoleTrader = false)(using request, messages(application))
+    val html     = view(form, NormalMode, withoutSoleTrader = false)(using request, messages(application))
     val document = doc(html)
     "should contain the expected title" in {
-      document.title() must include ("Which of these best describes your business? - Soft Drinks Industry Levy - GOV.UK")
+      document.title() must include("Which of these best describes your business? - Soft Drinks Industry Levy - GOV.UK")
     }
 
     "should include a legend with the expected heading" in {
@@ -75,7 +75,7 @@ class OrganisationTypeViewSpec extends ViewSpecHelper {
             radio1
               .getElementsByClass(Selectors.radiosLabels)
               .text() mustBe Messages("organisationType." + radio.toString)
-            val input = radio1
+            val input  = radio1
               .getElementsByClass(Selectors.radiosInput)
             input.attr("value") mustBe radio.toString
             input.hasAttr("checked") mustBe false
@@ -85,7 +85,7 @@ class OrganisationTypeViewSpec extends ViewSpecHelper {
     }
 
     "View when withCTEnrollment is true" - {
-      val html = view(form, NormalMode, withoutSoleTrader)(using request, messages(application))
+      val html     = view(form, NormalMode, withoutSoleTrader)(using request, messages(application))
       val document = doc(html)
       "when the form is not preoccupied and has no errors" - {
 
@@ -103,7 +103,7 @@ class OrganisationTypeViewSpec extends ViewSpecHelper {
               radio1
                 .getElementsByClass(Selectors.radiosLabels)
                 .text() mustBe Messages("organisationType." + radio.toString)
-              val input = radio1
+              val input  = radio1
                 .getElementsByClass(Selectors.radiosInput)
               input.attr("value") mustBe radio.toString
               input.hasAttr("checked") mustBe false
@@ -114,7 +114,7 @@ class OrganisationTypeViewSpec extends ViewSpecHelper {
     }
 
     OrganisationType.values.foreach { radio =>
-      val html1 = view(form.fill(radio), NormalMode, withoutSoleTrader)(using request, messages(application))
+      val html1     = view(form.fill(radio), NormalMode, withoutSoleTrader)(using request, messages(application))
       val document1 = doc(html1)
 
       s"when the form is preoccupied with " + radio.toString + "selected and has no errors" - {
@@ -128,7 +128,7 @@ class OrganisationTypeViewSpec extends ViewSpecHelper {
                 radiobuttons1
                   .getElementsByClass(Selectors.radiosLabels)
                   .text() mustBe Messages("organisationType." + radio1.toString)
-                val input = radiobuttons1
+                val input         = radiobuttons1
                   .getElementsByClass(Selectors.radiosInput)
                 input.attr("value") mustBe radio1.toString
                 input.hasAttr("checked") mustBe true
@@ -140,7 +140,7 @@ class OrganisationTypeViewSpec extends ViewSpecHelper {
                 radiobuttons1
                   .getElementsByClass(Selectors.radiosLabels)
                   .text() mustBe Messages("organisationType." + radio1.toString)
-                val input = radiobuttons1
+                val input         = radiobuttons1
                   .getElementsByClass(Selectors.radiosInput)
                 input.attr("value") mustBe radio1.toString
                 input.hasAttr("checked") mustBe false
@@ -157,24 +157,33 @@ class OrganisationTypeViewSpec extends ViewSpecHelper {
 
     "contains a form with the correct action" - {
       "when in CheckMode" in {
-        val htmlAllSelected = view(form.fill(OrganisationType.values.head), CheckMode, withoutSoleTrader)(using request, messages(application))
+        val htmlAllSelected     = view(form.fill(OrganisationType.values.head), CheckMode, withoutSoleTrader)(using
+          request,
+          messages(application)
+        )
         val documentAllSelected = doc(htmlAllSelected)
 
-        documentAllSelected.select(Selectors.form)
+        documentAllSelected
+          .select(Selectors.form)
           .attr("action") mustEqual routes.OrganisationTypeController.onSubmit(CheckMode).url
       }
 
       "when in NormalMode" in {
-        val htmlAllSelected = view(form.fill(OrganisationType.values.head), NormalMode, withoutSoleTrader)(using request, messages(application))
+        val htmlAllSelected     = view(form.fill(OrganisationType.values.head), NormalMode, withoutSoleTrader)(using
+          request,
+          messages(application)
+        )
         val documentAllSelected = doc(htmlAllSelected)
 
-        documentAllSelected.select(Selectors.form)
+        documentAllSelected
+          .select(Selectors.form)
           .attr("action") mustEqual routes.OrganisationTypeController.onSubmit(NormalMode).url
       }
     }
 
     "when there are form errors" - {
-      val htmlWithErrors = view(form.bind(Map("value" -> "")), NormalMode, withoutSoleTrader)(using request, messages(application))
+      val htmlWithErrors     =
+        view(form.bind(Map("value" -> "")), NormalMode, withoutSoleTrader)(using request, messages(application))
       val documentWithErrors = doc(htmlWithErrors)
 
       "should have a title containing error" in {

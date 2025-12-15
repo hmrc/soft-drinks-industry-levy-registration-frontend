@@ -25,14 +25,15 @@ import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 object ImportsSummary extends RegisterDetailsSummaryListWithLitres {
 
   override val summaryLitres: SummaryListRowLitresHelper = HowManyImportsSummary
-  //LDS ignore
-  override val key: String = "imports"
-  override val action: String = routes.ImportsController.onPageLoad(CheckMode).url
-  override val actionId: String = "change-imports"
-  override val hiddenText: String = "imports"
+  // LDS ignore
+  override val key: String                               = "imports"
+  override val action: String                            = routes.ImportsController.onPageLoad(CheckMode).url
+  override val actionId: String                          = "change-imports"
+  override val hiddenText: String                        = "imports"
 
-  def getOptHeadingAndSummary(subscription: Subscription, isCheckAnswers: Boolean)(implicit messages: Messages): (String, SummaryList) = {
+  def getOptHeadingAndSummary(subscription: Subscription, isCheckAnswers: Boolean)(implicit
+    messages: Messages
+  ): (String, SummaryList) =
     getHeadingAndSummary(subscription.activity.Imported, isCheckAnswers)
-  }
 
 }

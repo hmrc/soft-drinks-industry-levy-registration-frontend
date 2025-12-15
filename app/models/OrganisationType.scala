@@ -42,22 +42,21 @@ object OrganisationType extends Enumerable.Implicits {
     override val enumNum: String = "5"
   }
 
-  val values: Seq[OrganisationType] = Seq(
-    LimitedCompany, LimitedLiabilityPartnership, Partnership, UnincorporatedBody)
-  val valuesWithST: Seq[OrganisationType] = Seq(
-    LimitedCompany, LimitedLiabilityPartnership, Partnership, SoleTrader, UnincorporatedBody)
+  val values: Seq[OrganisationType]       = Seq(LimitedCompany, LimitedLiabilityPartnership, Partnership, UnincorporatedBody)
+  val valuesWithST: Seq[OrganisationType] =
+    Seq(LimitedCompany, LimitedLiabilityPartnership, Partnership, SoleTrader, UnincorporatedBody)
 
   def options(withoutSoleTrader: Boolean)(implicit messages: Messages): Seq[RadioItem] = {
     val valuesList = if (withoutSoleTrader) values else valuesWithST
-    valuesList.zipWithIndex.map {
-      case (value, index) =>
-        RadioItem(
-          content = Text(messages(s"organisationType.${value.toString}")),
-          value = Some(value.toString),
-          id = Some(s"value_$index"))
+    valuesList.zipWithIndex.map { case (value, index) =>
+      RadioItem(
+        content = Text(messages(s"organisationType.${value.toString}")),
+        value = Some(value.toString),
+        id = Some(s"value_$index")
+      )
     }
   }
 
   implicit val enumerable: Enumerable[OrganisationType] =
-    Enumerable(valuesWithST.map(v => v.toString -> v) *)
+    Enumerable(valuesWithST.map(v => v.toString -> v)*)
 }

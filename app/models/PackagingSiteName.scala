@@ -21,6 +21,6 @@ import play.api.libs.json._
 case class PackagingSiteName(packagingSiteName: String)
 
 object PackagingSiteName {
-  implicit val format: OFormat[PackagingSiteName] = Json.format[PackagingSiteName]
+  implicit val format: OFormat[PackagingSiteName]     = Json.format[PackagingSiteName]
   def unapply(psn: PackagingSiteName): Option[String] = Some(psn.packagingSiteName)
 }

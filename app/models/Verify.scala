@@ -28,17 +28,16 @@ object Verify extends Enumerable.Implicits {
   case object YesNewAddress extends WithName("yesNewAddress") with Verify
   case object No extends WithName("no") with Verify
 
-  val values: Seq[Verify] = Seq(
-    YesRegister, YesNewAddress, No)
+  val values: Seq[Verify] = Seq(YesRegister, YesNewAddress, No)
 
-  def options(implicit messages: Messages): Seq[RadioItem] = values.zipWithIndex.map {
-    case (value, index) =>
-      RadioItem(
-        content = Text(messages(s"verify.${value.toString}")),
-        value = Some(value.toString),
-        id = Some(s"value_$index"))
+  def options(implicit messages: Messages): Seq[RadioItem] = values.zipWithIndex.map { case (value, index) =>
+    RadioItem(
+      content = Text(messages(s"verify.${value.toString}")),
+      value = Some(value.toString),
+      id = Some(s"value_$index")
+    )
   }
 
   implicit val enumerable: Enumerable[Verify] =
-    Enumerable(values.map(v => v.toString -> v) *)
+    Enumerable(values.map(v => v.toString -> v)*)
 }

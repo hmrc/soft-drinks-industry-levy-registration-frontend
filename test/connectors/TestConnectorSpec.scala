@@ -33,7 +33,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class TestConnectorSpec extends AnyFlatSpec with Matchers with MockitoSugar with ScalaFutures with BeforeAndAfterEach {
 
   val mockHttpClient: HttpClientV2 = mock[HttpClientV2]
-  val mockConfig: Configuration = Configuration(
+  val mockConfig: Configuration    = Configuration(
     "microservice.services.soft-drinks-industry-levy.host" -> "localhost",
     "microservice.services.soft-drinks-industry-levy.port" -> "8701"
   )
@@ -48,7 +48,7 @@ class TestConnectorSpec extends AnyFlatSpec with Matchers with MockitoSugar with
   }
 
   "TestConnector" should "call resetPending endpoint correctly" in {
-    val connector = new TestConnector(mockHttpClient, mockConfig)
+    val connector    = new TestConnector(mockHttpClient, mockConfig)
     val mockResponse = HttpResponse(200, "")
 
     when(mockHttpClient.get(any())(using any())).thenReturn(mockRequestBuilder)
@@ -61,10 +61,10 @@ class TestConnectorSpec extends AnyFlatSpec with Matchers with MockitoSugar with
   }
 
   it should "call resetSubscriptions endpoint correctly" in {
-    val localMockHttpClient: HttpClientV2 = mock[HttpClientV2]
+    val localMockHttpClient: HttpClientV2       = mock[HttpClientV2]
     val localMockRequestBuilder: RequestBuilder = mock[RequestBuilder]
-    val connector = new TestConnector(localMockHttpClient, mockConfig)
-    val mockResponse = HttpResponse(200, "")
+    val connector                               = new TestConnector(localMockHttpClient, mockConfig)
+    val mockResponse                            = HttpResponse(200, "")
 
     when(localMockHttpClient.get(any())(using any())).thenReturn(localMockRequestBuilder)
     when(localMockRequestBuilder.execute[HttpResponse](using any(), any())).thenReturn(Future.successful(mockResponse))

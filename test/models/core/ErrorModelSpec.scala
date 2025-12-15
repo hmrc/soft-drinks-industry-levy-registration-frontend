@@ -23,26 +23,24 @@ import play.api.libs.json.{JsSuccess, Json}
 class ErrorModelSpec extends AnyFunSuite with Matchers {
 
   test("ErrorModel should serialize to JSON correctly") {
-    val errorModel = ErrorModel(404, "Not Found")
-    val json = Json.toJson(errorModel)
-    val expectedJson = Json.parse(
-      """
-        |{
-        |  "status": 404,
-        |  "message": "Not Found"
-        |}
+    val errorModel   = ErrorModel(404, "Not Found")
+    val json         = Json.toJson(errorModel)
+    val expectedJson = Json.parse("""
+                                    |{
+                                    |  "status": 404,
+                                    |  "message": "Not Found"
+                                    |}
       """.stripMargin)
 
     json mustBe expectedJson
   }
 
   test("ErrorModel should deserialize from JSON correctly") {
-    val json = Json.parse(
-      """
-        |{
-        |  "status": 404,
-        |  "message": "Not Found"
-        |}
+    val json = Json.parse("""
+                            |{
+                            |  "status": 404,
+                            |  "message": "Not Found"
+                            |}
       """.stripMargin)
 
     val expected = ErrorModel(404, "Not Found")

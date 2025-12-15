@@ -20,8 +20,8 @@ import base.SpecBase
 import errors.SessionDatabaseInsertError
 import forms.HowManyLitresFormProvider
 import helpers.LoggerHelper
-import models.{ LitresInBands, NormalMode, RegisterState, UserAnswers }
-import navigation.{ FakeNavigator, Navigator }
+import models.{LitresInBands, NormalMode, RegisterState, UserAnswers}
+import navigation.{FakeNavigator, Navigator}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -40,7 +40,7 @@ class HowManyContractPackingControllerSpec extends SpecBase with MockitoSugar wi
   def onwardRoute = Call("GET", "/foo")
 
   val formProvider = new HowManyLitresFormProvider
-  val form = formProvider()
+  val form         = formProvider()
 
   lazy val howManyContractPackingRoute = routes.HowManyContractPackingController.onPageLoad(NormalMode).url
 
@@ -48,7 +48,8 @@ class HowManyContractPackingControllerSpec extends SpecBase with MockitoSugar wi
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration).build()
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration).build()
 
       running(application) {
         val request = FakeRequest(GET, howManyContractPackingRoute)
@@ -64,7 +65,10 @@ class HowManyContractPackingControllerSpec extends SpecBase with MockitoSugar wi
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(identifier, RegisterState.RegisterWithAuthUTR).set(HowManyContractPackingPage, LitresInBands(100, 200)).success.value
+      val userAnswers = UserAnswers(identifier, RegisterState.RegisterWithAuthUTR)
+        .set(HowManyContractPackingPage, LitresInBands(100, 200))
+        .success
+        .value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers), rosmRegistration = rosmRegistration).build()
 
@@ -76,7 +80,10 @@ class HowManyContractPackingControllerSpec extends SpecBase with MockitoSugar wi
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(LitresInBands(100, 200)), NormalMode)(using request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(LitresInBands(100, 200)), NormalMode)(using
+          request,
+          messages(application)
+        ).toString
       }
     }
 
@@ -90,7 +97,8 @@ class HowManyContractPackingControllerSpec extends SpecBase with MockitoSugar wi
         applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration)
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionService].toInstance(mockSessionService))
+            bind[SessionService].toInstance(mockSessionService)
+          )
           .build()
 
       running(application) {
@@ -107,7 +115,8 @@ class HowManyContractPackingControllerSpec extends SpecBase with MockitoSugar wi
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration).build()
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration).build()
 
       running(application) {
         val request =
@@ -157,7 +166,10 @@ class HowManyContractPackingControllerSpec extends SpecBase with MockitoSugar wi
 
     "must fail if the setting of userAnswers fails" in {
 
-      val application = applicationBuilder(userAnswers = Some(userDetailsWithSetMethodsReturningFailure), rosmRegistration = rosmRegistration).build()
+      val application = applicationBuilder(
+        userAnswers = Some(userDetailsWithSetMethodsReturningFailure),
+        rosmRegistration = rosmRegistration
+      ).build()
 
       running(application) {
         val request =
@@ -181,7 +193,8 @@ class HowManyContractPackingControllerSpec extends SpecBase with MockitoSugar wi
         applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration)
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionService].toInstance(mockSessionService))
+            bind[SessionService].toInstance(mockSessionService)
+          )
           .build()
 
       running(application) {
@@ -191,11 +204,12 @@ class HowManyContractPackingControllerSpec extends SpecBase with MockitoSugar wi
               .withFormUrlEncodedBody(("lowBand", "1000"), ("highBand", "2000"))
 
           await(route(application, request).value)
-          events.collectFirst {
-            case event =>
+          events
+            .collectFirst { case event =>
               event.getLevel.levelStr mustBe "ERROR"
               event.getMessage mustEqual "Failed to set value in session repository while attempting set on howManyContractPacking"
-          }.getOrElse(fail("No logging captured"))
+            }
+            .getOrElse(fail("No logging captured"))
         }
       }
     }

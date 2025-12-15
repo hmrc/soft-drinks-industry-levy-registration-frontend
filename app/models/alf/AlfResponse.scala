@@ -24,7 +24,8 @@ case class AlfAddress(
   organisation: Option[String],
   lines: List[String],
   postcode: Option[String],
-  countryCode: Option[String])
+  countryCode: Option[String]
+)
 
 object AlfAddress {
   implicit val format: OFormat[AlfAddress] = Json.format[AlfAddress]

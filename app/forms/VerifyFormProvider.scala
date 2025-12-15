@@ -25,6 +25,5 @@ import models.Verify
 class VerifyFormProvider @Inject() extends Mappings {
 
   def apply(): Form[Verify] =
-    Form(
-      "value" -> enumerable[Verify]("verify.error.required"))
+    Form("value" -> enumerable[Verify]("verify.error.required"))
 }

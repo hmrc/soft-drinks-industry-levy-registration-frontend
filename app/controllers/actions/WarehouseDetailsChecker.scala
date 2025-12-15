@@ -17,7 +17,7 @@
 package controllers.actions
 
 import controllers.routes
-import models.{ Mode, UserAnswers }
+import models.{Mode, UserAnswers}
 import pages.AskSecondaryWarehousesPage
 import play.api.mvc.Result
 import play.api.mvc.Results.Redirect
@@ -27,17 +27,20 @@ import utilities.GenericLogger
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
-class WarehouseDetailsChecker @Inject() (genericLogger: GenericLogger, val sessionService: SessionService)(implicit val executionContext: ExecutionContext) extends ActionHelpers {
+class WarehouseDetailsChecker @Inject() (genericLogger: GenericLogger, val sessionService: SessionService)(implicit
+  val executionContext: ExecutionContext
+) extends ActionHelpers {
 
-  def checkWarehouseDetails(userAnswers: UserAnswers, mode: Mode)(action: => Result): Result = {
+  def checkWarehouseDetails(userAnswers: UserAnswers, mode: Mode)(action: => Result): Result =
     userAnswers match {
       case answers if answers.warehouseList.nonEmpty =>
         action
-      case _ =>
+      case _                                         =>
         val updatedAnswers = userAnswers.remove(AskSecondaryWarehousesPage).get
         sessionService.set(updatedAnswers)
-        genericLogger.logger.warn(s"${getClass.getName} - No warehouse present. Redirecting to ask secondary warehouse details page.")
+        genericLogger.logger.warn(
+          s"${getClass.getName} - No warehouse present. Redirecting to ask secondary warehouse details page."
+        )
         Redirect(routes.AskSecondaryWarehousesController.onPageLoad(mode))
     }
-  }
 }

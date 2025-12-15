@@ -12,16 +12,15 @@ import play.api.test.{FakeRequest, WsTestClient}
 
 class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
   val normalRoutePath = "/organisation-type"
-  val checkRoutePath = "/change-organisation-type"
+  val checkRoutePath  = "/change-organisation-type"
 
   given messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-  given messages: Messages = messagesApi.preferred(FakeRequest())
-  
+  given messages: Messages       = messagesApi.preferred(FakeRequest())
+
   "GET" + normalRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the OrganisationType page with no data populated" in {
-        build
-          .commonPrecondition
+        build.commonPrecondition
 
         setAnswers(emptyUserAnswers)
 
@@ -47,8 +46,7 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
     OrganisationType.values.zipWithIndex.foreach { case (radio, index) =>
       s"when the userAnswers contains data for the page with " + radio.toString + " selected" - {
         s"should return OK and render the page with " + radio.toString + " radio checked" in {
-          build
-            .commonPrecondition
+          build.commonPrecondition
 
           val userAnswers = emptyUserAnswers.set(OrganisationTypePage, radio).success.value
 
@@ -82,8 +80,7 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
   s"GET " + checkRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the OrganisationType page with no data populated" in {
-        build
-          .commonPrecondition
+        build.commonPrecondition
 
         setAnswers(emptyUserAnswers)
 
@@ -109,11 +106,9 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
     OrganisationType.values.zipWithIndex.foreach { case (radio, index) =>
       s"when the userAnswers contains data for the page with " + radio.toString + " selected" - {
         s"should return OK and render the page with " + radio.toString + " radio checked" in {
-          build
-            .commonPrecondition
+          build.commonPrecondition
 
           val userAnswers = emptyUserAnswers.set(OrganisationTypePage, radio).success.value
-
 
           setAnswers(userAnswers)
 
@@ -145,23 +140,27 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
 
   s"POST " + normalRoutePath - {
     OrganisationType.values.foreach {
-      case radio if radio != Partnership=>
+      case radio if radio != Partnership =>
         "when the user selects " + radio.toString - {
           "should update the session with the new value and redirect to the how many litres globally" - {
             "when the session contains no data for page" in {
-              build
-                .commonPrecondition
+              build.commonPrecondition
 
               setAnswers(emptyUserAnswers)
 
               WsTestClient.withClient { client =>
                 val result = createClientRequestPOST(
-                  client, baseUrl + normalRoutePath, Json.obj("value" -> radio)
+                  client,
+                  baseUrl + normalRoutePath,
+                  Json.obj("value" -> radio)
                 )
                 whenReady(result) { res =>
                   res.status mustBe 303
-                  res.header(HeaderNames.LOCATION) mustBe Some(routes.HowManyLitresGloballyController.onPageLoad(NormalMode).url)
-                  val dataStoredForPage = getAnswers(identifier).fold[Option[OrganisationType]](None)(_.get(OrganisationTypePage))
+                  res.header(HeaderNames.LOCATION) mustBe Some(
+                    routes.HowManyLitresGloballyController.onPageLoad(NormalMode).url
+                  )
+                  val dataStoredForPage =
+                    getAnswers(identifier).fold[Option[OrganisationType]](None)(_.get(OrganisationTypePage))
                   dataStoredForPage.nonEmpty mustBe true
                   dataStoredForPage.get mustBe radio
                 }
@@ -169,21 +168,25 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
             }
 
             "when the session already contains data for page" in {
-              build
-                .commonPrecondition
+              build.commonPrecondition
 
               val userAnswers = emptyUserAnswers.set(OrganisationTypePage, radio).success.value
 
               setAnswers(userAnswers)
               WsTestClient.withClient { client =>
                 val result = createClientRequestPOST(
-                  client, baseUrl + normalRoutePath, Json.obj("value" -> radio)
+                  client,
+                  baseUrl + normalRoutePath,
+                  Json.obj("value" -> radio)
                 )
 
                 whenReady(result) { res =>
                   res.status mustBe 303
-                  res.header(HeaderNames.LOCATION) mustBe Some(routes.HowManyLitresGloballyController.onPageLoad(NormalMode).url)
-                  val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[OrganisationType]](None)(_.get(OrganisationTypePage))
+                  res.header(HeaderNames.LOCATION) mustBe Some(
+                    routes.HowManyLitresGloballyController.onPageLoad(NormalMode).url
+                  )
+                  val dataStoredForPage =
+                    getAnswers(userAnswers.id).fold[Option[OrganisationType]](None)(_.get(OrganisationTypePage))
                   dataStoredForPage.nonEmpty mustBe true
                   dataStoredForPage.get mustBe radio
                 }
@@ -191,23 +194,27 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
             }
           }
         }
-      case radio =>
+      case radio                         =>
         "when the user selects " + radio.toString - {
           "should update the session with the new value and redirect to the how many litres globally" - {
             "when the session contains no data for page" in {
-              build
-                .commonPrecondition
+              build.commonPrecondition
 
               setAnswers(emptyUserAnswers)
 
               WsTestClient.withClient { client =>
                 val result = createClientRequestPOST(
-                  client, baseUrl + normalRoutePath, Json.obj("value" -> radio)
+                  client,
+                  baseUrl + normalRoutePath,
+                  Json.obj("value" -> radio)
                 )
                 whenReady(result) { res =>
                   res.status mustBe 303
-                  res.header(HeaderNames.LOCATION) mustBe Some(routes.CannotRegisterPartnershipController.onPageLoad.url)
-                  val dataStoredForPage = getAnswers(identifier).fold[Option[OrganisationType]](None)(_.get(OrganisationTypePage))
+                  res.header(HeaderNames.LOCATION) mustBe Some(
+                    routes.CannotRegisterPartnershipController.onPageLoad.url
+                  )
+                  val dataStoredForPage =
+                    getAnswers(identifier).fold[Option[OrganisationType]](None)(_.get(OrganisationTypePage))
                   dataStoredForPage.nonEmpty mustBe true
                   dataStoredForPage.get mustBe radio
                 }
@@ -215,21 +222,25 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
             }
 
             "when the session already contains data for page" in {
-              build
-                .commonPrecondition
+              build.commonPrecondition
 
               val userAnswers = emptyUserAnswers.set(OrganisationTypePage, radio).success.value
 
               setAnswers(userAnswers)
               WsTestClient.withClient { client =>
                 val result = createClientRequestPOST(
-                  client, baseUrl + normalRoutePath, Json.obj("value" -> radio)
+                  client,
+                  baseUrl + normalRoutePath,
+                  Json.obj("value" -> radio)
                 )
 
                 whenReady(result) { res =>
                   res.status mustBe 303
-                  res.header(HeaderNames.LOCATION) mustBe Some(routes.CannotRegisterPartnershipController.onPageLoad.url)
-                  val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[OrganisationType]](None)(_.get(OrganisationTypePage))
+                  res.header(HeaderNames.LOCATION) mustBe Some(
+                    routes.CannotRegisterPartnershipController.onPageLoad.url
+                  )
+                  val dataStoredForPage =
+                    getAnswers(userAnswers.id).fold[Option[OrganisationType]](None)(_.get(OrganisationTypePage))
                   dataStoredForPage.nonEmpty mustBe true
                   dataStoredForPage.get mustBe radio
                 }
@@ -241,20 +252,22 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
 
     "when the user does not select an option" - {
       "should return 400 with required error" in {
-        build
-          .commonPrecondition
+        build.commonPrecondition
 
         setAnswers(emptyUserAnswers)
         WsTestClient.withClient { client =>
           val result = createClientRequestPOST(
-            client, baseUrl + normalRoutePath, Json.obj("value" -> "")
+            client,
+            baseUrl + normalRoutePath,
+            Json.obj("value" -> "")
           )
 
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
             page.title must include("Error: " + messages("organisationType" + ".title"))
-            val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
+            val errorSummary = page
+              .getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")
@@ -271,22 +284,24 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
 
   s"POST " + checkRoutePath - {
     OrganisationType.values.foreach {
-      case radio if radio != Partnership=>
+      case radio if radio != Partnership =>
         "when the user selects " + radio.toString - {
           "should update the session with the new value and redirect to the checkAnswers controller" - {
             "when the session contains no data for page" in {
-              build
-                .commonPrecondition
+              build.commonPrecondition
 
               setAnswers(emptyUserAnswers)
               WsTestClient.withClient { client =>
                 val result = createClientRequestPOST(
-                  client, baseUrl + checkRoutePath, Json.obj("value" -> Json.toJson(radio))
+                  client,
+                  baseUrl + checkRoutePath,
+                  Json.obj("value" -> Json.toJson(radio))
                 )
                 whenReady(result) { res =>
                   res.status mustBe 303
                   res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
-                  val dataStoredForPage = getAnswers(identifier).fold[Option[OrganisationType]](None)(_.get(OrganisationTypePage))
+                  val dataStoredForPage =
+                    getAnswers(identifier).fold[Option[OrganisationType]](None)(_.get(OrganisationTypePage))
                   dataStoredForPage.nonEmpty mustBe true
                   dataStoredForPage.get mustBe radio
                 }
@@ -294,21 +309,23 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
             }
 
             "when the session already contains data for page" in {
-              build
-                .commonPrecondition
+              build.commonPrecondition
 
               val userAnswers = emptyUserAnswers.set(OrganisationTypePage, radio).success.value
 
               setAnswers(userAnswers)
               WsTestClient.withClient { client =>
                 val result = createClientRequestPOST(
-                  client, baseUrl + checkRoutePath, Json.obj("value" -> Json.toJson(radio))
+                  client,
+                  baseUrl + checkRoutePath,
+                  Json.obj("value" -> Json.toJson(radio))
                 )
 
                 whenReady(result) { res =>
                   res.status mustBe 303
                   res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
-                  val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[OrganisationType]](None)(_.get(OrganisationTypePage))
+                  val dataStoredForPage =
+                    getAnswers(userAnswers.id).fold[Option[OrganisationType]](None)(_.get(OrganisationTypePage))
                   dataStoredForPage.nonEmpty mustBe true
                   dataStoredForPage.get mustBe radio
                 }
@@ -316,22 +333,26 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
             }
           }
         }
-      case radio =>
+      case radio                         =>
         "when the user selects " + radio.toString - {
           "should update the session with the new value and redirect to the checkAnswers controller" - {
             "when the session contains no data for page" in {
-              build
-                .commonPrecondition
+              build.commonPrecondition
 
               setAnswers(emptyUserAnswers)
               WsTestClient.withClient { client =>
                 val result = createClientRequestPOST(
-                  client, baseUrl + checkRoutePath, Json.obj("value" -> Json.toJson(radio))
+                  client,
+                  baseUrl + checkRoutePath,
+                  Json.obj("value" -> Json.toJson(radio))
                 )
                 whenReady(result) { res =>
                   res.status mustBe 303
-                  res.header(HeaderNames.LOCATION) mustBe Some(routes.CannotRegisterPartnershipController.onPageLoad.url)
-                  val dataStoredForPage = getAnswers(identifier).fold[Option[OrganisationType]](None)(_.get(OrganisationTypePage))
+                  res.header(HeaderNames.LOCATION) mustBe Some(
+                    routes.CannotRegisterPartnershipController.onPageLoad.url
+                  )
+                  val dataStoredForPage =
+                    getAnswers(identifier).fold[Option[OrganisationType]](None)(_.get(OrganisationTypePage))
                   dataStoredForPage.nonEmpty mustBe true
                   dataStoredForPage.get mustBe radio
                 }
@@ -339,21 +360,25 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
             }
 
             "when the session already contains data for page" in {
-              build
-                .commonPrecondition
+              build.commonPrecondition
 
               val userAnswers = emptyUserAnswers.set(OrganisationTypePage, radio).success.value
 
               setAnswers(userAnswers)
               WsTestClient.withClient { client =>
                 val result = createClientRequestPOST(
-                  client, baseUrl + checkRoutePath, Json.obj("value" -> Json.toJson(radio))
+                  client,
+                  baseUrl + checkRoutePath,
+                  Json.obj("value" -> Json.toJson(radio))
                 )
 
                 whenReady(result) { res =>
                   res.status mustBe 303
-                  res.header(HeaderNames.LOCATION) mustBe Some(routes.CannotRegisterPartnershipController.onPageLoad.url)
-                  val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[OrganisationType]](None)(_.get(OrganisationTypePage))
+                  res.header(HeaderNames.LOCATION) mustBe Some(
+                    routes.CannotRegisterPartnershipController.onPageLoad.url
+                  )
+                  val dataStoredForPage =
+                    getAnswers(userAnswers.id).fold[Option[OrganisationType]](None)(_.get(OrganisationTypePage))
                   dataStoredForPage.nonEmpty mustBe true
                   dataStoredForPage.get mustBe radio
                 }
@@ -365,20 +390,22 @@ class OrganisationTypeIntegrationSpec extends ControllerITTestHelper {
 
     "when the user does not select an option" - {
       "should return 400 with required error" in {
-        build
-          .commonPrecondition
+        build.commonPrecondition
 
         setAnswers(emptyUserAnswers)
         WsTestClient.withClient { client =>
           val result = createClientRequestPOST(
-            client, baseUrl + checkRoutePath, Json.obj("value" -> "")
+            client,
+            baseUrl + checkRoutePath,
+            Json.obj("value" -> "")
           )
 
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
             page.title must include("Error: " + messages("organisationType" + ".title"))
-            val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
+            val errorSummary = page
+              .getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")

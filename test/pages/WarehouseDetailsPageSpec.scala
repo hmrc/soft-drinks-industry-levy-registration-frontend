@@ -30,7 +30,8 @@ class WarehouseDetailsPageSpec extends PageBehaviours {
     beRemovable[Boolean](WarehouseDetailsPage)
 
     s"url should be correct for $NormalMode" in {
-      WarehouseDetailsPage.url(NormalMode) mustBe controllers.routes.WarehouseDetailsController.onPageLoad(NormalMode).url
+      WarehouseDetailsPage
+        .url(NormalMode) mustBe controllers.routes.WarehouseDetailsController.onPageLoad(NormalMode).url
     }
     s"url should be correct for $CheckMode" in {
       WarehouseDetailsPage.url(CheckMode) mustBe controllers.routes.WarehouseDetailsController.onPageLoad(CheckMode).url

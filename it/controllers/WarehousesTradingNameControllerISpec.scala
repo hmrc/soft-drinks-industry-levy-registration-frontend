@@ -11,30 +11,29 @@ import services.AddressLookupState.WarehouseDetails
 
 class WarehousesTradingNameControllerISpec extends ControllerITTestHelper {
 
-  val ref = "1234567890"
+  val ref             = "1234567890"
   val normalRoutePath = s"/warehouses-trading-name/$ref"
-  val checkRoutePath = s"/change-warehouses-trading-name/$ref"
+  val checkRoutePath  = s"/change-warehouses-trading-name/$ref"
 
-  val warehousesTradingNameJsObject: collection.Map[String, JsValue] = Json.toJson(warehousesTradingName).as[JsObject].value
-  val warehousesTradingNameMap: collection.Map[String, String] = {
+  val warehousesTradingNameJsObject: collection.Map[String, JsValue] =
+    Json.toJson(warehousesTradingName).as[JsObject].value
+  val warehousesTradingNameMap: collection.Map[String, String]       =
     warehousesTradingNameJsObject.map { case (fName, fValue) => fName -> fValue.as[String] }
-  }
-  val alfResponseForLookupState = AddressResponseForLookupState(ukAddress, WarehouseDetails, ref)
-  val userAnswersWithAlfResponseForSdilId: UserAnswers = emptyUserAnswers.copy(
-    alfResponseForLookupState = Some(alfResponseForLookupState))
-  val userAnswersWithNoAlfResponseButWarehouseWithSdilRef = emptyUserAnswers.copy(
-    warehouseList = Map(ref -> Warehouse(warehousesTradingName.warehouseTradingName, ukAddress)))
-  val userAnswersWithWarehousesButNotForSdilRef = emptyUserAnswers.copy(
-    warehouseList = Map("5432456" -> Warehouse(warehousesTradingName.warehouseTradingName, ukAddress)))
-  val modeWithPaths = Map(NormalMode -> normalRoutePath,
-    CheckMode -> checkRoutePath)
+  val alfResponseForLookupState                                      = AddressResponseForLookupState(ukAddress, WarehouseDetails, ref)
+  val userAnswersWithAlfResponseForSdilId: UserAnswers               =
+    emptyUserAnswers.copy(alfResponseForLookupState = Some(alfResponseForLookupState))
+  val userAnswersWithNoAlfResponseButWarehouseWithSdilRef            =
+    emptyUserAnswers.copy(warehouseList = Map(ref -> Warehouse(warehousesTradingName.warehouseTradingName, ukAddress)))
+  val userAnswersWithWarehousesButNotForSdilRef                      = emptyUserAnswers.copy(
+    warehouseList = Map("5432456" -> Warehouse(warehousesTradingName.warehouseTradingName, ukAddress))
+  )
+  val modeWithPaths                                                  = Map(NormalMode -> normalRoutePath, CheckMode -> checkRoutePath)
 
   modeWithPaths.foreach { case (mode, path) =>
     "GET " + path - {
       "when the userAnswers contains alfResponseWithLookupState for the reference number" - {
         "should return OK and render the WarehouseTradingName page with no data populated" in {
-          build
-            .commonPrecondition
+          build.commonPrecondition
 
           setAnswers(userAnswersWithAlfResponseForSdilId)
 
@@ -43,7 +42,7 @@ class WarehousesTradingNameControllerISpec extends ControllerITTestHelper {
 
             whenReady(result1) { res =>
               res.status mustBe 200
-              val page = Jsoup.parse(res.body)
+              val page        = Jsoup.parse(res.body)
               page.title mustBe "What is your UK warehouse trading name? - Soft Drinks Industry Levy - GOV.UK"
               val inputFields = page.getElementsByClass("govuk-form-group")
               inputFields.size() mustBe 1
@@ -56,8 +55,7 @@ class WarehousesTradingNameControllerISpec extends ControllerITTestHelper {
 
       "when the userAnswers contains no alfResponseWithLookupState but contains a packaging site for the reference number" - {
         "should return OK and render the WarehouseTradingName page with data populated" in {
-          build
-            .commonPrecondition
+          build.commonPrecondition
 
           setAnswers(userAnswersWithNoAlfResponseButWarehouseWithSdilRef)
 
@@ -66,13 +64,16 @@ class WarehousesTradingNameControllerISpec extends ControllerITTestHelper {
 
             whenReady(result1) { res =>
               res.status mustBe 200
-              val page = Jsoup.parse(res.body)
+              val page        = Jsoup.parse(res.body)
               page.title mustBe "What is your UK warehouse trading name? - Soft Drinks Industry Levy - GOV.UK"
               val inputFields = page.getElementsByClass("govuk-form-group")
               inputFields.size() mustBe 1
               inputFields.get(0).text() mustBe "What is your UK warehouse trading name?"
               inputFields.get(0).getElementById("warehouseTradingName").hasAttr("value") mustBe true
-              inputFields.get(0).getElementById("warehouseTradingName").attr("value") mustBe warehousesTradingName.warehouseTradingName
+              inputFields
+                .get(0)
+                .getElementById("warehouseTradingName")
+                .attr("value") mustBe warehousesTradingName.warehouseTradingName
             }
           }
         }
@@ -80,8 +81,7 @@ class WarehousesTradingNameControllerISpec extends ControllerITTestHelper {
 
       "when the useranswers contains warehouses but none with sdilId and has no alfAddres" - {
         "must redirect to warehouseDetails" in {
-          build
-            .commonPrecondition
+          build.commonPrecondition
 
           setAnswers(userAnswersWithWarehousesButNotForSdilRef)
 
@@ -98,8 +98,7 @@ class WarehousesTradingNameControllerISpec extends ControllerITTestHelper {
 
       "when the useranswers contains no warehouses or alfAddres" - {
         "must redirect to AskSecondaryWarehouse" in {
-          build
-            .commonPrecondition
+          build.commonPrecondition
 
           setAnswers(emptyUserAnswers)
 
@@ -121,8 +120,7 @@ class WarehousesTradingNameControllerISpec extends ControllerITTestHelper {
       "should add the warehouse and remove alfResponse from user answers if present and redirect to warehouse details" - {
         "when the user populates the trading name field with a valid value" - {
           "and the userAnswers contains alfResponseWithLookupState for the reference number" in {
-            build
-              .commonPrecondition
+            build.commonPrecondition
 
             setAnswers(userAnswersWithAlfResponseForSdilId)
 
@@ -134,14 +132,15 @@ class WarehousesTradingNameControllerISpec extends ControllerITTestHelper {
                 res.header(HeaderNames.LOCATION) mustBe Some(routes.WarehouseDetailsController.onPageLoad(mode).url)
                 val updatedUserAnswer = getAnswers(identifier).get
                 updatedUserAnswer.alfResponseForLookupState mustBe None
-                updatedUserAnswer.warehouseList mustBe Map(ref -> Warehouse(warehousesTradingNameDiff.warehouseTradingName, ukAddress))
+                updatedUserAnswer.warehouseList mustBe Map(
+                  ref -> Warehouse(warehousesTradingNameDiff.warehouseTradingName, ukAddress)
+                )
               }
             }
           }
 
           "and the userAnswers contains no alfResponseWithLookupState but has a warehouse for the reference number" in {
-            build
-              .commonPrecondition
+            build.commonPrecondition
 
             setAnswers(userAnswersWithNoAlfResponseButWarehouseWithSdilRef)
 
@@ -153,7 +152,9 @@ class WarehousesTradingNameControllerISpec extends ControllerITTestHelper {
                 res.header(HeaderNames.LOCATION) mustBe Some(routes.WarehouseDetailsController.onPageLoad(mode).url)
                 val updatedUserAnswer = getAnswers(identifier).get
                 updatedUserAnswer.alfResponseForLookupState mustBe None
-                updatedUserAnswer.warehouseList mustBe Map(ref -> Warehouse(warehousesTradingNameDiff.warehouseTradingName, ukAddress))
+                updatedUserAnswer.warehouseList mustBe Map(
+                  ref -> Warehouse(warehousesTradingNameDiff.warehouseTradingName, ukAddress)
+                )
               }
             }
           }
@@ -162,8 +163,7 @@ class WarehousesTradingNameControllerISpec extends ControllerITTestHelper {
 
       "should not update the database and redirect to warehouse details" - {
         "when the useranswers contains waehouses but none with sdilId and has no alfAddress" in {
-          build
-            .commonPrecondition
+          build.commonPrecondition
 
           setAnswers(userAnswersWithWarehousesButNotForSdilRef)
 
@@ -180,8 +180,7 @@ class WarehousesTradingNameControllerISpec extends ControllerITTestHelper {
 
       "should not update the database and redirect to ask secondary warehouse" - {
         "when the useranswers contains no warehouses or alfAddress" in {
-          build
-            .commonPrecondition
+          build.commonPrecondition
 
           setAnswers(emptyUserAnswers)
 
@@ -198,21 +197,24 @@ class WarehousesTradingNameControllerISpec extends ControllerITTestHelper {
 
       "should return 400 with required error" - {
         "when no questions are answered" in {
-          build
-            .commonPrecondition
+          build.commonPrecondition
 
           setAnswers(userAnswersWithAlfResponseForSdilId)
           WsTestClient.withClient { client =>
             val result = createClientRequestPOST(
-              client, baseUrl + path, Json.toJson(WarehousesTradingName(""))
+              client,
+              baseUrl + path,
+              Json.toJson(WarehousesTradingName(""))
             )
 
             whenReady(result) { res =>
               res.status mustBe 400
-              val page = Jsoup.parse(res.body)
+              val page             = Jsoup.parse(res.body)
               page.title mustBe "Error: What is your UK warehouse trading name? - Soft Drinks Industry Levy - GOV.UK"
-              val errorSummaryList = page.getElementsByClass("govuk-list govuk-error-summary__list")
-                .first().getElementsByTag("li")
+              val errorSummaryList = page
+                .getElementsByClass("govuk-list govuk-error-summary__list")
+                .first()
+                .getElementsByTag("li")
               errorSummaryList.size() mustBe warehousesTradingNameMap.size
               warehousesTradingNameMap.zipWithIndex.foreach { case ((fieldName, _), index) =>
                 val errorSummary = errorSummaryList.get(index)
@@ -226,8 +228,7 @@ class WarehousesTradingNameControllerISpec extends ControllerITTestHelper {
         }
         warehousesTradingNameMap.zipWithIndex.foreach { case ((fieldName, _), index) =>
           "when no answer is given for field" + fieldName in {
-            build
-              .commonPrecondition
+            build.commonPrecondition
 
             setAnswers(userAnswersWithAlfResponseForSdilId)
             val invalidJson = warehousesTradingNameMap.foldLeft(Json.obj()) { case (current, (fn, fv)) =>
@@ -240,14 +241,17 @@ class WarehousesTradingNameControllerISpec extends ControllerITTestHelper {
             }
             WsTestClient.withClient { client =>
               val result = createClientRequestPOST(
-                client, baseUrl + path, invalidJson
+                client,
+                baseUrl + path,
+                invalidJson
               )
 
               whenReady(result) { res =>
                 res.status mustBe 400
-                val page = Jsoup.parse(res.body)
+                val page             = Jsoup.parse(res.body)
                 page.title mustBe "Error: What is your UK warehouse trading name? - Soft Drinks Industry Levy - GOV.UK"
-                val errorSummaryList = page.getElementsByClass("govuk-list govuk-error-summary__list")
+                val errorSummaryList = page
+                  .getElementsByClass("govuk-list govuk-error-summary__list")
                   .first()
                 errorSummaryList
                   .select("a")

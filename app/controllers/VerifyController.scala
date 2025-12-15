@@ -19,20 +19,20 @@ package controllers
 import controllers.actions._
 import forms.VerifyFormProvider
 import handlers.ErrorHandler
-import models.Verify.{ No, YesNewAddress }
-import models.{ Mode, RosmRegistration }
+import models.Verify.{No, YesNewAddress}
+import models.{Mode, RosmRegistration}
 import navigation.Navigator
 import pages.VerifyPage
 import play.api.i18n.MessagesApi
-import play.api.mvc.{ Action, AnyContent, MessagesControllerComponents }
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.AddressLookupState.BusinessAddress
-import services.{ AddressLookupService, SessionService }
+import services.{AddressLookupService, SessionService}
 import utilities.GenericLogger
 import viewmodels.AddressFormattingHelper
 import views.html.VerifyView
 
 import javax.inject.Inject
-import scala.concurrent.{ ExecutionContext, Future }
+import scala.concurrent.{ExecutionContext, Future}
 
 class VerifyController @Inject() (
   override val messagesApi: MessagesApi,
@@ -44,39 +44,57 @@ class VerifyController @Inject() (
   view: VerifyView,
   val errorHandler: ErrorHandler,
   val genericLogger: GenericLogger,
-  addressLookupService: AddressLookupService)(implicit ec: ExecutionContext) extends ControllerHelper {
+  addressLookupService: AddressLookupService
+)(implicit ec: ExecutionContext)
+    extends ControllerHelper {
 
   val form = formProvider()
 
   private val formattedAddress = (rosmRegistration: RosmRegistration) =>
     AddressFormattingHelper.formatBusinessAddress(rosmRegistration.address, Some(rosmRegistration.organisationName))
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = controllerActions.withUserWhoCanRegister {
-    implicit request =>
-      val preparedForm = request.userAnswers.get(VerifyPage) match {
-        case None => form
-        case Some(value) => form.fill(value)
-      }
+  def onPageLoad(mode: Mode): Action[AnyContent] = controllerActions.withUserWhoCanRegister { implicit request =>
+    val preparedForm = request.userAnswers.get(VerifyPage) match {
+      case None        => form
+      case Some(value) => form.fill(value)
+    }
 
-      Ok(view(preparedForm, mode, request.rosmWithUtr.utr, formattedAddress(request.rosmWithUtr.rosmRegistration)))
+    Ok(view(preparedForm, mode, request.rosmWithUtr.utr, formattedAddress(request.rosmWithUtr.rosmRegistration)))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = controllerActions.withUserWhoCanRegister.async {
-    implicit request =>
-
-      form.bindFromRequest().fold(
+  def onSubmit(mode: Mode): Action[AnyContent] = controllerActions.withUserWhoCanRegister.async { implicit request =>
+    form
+      .bindFromRequest()
+      .fold(
         formWithErrors =>
-          Future.successful(BadRequest(view(formWithErrors, mode, request.rosmWithUtr.utr, formattedAddress(request.rosmWithUtr.rosmRegistration)))),
+          Future.successful(
+            BadRequest(
+              view(
+                formWithErrors,
+                mode,
+                request.rosmWithUtr.utr,
+                formattedAddress(request.rosmWithUtr.rosmRegistration)
+              )
+            )
+          ),
         value => {
           val updatedAnswers = request.userAnswers.set(VerifyPage, value)
           value match {
             case YesNewAddress =>
               updateDatabaseWithoutRedirect(updatedAnswers, VerifyPage)(
-                addressLookupService.initJourneyAndReturnOnRampUrl(BusinessAddress, mode = mode)
-                  .map(alfOnRamp => Redirect(alfOnRamp)))
-            case No => Future.successful(Redirect(auth.routes.AuthController.signOutNoSurvey))
-            case _ => updateDatabaseAndRedirect(updatedAnswers.map(_.copy(address = Some(request.rosmWithUtr.rosmRegistration.address))), VerifyPage, mode)
+                addressLookupService
+                  .initJourneyAndReturnOnRampUrl(BusinessAddress, mode = mode)
+                  .map(alfOnRamp => Redirect(alfOnRamp))
+              )
+            case No            => Future.successful(Redirect(auth.routes.AuthController.signOutNoSurvey))
+            case _             =>
+              updateDatabaseAndRedirect(
+                updatedAnswers.map(_.copy(address = Some(request.rosmWithUtr.rosmRegistration.address))),
+                VerifyPage,
+                mode
+              )
           }
-        })
+        }
+      )
   }
 }

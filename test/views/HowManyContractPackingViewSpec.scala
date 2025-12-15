@@ -27,28 +27,29 @@ import views.html.HowManyContractPackingView
 
 class HowManyContractPackingViewSpec extends LitresSpecHelper {
 
-  val howManyContractPackingView: HowManyContractPackingView = application.injector.instanceOf[HowManyContractPackingView]
+  val howManyContractPackingView: HowManyContractPackingView =
+    application.injector.instanceOf[HowManyContractPackingView]
 
-  implicit val request: Request[?] = FakeRequest()
+  implicit val request: Request[?]       = FakeRequest()
   implicit val config: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
 
   "HowManyContractPackingView" - {
     List(NormalMode, CheckMode).foreach { mode =>
-      "when in " + mode +" mode" - {
-        val html: HtmlFormat.Appendable = howManyContractPackingView(form, mode)
-        val document = doc(html)
-        val htmlWithValidData: HtmlFormat.Appendable = howManyContractPackingView(formWithHighAndLowBands, mode)
-        val documentWithValidData = doc(htmlWithValidData)
-        val htmlFormErrorsEmpty: HtmlFormat.Appendable = howManyContractPackingView(emptyForm, mode)
-        val documentFormErrorsEmpty = doc(htmlFormErrorsEmpty)
-        val htmlFormErrorsNegative: HtmlFormat.Appendable = howManyContractPackingView(formWithNegativeNumber, mode)
-        val documentFormErrorsNegative = doc(htmlFormErrorsNegative)
+      "when in " + mode + " mode" - {
+        val html: HtmlFormat.Appendable                      = howManyContractPackingView(form, mode)
+        val document                                         = doc(html)
+        val htmlWithValidData: HtmlFormat.Appendable         = howManyContractPackingView(formWithHighAndLowBands, mode)
+        val documentWithValidData                            = doc(htmlWithValidData)
+        val htmlFormErrorsEmpty: HtmlFormat.Appendable       = howManyContractPackingView(emptyForm, mode)
+        val documentFormErrorsEmpty                          = doc(htmlFormErrorsEmpty)
+        val htmlFormErrorsNegative: HtmlFormat.Appendable    = howManyContractPackingView(formWithNegativeNumber, mode)
+        val documentFormErrorsNegative                       = doc(htmlFormErrorsNegative)
         val htmlFormErrorsNoneNumeric: HtmlFormat.Appendable = howManyContractPackingView(formWithNoNumeric, mode)
-        val documentFormErrorsNoneNumeric = doc(htmlFormErrorsNoneNumeric)
-        val htmlFormErrorsNotWhole: HtmlFormat.Appendable = howManyContractPackingView(formWithDecimalNumber, mode)
-        val documentFormErrorsNotWhole = doc(htmlFormErrorsNotWhole)
-        val htmlFormErrorsOutOfRange: HtmlFormat.Appendable = howManyContractPackingView(formWithOutOfRangeNumber, mode)
-        val documentFormErrorsOutOfRange = doc(htmlFormErrorsOutOfRange)
+        val documentFormErrorsNoneNumeric                    = doc(htmlFormErrorsNoneNumeric)
+        val htmlFormErrorsNotWhole: HtmlFormat.Appendable    = howManyContractPackingView(formWithDecimalNumber, mode)
+        val documentFormErrorsNotWhole                       = doc(htmlFormErrorsNotWhole)
+        val htmlFormErrorsOutOfRange: HtmlFormat.Appendable  = howManyContractPackingView(formWithOutOfRangeNumber, mode)
+        val documentFormErrorsOutOfRange                     = doc(htmlFormErrorsOutOfRange)
 
         "should have the expected title" in {
           document.title() must include(Messages("howManyContractPacking.title"))

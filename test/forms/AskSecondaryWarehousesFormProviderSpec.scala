@@ -22,7 +22,7 @@ import play.api.data.FormError
 class AskSecondaryWarehousesFormProviderSpec extends BooleanFieldBehaviours {
 
   val requiredKey = "askSecondaryWarehouses.error.required"
-  val invalidKey = "error.boolean"
+  val invalidKey  = "error.boolean"
 
   val form = new AskSecondaryWarehousesFormProvider()()
 
@@ -30,14 +30,8 @@ class AskSecondaryWarehousesFormProviderSpec extends BooleanFieldBehaviours {
 
     val fieldName = "value"
 
-    behave like booleanField(
-      form,
-      fieldName,
-      invalidError = FormError(fieldName, invalidKey))
+    behave like booleanField(form, fieldName, invalidError = FormError(fieldName, invalidKey))
 
-    behave like mandatoryField(
-      form,
-      fieldName,
-      requiredError = FormError(fieldName, requiredKey))
+    behave like mandatoryField(form, fieldName, requiredError = FormError(fieldName, requiredKey))
   }
 }

@@ -16,14 +16,14 @@ class RegistrationControllerISpec extends ControllerITTestHelper {
   val path = "/start"
 
   val expectedRedirectUrlForSubscriptionStatus = Map(
-      Pending -> routes.RegistrationPendingController.onPageLoad.url,
-      Registered -> routes.ApplicationAlreadySubmittedController.onPageLoad.url,
-      DoesNotExist -> routes.VerifyController.onPageLoad(NormalMode).url
-    )
+    Pending      -> routes.RegistrationPendingController.onPageLoad.url,
+    Registered   -> routes.ApplicationAlreadySubmittedController.onPageLoad.url,
+    DoesNotExist -> routes.VerifyController.onPageLoad(NormalMode).url
+  )
 
   val expectedRegisteredStateForSubscriptionStatus = Map(
-    Pending -> RegistrationPending,
-    Registered -> RegisterApplicationAccepted,
+    Pending      -> RegistrationPending,
+    Registered   -> RegisterApplicationAccepted,
     DoesNotExist -> RegisterWithAuthUTR
   )
 
@@ -36,11 +36,12 @@ class RegistrationControllerISpec extends ControllerITTestHelper {
             expectedRedirectUrlForSubscriptionStatus.foreach { case (subscriptionState, expectedUrl) =>
               s"and has a subscription status of $subscriptionState" - {
                 s"should create new user answers including the registered state and redirect to $expectedUrl" in {
-                  build
-                    .user.isAuthorisedAndEnrolled
-                    .sdilBackend.retrieveSubscriptionNone("utr", "0000001611")
-                    .sdilBackend.retrieveRosm("0000001611")
-                    .sdilBackend.checkPendingQueue("0000001611", subscriptionState)
+                  build.user.isAuthorisedAndEnrolled.sdilBackend
+                    .retrieveSubscriptionNone("utr", "0000001611")
+                    .sdilBackend
+                    .retrieveRosm("0000001611")
+                    .sdilBackend
+                    .checkPendingQueue("0000001611", subscriptionState)
 
                   WsTestClient.withClient { client =>
                     val result1 = createClientRequestGet(client, baseUrl + path)
@@ -50,7 +51,9 @@ class RegistrationControllerISpec extends ControllerITTestHelper {
                       res.header(HeaderNames.LOCATION) mustBe Some(expectedUrl)
                       val userAnswers = getAnswers(identifier)
                       userAnswers mustBe defined
-                      userAnswers.get.registerState mustBe expectedRegisteredStateForSubscriptionStatus(subscriptionState)
+                      userAnswers.get.registerState mustBe expectedRegisteredStateForSubscriptionStatus(
+                        subscriptionState
+                      )
                     }
                   }
                 }
@@ -60,10 +63,10 @@ class RegistrationControllerISpec extends ControllerITTestHelper {
 
           "has no rosm data associated with the utr" - {
             "should create new useranswers and redirect the EnterBusinessDetails" in {
-              build
-                .user.isAuthorisedAndEnrolled
-                .sdilBackend.retrieveSubscriptionNone("utr", "0000001611")
-                .sdilBackend.retrieveRosmNone("0000001611")
+              build.user.isAuthorisedAndEnrolled.sdilBackend
+                .retrieveSubscriptionNone("utr", "0000001611")
+                .sdilBackend
+                .retrieveRosmNone("0000001611")
 
               WsTestClient.withClient { client =>
                 val result1 = createClientRequestGet(client, baseUrl + path)
@@ -84,11 +87,12 @@ class RegistrationControllerISpec extends ControllerITTestHelper {
             expectedRedirectUrlForSubscriptionStatus.foreach { case (subscriptionState, expectedUrl) =>
               s"and has a subscription status of $subscriptionState" - {
                 s"should create new user answers including the registered state and redirect to $expectedUrl" in {
-                  build
-                    .user.isAuthorisedAndEnrolled
-                    .sdilBackend.retrieveSubscriptionWithDeRegDate("utr", "0000001611")
-                    .sdilBackend.retrieveRosm("0000001611")
-                    .sdilBackend.checkPendingQueue("0000001611", subscriptionState)
+                  build.user.isAuthorisedAndEnrolled.sdilBackend
+                    .retrieveSubscriptionWithDeRegDate("utr", "0000001611")
+                    .sdilBackend
+                    .retrieveRosm("0000001611")
+                    .sdilBackend
+                    .checkPendingQueue("0000001611", subscriptionState)
 
                   WsTestClient.withClient { client =>
                     val result1 = createClientRequestGet(client, baseUrl + path)
@@ -98,7 +102,9 @@ class RegistrationControllerISpec extends ControllerITTestHelper {
                       res.header(HeaderNames.LOCATION) mustBe Some(expectedUrl)
                       val userAnswers = getAnswers(identifier)
                       userAnswers mustBe defined
-                      userAnswers.get.registerState mustBe expectedRegisteredStateForSubscriptionStatus(subscriptionState)
+                      userAnswers.get.registerState mustBe expectedRegisteredStateForSubscriptionStatus(
+                        subscriptionState
+                      )
                     }
                   }
                 }
@@ -108,10 +114,10 @@ class RegistrationControllerISpec extends ControllerITTestHelper {
 
           "has no rosm data associated with the utr" - {
             "should create new useranswers and redirect the EnterBusinessDetails" in {
-              build
-                .user.isAuthorisedAndEnrolled
-                .sdilBackend.retrieveSubscriptionWithDeRegDate("utr", "0000001611")
-                .sdilBackend.retrieveRosmNone("0000001611")
+              build.user.isAuthorisedAndEnrolled.sdilBackend
+                .retrieveSubscriptionWithDeRegDate("utr", "0000001611")
+                .sdilBackend
+                .retrieveRosmNone("0000001611")
 
               WsTestClient.withClient { client =>
                 val result1 = createClientRequestGet(client, baseUrl + path)
@@ -130,9 +136,7 @@ class RegistrationControllerISpec extends ControllerITTestHelper {
 
         "has a subscription with no deregistered date" - {
           "should redirect to sdilHome" in {
-            build
-              .user.isAuthorisedAndEnrolled
-              .sdilBackend.retrieveSubscription("utr", "0000001611")
+            build.user.isAuthorisedAndEnrolled.sdilBackend.retrieveSubscription("utr", "0000001611")
 
             WsTestClient.withClient { client =>
               val result1 = createClientRequestGet(client, baseUrl + path)
@@ -154,11 +158,12 @@ class RegistrationControllerISpec extends ControllerITTestHelper {
             expectedRedirectUrlForSubscriptionStatus.foreach { case (subscriptionState, expectedUrl) =>
               s"and has a subscription status of $subscriptionState" - {
                 s"should create new user answers including the registered state and redirect to $expectedUrl" in {
-                  build
-                    .user.isAuthorisedAndEnrolledBoth
-                    .sdilBackend.retrieveSubscriptionNone("utr", "0000001611")
-                    .sdilBackend.retrieveRosm("0000001611")
-                    .sdilBackend.checkPendingQueue("0000001611", subscriptionState)
+                  build.user.isAuthorisedAndEnrolledBoth.sdilBackend
+                    .retrieveSubscriptionNone("utr", "0000001611")
+                    .sdilBackend
+                    .retrieveRosm("0000001611")
+                    .sdilBackend
+                    .checkPendingQueue("0000001611", subscriptionState)
 
                   WsTestClient.withClient { client =>
                     val result1 = createClientRequestGet(client, baseUrl + path)
@@ -168,7 +173,9 @@ class RegistrationControllerISpec extends ControllerITTestHelper {
                       res.header(HeaderNames.LOCATION) mustBe Some(expectedUrl)
                       val userAnswers = getAnswers(identifier)
                       userAnswers mustBe defined
-                      userAnswers.get.registerState mustBe expectedRegisteredStateForSubscriptionStatus(subscriptionState)
+                      userAnswers.get.registerState mustBe expectedRegisteredStateForSubscriptionStatus(
+                        subscriptionState
+                      )
                     }
                   }
                 }
@@ -178,10 +185,10 @@ class RegistrationControllerISpec extends ControllerITTestHelper {
 
           "has no rosm data associated with the utr" - {
             "should create new useranswers and redirect the EnterBusinessDetails" in {
-              build
-                .user.isAuthorisedAndEnrolledBoth
-                .sdilBackend.retrieveSubscriptionNone("utr", "0000001611")
-                .sdilBackend.retrieveRosmNone("0000001611")
+              build.user.isAuthorisedAndEnrolledBoth.sdilBackend
+                .retrieveSubscriptionNone("utr", "0000001611")
+                .sdilBackend
+                .retrieveRosmNone("0000001611")
 
               WsTestClient.withClient { client =>
                 val result1 = createClientRequestGet(client, baseUrl + path)
@@ -203,11 +210,12 @@ class RegistrationControllerISpec extends ControllerITTestHelper {
             expectedRedirectUrlForSubscriptionStatus.foreach { case (subscriptionState, expectedUrl) =>
               s"and has a subscription status of $subscriptionState" - {
                 s"should create new user answers including the registered state and redirect to $expectedUrl" in {
-                  build
-                    .user.isAuthorisedAndEnrolledBoth
-                    .sdilBackend.retrieveSubscriptionWithDeRegDate("utr", "0000001611")
-                    .sdilBackend.retrieveRosm("0000001611")
-                    .sdilBackend.checkPendingQueue("0000001611", subscriptionState)
+                  build.user.isAuthorisedAndEnrolledBoth.sdilBackend
+                    .retrieveSubscriptionWithDeRegDate("utr", "0000001611")
+                    .sdilBackend
+                    .retrieveRosm("0000001611")
+                    .sdilBackend
+                    .checkPendingQueue("0000001611", subscriptionState)
 
                   WsTestClient.withClient { client =>
                     val result1 = createClientRequestGet(client, baseUrl + path)
@@ -217,7 +225,9 @@ class RegistrationControllerISpec extends ControllerITTestHelper {
                       res.header(HeaderNames.LOCATION) mustBe Some(expectedUrl)
                       val userAnswers = getAnswers(identifier)
                       userAnswers mustBe defined
-                      userAnswers.get.registerState mustBe expectedRegisteredStateForSubscriptionStatus(subscriptionState)
+                      userAnswers.get.registerState mustBe expectedRegisteredStateForSubscriptionStatus(
+                        subscriptionState
+                      )
                     }
                   }
                 }
@@ -227,10 +237,10 @@ class RegistrationControllerISpec extends ControllerITTestHelper {
 
           "has no rosm data associated with the utr" - {
             "should create new useranswers and redirect the EnterBusinessDetails" in {
-              build
-                .user.isAuthorisedAndEnrolledBoth
-                .sdilBackend.retrieveSubscriptionWithDeRegDate("utr", "0000001611")
-                .sdilBackend.retrieveRosmNone("0000001611")
+              build.user.isAuthorisedAndEnrolledBoth.sdilBackend
+                .retrieveSubscriptionWithDeRegDate("utr", "0000001611")
+                .sdilBackend
+                .retrieveRosmNone("0000001611")
 
               WsTestClient.withClient { client =>
                 val result1 = createClientRequestGet(client, baseUrl + path)
@@ -250,10 +260,10 @@ class RegistrationControllerISpec extends ControllerITTestHelper {
         "has a subscription with no deregistered date" - {
           "and has rosm data associated with the utr" - {
             "should create new useranswers and redirect the AlreadyRegistered page" in {
-              build
-                .user.isAuthorisedAndEnrolledBoth
-                .sdilBackend.retrieveSubscription("utr", "0000001611")
-                .sdilBackend.retrieveRosm("0000001611")
+              build.user.isAuthorisedAndEnrolledBoth.sdilBackend
+                .retrieveSubscription("utr", "0000001611")
+                .sdilBackend
+                .retrieveRosm("0000001611")
 
               WsTestClient.withClient { client =>
                 val result1 = createClientRequestGet(client, baseUrl + path)
@@ -271,10 +281,10 @@ class RegistrationControllerISpec extends ControllerITTestHelper {
 
           "and has no rosm data associated with the utr" - {
             "should redirect the user to gg signin" in {
-              build
-                .user.isAuthorisedAndEnrolledBoth
-                .sdilBackend.retrieveSubscription("utr", "0000001611")
-                .sdilBackend.retrieveRosmNone("0000001611")
+              build.user.isAuthorisedAndEnrolledBoth.sdilBackend
+                .retrieveSubscription("utr", "0000001611")
+                .sdilBackend
+                .retrieveRosmNone("0000001611")
 
               WsTestClient.withClient { client =>
                 val result1 = createClientRequestGet(client, baseUrl + path)
@@ -294,9 +304,7 @@ class RegistrationControllerISpec extends ControllerITTestHelper {
       "when a user has a sdilRef but no utr in the auth session," - {
         "should redirect to sdilHome" - {
           "when the user has a subscription" in {
-            build
-              .user.isAuthorisedAndEnrolledSdilEnrolment
-              .sdilBackend.retrieveSubscription("sdil", "XKSDIL000000022")
+            build.user.isAuthorisedAndEnrolledSdilEnrolment.sdilBackend.retrieveSubscription("sdil", "XKSDIL000000022")
 
             WsTestClient.withClient { client =>
               val result1 = createClientRequestGet(client, baseUrl + path)
@@ -313,9 +321,8 @@ class RegistrationControllerISpec extends ControllerITTestHelper {
 
         "should redirect to enter business details" - {
           "when the user has a subscription with a deregistered date" in {
-            build
-              .user.isAuthorisedAndEnrolledSdilEnrolment
-              .sdilBackend.retrieveSubscriptionWithDeRegDate("sdil", "XKSDIL000000022")
+            build.user.isAuthorisedAndEnrolledSdilEnrolment.sdilBackend
+              .retrieveSubscriptionWithDeRegDate("sdil", "XKSDIL000000022")
 
             WsTestClient.withClient { client =>
               val result1 = createClientRequestGet(client, baseUrl + path)
@@ -331,9 +338,8 @@ class RegistrationControllerISpec extends ControllerITTestHelper {
           }
 
           "when the user has no subscription" in {
-            build
-              .user.isAuthorisedAndEnrolledSdilEnrolment
-              .sdilBackend.retrieveSubscriptionNone("sdil", "XKSDIL000000022")
+            build.user.isAuthorisedAndEnrolledSdilEnrolment.sdilBackend
+              .retrieveSubscriptionNone("sdil", "XKSDIL000000022")
 
             WsTestClient.withClient { client =>
               val result1 = createClientRequestGet(client, baseUrl + path)
@@ -352,8 +358,7 @@ class RegistrationControllerISpec extends ControllerITTestHelper {
 
       "when the user has no utr or sdilRef in auth session" - {
         "should redirect to enter business details" in {
-          build
-            .user.isAuthorisedButNotEnrolled()
+          build.user.isAuthorisedButNotEnrolled()
 
           WsTestClient.withClient { client =>
             val result1 = createClientRequestGet(client, baseUrl + path)
@@ -373,12 +378,18 @@ class RegistrationControllerISpec extends ControllerITTestHelper {
     "the user has already started a registration journey" - {
       "and has user answers that contains the submittedOn date" - {
         "should redirect to registration confirmation" in {
-          build
-            .user.isAuthorisedAndEnrolled
-            .sdilBackend.retrieveSubscriptionNone("utr", "0000001611")
-            .sdilBackend.retrieveRosm("0000001611")
+          build.user.isAuthorisedAndEnrolled.sdilBackend
+            .retrieveSubscriptionNone("utr", "0000001611")
+            .sdilBackend
+            .retrieveRosm("0000001611")
 
-          setAnswers(emptyUserAnswers.copy(registerState = RegisterWithOtherUTR, data = Json.obj("test" -> "testing"), submittedOn = Some(Instant.now)))
+          setAnswers(
+            emptyUserAnswers.copy(
+              registerState = RegisterWithOtherUTR,
+              data = Json.obj("test" -> "testing"),
+              submittedOn = Some(Instant.now)
+            )
+          )
 
           WsTestClient.withClient { client =>
             val result1 = createClientRequestGet(client, baseUrl + path)
@@ -395,14 +406,14 @@ class RegistrationControllerISpec extends ControllerITTestHelper {
       }
 
       "and has userAnswers without a submittedOn date," - {
-        RegisterState.values.foreach{ registerState =>
+        RegisterState.values.foreach { registerState =>
           s"a registerState of $registerState" - {
             "and has previously entered business details" - {
               "should redirect to EnterBusinessDetails" in {
-                build
-                  .user.isAuthorisedAndEnrolled
-                  .sdilBackend.retrieveSubscriptionNone("utr", "0000001611")
-                  .sdilBackend.retrieveRosm("0000001611")
+                build.user.isAuthorisedAndEnrolled.sdilBackend
+                  .retrieveSubscriptionNone("utr", "0000001611")
+                  .sdilBackend
+                  .retrieveRosm("0000001611")
 
                 val userAnswers = userAnswersForEnterBusinessDetailsPage.copy(registerState = registerState)
 
@@ -422,10 +433,10 @@ class RegistrationControllerISpec extends ControllerITTestHelper {
             "and has not previously been on the EnterBusinessDetails page" - {
               val expectedLocation = expectedLocationForRegState(registerState)
               s"should redirect to $expectedLocation" in {
-                build
-                  .user.isAuthorisedAndEnrolled
-                  .sdilBackend.retrieveSubscriptionNone("utr", "0000001611")
-                  .sdilBackend.retrieveRosm("0000001611")
+                build.user.isAuthorisedAndEnrolled.sdilBackend
+                  .retrieveSubscriptionNone("utr", "0000001611")
+                  .sdilBackend
+                  .retrieveRosm("0000001611")
 
                 val userAnswers = emptyUserAnswers.copy(registerState = registerState)
 
@@ -447,13 +458,12 @@ class RegistrationControllerISpec extends ControllerITTestHelper {
     }
   }
 
-  private def expectedLocationForRegState(regState: RegisterState): String = {
+  private def expectedLocationForRegState(regState: RegisterState): String =
     regState match {
-      case AlreadyRegistered => routes.AlreadyRegisteredController.onPageLoad.url
-      case RegistrationPending => routes.RegistrationPendingController.onPageLoad.url
-      case RequiresBusinessDetails => routes.EnterBusinessDetailsController.onPageLoad.url
+      case AlreadyRegistered           => routes.AlreadyRegisteredController.onPageLoad.url
+      case RegistrationPending         => routes.RegistrationPendingController.onPageLoad.url
+      case RequiresBusinessDetails     => routes.EnterBusinessDetailsController.onPageLoad.url
       case RegisterApplicationAccepted => routes.ApplicationAlreadySubmittedController.onPageLoad.url
-      case _ => routes.VerifyController.onPageLoad(NormalMode).url
+      case _                           => routes.VerifyController.onPageLoad(NormalMode).url
     }
-  }
 }

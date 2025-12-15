@@ -17,7 +17,7 @@
 package pages
 
 import play.api.libs.json.JsPath
-import models.{ LitresInBands, Mode }
+import models.{LitresInBands, Mode}
 
 case object HowManyOperatePackagingSitesPage extends QuestionPage[LitresInBands] {
 
@@ -25,5 +25,6 @@ case object HowManyOperatePackagingSitesPage extends QuestionPage[LitresInBands]
 
   override def toString: String = "howManyOperatePackagingSites"
 
-  override val url: Mode => String = mode => controllers.routes.HowManyOperatePackagingSitesController.onPageLoad(mode).url
+  override val url: Mode => String = mode =>
+    controllers.routes.HowManyOperatePackagingSitesController.onPageLoad(mode).url
 }

@@ -16,13 +16,13 @@
 
 package controllers.actions
 
-import com.google.inject.{ Inject, Singleton }
+import com.google.inject.{Inject, Singleton}
 import connectors.SoftDrinksIndustryLevyConnector
 import handlers.ErrorHandler
 import models.Mode
 import models.RegisterState._
-import models.requests.{ DataRequest, DataRequestForApplicationSubmitted, DataRequestForEnterBusinessDetails, DataRequestForEnterTradingName }
-import play.api.mvc.{ ActionBuilder, AnyContent }
+import models.requests.{DataRequest, DataRequestForApplicationSubmitted, DataRequestForEnterBusinessDetails, DataRequestForEnterTradingName}
+import play.api.mvc.{ActionBuilder, AnyContent}
 import services.AddressLookupState
 import utilities.GenericLogger
 
@@ -35,34 +35,33 @@ class ControllerActions @Inject() (
   dataRequired: DataRequiredAction,
   val sdilConnector: SoftDrinksIndustryLevyConnector,
   val genericLogger: GenericLogger,
-  val errorHandler: ErrorHandler)(implicit ec: ExecutionContext) extends ControllerActionHelper {
+  val errorHandler: ErrorHandler
+)(implicit ec: ExecutionContext)
+    extends ControllerActionHelper {
 
-  def withUserWhoCanEnterTradingName(addressLookupState: AddressLookupState, ref: String, mode: Mode): ActionBuilder[DataRequestForEnterTradingName, AnyContent] = {
+  def withUserWhoCanEnterTradingName(
+    addressLookupState: AddressLookupState,
+    ref: String,
+    mode: Mode
+  ): ActionBuilder[DataRequestForEnterTradingName, AnyContent] =
     withUserWhoCanRegister andThen dataRequiredForEnterTradingNameAction(addressLookupState, ref, mode)
-  }
 
-  def withUserWhoCanRegister: ActionBuilder[DataRequest, AnyContent] = {
+  def withUserWhoCanRegister: ActionBuilder[DataRequest, AnyContent] =
     identify andThen getData andThen dataRequired
-  }
 
-  def withUserWhoHasSubmittedRegistrationAction: ActionBuilder[DataRequestForApplicationSubmitted, AnyContent] = {
+  def withUserWhoHasSubmittedRegistrationAction: ActionBuilder[DataRequestForApplicationSubmitted, AnyContent] =
     identify andThen getData andThen dataRequiredForUserWhoHasSubmittedApplicationAction
-  }
 
-  def withAlreadyRegisteredAction: ActionBuilder[DataRequest, AnyContent] = {
+  def withAlreadyRegisteredAction: ActionBuilder[DataRequest, AnyContent] =
     identify andThen getData andThen dataRequiredForUserWhoCannotRegisterAction(AlreadyRegistered)
-  }
 
-  def withPendingRegistrationAction: ActionBuilder[DataRequest, AnyContent] = {
+  def withPendingRegistrationAction: ActionBuilder[DataRequest, AnyContent] =
     identify andThen getData andThen dataRequiredForUserWhoCannotRegisterAction(RegistrationPending)
-  }
 
-  def withRegisterApplicationAcceptedAction: ActionBuilder[DataRequest, AnyContent] = {
+  def withRegisterApplicationAcceptedAction: ActionBuilder[DataRequest, AnyContent] =
     identify andThen getData andThen dataRequiredForUserWhoCannotRegisterAction(RegisterApplicationAccepted)
-  }
 
-  def withRequiresBusinessDetailsAction: ActionBuilder[DataRequestForEnterBusinessDetails, AnyContent] = {
+  def withRequiresBusinessDetailsAction: ActionBuilder[DataRequestForEnterBusinessDetails, AnyContent] =
     identify andThen getData andThen dataRequiredForRequiresBusinessDetailsAction
-  }
 
 }

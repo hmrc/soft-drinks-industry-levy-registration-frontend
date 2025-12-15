@@ -16,7 +16,7 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
   val path = "/registration-confirmation"
 
   given messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-  given messages: Messages = messagesApi.preferred(FakeRequest())
+  given messages: Messages       = messagesApi.preferred(FakeRequest())
 
   "GET " + path - {
     "when the user has submitted a registration request" - {
@@ -24,15 +24,19 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
         "with the expected content" - {
           s"when the user has selected they are a Large producer type" - {
             "and they have populated all pages including litres" in {
-              val userAnswers = userAnswerWithLitresForAllPagesIncludingOnesNotRequired(HowManyLitresGlobally.Large)
+              val userAnswers                                  = userAnswerWithLitresForAllPagesIncludingOnesNotRequired(HowManyLitresGlobally.Large)
                 .copy(submittedOn = Some(submittedDate))
               val createdSubscriptionAndAmountProducedGlobally = CreatedSubscriptionAndAmountProducedGlobally(
-                Subscription.generate(userAnswers, RosmWithUtr("0000001611", rosmRegistration)), HowManyLitresGlobally.Large)
-              build
-                .commonPrecondition
+                Subscription.generate(userAnswers, RosmWithUtr("0000001611", rosmRegistration)),
+                HowManyLitresGlobally.Large
+              )
+              build.commonPrecondition
 
               setAnswers(userAnswers)
-              addToCache(SDILSessionKeys.CREATED_SUBSCRIPTION_AND_AMOUNT_PRODUCED_GLOBALLY, createdSubscriptionAndAmountProducedGlobally)
+              addToCache(
+                SDILSessionKeys.CREATED_SUBSCRIPTION_AND_AMOUNT_PRODUCED_GLOBALLY,
+                createdSubscriptionAndAmountProducedGlobally
+              )
 
               WsTestClient.withClient { client =>
                 val result = createClientRequestGet(client, baseUrl + path)
@@ -51,7 +55,11 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
 
                   val operatePackagingSites = detailsSection.getElementsByClass("govuk-summary-list").get(1)
                   detailsSection.getElementsByTag("h2").get(1).text() mustBe "Own brands packaged at your own site"
-                  validateOperatePackagingSitesWithLitresSummaryList(operatePackagingSites, operatePackagingSiteLitres, false)
+                  validateOperatePackagingSitesWithLitresSummaryList(
+                    operatePackagingSites,
+                    operatePackagingSiteLitres,
+                    false
+                  )
 
                   val contractPacking = detailsSection.getElementsByClass("govuk-summary-list").get(2)
 
@@ -79,15 +87,19 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
             }
 
             "and they have only populated the required pages and have no litres" in {
-              val userAnswers = userAnswerWithAllNoAndNoPagesToFilterOut(HowManyLitresGlobally.Large)
+              val userAnswers                                  = userAnswerWithAllNoAndNoPagesToFilterOut(HowManyLitresGlobally.Large)
                 .copy(submittedOn = Some(submittedDate))
               val createdSubscriptionAndAmountProducedGlobally = CreatedSubscriptionAndAmountProducedGlobally(
-                Subscription.generate(userAnswers, RosmWithUtr("0000001611", rosmRegistration)), HowManyLitresGlobally.Large)
-              build
-                .commonPrecondition
+                Subscription.generate(userAnswers, RosmWithUtr("0000001611", rosmRegistration)),
+                HowManyLitresGlobally.Large
+              )
+              build.commonPrecondition
 
               setAnswers(userAnswers)
-              addToCache(SDILSessionKeys.CREATED_SUBSCRIPTION_AND_AMOUNT_PRODUCED_GLOBALLY, createdSubscriptionAndAmountProducedGlobally)
+              addToCache(
+                SDILSessionKeys.CREATED_SUBSCRIPTION_AND_AMOUNT_PRODUCED_GLOBALLY,
+                createdSubscriptionAndAmountProducedGlobally
+              )
 
               WsTestClient.withClient { client =>
                 val result = createClientRequestGet(client, baseUrl + path)
@@ -127,22 +139,27 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
 
                   val siteDetailsSummaryListItem = detailsSection.getElementsByClass("govuk-summary-list").get(6)
                   detailsSection.getElementsByTag("h2").get(6).text() mustBe "UK site details"
-                  validateSiteDetailsSummary(siteDetailsSummaryListItem, 0, 0, false)                }
+                  validateSiteDetailsSummary(siteDetailsSummaryListItem, 0, 0, false)
+                }
               }
             }
           }
 
           s"when the user has selected they are a Small producer type" - {
             "and they have populated all pages including litres" in {
-              val userAnswers = userAnswerWithLitresForAllPagesIncludingOnesNotRequired(HowManyLitresGlobally.Small)
+              val userAnswers                                  = userAnswerWithLitresForAllPagesIncludingOnesNotRequired(HowManyLitresGlobally.Small)
                 .copy(submittedOn = Some(submittedDate))
               val createdSubscriptionAndAmountProducedGlobally = CreatedSubscriptionAndAmountProducedGlobally(
-                Subscription.generate(userAnswers, RosmWithUtr("0000001611", rosmRegistration)), HowManyLitresGlobally.Small)
-              build
-                .commonPrecondition
+                Subscription.generate(userAnswers, RosmWithUtr("0000001611", rosmRegistration)),
+                HowManyLitresGlobally.Small
+              )
+              build.commonPrecondition
 
               setAnswers(userAnswers)
-              addToCache(SDILSessionKeys.CREATED_SUBSCRIPTION_AND_AMOUNT_PRODUCED_GLOBALLY, createdSubscriptionAndAmountProducedGlobally)
+              addToCache(
+                SDILSessionKeys.CREATED_SUBSCRIPTION_AND_AMOUNT_PRODUCED_GLOBALLY,
+                createdSubscriptionAndAmountProducedGlobally
+              )
 
               WsTestClient.withClient { client =>
                 val result = createClientRequestGet(client, baseUrl + path)
@@ -165,7 +182,11 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
 
                   val operatePackagingSites = detailsSection.getElementsByClass("govuk-summary-list").get(2)
                   detailsSection.getElementsByTag("h2").get(2).text() mustBe "Own brands packaged at your own site"
-                  validateOperatePackagingSitesWithLitresSummaryList(operatePackagingSites, operatePackagingSiteLitres, false)
+                  validateOperatePackagingSitesWithLitresSummaryList(
+                    operatePackagingSites,
+                    operatePackagingSiteLitres,
+                    false
+                  )
 
                   val contractPacking = detailsSection.getElementsByClass("govuk-summary-list").get(3)
                   detailsSection.getElementsByTag("h2").get(3).text() mustBe "Contract packed at your own site"
@@ -191,15 +212,19 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
             }
 
             "and they have only populated the required pages and have no litres" in {
-              val userAnswers = userAnswerWithAllNoAndNoPagesToFilterOut(HowManyLitresGlobally.Small)
+              val userAnswers                                  = userAnswerWithAllNoAndNoPagesToFilterOut(HowManyLitresGlobally.Small)
                 .copy(submittedOn = Some(submittedDate))
               val createdSubscriptionAndAmountProducedGlobally = CreatedSubscriptionAndAmountProducedGlobally(
-                Subscription.generate(userAnswers, RosmWithUtr("0000001611", rosmRegistration)), HowManyLitresGlobally.Small)
-              build
-                .commonPrecondition
+                Subscription.generate(userAnswers, RosmWithUtr("0000001611", rosmRegistration)),
+                HowManyLitresGlobally.Small
+              )
+              build.commonPrecondition
 
               setAnswers(userAnswers)
-              addToCache(SDILSessionKeys.CREATED_SUBSCRIPTION_AND_AMOUNT_PRODUCED_GLOBALLY, createdSubscriptionAndAmountProducedGlobally)
+              addToCache(
+                SDILSessionKeys.CREATED_SUBSCRIPTION_AND_AMOUNT_PRODUCED_GLOBALLY,
+                createdSubscriptionAndAmountProducedGlobally
+              )
 
               WsTestClient.withClient { client =>
                 val result = createClientRequestGet(client, baseUrl + path)
@@ -214,7 +239,13 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
 
                   val businessDetails = detailsSection.getElementsByClass("govuk-summary-list").first()
                   detailsSection.getElementsByTag("h2").first().text() mustBe "Business details"
-                  validateBusinessDetailsSummaryList(businessDetails, "0000001611", newAddress, HowManyLitresGlobally.Small, false)
+                  validateBusinessDetailsSummaryList(
+                    businessDetails,
+                    "0000001611",
+                    newAddress,
+                    HowManyLitresGlobally.Small,
+                    false
+                  )
 
                   val copackee = detailsSection.getElementsByClass("govuk-summary-list").get(1)
                   detailsSection.getElementsByTag("h2").get(1).text() mustBe "Use third party packagers"
@@ -244,15 +275,19 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
 
           s"when the user has selected they are a None producer type" - {
             "and they have populated all pages including litres" in {
-              val userAnswers = userAnswerWithLitresForAllPagesIncludingOnesNotRequired(HowManyLitresGlobally.None)
+              val userAnswers                                  = userAnswerWithLitresForAllPagesIncludingOnesNotRequired(HowManyLitresGlobally.None)
                 .copy(submittedOn = Some(submittedDate))
               val createdSubscriptionAndAmountProducedGlobally = CreatedSubscriptionAndAmountProducedGlobally(
-                Subscription.generate(userAnswers, RosmWithUtr("0000001611", rosmRegistration)), HowManyLitresGlobally.None)
-              build
-                .commonPrecondition
+                Subscription.generate(userAnswers, RosmWithUtr("0000001611", rosmRegistration)),
+                HowManyLitresGlobally.None
+              )
+              build.commonPrecondition
 
               setAnswers(userAnswers)
-              addToCache(SDILSessionKeys.CREATED_SUBSCRIPTION_AND_AMOUNT_PRODUCED_GLOBALLY, createdSubscriptionAndAmountProducedGlobally)
+              addToCache(
+                SDILSessionKeys.CREATED_SUBSCRIPTION_AND_AMOUNT_PRODUCED_GLOBALLY,
+                createdSubscriptionAndAmountProducedGlobally
+              )
 
               WsTestClient.withClient { client =>
                 val result = createClientRequestGet(client, baseUrl + path)
@@ -267,7 +302,13 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
 
                   val businessDetails = detailsSection.getElementsByClass("govuk-summary-list").first()
                   detailsSection.getElementsByTag("h2").first().text() mustBe "Business details"
-                  validateBusinessDetailsSummaryList(businessDetails, "0000001611", rosmAddress, HowManyLitresGlobally.None, false)
+                  validateBusinessDetailsSummaryList(
+                    businessDetails,
+                    "0000001611",
+                    rosmAddress,
+                    HowManyLitresGlobally.None,
+                    false
+                  )
 
                   val contractPacking = detailsSection.getElementsByClass("govuk-summary-list").get(1)
                   detailsSection.getElementsByTag("h2").get(1).text() mustBe "Contract packed at your own site"
@@ -292,15 +333,19 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
               }
             }
             "and they have only populated the required pages and have no litres" in {
-              val userAnswers = userAnswerWithAllNoAndNoPagesToFilterOut(HowManyLitresGlobally.None)
+              val userAnswers                                  = userAnswerWithAllNoAndNoPagesToFilterOut(HowManyLitresGlobally.None)
                 .copy(submittedOn = Some(submittedDate))
               val createdSubscriptionAndAmountProducedGlobally = CreatedSubscriptionAndAmountProducedGlobally(
-                Subscription.generate(userAnswers, RosmWithUtr("0000001611", rosmRegistration)), HowManyLitresGlobally.None)
-              build
-                .commonPrecondition
+                Subscription.generate(userAnswers, RosmWithUtr("0000001611", rosmRegistration)),
+                HowManyLitresGlobally.None
+              )
+              build.commonPrecondition
 
               setAnswers(userAnswers)
-              addToCache(SDILSessionKeys.CREATED_SUBSCRIPTION_AND_AMOUNT_PRODUCED_GLOBALLY, createdSubscriptionAndAmountProducedGlobally)
+              addToCache(
+                SDILSessionKeys.CREATED_SUBSCRIPTION_AND_AMOUNT_PRODUCED_GLOBALLY,
+                createdSubscriptionAndAmountProducedGlobally
+              )
 
               WsTestClient.withClient { client =>
                 val result = createClientRequestGet(client, baseUrl + path)
@@ -315,7 +360,13 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
 
                   val businessDetails = detailsSection.getElementsByClass("govuk-summary-list").first()
                   detailsSection.getElementsByTag("h2").first().text() mustBe "Business details"
-                  validateBusinessDetailsSummaryList(businessDetails, "0000001611", newAddress, HowManyLitresGlobally.None, false)
+                  validateBusinessDetailsSummaryList(
+                    businessDetails,
+                    "0000001611",
+                    newAddress,
+                    HowManyLitresGlobally.None,
+                    false
+                  )
 
                   val contractPacking = detailsSection.getElementsByClass("govuk-summary-list").get(1)
                   detailsSection.getElementsByTag("h2").get(1).text() mustBe "Contract packed at your own site"
@@ -346,8 +397,7 @@ class RegistrationConfirmationControllerISpec extends RegSummaryISpecHelper {
 
     "the user has not submitted a registration request" - {
       "should redirect to registration start" in {
-        build
-          .commonPrecondition
+        build.commonPrecondition
 
         val userAnswers = userAnswersWithLitres.copy(submittedOn = None)
 

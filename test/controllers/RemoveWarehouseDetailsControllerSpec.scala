@@ -41,13 +41,14 @@ class RemoveWarehouseDetailsControllerSpec extends SpecBase with MockitoSugar wi
 
   def onwardRoute: Call = Call("GET", "/foo")
 
-  val formProvider = new RemoveWarehouseDetailsFormProvider()
+  val formProvider        = new RemoveWarehouseDetailsFormProvider()
   val form: Form[Boolean] = formProvider()
 
-  val indexOfWarehouseToBeRemoved: String = "foobar"
-  lazy val removeWarehouseDetailsRoute: String = routes.RemoveWarehouseDetailsController.onPageLoad(NormalMode, indexOfWarehouseToBeRemoved).url
-  val addressOfWarehouse: UkAddress = UkAddress(List("foo"),"bar", None)
-  val userAnswersWithWarehouse: UserAnswers = emptyUserAnswers
+  val indexOfWarehouseToBeRemoved: String      = "foobar"
+  lazy val removeWarehouseDetailsRoute: String =
+    routes.RemoveWarehouseDetailsController.onPageLoad(NormalMode, indexOfWarehouseToBeRemoved).url
+  val addressOfWarehouse: UkAddress            = UkAddress(List("foo"), "bar", None)
+  val userAnswersWithWarehouse: UserAnswers    = emptyUserAnswers
     .copy(warehouseList = Map(indexOfWarehouseToBeRemoved -> Warehouse(aTradingName, addressOfWarehouse)))
 
   "RemoveWarehouseDetails Controller" - {
@@ -65,8 +66,12 @@ class RemoveWarehouseDetailsControllerSpec extends SpecBase with MockitoSugar wi
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual
-          view(form, NormalMode, AddressFormattingHelper.addressFormatting(addressOfWarehouse, aTradingName),
-            indexOfWarehouseToBeRemoved)(using request, messages(application)).toString
+          view(
+            form,
+            NormalMode,
+            AddressFormattingHelper.addressFormatting(addressOfWarehouse, aTradingName),
+            indexOfWarehouseToBeRemoved
+          )(using request, messages(application)).toString
       }
     }
 
@@ -77,13 +82,14 @@ class RemoveWarehouseDetailsControllerSpec extends SpecBase with MockitoSugar wi
       running(application) {
         withCaptureOfLoggingFrom(application.injector.instanceOf[GenericLogger].logger) { events =>
           val request = FakeRequest(GET, routes.RemoveWarehouseDetailsController.onPageLoad(NormalMode, ref).url)
-          val result = await(route(application, request).value)
-          events.collectFirst {
-            case event =>
+          val result  = await(route(application, request).value)
+          events
+            .collectFirst { case event =>
               event.getLevel.levelStr mustBe "WARN"
               event.getMessage mustEqual s"Warehouse index $ref doesn't exist ${userAnswersWithWarehouse.id} warehouse list length:" +
                 s"${userAnswersWithWarehouse.warehouseList.size}"
-          }.getOrElse(fail("No logging captured"))
+            }
+            .getOrElse(fail("No logging captured"))
 
           result.header.status mustEqual SEE_OTHER
         }
@@ -123,13 +129,14 @@ class RemoveWarehouseDetailsControllerSpec extends SpecBase with MockitoSugar wi
       running(application) {
         withCaptureOfLoggingFrom(application.injector.instanceOf[GenericLogger].logger) { events =>
           val request = FakeRequest(POST, routes.RemoveWarehouseDetailsController.onSubmit(NormalMode, ref).url)
-          val result = await(route(application, request).value)
-          events.collectFirst {
-            case event =>
+          val result  = await(route(application, request).value)
+          events
+            .collectFirst { case event =>
               event.getLevel.levelStr mustBe "WARN"
               event.getMessage mustEqual s"Warehouse index $ref doesn't exist ${userAnswersWithWarehouse.id} warehouse list length:" +
                 s"${userAnswersWithWarehouse.warehouseList.size}"
-          }.getOrElse(fail("No logging captured"))
+            }
+            .getOrElse(fail("No logging captured"))
 
           result.header.status mustEqual SEE_OTHER
         }
@@ -153,8 +160,12 @@ class RemoveWarehouseDetailsControllerSpec extends SpecBase with MockitoSugar wi
 
         status(result) mustEqual BAD_REQUEST
         contentAsString(result) mustEqual
-          view(boundForm, NormalMode, AddressFormattingHelper.addressFormatting(addressOfWarehouse, aTradingName),
-            indexOfWarehouseToBeRemoved)(using request, messages(application)).toString
+          view(
+            boundForm,
+            NormalMode,
+            AddressFormattingHelper.addressFormatting(addressOfWarehouse, aTradingName),
+            indexOfWarehouseToBeRemoved
+          )(using request, messages(application)).toString
       }
     }
 
@@ -195,22 +206,24 @@ class RemoveWarehouseDetailsControllerSpec extends SpecBase with MockitoSugar wi
       val application =
         applicationBuilder(userAnswers = Some(userAnswersWithWarehouse))
           .overrides(
-            bind[Navigator].toInstance(new FakeNavigator (onwardRoute)),
+            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionService].toInstance(mockSessionService)
-          ).build()
+          )
+          .build()
 
       running(application) {
         withCaptureOfLoggingFrom(application.injector.instanceOf[GenericLogger].logger) { events =>
           val request =
             FakeRequest(POST, removeWarehouseDetailsRoute)
-          .withFormUrlEncodedBody(("value", "true"))
+              .withFormUrlEncodedBody(("value", "true"))
 
           await(route(application, request).value)
-          events.collectFirst {
-            case event =>
+          events
+            .collectFirst { case event =>
               event.getLevel.levelStr mustBe "ERROR"
               event.getMessage mustEqual "Failed to set value in session repository while attempting set on removeWarehouseDetails"
-          }.getOrElse(fail("No logging captured"))
+            }
+            .getOrElse(fail("No logging captured"))
         }
       }
     }

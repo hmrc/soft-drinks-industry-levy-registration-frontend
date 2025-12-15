@@ -17,8 +17,8 @@
 package controllers
 
 import controllers.actions._
-import play.api.i18n.{ I18nSupport, MessagesApi }
-import play.api.mvc.{ Action, AnyContent, MessagesControllerComponents }
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.AddressFormattingHelper
 import views.html.AlreadyRegisteredView
@@ -29,13 +29,14 @@ class AlreadyRegisteredController @Inject() (
   override val messagesApi: MessagesApi,
   controllerActions: ControllerActions,
   val controllerComponents: MessagesControllerComponents,
-  view: AlreadyRegisteredView) extends FrontendBaseController with I18nSupport {
+  view: AlreadyRegisteredView
+) extends FrontendBaseController
+    with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = controllerActions.withAlreadyRegisteredAction {
-    implicit request =>
-
-      val rosmRegistration = request.rosmWithUtr.rosmRegistration
-      val formattedAddress = AddressFormattingHelper.formatBusinessAddress(rosmRegistration.address, Some(rosmRegistration.organisationName))
-      Ok(view(request.rosmWithUtr.utr, formattedAddress))
+  def onPageLoad: Action[AnyContent] = controllerActions.withAlreadyRegisteredAction { implicit request =>
+    val rosmRegistration = request.rosmWithUtr.rosmRegistration
+    val formattedAddress =
+      AddressFormattingHelper.formatBusinessAddress(rosmRegistration.address, Some(rosmRegistration.organisationName))
+    Ok(view(request.rosmWithUtr.utr, formattedAddress))
   }
 }

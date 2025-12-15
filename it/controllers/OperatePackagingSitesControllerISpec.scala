@@ -12,16 +12,15 @@ import play.api.test.{FakeRequest, WsTestClient}
 class OperatePackagingSitesControllerISpec extends ControllerITTestHelper {
 
   val normalRoutePath = "/operate-packaging-sites"
-  val checkRoutePath = "/change-operate-packaging-sites"
+  val checkRoutePath  = "/change-operate-packaging-sites"
 
   given messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-  given messages: Messages = messagesApi.preferred(FakeRequest())
-  
+  given messages: Messages       = messagesApi.preferred(FakeRequest())
+
   "GET " + normalRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the OperatePackagingSites page with no data populated" in {
-        build
-          .commonPrecondition
+        build.commonPrecondition
 
         setAnswers(emptyUserAnswers)
 
@@ -46,8 +45,7 @@ class OperatePackagingSitesControllerISpec extends ControllerITTestHelper {
     userAnswersForOperatePackagingSitesPage.foreach { case (key, userAnswers) =>
       s"when the userAnswers contains data for the page with " + key + " selected" - {
         s"should return OK and render the page with " + key + " radio checked" in {
-          build
-            .commonPrecondition
+          build.commonPrecondition
 
           setAnswers(userAnswers)
 
@@ -78,8 +76,7 @@ class OperatePackagingSitesControllerISpec extends ControllerITTestHelper {
   s"GET " + checkRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the OperatePackagingSites page with no data populated" in {
-        build
-          .commonPrecondition
+        build.commonPrecondition
 
         setAnswers(emptyUserAnswers)
 
@@ -104,8 +101,7 @@ class OperatePackagingSitesControllerISpec extends ControllerITTestHelper {
     userAnswersForOperatePackagingSitesPage.foreach { case (key, userAnswers) =>
       s"when the userAnswers contains data for the page with " + key + " selected" - {
         s"should return OK and render the page with " + key + " radio checked" in {
-          build
-            .commonPrecondition
+          build.commonPrecondition
 
           setAnswers(userAnswers)
 
@@ -139,25 +135,27 @@ class OperatePackagingSitesControllerISpec extends ControllerITTestHelper {
       "when the user selects " + key - {
         "should update the session with the new value and redirect to the OperatePackagingSites/ContractPacker controller" - {
           "when the session contains no data for page" in {
-            build
-              .commonPrecondition
+            build.commonPrecondition
 
             setAnswers(emptyUserAnswers)
             WsTestClient.withClient { client =>
               val yesSelected = key == "yes"
-              val result = createClientRequestPOST(
-                client, baseUrl + normalRoutePath, Json.obj("value" -> yesSelected.toString)
+              val result      = createClientRequestPOST(
+                client,
+                baseUrl + normalRoutePath,
+                Json.obj("value" -> yesSelected.toString)
               )
 
               whenReady(result) { res =>
                 res.status mustBe 303
-                val expectedLocation = if (yesSelected) {
+                val expectedLocation  = if (yesSelected) {
                   routes.HowManyOperatePackagingSitesController.onPageLoad(NormalMode).url
                 } else {
                   routes.ContractPackingController.onPageLoad(NormalMode).url
                 }
                 res.header(HeaderNames.LOCATION) mustBe Some(expectedLocation)
-                val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(OperatePackagingSitesPage))
+                val dataStoredForPage =
+                  getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(OperatePackagingSitesPage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe yesSelected
               }
@@ -165,25 +163,27 @@ class OperatePackagingSitesControllerISpec extends ControllerITTestHelper {
           }
 
           "when the session already contains data for page" in {
-            build
-              .commonPrecondition
+            build.commonPrecondition
 
             setAnswers(userAnswers)
             WsTestClient.withClient { client =>
               val yesSelected = key == "yes"
-              val result = createClientRequestPOST(
-                client, baseUrl + normalRoutePath, Json.obj("value" -> yesSelected.toString)
+              val result      = createClientRequestPOST(
+                client,
+                baseUrl + normalRoutePath,
+                Json.obj("value" -> yesSelected.toString)
               )
 
               whenReady(result) { res =>
                 res.status mustBe 303
-                val expectedLocation = if (yesSelected) {
+                val expectedLocation  = if (yesSelected) {
                   routes.HowManyOperatePackagingSitesController.onPageLoad(NormalMode).url
                 } else {
                   routes.ContractPackingController.onPageLoad(NormalMode).url
                 }
                 res.header(HeaderNames.LOCATION) mustBe Some(expectedLocation)
-                val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(OperatePackagingSitesPage))
+                val dataStoredForPage =
+                  getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(OperatePackagingSitesPage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe yesSelected
               }
@@ -195,20 +195,22 @@ class OperatePackagingSitesControllerISpec extends ControllerITTestHelper {
 
     "when the user does not select yes or no" - {
       "should return 400 with required error" in {
-        build
-          .commonPrecondition
+        build.commonPrecondition
 
         setAnswers(emptyUserAnswers)
         WsTestClient.withClient { client =>
           val result = createClientRequestPOST(
-            client, baseUrl + normalRoutePath, Json.obj("value" -> "")
+            client,
+            baseUrl + normalRoutePath,
+            Json.obj("value" -> "")
           )
 
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
             page.title must include("Error: " + messages("operatePackagingSites" + ".title"))
-            val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
+            val errorSummary = page
+              .getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")
@@ -229,24 +231,26 @@ class OperatePackagingSitesControllerISpec extends ControllerITTestHelper {
         val yesSelected = key == "yes"
         "should update the session with the new value and redirect to the checkAnswers controller" - {
           "when the session contains no data for page" in {
-            build
-              .commonPrecondition
+            build.commonPrecondition
 
             setAnswers(emptyUserAnswers)
             WsTestClient.withClient { client =>
               val result = createClientRequestPOST(
-                client, baseUrl + checkRoutePath, Json.obj("value" -> yesSelected.toString)
+                client,
+                baseUrl + checkRoutePath,
+                Json.obj("value" -> yesSelected.toString)
               )
 
               whenReady(result) { res =>
                 res.status mustBe 303
-                val expectedLocation = if(yesSelected) {
+                val expectedLocation  = if (yesSelected) {
                   routes.HowManyOperatePackagingSitesController.onPageLoad(CheckMode).url
                 } else {
                   routes.CheckYourAnswersController.onPageLoad.url
                 }
                 res.header(HeaderNames.LOCATION) mustBe Some(expectedLocation)
-                val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(OperatePackagingSitesPage))
+                val dataStoredForPage =
+                  getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(OperatePackagingSitesPage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe yesSelected
               }
@@ -254,25 +258,27 @@ class OperatePackagingSitesControllerISpec extends ControllerITTestHelper {
           }
 
           "when the session already contains data for page" in {
-            build
-              .commonPrecondition
+            build.commonPrecondition
 
             setAnswers(userAnswers)
             WsTestClient.withClient { client =>
               val yesSelected = key == "yes"
-              val result = createClientRequestPOST(
-                client, baseUrl + checkRoutePath, Json.obj("value" -> yesSelected.toString)
+              val result      = createClientRequestPOST(
+                client,
+                baseUrl + checkRoutePath,
+                Json.obj("value" -> yesSelected.toString)
               )
 
               whenReady(result) { res =>
                 res.status mustBe 303
-                val expectedLocation = if (yesSelected) {
+                val expectedLocation  = if (yesSelected) {
                   routes.HowManyOperatePackagingSitesController.onPageLoad(CheckMode).url
                 } else {
                   routes.CheckYourAnswersController.onPageLoad.url
                 }
                 res.header(HeaderNames.LOCATION) mustBe Some(expectedLocation)
-                val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(OperatePackagingSitesPage))
+                val dataStoredForPage =
+                  getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(OperatePackagingSitesPage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe yesSelected
               }
@@ -284,20 +290,22 @@ class OperatePackagingSitesControllerISpec extends ControllerITTestHelper {
 
     "when the user does not select yes or no" - {
       "should return 400 with required error" in {
-        build
-          .commonPrecondition
+        build.commonPrecondition
 
         setAnswers(emptyUserAnswers)
         WsTestClient.withClient { client =>
           val result = createClientRequestPOST(
-            client, baseUrl + checkRoutePath, Json.obj("value" -> "")
+            client,
+            baseUrl + checkRoutePath,
+            Json.obj("value" -> "")
           )
 
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
             page.title must include("Error: " + messages("operatePackagingSites" + ".title"))
-            val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
+            val errorSummary = page
+              .getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")
@@ -313,24 +321,31 @@ class OperatePackagingSitesControllerISpec extends ControllerITTestHelper {
   }
 
   "POST must clear litres data when the session already contained data but no is selected" in {
-    build
-      .commonPrecondition
+    build.commonPrecondition
 
     val previouslyFilledAnswers =
-      UserAnswers("some-id", RegisterState.RegisterWithAuthUTR, Json.obj(
-        OperatePackagingSitesPage.toString -> true,
-        HowManyOperatePackagingSitesPage.toString -> Json.obj("lowBand" -> "123", "highBand" -> "123")))
+      UserAnswers(
+        "some-id",
+        RegisterState.RegisterWithAuthUTR,
+        Json.obj(
+          OperatePackagingSitesPage.toString        -> true,
+          HowManyOperatePackagingSitesPage.toString -> Json.obj("lowBand" -> "123", "highBand" -> "123")
+        )
+      )
 
     setAnswers(previouslyFilledAnswers)
     WsTestClient.withClient { client =>
       val result = createClientRequestPOST(
-        client, baseUrl + normalRoutePath, Json.obj("value" -> false)
+        client,
+        baseUrl + normalRoutePath,
+        Json.obj("value" -> false)
       )
 
       whenReady(result) { res =>
         res.status mustBe 303
         res.header(HeaderNames.LOCATION) mustBe Some(routes.ContractPackingController.onPageLoad(NormalMode).url)
-        val litresData = getAnswers(previouslyFilledAnswers.id).fold[Option[LitresInBands]](None)(_.get(HowManyOperatePackagingSitesPage))
+        val litresData = getAnswers(previouslyFilledAnswers.id)
+          .fold[Option[LitresInBands]](None)(_.get(HowManyOperatePackagingSitesPage))
         litresData mustBe None
       }
     }

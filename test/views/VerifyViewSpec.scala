@@ -27,35 +27,37 @@ import views.html.VerifyView
 
 class VerifyViewSpec extends ViewSpecHelper {
 
-  val view = application.injector.instanceOf[VerifyView]
-  val formProvider = new VerifyFormProvider
-  val form = formProvider.apply()
+  val view                         = application.injector.instanceOf[VerifyView]
+  val formProvider                 = new VerifyFormProvider
+  val form                         = formProvider.apply()
   implicit val request: Request[?] = FakeRequest()
 
   object Selectors {
-    val heading = "govuk-fieldset__heading"
-    val legend = "govuk-fieldset__legend  govuk-fieldset__legend--m"
-    val radios = "govuk-radios"
-    val radiosInput = "govuk-radios__input"
-    val radiosItems = "govuk-radios__item"
-    val radiosLables = "govuk-label govuk-radios__label"
-    val body = "govuk-body"
+    val heading           = "govuk-fieldset__heading"
+    val legend            = "govuk-fieldset__legend  govuk-fieldset__legend--m"
+    val radios            = "govuk-radios"
+    val radiosInput       = "govuk-radios__input"
+    val radiosItems       = "govuk-radios__item"
+    val radiosLables      = "govuk-label govuk-radios__label"
+    val body              = "govuk-body"
     val errorSummaryTitle = "govuk-error-summary__title"
-    val errorSummaryList = "govuk-list govuk-error-summary__list"
-    val button = "govuk-button"
-    val form = "form"
+    val errorSummaryList  = "govuk-list govuk-error-summary__list"
+    val button            = "govuk-button"
+    val form              = "form"
   }
 
   "View" - {
-    val address = HtmlContent("foo")
-    val utr = "bar"
-    val html = view(form, NormalMode, utr, address)(using request, messages(application))
+    val address  = HtmlContent("foo")
+    val utr      = "bar"
+    val html     = view(form, NormalMode, utr, address)(using request, messages(application))
     val document = doc(html)
     "should contain the expected title" in {
       document.title() mustBe "Your business details - Soft Drinks Industry Levy - GOV.UK"
     }
     "should include the expected subtext" in {
-      document.getElementById("subText").text() mustBe s"These are the details we hold for Unique Taxpayer Reference (UTR) $utr:"
+      document
+        .getElementById("subText")
+        .text() mustBe s"These are the details we hold for Unique Taxpayer Reference (UTR) $utr:"
     }
     "should include the expected utr" in {
       document.getElementById("utrField").text() mustBe utr + ":"
@@ -67,7 +69,9 @@ class VerifyViewSpec extends ViewSpecHelper {
     "should not include a legend with the expected heading" in {
       val legend = document.getElementsByClass(Selectors.legend)
       legend.size() mustBe 1
-      legend.get(0).getElementsByClass(Selectors.legend).text() mustEqual Messages("Is this the business you want to register?")
+      legend.get(0).getElementsByClass(Selectors.legend).text() mustEqual Messages(
+        "Is this the business you want to register?"
+      )
     }
 
     "when the form is not preoccupied and has no errors" - {
@@ -85,7 +89,7 @@ class VerifyViewSpec extends ViewSpecHelper {
             radio1
               .getElementsByClass(Selectors.radiosLables)
               .text() mustBe Messages("verify." + radio.toString)
-            val input = radio1
+            val input  = radio1
               .getElementsByClass(Selectors.radiosInput)
             input.attr("value") mustBe radio.toString
             input.hasAttr("checked") mustBe false
@@ -95,7 +99,7 @@ class VerifyViewSpec extends ViewSpecHelper {
     }
 
     Verify.values.foreach { radio =>
-      val html1 = view(form.fill(radio), NormalMode, utr, address)(using request, messages(application))
+      val html1     = view(form.fill(radio), NormalMode, utr, address)(using request, messages(application))
       val document1 = doc(html1)
 
       s"when the form is preoccupied with " + radio.toString + "selected and has no errors" - {
@@ -109,7 +113,7 @@ class VerifyViewSpec extends ViewSpecHelper {
                 radiobuttons1
                   .getElementsByClass(Selectors.radiosLables)
                   .text() mustBe Messages("verify." + radio1.toString)
-                val input = radiobuttons1
+                val input         = radiobuttons1
                   .getElementsByClass(Selectors.radiosInput)
                 input.attr("value") mustBe radio1.toString
                 input.hasAttr("checked") mustBe true
@@ -121,7 +125,7 @@ class VerifyViewSpec extends ViewSpecHelper {
                 radiobuttons1
                   .getElementsByClass(Selectors.radiosLables)
                   .text() mustBe Messages("verify." + radio1.toString)
-                val input = radiobuttons1
+                val input         = radiobuttons1
                   .getElementsByClass(Selectors.radiosInput)
                 input.attr("value") mustBe radio1.toString
                 input.hasAttr("checked") mustBe false
@@ -138,24 +142,29 @@ class VerifyViewSpec extends ViewSpecHelper {
 
     "contains a form with the correct action" - {
       "when in CheckMode" in {
-        val htmlAllSelected = view(form.fill(Verify.values.head), CheckMode, utr, address)(using request, messages(application))
+        val htmlAllSelected     =
+          view(form.fill(Verify.values.head), CheckMode, utr, address)(using request, messages(application))
         val documentAllSelected = doc(htmlAllSelected)
 
-        documentAllSelected.select(Selectors.form)
+        documentAllSelected
+          .select(Selectors.form)
           .attr("action") mustEqual routes.VerifyController.onSubmit(CheckMode).url
       }
 
       "when in NormalMode" in {
-        val htmlAllSelected = view(form.fill(Verify.values.head), NormalMode, utr, address)(using request, messages(application))
+        val htmlAllSelected     =
+          view(form.fill(Verify.values.head), NormalMode, utr, address)(using request, messages(application))
         val documentAllSelected = doc(htmlAllSelected)
 
-        documentAllSelected.select(Selectors.form)
+        documentAllSelected
+          .select(Selectors.form)
           .attr("action") mustEqual routes.VerifyController.onSubmit(NormalMode).url
       }
     }
 
     "when there are form errors" - {
-      val htmlWithErrors = view(form.bind(Map("value" -> "")), NormalMode, utr, address)(using request, messages(application))
+      val htmlWithErrors     =
+        view(form.bind(Map("value" -> "")), NormalMode, utr, address)(using request, messages(application))
       val documentWithErrors = doc(htmlWithErrors)
 
       "should have a title containing error" in {

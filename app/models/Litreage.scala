@@ -16,18 +16,18 @@
 
 package models
 
-import play.api.libs.json.{ Json, OFormat }
+import play.api.libs.json.{Json, OFormat}
 
 case class Litreage(lower: Long, upper: Long) {
 
-  def isEmpty = total == 0
+  def isEmpty  = total == 0
   def nonEmpty = total != 0
-  def total = (lower + upper)
+  def total    = lower + upper
 }
 
 object Litreage {
   implicit val format: OFormat[Litreage] = Json.format[Litreage]
 
-  def fromLitresInBands(litresInBands: LitresInBands): Litreage = Litreage(
-    lower = litresInBands.lowBand, upper = litresInBands.highBand)
+  def fromLitresInBands(litresInBands: LitresInBands): Litreage =
+    Litreage(lower = litresInBands.lowBand, upper = litresInBands.highBand)
 }

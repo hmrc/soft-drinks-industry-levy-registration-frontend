@@ -36,8 +36,8 @@ import scala.concurrent.Future
 
 class RegistrationOrchestratorSpec extends RegistrationSubscriptionHelper with MockitoSugar {
 
-  val mockSDILConnector = mock[SoftDrinksIndustryLevyConnector]
-  val mockSessionService = mock[SessionService]
+  val mockSDILConnector    = mock[SoftDrinksIndustryLevyConnector]
+  val mockSessionService   = mock[SessionService]
   val mockSdilSessionCache = mock[SDILSessionCache]
 
   val orchestrator = new RegistrationOrchestrator(mockSDILConnector, mockSessionService, mockSdilSessionCache, logger)
@@ -57,18 +57,15 @@ class RegistrationOrchestratorSpec extends RegistrationSubscriptionHelper with M
     } else {
       RegisterWithAuthUTR
     }
-    Map(
-      Pending -> RegistrationPending,
-      Registered -> RegisterApplicationAccepted,
-      DoesNotExist -> registerWithUTR)
+    Map(Pending -> RegistrationPending, Registered -> RegisterApplicationAccepted, DoesNotExist -> registerWithUTR)
   }
 
   "handleRegistrationRequest" - {
     "when the user has useranswers in the database" - {
       "that contains a submittedOn time" - {
         "should return RegistrationAlreadySubmitted error" in {
-          when(mockSessionService.get(identifier)).thenReturn(
-            createSuccessRegistrationResult(Some(emptyUserAnswers.copy(submittedOn = Some(Instant.now)))))
+          when(mockSessionService.get(identifier))
+            .thenReturn(createSuccessRegistrationResult(Some(emptyUserAnswers.copy(submittedOn = Some(Instant.now)))))
 
           val res = orchestrator.handleRegistrationRequest(using identifyRequestWithAuthUtrAndRegistered, hc, ec)
 
@@ -104,7 +101,8 @@ class RegistrationOrchestratorSpec extends RegistrationSubscriptionHelper with M
             "should return AlreadyRegistered" in {
 
               when(mockSessionService.get(identifier)).thenReturn(createSuccessRegistrationResult(None))
-              when(mockSDILConnector.retreiveRosmSubscription(utr, identifier)(using hc)).thenReturn(createSuccessRegistrationResult(rosmRegistration))
+              when(mockSDILConnector.retreiveRosmSubscription(utr, identifier)(using hc))
+                .thenReturn(createSuccessRegistrationResult(rosmRegistration))
               when(mockSessionService.set(any())).thenReturn(createSuccessRegistrationResult(true))
 
               val res = orchestrator.handleRegistrationRequest(using identifyRequestWithAuthUtrAndRegistered, hc, ec)
@@ -114,32 +112,36 @@ class RegistrationOrchestratorSpec extends RegistrationSubscriptionHelper with M
               }
             }
           }
-          expectedRegStateForSubscriptionStatus(false).foreach {
-            case (subscriptionStatus, expectedState) =>
-              s"and has a subscription status of $subscriptionStatus" - {
-                "for a user that is not registered" - {
-                  s"should return $expectedState" in {
-                    when(mockSessionService.get(identifier)).thenReturn(createSuccessRegistrationResult(None))
-                    when(mockSDILConnector.retreiveRosmSubscription(utr, identifier)(using hc)).thenReturn(createSuccessRegistrationResult(rosmRegistration))
-                    when(mockSDILConnector.checkPendingQueue(utr)(using hc)).thenReturn(createSuccessRegistrationResult(subscriptionStatus))
-                    when(mockSessionService.set(any())).thenReturn(createSuccessRegistrationResult(true))
+          expectedRegStateForSubscriptionStatus(false).foreach { case (subscriptionStatus, expectedState) =>
+            s"and has a subscription status of $subscriptionStatus" - {
+              "for a user that is not registered" - {
+                s"should return $expectedState" in {
+                  when(mockSessionService.get(identifier)).thenReturn(createSuccessRegistrationResult(None))
+                  when(mockSDILConnector.retreiveRosmSubscription(utr, identifier)(using hc))
+                    .thenReturn(createSuccessRegistrationResult(rosmRegistration))
+                  when(mockSDILConnector.checkPendingQueue(utr)(using hc))
+                    .thenReturn(createSuccessRegistrationResult(subscriptionStatus))
+                  when(mockSessionService.set(any())).thenReturn(createSuccessRegistrationResult(true))
 
-                    val res = orchestrator.handleRegistrationRequest(using identifyRequestWithAuthAndNotRegistered, hc, ec)
+                  val res =
+                    orchestrator.handleRegistrationRequest(using identifyRequestWithAuthAndNotRegistered, hc, ec)
 
-                    whenReady(res.value) { result =>
-                      result.map(_.registerState) mustBe Right(expectedState)
-                    }
+                  whenReady(res.value) { result =>
+                    result.map(_.registerState) mustBe Right(expectedState)
                   }
                 }
               }
+            }
           }
 
           "for a user that is not register" - {
             "but the call to get subscriptionStatus fails" - {
               "should return UnexpectedResponseFromSdil" in {
                 when(mockSessionService.get(identifier)).thenReturn(createSuccessRegistrationResult(None))
-                when(mockSDILConnector.retreiveRosmSubscription(utr, identifier)(using hc)).thenReturn(createSuccessRegistrationResult(rosmRegistration))
-                when(mockSDILConnector.checkPendingQueue(utr)(using hc)).thenReturn(createFailureRegistrationResult(UnexpectedResponseFromSDIL))
+                when(mockSDILConnector.retreiveRosmSubscription(utr, identifier)(using hc))
+                  .thenReturn(createSuccessRegistrationResult(rosmRegistration))
+                when(mockSDILConnector.checkPendingQueue(utr)(using hc))
+                  .thenReturn(createFailureRegistrationResult(UnexpectedResponseFromSDIL))
 
                 val res = orchestrator.handleRegistrationRequest(using identifyRequestWithAuthAndNotRegistered, hc, ec)
 
@@ -155,7 +157,8 @@ class RegistrationOrchestratorSpec extends RegistrationSubscriptionHelper with M
           "for a user who is registered" - {
             "should return an AuthenticationError" in {
               when(mockSessionService.get(identifier)).thenReturn(createSuccessRegistrationResult(None))
-              when(mockSDILConnector.retreiveRosmSubscription(utr, identifier)(using hc)).thenReturn(createFailureRegistrationResult(NoROSMRegistration))
+              when(mockSDILConnector.retreiveRosmSubscription(utr, identifier)(using hc))
+                .thenReturn(createFailureRegistrationResult(NoROSMRegistration))
 
               val res = orchestrator.handleRegistrationRequest(using identifyRequestWithAuthUtrAndRegistered, hc, ec)
 
@@ -168,7 +171,8 @@ class RegistrationOrchestratorSpec extends RegistrationSubscriptionHelper with M
           "for a user who is not registered" - {
             "should return RequiresBusinessDetails" in {
               when(mockSessionService.get(identifier)).thenReturn(createSuccessRegistrationResult(None))
-              when(mockSDILConnector.retreiveRosmSubscription(utr, identifier)(using hc)).thenReturn(createFailureRegistrationResult(NoROSMRegistration))
+              when(mockSDILConnector.retreiveRosmSubscription(utr, identifier)(using hc))
+                .thenReturn(createFailureRegistrationResult(NoROSMRegistration))
               when(mockSessionService.set(any())).thenReturn(createSuccessRegistrationResult(true))
 
               val res = orchestrator.handleRegistrationRequest(using identifyRequestWithAuthAndNotRegistered, hc, ec)
@@ -182,7 +186,8 @@ class RegistrationOrchestratorSpec extends RegistrationSubscriptionHelper with M
         "but the call to get rosmRegistration fails" - {
           "should return a UnexpectedResponseFromSdil error" in {
             when(mockSessionService.get(identifier)).thenReturn(createSuccessRegistrationResult(None))
-            when(mockSDILConnector.retreiveRosmSubscription(utr, identifier)(using hc)).thenReturn(createFailureRegistrationResult(UnexpectedResponseFromSDIL))
+            when(mockSDILConnector.retreiveRosmSubscription(utr, identifier)(using hc))
+              .thenReturn(createFailureRegistrationResult(UnexpectedResponseFromSDIL))
 
             val res = orchestrator.handleRegistrationRequest(using identifyRequestWithAuthAndNotRegistered, hc, ec)
 
@@ -208,46 +213,50 @@ class RegistrationOrchestratorSpec extends RegistrationSubscriptionHelper with M
 
   "checkEnteredBusinessDetailsAreValidAndUpdateUserAnswers" - {
     "when the utr entered has rosmRegistration" - {
-      expectedRegStateForSubscriptionStatus(true).foreach {
-        case (subscriptionStatus, expectedRegisterState) =>
-          "that has a postcode that exactly matches that typed in" - {
-            val identify = Identify(utr = utr, postcode = "GU14 8NL")
-            s"and has a subscription status of $subscriptionStatus" - {
-              s"should return $expectedRegisterState" in {
-                when(mockSDILConnector.retreiveRosmSubscription(utr, identifier)(using hc)).thenReturn(createSuccessRegistrationResult(rosmRegistration))
-                when(mockSDILConnector.checkPendingQueue(utr)(using hc)).thenReturn(createSuccessRegistrationResult(subscriptionStatus))
+      expectedRegStateForSubscriptionStatus(true).foreach { case (subscriptionStatus, expectedRegisterState) =>
+        "that has a postcode that exactly matches that typed in" - {
+          val identify = Identify(utr = utr, postcode = "GU14 8NL")
+          s"and has a subscription status of $subscriptionStatus" - {
+            s"should return $expectedRegisterState" in {
+              when(mockSDILConnector.retreiveRosmSubscription(utr, identifier)(using hc))
+                .thenReturn(createSuccessRegistrationResult(rosmRegistration))
+              when(mockSDILConnector.checkPendingQueue(utr)(using hc))
+                .thenReturn(createSuccessRegistrationResult(subscriptionStatus))
 
-                val res = orchestrator.checkEnteredBusinessDetailsAreValidAndUpdateUserAnswers(identify, identifier)
+              val res = orchestrator.checkEnteredBusinessDetailsAreValidAndUpdateUserAnswers(identify, identifier)
 
-                whenReady(res.value) { result =>
-                  result mustBe Right(expectedRegisterState)
-                }
+              whenReady(res.value) { result =>
+                result mustBe Right(expectedRegisterState)
               }
             }
           }
+        }
 
-          "that has a postcode that matches that typed in expect for case and spacing" - {
-            val identify = Identify(utr = utr, postcode = "gu148nl")
-            s"and has a subscription status of $subscriptionStatus" - {
-              s"should return $expectedRegisterState" in {
-                when(mockSDILConnector.retreiveRosmSubscription(utr, identifier)(using hc)).thenReturn(createSuccessRegistrationResult(rosmRegistration))
-                when(mockSDILConnector.checkPendingQueue(utr)(using hc)).thenReturn(createSuccessRegistrationResult(subscriptionStatus))
+        "that has a postcode that matches that typed in expect for case and spacing" - {
+          val identify = Identify(utr = utr, postcode = "gu148nl")
+          s"and has a subscription status of $subscriptionStatus" - {
+            s"should return $expectedRegisterState" in {
+              when(mockSDILConnector.retreiveRosmSubscription(utr, identifier)(using hc))
+                .thenReturn(createSuccessRegistrationResult(rosmRegistration))
+              when(mockSDILConnector.checkPendingQueue(utr)(using hc))
+                .thenReturn(createSuccessRegistrationResult(subscriptionStatus))
 
-                val res = orchestrator.checkEnteredBusinessDetailsAreValidAndUpdateUserAnswers(identify, identifier)
+              val res = orchestrator.checkEnteredBusinessDetailsAreValidAndUpdateUserAnswers(identify, identifier)
 
-                whenReady(res.value) { result =>
-                  result mustBe Right(expectedRegisterState)
-                }
+              whenReady(res.value) { result =>
+                result mustBe Right(expectedRegisterState)
               }
             }
           }
+        }
       }
 
       "the postcode entered does not match the rosmReg postcode" - {
         "should return EnteredBusinessDetailsDoNotMatch error" in {
           val identify = Identify(utr, "DD1 3WE")
-          when(mockSDILConnector.retreiveRosmSubscription(utr, identifier)(using hc)).thenReturn(createSuccessRegistrationResult(rosmRegistration))
-          val res = orchestrator.checkEnteredBusinessDetailsAreValidAndUpdateUserAnswers(identify, identifier)
+          when(mockSDILConnector.retreiveRosmSubscription(utr, identifier)(using hc))
+            .thenReturn(createSuccessRegistrationResult(rosmRegistration))
+          val res      = orchestrator.checkEnteredBusinessDetailsAreValidAndUpdateUserAnswers(identify, identifier)
 
           whenReady(res.value) { result =>
             result mustBe Left(EnteredBusinessDetailsDoNotMatch)
@@ -258,8 +267,10 @@ class RegistrationOrchestratorSpec extends RegistrationSubscriptionHelper with M
       "the call to get subscription status fails" - {
         "should return UnexpectedResponseFromSdil" in {
           val identify = Identify(utr = utr, postcode = "GU14 8NL")
-          when(mockSDILConnector.retreiveRosmSubscription(utr, identifier)(using hc)).thenReturn(createSuccessRegistrationResult(rosmRegistration))
-          when(mockSDILConnector.checkPendingQueue(utr)(using hc)).thenReturn(createFailureRegistrationResult(UnexpectedResponseFromSDIL))
+          when(mockSDILConnector.retreiveRosmSubscription(utr, identifier)(using hc))
+            .thenReturn(createSuccessRegistrationResult(rosmRegistration))
+          when(mockSDILConnector.checkPendingQueue(utr)(using hc))
+            .thenReturn(createFailureRegistrationResult(UnexpectedResponseFromSDIL))
 
           val res = orchestrator.checkEnteredBusinessDetailsAreValidAndUpdateUserAnswers(identify, identifier)
 
@@ -273,7 +284,8 @@ class RegistrationOrchestratorSpec extends RegistrationSubscriptionHelper with M
     "when the utr entered does not have rosm data" - {
       "should return NoROSMRegistration" in {
         val identify = Identify(utr = utr, postcode = "GU14 8NL")
-        when(mockSDILConnector.retreiveRosmSubscription(utr, identifier)(using hc)).thenReturn(createFailureRegistrationResult(NoROSMRegistration))
+        when(mockSDILConnector.retreiveRosmSubscription(utr, identifier)(using hc))
+          .thenReturn(createFailureRegistrationResult(NoROSMRegistration))
 
         val res = orchestrator.checkEnteredBusinessDetailsAreValidAndUpdateUserAnswers(identify, identifier)
 
@@ -286,7 +298,8 @@ class RegistrationOrchestratorSpec extends RegistrationSubscriptionHelper with M
     "when the call to get rosm data fails" - {
       "should return UnexpectedResponseFromSDIL" in {
         val identify = Identify(utr = utr, postcode = "GU14 8NL")
-        when(mockSDILConnector.retreiveRosmSubscription(utr, identifier)(using hc)).thenReturn(createFailureRegistrationResult(UnexpectedResponseFromSDIL))
+        when(mockSDILConnector.retreiveRosmSubscription(utr, identifier)(using hc))
+          .thenReturn(createFailureRegistrationResult(UnexpectedResponseFromSDIL))
 
         val res = orchestrator.checkEnteredBusinessDetailsAreValidAndUpdateUserAnswers(identify, identifier)
 
@@ -304,12 +317,17 @@ class RegistrationOrchestratorSpec extends RegistrationSubscriptionHelper with M
           "when the user answers contains the required pages" - {
             s"for a ${orgType.toString} that is a ${litresGlobally.toString} producer" - {
               "that has all litres pages populated, warehouses and packagaing site" in {
-                val userAnswers = getCompletedUserAnswers(orgType, litresGlobally, true)
-                val dataRequest: DataRequest[AnyContent] = DataRequest(FakeRequest(), identifier, true, Some(utr), userAnswers, rosmRegistration)
-                val expectedSubscription = generateSubscription(orgType, litresGlobally, true)
-                when(mockSDILConnector.createSubscription(expectedSubscription, "safeid")(using hc)).thenReturn(createSuccessRegistrationResult((): Unit))
+                val userAnswers                          = getCompletedUserAnswers(orgType, litresGlobally, true)
+                val dataRequest: DataRequest[AnyContent] =
+                  DataRequest(FakeRequest(), identifier, true, Some(utr), userAnswers, rosmRegistration)
+                val expectedSubscription                 = generateSubscription(orgType, litresGlobally, true)
+                when(mockSDILConnector.createSubscription(expectedSubscription, "safeid")(using hc))
+                  .thenReturn(createSuccessRegistrationResult((): Unit))
                 when(mockSessionService.set(any())).thenReturn(createSuccessRegistrationResult(true))
-                when(mockSdilSessionCache.save[CreatedSubscriptionAndAmountProducedGlobally](any(), any(), any())(using any())).thenReturn(Future.successful(CacheMap("id", Map.empty)))
+                when(
+                  mockSdilSessionCache
+                    .save[CreatedSubscriptionAndAmountProducedGlobally](any(), any(), any())(using any())
+                ).thenReturn(Future.successful(CacheMap("id", Map.empty)))
 
                 val res = orchestrator.createSubscriptionAndUpdateUserAnswers(using dataRequest, hc, ec)
 
@@ -318,13 +336,18 @@ class RegistrationOrchestratorSpec extends RegistrationSubscriptionHelper with M
                 }
               }
               "that has no litres pages populated" in {
-                val userAnswers = getCompletedUserAnswers(orgType, litresGlobally, false)
-                val dataRequest: DataRequest[AnyContent] = DataRequest(FakeRequest(), identifier, true, Some(utr), userAnswers, rosmRegistration)
-                val expectedSubscription = generateSubscription(orgType, litresGlobally, false)
+                val userAnswers                          = getCompletedUserAnswers(orgType, litresGlobally, false)
+                val dataRequest: DataRequest[AnyContent] =
+                  DataRequest(FakeRequest(), identifier, true, Some(utr), userAnswers, rosmRegistration)
+                val expectedSubscription                 = generateSubscription(orgType, litresGlobally, false)
 
-                when(mockSDILConnector.createSubscription(expectedSubscription, "safeid")(using hc)).thenReturn(createSuccessRegistrationResult((): Unit))
+                when(mockSDILConnector.createSubscription(expectedSubscription, "safeid")(using hc))
+                  .thenReturn(createSuccessRegistrationResult((): Unit))
                 when(mockSessionService.set(any())).thenReturn(createSuccessRegistrationResult(true))
-                when(mockSdilSessionCache.save[CreatedSubscriptionAndAmountProducedGlobally](any(), any(), any())(using any())).thenReturn(Future.successful(CacheMap("id", Map.empty)))
+                when(
+                  mockSdilSessionCache
+                    .save[CreatedSubscriptionAndAmountProducedGlobally](any(), any(), any())(using any())
+                ).thenReturn(Future.successful(CacheMap("id", Map.empty)))
                 val res = orchestrator.createSubscriptionAndUpdateUserAnswers(using dataRequest, hc, ec)
 
                 whenReady(res.value) { result =>
@@ -339,11 +362,14 @@ class RegistrationOrchestratorSpec extends RegistrationSubscriptionHelper with M
           "when the update of user answers fails" - {
             s"for a ${orgType.toString} that is a ${litresGlobally.toString} producer" - {
               "that has all litres pages populated, warehouses and packagaing site" in {
-                val userAnswers = getCompletedUserAnswers(orgType, litresGlobally, true)
-                val dataRequest: DataRequest[AnyContent] = DataRequest(FakeRequest(), identifier, true, Some(utr), userAnswers, rosmRegistration)
-                val expectedSubscription = generateSubscription(orgType, litresGlobally, true)
-                when(mockSDILConnector.createSubscription(expectedSubscription, "safeid")(using hc)).thenReturn(createSuccessRegistrationResult((): Unit))
-                when(mockSessionService.set(any())).thenReturn(createFailureRegistrationResult(SessionDatabaseInsertError))
+                val userAnswers                          = getCompletedUserAnswers(orgType, litresGlobally, true)
+                val dataRequest: DataRequest[AnyContent] =
+                  DataRequest(FakeRequest(), identifier, true, Some(utr), userAnswers, rosmRegistration)
+                val expectedSubscription                 = generateSubscription(orgType, litresGlobally, true)
+                when(mockSDILConnector.createSubscription(expectedSubscription, "safeid")(using hc))
+                  .thenReturn(createSuccessRegistrationResult((): Unit))
+                when(mockSessionService.set(any()))
+                  .thenReturn(createFailureRegistrationResult(SessionDatabaseInsertError))
 
                 val res = orchestrator.createSubscriptionAndUpdateUserAnswers(using dataRequest, hc, ec)
 
@@ -352,12 +378,15 @@ class RegistrationOrchestratorSpec extends RegistrationSubscriptionHelper with M
                 }
               }
               "that has no litres pages populated" in {
-                val userAnswers = getCompletedUserAnswers(orgType, litresGlobally, false)
-                val dataRequest: DataRequest[AnyContent] = DataRequest(FakeRequest(), identifier, true, Some(utr), userAnswers, rosmRegistration)
-                val expectedSubscription = generateSubscription(orgType, litresGlobally, false)
+                val userAnswers                          = getCompletedUserAnswers(orgType, litresGlobally, false)
+                val dataRequest: DataRequest[AnyContent] =
+                  DataRequest(FakeRequest(), identifier, true, Some(utr), userAnswers, rosmRegistration)
+                val expectedSubscription                 = generateSubscription(orgType, litresGlobally, false)
 
-                when(mockSDILConnector.createSubscription(expectedSubscription, "safeid")(using hc)).thenReturn(createSuccessRegistrationResult((): Unit))
-                when(mockSessionService.set(any())).thenReturn(createFailureRegistrationResult(SessionDatabaseInsertError))
+                when(mockSDILConnector.createSubscription(expectedSubscription, "safeid")(using hc))
+                  .thenReturn(createSuccessRegistrationResult((): Unit))
+                when(mockSessionService.set(any()))
+                  .thenReturn(createFailureRegistrationResult(SessionDatabaseInsertError))
                 val res = orchestrator.createSubscriptionAndUpdateUserAnswers(using dataRequest, hc, ec)
 
                 whenReady(res.value) { result =>
@@ -372,20 +401,26 @@ class RegistrationOrchestratorSpec extends RegistrationSubscriptionHelper with M
 
     "should return MissingRequiredUserAnswers error" - {
       "when the user answers doesn't include how many litres globally " in {
-        val userAnswers = getCompletedUserAnswers(OrganisationType.LimitedCompany, HowManyLitresGlobally.Large, false)
-          .remove(HowManyLitresGloballyPage).success.value
-        val dataRequest: DataRequest[AnyContent] = DataRequest(FakeRequest(), identifier, true, Some(utr), userAnswers, rosmRegistration)
-        val res = orchestrator.createSubscriptionAndUpdateUserAnswers(using dataRequest, hc, ec)
+        val userAnswers                          = getCompletedUserAnswers(OrganisationType.LimitedCompany, HowManyLitresGlobally.Large, false)
+          .remove(HowManyLitresGloballyPage)
+          .success
+          .value
+        val dataRequest: DataRequest[AnyContent] =
+          DataRequest(FakeRequest(), identifier, true, Some(utr), userAnswers, rosmRegistration)
+        val res                                  = orchestrator.createSubscriptionAndUpdateUserAnswers(using dataRequest, hc, ec)
 
         whenReady(res.value) { result =>
           result mustBe Left(MissingRequiredUserAnswers)
         }
       }
       "when the user answers doesn't include organisation type" in {
-        val userAnswers = getCompletedUserAnswers(OrganisationType.LimitedCompany, HowManyLitresGlobally.Large, false)
-          .remove(OrganisationTypePage).success.value
-        val dataRequest: DataRequest[AnyContent] = DataRequest(FakeRequest(), identifier, true, Some(utr), userAnswers, rosmRegistration)
-        val res = orchestrator.createSubscriptionAndUpdateUserAnswers(using dataRequest, hc, ec)
+        val userAnswers                          = getCompletedUserAnswers(OrganisationType.LimitedCompany, HowManyLitresGlobally.Large, false)
+          .remove(OrganisationTypePage)
+          .success
+          .value
+        val dataRequest: DataRequest[AnyContent] =
+          DataRequest(FakeRequest(), identifier, true, Some(utr), userAnswers, rosmRegistration)
+        val res                                  = orchestrator.createSubscriptionAndUpdateUserAnswers(using dataRequest, hc, ec)
 
         whenReady(res.value) { result =>
           result mustBe Left(MissingRequiredUserAnswers)
@@ -393,10 +428,13 @@ class RegistrationOrchestratorSpec extends RegistrationSubscriptionHelper with M
       }
 
       "when the user answers doesn't include contact details" in {
-        val userAnswers = getCompletedUserAnswers(OrganisationType.LimitedCompany, HowManyLitresGlobally.Large, false)
-          .remove(ContactDetailsPage).success.value
-        val dataRequest: DataRequest[AnyContent] = DataRequest(FakeRequest(), identifier, true, Some(utr), userAnswers, rosmRegistration)
-        val res = orchestrator.createSubscriptionAndUpdateUserAnswers(using dataRequest, hc, ec)
+        val userAnswers                          = getCompletedUserAnswers(OrganisationType.LimitedCompany, HowManyLitresGlobally.Large, false)
+          .remove(ContactDetailsPage)
+          .success
+          .value
+        val dataRequest: DataRequest[AnyContent] =
+          DataRequest(FakeRequest(), identifier, true, Some(utr), userAnswers, rosmRegistration)
+        val res                                  = orchestrator.createSubscriptionAndUpdateUserAnswers(using dataRequest, hc, ec)
 
         whenReady(res.value) { result =>
           result mustBe Left(MissingRequiredUserAnswers)

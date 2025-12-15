@@ -37,32 +37,35 @@ class RegistrationController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   errorHandler: ErrorHandler,
   val genericLogger: GenericLogger,
-  config: FrontendAppConfig)(implicit ec: ExecutionContext) extends FrontendBaseController with I18nSupport {
+  config: FrontendAppConfig
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
+    with I18nSupport {
 
-  def start: Action[AnyContent] = identify.async {
-    implicit request =>
-      registrationOrchestrator.handleRegistrationRequest.value.flatMap {
-        case Right(userAnswers) => Future.successful(handleSuccessResult(userAnswers))
-        case Left(RegistrationAlreadySubmitted) => Future.successful(Redirect(routes.RegistrationConfirmationController.onPageLoad))
-        case Left(AuthenticationError) => Future.successful(
+  def start: Action[AnyContent] = identify.async { implicit request =>
+    registrationOrchestrator.handleRegistrationRequest.value.flatMap {
+      case Right(userAnswers)                 => Future.successful(handleSuccessResult(userAnswers))
+      case Left(RegistrationAlreadySubmitted) =>
+        Future.successful(Redirect(routes.RegistrationConfirmationController.onPageLoad))
+      case Left(AuthenticationError)          =>
+        Future.successful(
           Redirect(config.loginUrl, Map("continue_url" -> Seq(config.sdilHomeUrl), "origin" -> Seq(config.appName)))
         )
-        case Left(error) =>
-          genericLogger.logger.error(s"${getClass.getName} - $error while handling registration request")
-          errorHandler.internalServerErrorTemplate.map(errorView => InternalServerError(errorView))
-      }
+      case Left(error)                        =>
+        genericLogger.logger.error(s"${getClass.getName} - $error while handling registration request")
+        errorHandler.internalServerErrorTemplate.map(errorView => InternalServerError(errorView))
+    }
   }
 
-  private def handleSuccessResult(userAnswers: UserAnswers): Result = {
-    if(canAccessEnterBusinessDetails(userAnswers)) {
+  private def handleSuccessResult(userAnswers: UserAnswers): Result =
+    if (canAccessEnterBusinessDetails(userAnswers)) {
       Redirect(routes.EnterBusinessDetailsController.onPageLoad)
     } else {
       userAnswers.registerState match {
-        case RegistrationPending => Redirect(routes.RegistrationPendingController.onPageLoad)
-        case AlreadyRegistered => Redirect(routes.AlreadyRegisteredController.onPageLoad)
+        case RegistrationPending         => Redirect(routes.RegistrationPendingController.onPageLoad)
+        case AlreadyRegistered           => Redirect(routes.AlreadyRegisteredController.onPageLoad)
         case RegisterApplicationAccepted => Redirect(routes.ApplicationAlreadySubmittedController.onPageLoad)
-        case _ => Redirect(routes.VerifyController.onPageLoad(NormalMode))
+        case _                           => Redirect(routes.VerifyController.onPageLoad(NormalMode))
       }
     }
-  }
 }

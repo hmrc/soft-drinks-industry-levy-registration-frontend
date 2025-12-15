@@ -20,58 +20,74 @@ import connectors.SoftDrinksIndustryLevyConnector
 import controllers.routes
 import handlers.ErrorHandler
 import models.RegisterState.RegisterWithOtherUTR
-import models.requests.{ DataRequest, OptionalDataRequest }
-import models.{ RegisterState, UserAnswers }
+import models.requests.{DataRequest, OptionalDataRequest}
+import models.{RegisterState, UserAnswers}
 import pages.EnterBusinessDetailsPage
-import play.api.mvc.Results.{ InternalServerError, Redirect }
-import play.api.mvc.{ ActionRefiner, Result }
+import play.api.mvc.Results.{InternalServerError, Redirect}
+import play.api.mvc.{ActionRefiner, Result}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import utilities.GenericLogger
 
 import javax.inject.Inject
-import scala.concurrent.{ ExecutionContext, Future }
+import scala.concurrent.{ExecutionContext, Future}
 
 class DataRequiredActionImpl @Inject() (
   sdilConnector: SoftDrinksIndustryLevyConnector,
   genericLogger: GenericLogger,
-  errorHandler: ErrorHandler)(implicit val executionContext: ExecutionContext) extends DataRequiredAction {
+  errorHandler: ErrorHandler
+)(implicit val executionContext: ExecutionContext)
+    extends DataRequiredAction {
 
   override protected def refine[A](request: OptionalDataRequest[A]): Future[Either[Result, DataRequest[A]]] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
     request.userAnswers match {
-      case Some(useranswers) if useranswers.submittedOn.isDefined =>
+      case Some(useranswers) if useranswers.submittedOn.isDefined                    =>
         Future.successful(Left(Redirect(routes.RegistrationConfirmationController.onPageLoad)))
       case Some(useranswers) if RegisterState.canRegister(useranswers.registerState) =>
         getUtrFromUserAnswers(useranswers, request) match {
           case Some(utr) =>
             sdilConnector.retreiveRosmSubscription(utr, request.internalId).value.flatMap {
-              case Right(rosmWithUtr) => Future.successful(
-                Right(DataRequest(request, request.internalId, request.hasCTEnrolment, request.authUtr, useranswers, rosmWithUtr))
-              )
-              case Left(_) => errorHandler.internalServerErrorTemplate(using request).map(errorView => Left(InternalServerError(errorView)))
+              case Right(rosmWithUtr) =>
+                Future.successful(
+                  Right(
+                    DataRequest(
+                      request,
+                      request.internalId,
+                      request.hasCTEnrolment,
+                      request.authUtr,
+                      useranswers,
+                      rosmWithUtr
+                    )
+                  )
+                )
+              case Left(_)            =>
+                errorHandler
+                  .internalServerErrorTemplate(using request)
+                  .map(errorView => Left(InternalServerError(errorView)))
             }
-          case None =>
+          case None      =>
             genericLogger.logger.error(s"User has no utr when required for register state ${useranswers.registerState}")
-            errorHandler.internalServerErrorTemplate(using request).map(errorView => Left(InternalServerError(errorView)))
+            errorHandler
+              .internalServerErrorTemplate(using request)
+              .map(errorView => Left(InternalServerError(errorView)))
         }
-      case Some(useranswers) =>
+      case Some(useranswers)                                                         =>
         val call = ActionHelpers.getRouteForRegisterState(useranswers.registerState)
         Future.successful(Left(Redirect(call)))
-      case _ =>
+      case _                                                                         =>
         genericLogger.logger.info(s"User has no user answers ${hc.requestId}")
         Future.successful(Left(Redirect(routes.RegistrationController.start)))
     }
   }
 
-  private def getUtrFromUserAnswers[A](userAnswers: UserAnswers, request: OptionalDataRequest[A]): Option[String] = {
+  private def getUtrFromUserAnswers[A](userAnswers: UserAnswers, request: OptionalDataRequest[A]): Option[String] =
     if (userAnswers.registerState == RegisterWithOtherUTR) {
       userAnswers.get(EnterBusinessDetailsPage).map(_.utr)
     } else {
       request.authUtr
     }
-  }
 }
 
 trait DataRequiredAction extends ActionRefiner[OptionalDataRequest, DataRequest]

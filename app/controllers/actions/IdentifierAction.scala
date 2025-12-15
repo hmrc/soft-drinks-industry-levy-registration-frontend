@@ -31,9 +31,11 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import utilities.GenericLogger
 
-import scala.concurrent.{ ExecutionContext, Future }
+import scala.concurrent.{ExecutionContext, Future}
 
-trait IdentifierAction extends ActionRefiner[Request, IdentifierRequest] with ActionBuilder[IdentifierRequest, AnyContent]
+trait IdentifierAction
+    extends ActionRefiner[Request, IdentifierRequest]
+    with ActionBuilder[IdentifierRequest, AnyContent]
 
 class AuthenticatedIdentifierAction @Inject() (
   override val authConnector: AuthConnector,
@@ -41,56 +43,70 @@ class AuthenticatedIdentifierAction @Inject() (
   val parser: BodyParsers.Default,
   sdilConnector: SoftDrinksIndustryLevyConnector,
   errorHandler: ErrorHandler,
-  val genericLogger: GenericLogger)(implicit val executionContext: ExecutionContext)
-  extends IdentifierAction with AuthorisedFunctions with ActionHelpers {
+  val genericLogger: GenericLogger
+)(implicit val executionContext: ExecutionContext)
+    extends IdentifierAction
+    with AuthorisedFunctions
+    with ActionHelpers {
 
   override protected def refine[A](request: Request[A]): Future[Either[Result, IdentifierRequest[A]]] = {
-    implicit val req: Request[A] = request
+    implicit val req: Request[A]   = request
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
     authorised(AuthProviders(GovernmentGateway)).retrieve(registrationRetrieval) {
       case enrolments ~ role ~ id ~ affinity =>
-        id.fold[Future[Either[Result, IdentifierRequest[A]]]](errorHandler.internalServerErrorTemplate.map(errorView => Left(InternalServerError(errorView)))) { internalId =>
-          val maybeUtr = getUtr(enrolments)
+        id.fold[Future[Either[Result, IdentifierRequest[A]]]](
+          errorHandler.internalServerErrorTemplate.map(errorView => Left(InternalServerError(errorView)))
+        ) { internalId =>
+          val maybeUtr  = getUtr(enrolments)
           val maybeSdil = getSdilEnrolment(enrolments)
           (maybeUtr, maybeSdil) match {
-            case (Some(utr), optSdilEnrolment) =>
+            case (Some(utr), optSdilEnrolment)                     =>
               handleUserWithUTR(internalId, utr, hasCTEnrolment(enrolments), optSdilEnrolment)
-            case (None, Some(sdil)) => handleUserWithNoUTRAndSDILEnrolment(internalId, sdil, hasCTEnrolment(enrolments))
+            case (None, Some(sdil))                                => handleUserWithNoUTRAndSDILEnrolment(internalId, sdil, hasCTEnrolment(enrolments))
             case _ if hasValidRoleAndAffinityGroup(role, affinity) =>
-              Future.successful(Right(IdentifierRequest(request, internalId, hasCTEnrolment(enrolments), None, isRegistered = false)))
-            case _ => Future.successful(Left(Redirect(config.sdilHomeUrl)))
+              Future.successful(
+                Right(IdentifierRequest(request, internalId, hasCTEnrolment(enrolments), None, isRegistered = false))
+              )
+            case _                                                 => Future.successful(Left(Redirect(config.sdilHomeUrl)))
           }
         }
     } recover {
-      case _: NoActiveSession =>
+      case _: NoActiveSession        =>
         Left(Redirect(config.loginUrl, Map("continue" -> Seq(config.loginContinueUrl))))
       case _: AuthorisationException =>
         Left(Redirect(routes.UnauthorisedController.onPageLoad))
     }
   }
 
-  private def handleUserWithUTR[A](internalId: String, utr: String, hasCTEnrolment: Boolean, optSdilEnrolment: Option[EnrolmentIdentifier])(implicit hc: HeaderCarrier, request: Request[A]): Future[Either[Result, IdentifierRequest[A]]] = {
+  private def handleUserWithUTR[A](
+    internalId: String,
+    utr: String,
+    hasCTEnrolment: Boolean,
+    optSdilEnrolment: Option[EnrolmentIdentifier]
+  )(implicit hc: HeaderCarrier, request: Request[A]): Future[Either[Result, IdentifierRequest[A]]] =
     sdilConnector.retrieveSubscription(utr, "utr", internalId).value.flatMap {
       case Right(Some(sub)) if sub.deregDate.isEmpty && optSdilEnrolment.isDefined =>
         Future.successful(Right(IdentifierRequest(request, internalId, hasCTEnrolment, Some(utr), true)))
-      case Right(Some(sub)) if sub.deregDate.isEmpty =>
+      case Right(Some(sub)) if sub.deregDate.isEmpty                               =>
         Future.successful(Left(Redirect(config.sdilHomeUrl)))
-      case Right(_) =>
+      case Right(_)                                                                =>
         Future.successful(Right(IdentifierRequest(request, internalId, hasCTEnrolment, Some(utr))))
-      case Left(_) =>
+      case Left(_)                                                                 =>
         genericLogger.logger.error(s"${getClass.getName} - failed to handle user with UTR")
         errorHandler.internalServerErrorTemplate(using request).map(errorView => Left(InternalServerError(errorView)))
     }
-  }
 
-  private def handleUserWithNoUTRAndSDILEnrolment[A](internalId: String, sdil: EnrolmentIdentifier, hasCTEnrolment: Boolean)(implicit hc: HeaderCarrier, request: Request[A]): Future[Either[Result, IdentifierRequest[A]]] = {
+  private def handleUserWithNoUTRAndSDILEnrolment[A](
+    internalId: String,
+    sdil: EnrolmentIdentifier,
+    hasCTEnrolment: Boolean
+  )(implicit hc: HeaderCarrier, request: Request[A]): Future[Either[Result, IdentifierRequest[A]]] =
     sdilConnector.retrieveSubscription(sdil.value, "sdil", internalId).value.flatMap {
       case Right(Some(sub)) if sub.deregDate.isEmpty => Future.successful(Left(Redirect(config.sdilHomeUrl)))
-      case Right(_) => Future.successful(Right(IdentifierRequest(request, internalId, hasCTEnrolment, None)))
-      case Left(_) =>
+      case Right(_)                                  => Future.successful(Right(IdentifierRequest(request, internalId, hasCTEnrolment, None)))
+      case Left(_)                                   =>
         genericLogger.logger.error(s"${getClass.getName} - failed to handle user with no UTR and SDIL enrolment")
         errorHandler.internalServerErrorTemplate(using request).map(errorView => Left(InternalServerError(errorView)))
     }
-  }
 }

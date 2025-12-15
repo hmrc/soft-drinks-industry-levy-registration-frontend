@@ -19,7 +19,6 @@ package pages
 import models.{CheckMode, Identify, NormalMode}
 import pages.behaviours.PageBehaviours
 
-
 class EnterBusinessDetailsPageSpec extends PageBehaviours {
 
   "EnterBusinessDetailsPage" - {

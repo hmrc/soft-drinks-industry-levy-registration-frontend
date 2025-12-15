@@ -17,8 +17,8 @@ class CannotRegisterPartnershipControllerISpec extends ControllerITTestHelper {
       val userAnswers = emptyUserAnswers.set(StartDatePage, date).success.value
       setAnswers(userAnswers)
 
-      given messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-      given request: FakeRequest[?] = FakeRequest()
+      given messagesApi: MessagesApi           = app.injector.instanceOf[MessagesApi]
+      given request: FakeRequest[?]            = FakeRequest()
       given messagesProvider: MessagesProvider = messagesApi.preferred(request)
 
       WsTestClient.withClient { client =>
@@ -28,11 +28,17 @@ class CannotRegisterPartnershipControllerISpec extends ControllerITTestHelper {
           res.status mustBe 200
           val page = Jsoup.parse(res.body)
           page.title must include(Messages("cannotRegisterPartnership" + ".title"))
-          page.getElementsByClass("govuk-body").text() mustBe Messages("cannotRegisterPartnership.subText", "0300 200 1000")
+          page.getElementsByClass("govuk-body").text() mustBe Messages(
+            "cannotRegisterPartnership.subText",
+            "0300 200 1000"
+          )
         }
       }
     }
-    testOtherSuccessUserTypes(baseUrl + normalRoutePath, Messages("cannotRegisterPartnership" + ".title")(using messagesProvider))
+    testOtherSuccessUserTypes(
+      baseUrl + normalRoutePath,
+      Messages("cannotRegisterPartnership" + ".title")(using messagesProvider)
+    )
     testUnauthorisedUser(baseUrl + normalRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)
     testUserWhoIsUnableToRegister(baseUrl + normalRoutePath)

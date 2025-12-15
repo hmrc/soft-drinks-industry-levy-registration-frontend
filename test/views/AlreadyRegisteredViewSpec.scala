@@ -26,7 +26,7 @@ import views.html.AlreadyRegisteredView
 
 class AlreadyRegisteredViewSpec extends ViewSpecHelper with SpecBase {
 
-  val view = application.injector.instanceOf[AlreadyRegisteredView]
+  val view                         = application.injector.instanceOf[AlreadyRegisteredView]
   implicit val request: Request[?] = FakeRequest()
 
   object Selectors {
@@ -34,10 +34,11 @@ class AlreadyRegisteredViewSpec extends ViewSpecHelper with SpecBase {
   }
 
   "View" - {
-    val registration = rosmRegistration.rosmRegistration
-    val formattedAddress = AddressFormattingHelper.formatBusinessAddress(registration.address,Some(registration.organisationName))
-    val html = view(utr, formattedAddress)(using request, messages(application))
-    val document = doc(html)
+    val registration     = rosmRegistration.rosmRegistration
+    val formattedAddress =
+      AddressFormattingHelper.formatBusinessAddress(registration.address, Some(registration.organisationName))
+    val html             = view(utr, formattedAddress)(using request, messages(application))
+    val document         = doc(html)
 
     "should contain the expected title" in {
       document.title() must include(Messages("alreadyRegistered.heading.title"))
@@ -48,15 +49,21 @@ class AlreadyRegisteredViewSpec extends ViewSpecHelper with SpecBase {
     }
 
     "should have the expected subheading" in {
-      document.getElementById("subheader").text() mustEqual s"These are the details we hold for Unique Taxpayer Reference (UTR) $utr:"
+      document
+        .getElementById("subheader")
+        .text() mustEqual s"These are the details we hold for Unique Taxpayer Reference (UTR) $utr:"
     }
 
     "should have the expected address" in {
-      document.getElementById("addressForUTR").text() mustBe "Super Lemonade Plc 105B Godfrey Marchant Grove Guildford GU14 8NL"
+      document
+        .getElementById("addressForUTR")
+        .text() mustBe "Super Lemonade Plc 105B Godfrey Marchant Grove Guildford GU14 8NL"
     }
 
     "should have the expected account link" in {
-      document.getElementById("account-redirect").text() mustBe "To view your registration details, go to your Soft Drinks Industry Levy account."
+      document
+        .getElementById("account-redirect")
+        .text() mustBe "To view your registration details, go to your Soft Drinks Industry Levy account."
       document.getElementById("account-link").attr("href") mustBe frontendAppConfig.sdilHomeUrl
     }
 

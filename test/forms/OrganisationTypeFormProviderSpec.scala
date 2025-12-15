@@ -26,13 +26,13 @@ class OrganisationTypeFormProviderSpec extends OptionFieldBehaviours {
 
   ".value" - {
 
-    val fieldName = "value"
+    val fieldName   = "value"
     val requiredKey = "organisationType.error.required"
 
     behave like optionsField[OrganisationType](
       form,
       fieldName,
-      validValues  = OrganisationType.values,
+      validValues = OrganisationType.values,
       invalidError = FormError(fieldName, "error.invalid")
     )
 

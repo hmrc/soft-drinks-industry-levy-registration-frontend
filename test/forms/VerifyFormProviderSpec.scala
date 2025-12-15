@@ -26,13 +26,13 @@ class VerifyFormProviderSpec extends OptionFieldBehaviours {
 
   ".value" - {
 
-    val fieldName = "value"
+    val fieldName   = "value"
     val requiredKey = "verify.error.required"
 
     behave like optionsField[Verify](
       form,
       fieldName,
-      validValues  = Verify.values,
+      validValues = Verify.values,
       invalidError = FormError(fieldName, "error.invalid")
     )
 

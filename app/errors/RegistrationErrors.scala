@@ -35,4 +35,3 @@ object EnteredBusinessDetailsDoNotMatch extends RegistrationErrors
 object RegistrationAlreadySubmitted extends RegistrationErrors
 
 object AuthenticationError extends RegistrationErrors
-
