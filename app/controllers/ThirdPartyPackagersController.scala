@@ -23,13 +23,13 @@ import models.Mode
 import navigation.Navigator
 import pages.ThirdPartyPackagersPage
 import play.api.i18n.MessagesApi
-import play.api.mvc.{ Action, AnyContent, MessagesControllerComponents }
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SessionService
 import utilities.GenericLogger
 import views.html.ThirdPartyPackagersView
 
 import javax.inject.Inject
-import scala.concurrent.{ ExecutionContext, Future }
+import scala.concurrent.{ExecutionContext, Future}
 
 class ThirdPartyPackagersController @Inject() (
   override val messagesApi: MessagesApi,
@@ -40,31 +40,30 @@ class ThirdPartyPackagersController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: ThirdPartyPackagersView,
   val errorHandler: ErrorHandler,
-  val genericLogger: GenericLogger)(implicit ec: ExecutionContext) extends ControllerHelper {
+  val genericLogger: GenericLogger
+)(implicit ec: ExecutionContext)
+    extends ControllerHelper {
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = controllerActions.withUserWhoCanRegister {
-    implicit request =>
+  def onPageLoad(mode: Mode): Action[AnyContent] = controllerActions.withUserWhoCanRegister { implicit request =>
+    val preparedForm = request.userAnswers.get(ThirdPartyPackagersPage) match {
+      case None        => form
+      case Some(value) => form.fill(value)
+    }
 
-      val preparedForm = request.userAnswers.get(ThirdPartyPackagersPage) match {
-        case None => form
-        case Some(value) => form.fill(value)
-      }
-
-      Ok(view(preparedForm, mode))
+    Ok(view(preparedForm, mode))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = controllerActions.withUserWhoCanRegister.async {
-    implicit request =>
-
-      form.bindFromRequest().fold(
-        formWithErrors =>
-          Future.successful(BadRequest(view(formWithErrors, mode))),
-
+  def onSubmit(mode: Mode): Action[AnyContent] = controllerActions.withUserWhoCanRegister.async { implicit request =>
+    form
+      .bindFromRequest()
+      .fold(
+        formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
         value => {
           val updatedAnswers = request.userAnswers.set(ThirdPartyPackagersPage, value)
           updateDatabaseAndRedirect(updatedAnswers, ThirdPartyPackagersPage, mode)
-        })
+        }
+      )
   }
 }

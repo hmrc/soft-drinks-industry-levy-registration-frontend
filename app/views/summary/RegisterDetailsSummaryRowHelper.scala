@@ -24,13 +24,15 @@ import viewmodels.implicits._
 
 trait RegisterDetailsSummaryRowHelper {
 
-  //LDS ignore
+  // LDS ignore
   val key: String
   val action: String
   val actionId: String
   val hiddenText: String
 
-  def row(literage: Option[Litreage], isCheckAnswers: Boolean = false)(implicit messages: Messages): Seq[SummaryListRow] = {
+  def row(literage: Option[Litreage], isCheckAnswers: Boolean = false)(implicit
+    messages: Messages
+  ): Seq[SummaryListRow] = {
     val value: String = if (literage.isDefined) {
       "site.yes"
     } else {
@@ -44,9 +46,12 @@ trait RegisterDetailsSummaryRowHelper {
           Seq(
             ActionItemViewModel("site.change", action)
               .withAttribute(("id", actionId))
-              .withVisuallyHiddenText(messages(s"$hiddenText.change.hidden")))
+              .withVisuallyHiddenText(messages(s"$hiddenText.change.hidden"))
+          )
         } else {
           Seq.empty
-        }))
+        }
+      )
+    )
   }
 }

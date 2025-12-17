@@ -11,16 +11,15 @@ import play.api.test.{FakeRequest, WsTestClient}
 
 class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
   given messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-  given messages: Messages = messagesApi.preferred(FakeRequest())
-  
-  def normalRoutePath(index: String) = s"/warehouse-details/remove/$index"
-  def checkRoutePath(index: String) = s"/change-warehouse-details/remove/$index"
+  given messages: Messages       = messagesApi.preferred(FakeRequest())
+
+  def normalRoutePath(index: String)      = s"/warehouse-details/remove/$index"
+  def checkRoutePath(index: String)       = s"/change-warehouse-details/remove/$index"
   val indexOfWarehouseToBeRemoved: String = "warehouseUNO"
   "GET " + normalRoutePath("indexDoesntExist") - {
     "when the userAnswers contains no data" - {
       "should redirect away when no data exists" in {
-        build
-          .commonPrecondition
+        build.commonPrecondition
 
         setAnswers(emptyUserAnswers)
 
@@ -29,48 +28,50 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
 
           whenReady(result) { res =>
             res.status mustBe 303
-            res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.WarehouseDetailsController.onPageLoad(NormalMode).url)
+            res.header(HeaderNames.LOCATION) mustBe Some(
+              controllers.routes.WarehouseDetailsController.onPageLoad(NormalMode).url
+            )
           }
         }
       }
     }
 
-    userAnswersForUpdateRegisteredDetailsRemoveWarehouseDetailsPage(indexOfWarehouseToBeRemoved).foreach { case (key, userAnswers) =>
-      s"when the userAnswers contains data for the page with " + key + " selected" - {
-        s"should return OK and render the page without the " + key + " radio checked" in {
-          build
-            .commonPrecondition
+    userAnswersForUpdateRegisteredDetailsRemoveWarehouseDetailsPage(indexOfWarehouseToBeRemoved).foreach {
+      case (key, userAnswers) =>
+        s"when the userAnswers contains data for the page with " + key + " selected" - {
+          s"should return OK and render the page without the " + key + " radio checked" in {
+            build.commonPrecondition
 
-          setAnswers(userAnswers)
+            setAnswers(userAnswers)
 
-          WsTestClient.withClient { client =>
-            val result = createClientRequestGet(client, baseUrl + normalRoutePath(indexOfWarehouseToBeRemoved))
+            WsTestClient.withClient { client =>
+              val result = createClientRequestGet(client, baseUrl + normalRoutePath(indexOfWarehouseToBeRemoved))
 
-            whenReady(result) { res =>
-              res.status mustBe 200
-              val page = Jsoup.parse(res.body)
-              page.title must include(messages("removeWarehouseDetails" + ".title"))
-              val radioInputs = page.getElementsByClass("govuk-radios__input")
-              radioInputs.size() mustBe 2
-              radioInputs.get(0).attr("value") mustBe "true"
-              radioInputs.get(0).hasAttr("checked") mustBe false
-              radioInputs.get(1).attr("value") mustBe "false"
-              radioInputs.get(1).hasAttr("checked") mustBe false
-              page.getElementById("warehouseToRemove").text() mustBe s"$aTradingName foo, bar, wizz"
+              whenReady(result) { res =>
+                res.status mustBe 200
+                val page = Jsoup.parse(res.body)
+                page.title must include(messages("removeWarehouseDetails" + ".title"))
+                val radioInputs = page.getElementsByClass("govuk-radios__input")
+                radioInputs.size() mustBe 2
+                radioInputs.get(0).attr("value") mustBe "true"
+                radioInputs.get(0).hasAttr("checked") mustBe false
+                radioInputs.get(1).attr("value") mustBe "false"
+                radioInputs.get(1).hasAttr("checked") mustBe false
+                page.getElementById("warehouseToRemove").text() mustBe s"$aTradingName foo, bar, wizz"
+              }
             }
           }
         }
-      }
     }
     testUnauthorisedUser(baseUrl + normalRoutePath(indexOfWarehouseToBeRemoved))
     testUserWhoIsUnableToRegister(baseUrl + normalRoutePath(indexOfWarehouseToBeRemoved))
-    testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath(indexOfWarehouseToBeRemoved))  }
+    testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath(indexOfWarehouseToBeRemoved))
+  }
 
   s"GET " + checkRoutePath(indexOfWarehouseToBeRemoved) - {
     "when the userAnswers contains no data" - {
       "should redirect away when no data exists" in {
-        build
-          .commonPrecondition
+        build.commonPrecondition
 
         setAnswers(emptyUserAnswers)
 
@@ -79,37 +80,39 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
 
           whenReady(result) { res =>
             res.status mustBe 303
-            res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.WarehouseDetailsController.onPageLoad(CheckMode).url)
+            res.header(HeaderNames.LOCATION) mustBe Some(
+              controllers.routes.WarehouseDetailsController.onPageLoad(CheckMode).url
+            )
           }
         }
       }
     }
 
-    userAnswersForUpdateRegisteredDetailsRemoveWarehouseDetailsPage(indexOfWarehouseToBeRemoved).foreach { case (key, userAnswers) =>
-      s"when the userAnswers contains data for the page with " + key + " selected" - {
-        s"should return OK and render the page without the " + key + " radio checked" in {
-          build
-            .commonPrecondition
+    userAnswersForUpdateRegisteredDetailsRemoveWarehouseDetailsPage(indexOfWarehouseToBeRemoved).foreach {
+      case (key, userAnswers) =>
+        s"when the userAnswers contains data for the page with " + key + " selected" - {
+          s"should return OK and render the page without the " + key + " radio checked" in {
+            build.commonPrecondition
 
-          setAnswers(userAnswers)
+            setAnswers(userAnswers)
 
-          WsTestClient.withClient { client =>
-            val result = createClientRequestGet(client, baseUrl + checkRoutePath(indexOfWarehouseToBeRemoved))
+            WsTestClient.withClient { client =>
+              val result = createClientRequestGet(client, baseUrl + checkRoutePath(indexOfWarehouseToBeRemoved))
 
-            whenReady(result) { res =>
-              res.status mustBe 200
-              val page = Jsoup.parse(res.body)
-              page.title must include(messages("removeWarehouseDetails" + ".title"))
-              val radioInputs = page.getElementsByClass("govuk-radios__input")
-              radioInputs.size() mustBe 2
-              radioInputs.get(0).attr("value") mustBe "true"
-              radioInputs.get(0).hasAttr("checked") mustBe false
-              radioInputs.get(1).attr("value") mustBe "false"
-              radioInputs.get(1).hasAttr("checked") mustBe false
+              whenReady(result) { res =>
+                res.status mustBe 200
+                val page = Jsoup.parse(res.body)
+                page.title must include(messages("removeWarehouseDetails" + ".title"))
+                val radioInputs = page.getElementsByClass("govuk-radios__input")
+                radioInputs.size() mustBe 2
+                radioInputs.get(0).attr("value") mustBe "true"
+                radioInputs.get(0).hasAttr("checked") mustBe false
+                radioInputs.get(1).attr("value") mustBe "false"
+                radioInputs.get(1).hasAttr("checked") mustBe false
+              }
             }
           }
         }
-      }
     }
 
     testUnauthorisedUser(baseUrl + checkRoutePath(indexOfWarehouseToBeRemoved))
@@ -119,77 +122,88 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
 
   s"POST " + normalRoutePath(indexOfWarehouseToBeRemoved) - {
 
-    userAnswersForUpdateRegisteredDetailsRemoveWarehouseDetailsPage(indexOfWarehouseToBeRemoved).foreach { case (key, userAnswers) =>
-      "when the user selects " + key - {
-        "should update the session with the new value and redirect to the Warehouse details controller" - {
-          "when the session contains no data for page" in {
-            build
-              .commonPrecondition
+    userAnswersForUpdateRegisteredDetailsRemoveWarehouseDetailsPage(indexOfWarehouseToBeRemoved).foreach {
+      case (key, userAnswers) =>
+        "when the user selects " + key - {
+          "should update the session with the new value and redirect to the Warehouse details controller" - {
+            "when the session contains no data for page" in {
+              build.commonPrecondition
 
-            setAnswers(emptyUserAnswers)
-            WsTestClient.withClient { client =>
-              val yesSelected = key == "yes"
-              val result = createClientRequestPOST(
-                client, baseUrl + normalRoutePath(indexOfWarehouseToBeRemoved), Json.obj("value" -> yesSelected.toString)
-              )
+              setAnswers(emptyUserAnswers)
+              WsTestClient.withClient { client =>
+                val yesSelected = key == "yes"
+                val result      = createClientRequestPOST(
+                  client,
+                  baseUrl + normalRoutePath(indexOfWarehouseToBeRemoved),
+                  Json.obj("value" -> yesSelected.toString)
+                )
 
-              whenReady(result) { res =>
-                res.status mustBe 303
-                res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.WarehouseDetailsController.onPageLoad(NormalMode).url)
+                whenReady(result) { res =>
+                  res.status mustBe 303
+                  res.header(HeaderNames.LOCATION) mustBe Some(
+                    controllers.routes.WarehouseDetailsController.onPageLoad(NormalMode).url
+                  )
+                }
               }
             }
-          }
 
-          "when the session already contains data for page" in {
-            build
-              .commonPrecondition
+            "when the session already contains data for page" in {
+              build.commonPrecondition
 
-            setAnswers(userAnswers)
-            getAnswers(userAnswers.id).get.warehouseList.size mustBe 1
-            WsTestClient.withClient { client =>
-              val yesSelected = key == "yes"
-              val result = createClientRequestPOST(
-                client, baseUrl + normalRoutePath(indexOfWarehouseToBeRemoved), Json.obj("value" -> yesSelected.toString)
-              )
+              setAnswers(userAnswers)
+              getAnswers(userAnswers.id).get.warehouseList.size mustBe 1
+              WsTestClient.withClient { client =>
+                val yesSelected = key == "yes"
+                val result      = createClientRequestPOST(
+                  client,
+                  baseUrl + normalRoutePath(indexOfWarehouseToBeRemoved),
+                  Json.obj("value" -> yesSelected.toString)
+                )
 
-              whenReady(result) { res =>
-                res.status mustBe 303
-                res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.WarehouseDetailsController.onPageLoad(NormalMode).url)
-                val userAnswersAfterTest = getAnswers(userAnswers.id)
-                val dataStoredForPage = userAnswersAfterTest.fold[Option[Boolean]](None)(_.get(RemoveWarehouseDetailsPage))
-                if(yesSelected) {
-                  userAnswersAfterTest.get.warehouseList.size mustBe 0
-                } else {
-                  userAnswersAfterTest.get.warehouseList.size mustBe 1
+                whenReady(result) { res =>
+                  res.status mustBe 303
+                  res.header(HeaderNames.LOCATION) mustBe Some(
+                    controllers.routes.WarehouseDetailsController.onPageLoad(NormalMode).url
+                  )
+                  val userAnswersAfterTest = getAnswers(userAnswers.id)
+                  val dataStoredForPage    =
+                    userAnswersAfterTest.fold[Option[Boolean]](None)(_.get(RemoveWarehouseDetailsPage))
+                  if (yesSelected) {
+                    userAnswersAfterTest.get.warehouseList.size mustBe 0
+                  } else {
+                    userAnswersAfterTest.get.warehouseList.size mustBe 1
+                  }
+                  dataStoredForPage.nonEmpty mustBe true
+                  dataStoredForPage.get mustBe yesSelected
                 }
-                dataStoredForPage.nonEmpty mustBe true
-                dataStoredForPage.get mustBe yesSelected
               }
             }
           }
         }
-      }
     }
 
     "when the user does not select yes or no" - {
       "should return 400 with required error" in {
-        build
-          .commonPrecondition
+        build.commonPrecondition
 
         setAnswers(
           emptyUserAnswers
-            .copy(warehouseList = Map(indexOfWarehouseToBeRemoved -> Warehouse(aTradingName, ukAddress))))
+            .copy(warehouseList = Map(indexOfWarehouseToBeRemoved -> Warehouse(aTradingName, ukAddress)))
+        )
         getAnswers(emptyUserAnswers.id).get.warehouseList.size mustBe 1
         WsTestClient.withClient { client =>
           val result = createClientRequestPOST(
-            client, baseUrl + normalRoutePath(indexOfWarehouseToBeRemoved), Json.obj("value" -> "")
+            client,
+            baseUrl + normalRoutePath(indexOfWarehouseToBeRemoved),
+            Json.obj("value" -> "")
           )
 
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
             page.title must include("Error: " + messages("removeWarehouseDetails" + ".title"))
-            val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
+            val errorSummary = page
+              .getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")
@@ -202,76 +216,92 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
       }
     }
     testUnauthorisedUser(baseUrl + normalRoutePath(indexOfWarehouseToBeRemoved), Some(Json.obj("value" -> "true")))
-    testUserWhoIsUnableToRegister(baseUrl + normalRoutePath(indexOfWarehouseToBeRemoved), Some(Json.obj("value" -> "true")))
-    testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath(indexOfWarehouseToBeRemoved), Some(Json.obj("value" -> "true")))
+    testUserWhoIsUnableToRegister(
+      baseUrl + normalRoutePath(indexOfWarehouseToBeRemoved),
+      Some(Json.obj("value" -> "true"))
+    )
+    testAuthenticatedUserButNoUserAnswers(
+      baseUrl + normalRoutePath(indexOfWarehouseToBeRemoved),
+      Some(Json.obj("value" -> "true"))
+    )
   }
 
   s"POST " + checkRoutePath(indexOfWarehouseToBeRemoved) - {
 
-    userAnswersForUpdateRegisteredDetailsRemoveWarehouseDetailsPage(indexOfWarehouseToBeRemoved).foreach { case (key, userAnswers) =>
-      "when the user selects " + key - {
-        "should update the session with the new value and redirect to the Warehouse details controller" - {
-          "when the session contains no data for page" in {
-            build
-              .commonPrecondition
+    userAnswersForUpdateRegisteredDetailsRemoveWarehouseDetailsPage(indexOfWarehouseToBeRemoved).foreach {
+      case (key, userAnswers) =>
+        "when the user selects " + key - {
+          "should update the session with the new value and redirect to the Warehouse details controller" - {
+            "when the session contains no data for page" in {
+              build.commonPrecondition
 
-            setAnswers(emptyUserAnswers)
-            WsTestClient.withClient { client =>
-              val yesSelected = key == "yes"
-              val result = createClientRequestPOST(
-                client, baseUrl + checkRoutePath(indexOfWarehouseToBeRemoved), Json.obj("value" -> yesSelected.toString)
-              )
+              setAnswers(emptyUserAnswers)
+              WsTestClient.withClient { client =>
+                val yesSelected = key == "yes"
+                val result      = createClientRequestPOST(
+                  client,
+                  baseUrl + checkRoutePath(indexOfWarehouseToBeRemoved),
+                  Json.obj("value" -> yesSelected.toString)
+                )
 
-              whenReady(result) { res =>
-                res.status mustBe 303
-                res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.WarehouseDetailsController.onPageLoad(CheckMode).url)
+                whenReady(result) { res =>
+                  res.status mustBe 303
+                  res.header(HeaderNames.LOCATION) mustBe Some(
+                    controllers.routes.WarehouseDetailsController.onPageLoad(CheckMode).url
+                  )
+                }
               }
             }
-          }
 
-          "when the session already contains data for page" in {
-            build
-              .commonPrecondition
+            "when the session already contains data for page" in {
+              build.commonPrecondition
 
-            setAnswers(userAnswers)
-            getAnswers(userAnswers.id).get.warehouseList.size mustBe 1
-            WsTestClient.withClient { client =>
-              val yesSelected = key == "yes"
-              val result = createClientRequestPOST(
-                client, baseUrl + checkRoutePath(indexOfWarehouseToBeRemoved), Json.obj("value" -> yesSelected.toString)
-              )
+              setAnswers(userAnswers)
+              getAnswers(userAnswers.id).get.warehouseList.size mustBe 1
+              WsTestClient.withClient { client =>
+                val yesSelected = key == "yes"
+                val result      = createClientRequestPOST(
+                  client,
+                  baseUrl + checkRoutePath(indexOfWarehouseToBeRemoved),
+                  Json.obj("value" -> yesSelected.toString)
+                )
 
-              whenReady(result) { res =>
-                res.status mustBe 303
-                res.header(HeaderNames.LOCATION) mustBe Some(controllers.routes.WarehouseDetailsController.onPageLoad(CheckMode).url)
-                val userAnswersAfterTest = getAnswers(userAnswers.id)
-                val dataStoredForPage = userAnswersAfterTest.fold[Option[Boolean]](None)(_.get(RemoveWarehouseDetailsPage))
-                dataStoredForPage.nonEmpty mustBe true
-                dataStoredForPage.get mustBe yesSelected
-                if(yesSelected) {
-                  userAnswersAfterTest.get.warehouseList.size mustBe 0
-                } else {
-                  userAnswersAfterTest.get.warehouseList.size mustBe 1
+                whenReady(result) { res =>
+                  res.status mustBe 303
+                  res.header(HeaderNames.LOCATION) mustBe Some(
+                    controllers.routes.WarehouseDetailsController.onPageLoad(CheckMode).url
+                  )
+                  val userAnswersAfterTest = getAnswers(userAnswers.id)
+                  val dataStoredForPage    =
+                    userAnswersAfterTest.fold[Option[Boolean]](None)(_.get(RemoveWarehouseDetailsPage))
+                  dataStoredForPage.nonEmpty mustBe true
+                  dataStoredForPage.get mustBe yesSelected
+                  if (yesSelected) {
+                    userAnswersAfterTest.get.warehouseList.size mustBe 0
+                  } else {
+                    userAnswersAfterTest.get.warehouseList.size mustBe 1
+                  }
                 }
               }
             }
           }
         }
-      }
     }
 
     "when the user does not select yes or no" - {
       "should return 400 with required error" in {
-        build
-          .commonPrecondition
+        build.commonPrecondition
 
         setAnswers(
           emptyUserAnswers
-            .copy(warehouseList = Map(indexOfWarehouseToBeRemoved -> Warehouse(aTradingName, ukAddress))))
+            .copy(warehouseList = Map(indexOfWarehouseToBeRemoved -> Warehouse(aTradingName, ukAddress)))
+        )
         getAnswers(emptyUserAnswers.id).get.warehouseList.size mustBe 1
         WsTestClient.withClient { client =>
           val result = createClientRequestPOST(
-            client, baseUrl + checkRoutePath(indexOfWarehouseToBeRemoved), Json.obj("value" -> "")
+            client,
+            baseUrl + checkRoutePath(indexOfWarehouseToBeRemoved),
+            Json.obj("value" -> "")
           )
 
           whenReady(result) { res =>
@@ -279,7 +309,8 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
             getAnswers(emptyUserAnswers.id).get.warehouseList.size mustBe 1
             val page = Jsoup.parse(res.body)
             page.title must include("Error: " + messages("removeWarehouseDetails" + ".title"))
-            val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
+            val errorSummary = page
+              .getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")
@@ -291,7 +322,13 @@ class RemoveWarehouseDetailsControllerISpec extends ControllerITTestHelper {
       }
     }
     testUnauthorisedUser(baseUrl + checkRoutePath(indexOfWarehouseToBeRemoved), Some(Json.obj("value" -> "true")))
-    testUserWhoIsUnableToRegister(baseUrl + checkRoutePath(indexOfWarehouseToBeRemoved), Some(Json.obj("value" -> "true")))
-    testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath(indexOfWarehouseToBeRemoved), Some(Json.obj("value" -> "true")))
+    testUserWhoIsUnableToRegister(
+      baseUrl + checkRoutePath(indexOfWarehouseToBeRemoved),
+      Some(Json.obj("value" -> "true"))
+    )
+    testAuthenticatedUserButNoUserAnswers(
+      baseUrl + checkRoutePath(indexOfWarehouseToBeRemoved),
+      Some(Json.obj("value" -> "true"))
+    )
   }
 }

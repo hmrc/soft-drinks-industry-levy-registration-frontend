@@ -16,9 +16,9 @@
 
 package models.backend
 
-import models.{ Contact, HowManyLitresGlobally, RosmWithUtr, UserAnswers }
-import pages.{ ContactDetailsPage, HowManyLitresGloballyPage, OrganisationTypePage, StartDatePage }
-import play.api.libs.json.{ Format, Json }
+import models.{Contact, HowManyLitresGlobally, RosmWithUtr, UserAnswers}
+import pages.{ContactDetailsPage, HowManyLitresGloballyPage, OrganisationTypePage, StartDatePage}
+import play.api.libs.json.{Format, Json}
 
 import java.time.LocalDate
 
@@ -31,15 +31,17 @@ case class Subscription(
   liabilityDate: LocalDate,
   productionSites: Seq[Site],
   warehouseSites: Seq[Site],
-  contact: Contact) {
-  def copacks = activity.Copackee.fold(false)(_.nonEmpty)
-  def isVoluntary(producerType: HowManyLitresGlobally) = producerType == HowManyLitresGlobally.Small && copacks && activity.CopackerAll.isEmpty && activity.Imported.isEmpty
+  contact: Contact
+) {
+  def copacks                                          = activity.Copackee.fold(false)(_.nonEmpty)
+  def isVoluntary(producerType: HowManyLitresGlobally) =
+    producerType == HowManyLitresGlobally.Small && copacks && activity.CopackerAll.isEmpty && activity.Imported.isEmpty
 }
 
 object Subscription {
   implicit val format: Format[Subscription] = Json.format[Subscription]
 
-  def generate(userAnswers: UserAnswers, rosmWithUtr: RosmWithUtr): Subscription = {
+  def generate(userAnswers: UserAnswers, rosmWithUtr: RosmWithUtr): Subscription =
     Subscription(
       utr = rosmWithUtr.utr,
       orgName = rosmWithUtr.rosmRegistration.organisationName,
@@ -49,75 +51,88 @@ object Subscription {
       liabilityDate = getLiabilityDate(userAnswers),
       productionSites = getProductionSites(userAnswers),
       warehouseSites = getWarehouses(userAnswers),
-      contact = getContact(userAnswers))
-  }
+      contact = getContact(userAnswers)
+    )
 
-  private def getOrganisationType(answers: UserAnswers) = {
-    answers.get(OrganisationTypePage).map(_.enumNum).getOrElse(throw new Exception("no organisation type in user answers"))
-  }
+  private def getOrganisationType(answers: UserAnswers) =
+    answers
+      .get(OrganisationTypePage)
+      .map(_.enumNum)
+      .getOrElse(throw new Exception("no organisation type in user answers"))
 
-  private def getActivity(answers: UserAnswers) = {
+  private def getActivity(answers: UserAnswers) =
     Activity.fromUserAnswers(answers)
-  }
 
-  private def getLiabilityDate(answers: UserAnswers) = {
+  private def getLiabilityDate(answers: UserAnswers) =
     answers.get(StartDatePage).getOrElse(LocalDate.now())
-  }
 
-  private def getProductionSites(answers: UserAnswers) = {
+  private def getProductionSites(answers: UserAnswers) =
     if (requiresPackagingSite(answers))
       answers.packagingSiteList.values.toSeq
     else List.empty[Site]
-  }
 
   private def requiresPackagingSite(answers: UserAnswers) = {
     val activity = getActivity(answers)
-    if (largeProducerRequiringPackingSite(activity) ||
+    if (
+      largeProducerRequiringPackingSite(activity) ||
       smallProducerRequiringPackingSite(activity, answers) ||
-      noneProducerRequiringPackingSite(activity, answers)) true else false
+      noneProducerRequiringPackingSite(activity, answers)
+    ) true
+    else false
   }
 
-  private def largeProducerRequiringPackingSite(activity: Activity) = {
+  private def largeProducerRequiringPackingSite(activity: Activity) =
     if (activity.isLarge && (activity.ProducedOwnBrand.isDefined || activity.CopackerAll.isDefined)) true else false
-  }
 
-  private def smallProducerRequiringPackingSite(activity: Activity, answers: UserAnswers) = {
-    if (answers.get(HowManyLitresGloballyPage).exists(_ == HowManyLitresGlobally.Small)
-      && activity.CopackerAll.isDefined) true else false
-  }
+  private def smallProducerRequiringPackingSite(activity: Activity, answers: UserAnswers) =
+    if (
+      answers.get(HowManyLitresGloballyPage).exists(_ == HowManyLitresGlobally.Small)
+      && activity.CopackerAll.isDefined
+    ) true
+    else false
 
-  private def noneProducerRequiringPackingSite(activity: Activity, answers: UserAnswers) = {
-    if (answers.get(HowManyLitresGloballyPage).exists(_ == HowManyLitresGlobally.None)
-      && activity.CopackerAll.isDefined) true else false
-  }
+  private def noneProducerRequiringPackingSite(activity: Activity, answers: UserAnswers) =
+    if (
+      answers.get(HowManyLitresGloballyPage).exists(_ == HowManyLitresGlobally.None)
+      && activity.CopackerAll.isDefined
+    ) true
+    else false
 
-  private def getWarehouses(answers: UserAnswers) = {
+  private def getWarehouses(answers: UserAnswers) =
     if (requiresWarehouses(answers)) {
-      answers.warehouseList.foldLeft[Seq[Site]](Seq.empty) {
-        case (list, (_, warehouse)) => list.+:(Site.fromWarehouse(warehouse))
+      answers.warehouseList.foldLeft[Seq[Site]](Seq.empty) { case (list, (_, warehouse)) =>
+        list.+:(Site.fromWarehouse(warehouse))
       }
     } else List.empty[Site]
-  }
 
   private def requiresWarehouses(answers: UserAnswers) = {
     val activity = getActivity(answers)
-    if (activity.isLarge ||
+    if (
+      activity.isLarge ||
       smallProducerRequiringWarehouse(activity, answers) ||
-      noneProducerRequiringWarehouse(activity, answers)) true else false
+      noneProducerRequiringWarehouse(activity, answers)
+    ) true
+    else false
   }
 
-  private def smallProducerRequiringWarehouse(activity: Activity, answers: UserAnswers) = {
-    if (answers.get(HowManyLitresGloballyPage).exists(_ == HowManyLitresGlobally.Small)
-      && (activity.CopackerAll.isDefined || activity.Imported.isDefined)) true else false
-  }
+  private def smallProducerRequiringWarehouse(activity: Activity, answers: UserAnswers) =
+    if (
+      answers.get(HowManyLitresGloballyPage).exists(_ == HowManyLitresGlobally.Small)
+      && (activity.CopackerAll.isDefined || activity.Imported.isDefined)
+    ) true
+    else false
 
-  private def noneProducerRequiringWarehouse(activity: Activity, answers: UserAnswers) = {
-    if (answers.get(HowManyLitresGloballyPage).exists(_ == HowManyLitresGlobally.None)
-      && (activity.CopackerAll.isDefined || activity.Imported.isDefined)) true else false
-  }
+  private def noneProducerRequiringWarehouse(activity: Activity, answers: UserAnswers) =
+    if (
+      answers.get(HowManyLitresGloballyPage).exists(_ == HowManyLitresGlobally.None)
+      && (activity.CopackerAll.isDefined || activity.Imported.isDefined)
+    ) true
+    else false
 
-  private def getContact(answers: UserAnswers) = {
-    answers.get(ContactDetailsPage).map(Contact.fromContactDetails).getOrElse(throw new Exception("no contact details in user answers"))
-  }
+  private def getContact(answers: UserAnswers) =
+    answers
+      .get(ContactDetailsPage)
+      .map(Contact.fromContactDetails)
+      .getOrElse(throw new Exception("no contact details in user answers"))
 
 }

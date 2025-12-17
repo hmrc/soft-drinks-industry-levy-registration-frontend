@@ -25,39 +25,37 @@ import play.api.test.FakeRequest
 
 trait LitresISpecHelper extends ControllerITTestHelper {
 
-
-  val lowBandValue: Long = 1000
-  val highBandValue: Long = 2000
-  val lowBandValueDiff: Long = 1100
-  val highBandValueDiff: Long = 2200
-  val litresInBands: LitresInBands = LitresInBands(lowBandValue, highBandValue)
+  val lowBandValue: Long               = 1000
+  val highBandValue: Long              = 2000
+  val lowBandValueDiff: Long           = 1100
+  val highBandValueDiff: Long          = 2200
+  val litresInBands: LitresInBands     = LitresInBands(lowBandValue, highBandValue)
   val litresInBandsDiff: LitresInBands = LitresInBands(lowBandValueDiff, highBandValueDiff)
 
-  val emptyJson: JsObject = Json.obj("lowBand" -> "", "highBand" -> "")
-  val jsonWithNoNumeric: JsObject = Json.obj("lowBand" -> "x", "highBand" -> "y")
-  val jsonWithNegativeNumber: JsObject = Json.obj("lowBand" -> "-1", "highBand" -> "-2")
-  val jsonWithDecimalNumber: JsObject = Json.obj("lowBand" -> "1.8", "highBand" -> "2.3")
+  val emptyJson: JsObject                = Json.obj("lowBand" -> "", "highBand" -> "")
+  val jsonWithNoNumeric: JsObject        = Json.obj("lowBand" -> "x", "highBand" -> "y")
+  val jsonWithNegativeNumber: JsObject   = Json.obj("lowBand" -> "-1", "highBand" -> "-2")
+  val jsonWithDecimalNumber: JsObject    = Json.obj("lowBand" -> "1.8", "highBand" -> "2.3")
   val jsonWithOutOfRangeNumber: JsObject = Json.obj("lowBand" -> "110000000000000", "highBand" -> "120000000000000")
 
   given messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-  given messages: Messages = messagesApi.preferred(FakeRequest())
-  
+  given messages: Messages       = messagesApi.preferred(FakeRequest())
+
   object Selectors {
-    val heading = "govuk-heading-l"
-    val body = "govuk-body"
+    val heading           = "govuk-heading-l"
+    val body              = "govuk-body"
     val errorSummaryTitle = "govuk-error-summary__title"
-    val errorSummaryList = "govuk-list govuk-error-summary__list"
-    val govukFormGroup = "govuk-form-group"
-    val label = "govuk-label"
-    val button = "govuk-button"
-    val form = "form"
+    val errorSummaryList  = "govuk-list govuk-error-summary__list"
+    val govukFormGroup    = "govuk-form-group"
+    val label             = "govuk-label"
+    val button            = "govuk-button"
+    val form              = "form"
   }
 
-
   def testLitresInBandsWithPrepopulatedData(document: Document): Unit = {
-    val formGroups = document.getElementsByClass(Selectors.govukFormGroup)
+    val formGroups    = document.getElementsByClass(Selectors.govukFormGroup)
     formGroups.size() mustEqual 2
-    val lowBandGroup = formGroups.get(0)
+    val lowBandGroup  = formGroups.get(0)
     lowBandGroup.getElementsByClass(Selectors.label).text() mustBe messages("litres.lowBand")
     lowBandGroup.getElementById("lowBand-hint").text() mustBe messages("litres.lowBandHint")
     lowBandGroup.getElementById("lowBand").hasAttr("value") mustBe true
@@ -70,9 +68,9 @@ trait LitresISpecHelper extends ControllerITTestHelper {
   }
 
   def testLitresInBandsNoPrepopulatedData(document: Document): Unit = {
-    val formGroups = document.getElementsByClass(Selectors.govukFormGroup)
+    val formGroups    = document.getElementsByClass(Selectors.govukFormGroup)
     formGroups.size() mustEqual 2
-    val lowBandGroup = formGroups.get(0)
+    val lowBandGroup  = formGroups.get(0)
     lowBandGroup.getElementsByClass(Selectors.label).text() mustBe messages("litres.lowBand")
     lowBandGroup.getElementById("lowBand-hint").text() mustBe messages("litres.lowBandHint")
     lowBandGroup.getElementById("lowBand").hasAttr("value") mustBe false
@@ -87,7 +85,7 @@ trait LitresISpecHelper extends ControllerITTestHelper {
     val errorSummary = document
       .getElementsByClass(Selectors.errorSummaryList)
       .first()
-    val errors = errorSummary.getElementsByTag("li")
+    val errors       = errorSummary.getElementsByTag("li")
 
     errors.size() mustEqual 2
     val error1 = errors.get(0)
@@ -104,7 +102,7 @@ trait LitresISpecHelper extends ControllerITTestHelper {
     val errorSummary = document
       .getElementsByClass(Selectors.errorSummaryList)
       .first()
-    val errors = errorSummary.getElementsByTag("li")
+    val errors       = errorSummary.getElementsByTag("li")
 
     errors.size() mustEqual 2
     val error1 = errors.get(0)
@@ -121,7 +119,7 @@ trait LitresISpecHelper extends ControllerITTestHelper {
     val errorSummary = document
       .getElementsByClass(Selectors.errorSummaryList)
       .first()
-    val errors = errorSummary.getElementsByTag("li")
+    val errors       = errorSummary.getElementsByTag("li")
 
     errors.size() mustEqual 2
     val error1 = errors.get(0)
@@ -138,7 +136,7 @@ trait LitresISpecHelper extends ControllerITTestHelper {
     val errorSummary = document
       .getElementsByClass(Selectors.errorSummaryList)
       .first()
-    val errors = errorSummary.getElementsByTag("li")
+    val errors       = errorSummary.getElementsByTag("li")
 
     errors.size() mustEqual 2
     val error1 = errors.get(0)
@@ -155,7 +153,7 @@ trait LitresISpecHelper extends ControllerITTestHelper {
     val errorSummary = document
       .getElementsByClass(Selectors.errorSummaryList)
       .first()
-    val errors = errorSummary.getElementsByTag("li")
+    val errors       = errorSummary.getElementsByTag("li")
 
     errors.size() mustEqual 2
     val error1 = errors.get(0)

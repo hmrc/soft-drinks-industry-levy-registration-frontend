@@ -29,7 +29,8 @@ case class RetrievedSubscription(
   activity: RetrievedActivity,
   liabilityDate: LocalDate,
   contact: Contact,
-  deregDate: Option[LocalDate] = None)
+  deregDate: Option[LocalDate] = None
+)
 
 object RetrievedSubscription {
   implicit val format: OFormat[RetrievedSubscription] = Json.format[RetrievedSubscription]

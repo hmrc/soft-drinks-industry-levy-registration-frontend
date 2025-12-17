@@ -27,7 +27,8 @@ class DoNotRegisterControllerSpec extends SpecBase {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration).build()
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration).build()
 
       running(application) {
         val request = FakeRequest(GET, routes.DoNotRegisterController.onPageLoad.url)
@@ -37,7 +38,7 @@ class DoNotRegisterControllerSpec extends SpecBase {
         val view = application.injector.instanceOf[DoNotRegisterView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view()(request, messages(application)).toString
+        contentAsString(result) mustEqual view()(using request, messages(application)).toString
       }
     }
   }

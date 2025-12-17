@@ -17,13 +17,13 @@
 package models
 
 import org.scalatest.funsuite.AnyFunSuite
-import play.api.libs.json.{Json, JsSuccess}
+import play.api.libs.json.{JsSuccess, Json}
 
 class ProducerSpec extends AnyFunSuite {
 
   test("Producer should serialize and deserialize correctly") {
-    val producer = Producer(isProducer = true, isLarge = Some(true))
-    val json = Json.toJson(producer)
+    val producer     = Producer(isProducer = true, isLarge = Some(true))
+    val json         = Json.toJson(producer)
     val deserialized = json.validate[Producer]
     assert(deserialized == JsSuccess(producer))
   }

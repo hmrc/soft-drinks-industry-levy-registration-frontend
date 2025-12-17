@@ -30,57 +30,44 @@ import views.html.PackagingSiteDetailsView
 class PackagingSiteDetailsViewSpec extends ViewSpecHelper {
 
   val view: PackagingSiteDetailsView = application.injector.instanceOf[PackagingSiteDetailsView]
-  val formProvider = new PackagingSiteDetailsFormProvider
-  val form: Form[Boolean] = formProvider.apply()
-  implicit val request: Request[_] = FakeRequest()
+  val formProvider                   = new PackagingSiteDetailsFormProvider
+  val form: Form[Boolean]            = formProvider.apply()
+  implicit val request: Request[?]   = FakeRequest()
 
-  val PackagingSite1: Site = Site(
-    UkAddress(List("33 Rhes Priordy", "East London"), "E73 2RP"),
-    None,
-    "Wild Lemonade Group",
-    None)
-  val address45Characters: Site = Site(
-    UkAddress(List("29 Station Pl.", "The Railyard", "Cambridge"), "CB1 2FP"),
-    None,
-    aTradingName,
-    None)
+  val PackagingSite1: Site      =
+    Site(UkAddress(List("33 Rhes Priordy", "East London"), "E73 2RP"), None, "Wild Lemonade Group", None)
+  val address45Characters: Site =
+    Site(UkAddress(List("29 Station Pl.", "The Railyard", "Cambridge"), "CB1 2FP"), None, aTradingName, None)
 
-  val address47Characters: Site = Site(
-    UkAddress(List("29 Station Place", "The Railyard", "Cambridge"), "CB1 2FP"),
-    Some("10"),
-    aTradingName,
-    None)
+  val address47Characters: Site =
+    Site(UkAddress(List("29 Station Place", "The Railyard", "Cambridge"), "CB1 2FP"), Some("10"), aTradingName, None)
 
-  val address49Characters: Site = Site(
-    UkAddress(List("29 Station PlaceDr", "The Railyard", "Cambridge"), "CB1 2FP"),
-    None,
-    aTradingName,
-    None)
+  val address49Characters: Site =
+    Site(UkAddress(List("29 Station PlaceDr", "The Railyard", "Cambridge"), "CB1 2FP"), None, aTradingName, None)
 
   lazy val packagingSiteListWith1: Map[String, Site] = Map(("78941132", PackagingSite1))
 
-
   object Selectors {
-    val heading = "govuk-fieldset__heading"
-    val legend = "govuk-fieldset__legend  govuk-fieldset__legend--m"
-    val radios = "govuk-radios__item"
-    val radioInput = "govuk-radios__input"
-    val radioLabels = "govuk-label govuk-radios__label"
-    val body = "govuk-body"
-    val summaryList = "govuk-summary-list"
-    val summaryListRow = "govuk-summary-list__row"
-    val summaryListKey = "govuk-summary-list__key"
+    val heading            = "govuk-fieldset__heading"
+    val legend             = "govuk-fieldset__legend  govuk-fieldset__legend--m"
+    val radios             = "govuk-radios__item"
+    val radioInput         = "govuk-radios__input"
+    val radioLabels        = "govuk-label govuk-radios__label"
+    val body               = "govuk-body"
+    val summaryList        = "govuk-summary-list"
+    val summaryListRow     = "govuk-summary-list__row"
+    val summaryListKey     = "govuk-summary-list__key"
     val summaryListActions = "govuk-summary-list__value"
-    val hidden = "govuk-visually-hidden"
-    val link = "govuk-link"
-    val errorSummaryTitle = "govuk-error-summary__title"
-    val errorSummaryList = "govuk-list govuk-error-summary__list"
-    val button = "govuk-button"
-    val form = "form"
+    val hidden             = "govuk-visually-hidden"
+    val link               = "govuk-link"
+    val errorSummaryTitle  = "govuk-error-summary__title"
+    val errorSummaryList   = "govuk-list govuk-error-summary__list"
+    val button             = "govuk-button"
+    val form               = "form"
   }
 
   def getDocument(packagingSites: Map[String, Site], mode: Mode) = {
-    val html = view(form, mode, packagingSites)(request, messages(application))
+    val html = view(form, mode, packagingSites)(using request, messages(application))
     doc(html)
   }
 
@@ -89,7 +76,7 @@ class PackagingSiteDetailsViewSpec extends ViewSpecHelper {
       s"In ${mode.toString}" - {
         List(packagingSiteListWith1, packagingSiteListWith3).foreach { packagingSites =>
           val numberOfPackagingSites = packagingSites.size
-          val document = getDocument(packagingSites, mode)
+          val document               = getDocument(packagingSites, mode)
           s"when $numberOfPackagingSites packaging site has been added" - {
             "should contain the expected title" in {
               val expectedTitle = if (numberOfPackagingSites > 1) {
@@ -106,7 +93,7 @@ class PackagingSiteDetailsViewSpec extends ViewSpecHelper {
               } else {
                 Messages("packagingSiteDetails.heading1Site")
               }
-              val h1 = document.getElementsByTag("h1")
+              val h1              = document.getElementsByTag("h1")
               h1.size() mustBe 1
               h1.text() mustEqual expectedHeading
             }
@@ -126,15 +113,18 @@ class PackagingSiteDetailsViewSpec extends ViewSpecHelper {
               packagingSites.zipWithIndex.foreach { case ((id, site), index) =>
                 s"that includes a summary row for ${site.address.lines.head}" in {
                   val summaryRow = summaryListRows.get(index)
-                  summaryRow.getElementsByTag("dt").text() must include((site.address.lines :+ site.address.postCode).mkString(", "))
-                  val action = summaryRow.getElementsByClass(Selectors.link)
+                  summaryRow.getElementsByTag("dt").text() must include(
+                    (site.address.lines :+ site.address.postCode).mkString(", ")
+                  )
+                  val action        = summaryRow.getElementsByClass(Selectors.link)
                   if (numberOfPackagingSites > 1) {
                     action.text() must include("Remove")
                     action.attr("href") mustBe routes.RemovePackagingSiteDetailsController.onPageLoad(mode, id).url
                   } else {
                     Messages("packagingSiteDetails.title1Site")
                   }
-                  val expectedTitle = s"You added $numberOfPackagingSites UK packaging site${if (numberOfPackagingSites != 1) "s" else ""} - Soft Drinks Industry Levy - GOV.UK"
+                  val expectedTitle =
+                    s"You added $numberOfPackagingSites UK packaging site${if (numberOfPackagingSites != 1) "s" else ""} - Soft Drinks Industry Levy - GOV.UK"
                   document.title() must include(expectedTitle)
                 }
               }
@@ -183,7 +173,7 @@ class PackagingSiteDetailsViewSpec extends ViewSpecHelper {
             }
 
             "when the form is not preoccupied with yes and has no errors" - {
-              val html1 = view(form, mode, packagingSiteListWith1)(request, messages(application))
+              val html1     = view(form, mode, packagingSiteListWith1)(using request, messages(application))
               val document1 = doc(html1)
               "should have radio buttons" - {
                 val radioButtons = document1.getElementsByClass(Selectors.radios)
@@ -218,7 +208,7 @@ class PackagingSiteDetailsViewSpec extends ViewSpecHelper {
             }
 
             "when the form is not preoccupied with no and has no errors" - {
-              val html1 = view(form, mode, packagingSiteListWith1)(request, messages(application))
+              val html1     = view(form, mode, packagingSiteListWith1)(using request, messages(application))
               val document1 = doc(html1)
               "should have radio buttons" - {
                 val radioButtons = document1.getElementsByClass(Selectors.radios)
@@ -258,38 +248,43 @@ class PackagingSiteDetailsViewSpec extends ViewSpecHelper {
 
             "contains a form with the correct action" - {
               "when in CheckMode" - {
-                val html = view(form, CheckMode, packagingSiteListWith1)(request, messages(application))
+                val html     = view(form, CheckMode, packagingSiteListWith1)(using request, messages(application))
                 val document = doc(html)
 
                 "and yes is selected" in {
-                  document.select(Selectors.form)
+                  document
+                    .select(Selectors.form)
                     .attr("action") mustEqual routes.PackagingSiteDetailsController.onSubmit(CheckMode).url
                 }
 
                 "and no is selected" in {
-                  document.select(Selectors.form)
+                  document
+                    .select(Selectors.form)
                     .attr("action") mustEqual routes.PackagingSiteDetailsController.onSubmit(CheckMode).url
                 }
               }
 
               "when in mode" - {
-                val html = view(form, mode, packagingSiteListWith1)(request, messages(application))
+                val html     = view(form, mode, packagingSiteListWith1)(using request, messages(application))
                 val document = doc(html)
 
                 "and yes is selected" in {
-                  document.select(Selectors.form)
+                  document
+                    .select(Selectors.form)
                     .attr("action") mustEqual routes.PackagingSiteDetailsController.onSubmit(mode).url
                 }
 
                 "and no is selected" in {
-                  document.select(Selectors.form)
+                  document
+                    .select(Selectors.form)
                     .attr("action") mustEqual routes.PackagingSiteDetailsController.onSubmit(mode).url
                 }
               }
             }
 
             "when there are form errors" - {
-              val htmlWithErrors = view(form.bind(Map("value" -> "")), mode, packagingSiteListWith1)(request, messages(application))
+              val htmlWithErrors     =
+                view(form.bind(Map("value" -> "")), mode, packagingSiteListWith1)(using request, messages(application))
               val documentWithErrors = doc(htmlWithErrors)
 
               "should have a title containing error" in {

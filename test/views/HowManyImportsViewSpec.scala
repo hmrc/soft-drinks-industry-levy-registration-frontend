@@ -29,26 +29,26 @@ class HowManyImportsViewSpec extends LitresSpecHelper {
 
   val howManyImportsView: HowManyImportsView = application.injector.instanceOf[HowManyImportsView]
 
-  implicit val request: Request[_] = FakeRequest()
+  implicit val request: Request[?]       = FakeRequest()
   implicit val config: FrontendAppConfig = application.injector.instanceOf[FrontendAppConfig]
 
   "HowManyImportsView" - {
     List(NormalMode, CheckMode).foreach { mode =>
-      "when in " + mode +" mode" - {
-        val html: HtmlFormat.Appendable = howManyImportsView(form, mode)
-        val document = doc(html)
-        val htmlWithValidData: HtmlFormat.Appendable = howManyImportsView(formWithHighAndLowBands, mode)
-        val documentWithValidData = doc(htmlWithValidData)
-        val htmlFormErrorsEmpty: HtmlFormat.Appendable = howManyImportsView(emptyForm, mode)
-        val documentFormErrorsEmpty = doc(htmlFormErrorsEmpty)
-        val htmlFormErrorsNegative: HtmlFormat.Appendable = howManyImportsView(formWithNegativeNumber, mode)
-        val documentFormErrorsNegative = doc(htmlFormErrorsNegative)
+      "when in " + mode + " mode" - {
+        val html: HtmlFormat.Appendable                      = howManyImportsView(form, mode)
+        val document                                         = doc(html)
+        val htmlWithValidData: HtmlFormat.Appendable         = howManyImportsView(formWithHighAndLowBands, mode)
+        val documentWithValidData                            = doc(htmlWithValidData)
+        val htmlFormErrorsEmpty: HtmlFormat.Appendable       = howManyImportsView(emptyForm, mode)
+        val documentFormErrorsEmpty                          = doc(htmlFormErrorsEmpty)
+        val htmlFormErrorsNegative: HtmlFormat.Appendable    = howManyImportsView(formWithNegativeNumber, mode)
+        val documentFormErrorsNegative                       = doc(htmlFormErrorsNegative)
         val htmlFormErrorsNoneNumeric: HtmlFormat.Appendable = howManyImportsView(formWithNoNumeric, mode)
-        val documentFormErrorsNoneNumeric = doc(htmlFormErrorsNoneNumeric)
-        val htmlFormErrorsNotWhole: HtmlFormat.Appendable = howManyImportsView(formWithDecimalNumber, mode)
-        val documentFormErrorsNotWhole = doc(htmlFormErrorsNotWhole)
-        val htmlFormErrorsOutOfRange: HtmlFormat.Appendable = howManyImportsView(formWithOutOfRangeNumber, mode)
-        val documentFormErrorsOutOfRange = doc(htmlFormErrorsOutOfRange)
+        val documentFormErrorsNoneNumeric                    = doc(htmlFormErrorsNoneNumeric)
+        val htmlFormErrorsNotWhole: HtmlFormat.Appendable    = howManyImportsView(formWithDecimalNumber, mode)
+        val documentFormErrorsNotWhole                       = doc(htmlFormErrorsNotWhole)
+        val htmlFormErrorsOutOfRange: HtmlFormat.Appendable  = howManyImportsView(formWithOutOfRangeNumber, mode)
+        val documentFormErrorsOutOfRange                     = doc(htmlFormErrorsOutOfRange)
 
         "should have the expected title" in {
           document.title() must include(Messages("howManyImports.title"))

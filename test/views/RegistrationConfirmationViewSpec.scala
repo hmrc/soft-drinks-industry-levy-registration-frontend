@@ -27,37 +27,40 @@ import java.time.LocalDateTime
 
 class RegistrationConfirmationViewSpec extends ViewSpecHelper {
 
-  val view = application.injector.instanceOf[RegistrationConfirmationView]
-  implicit val request: Request[_] = FakeRequest()
-  val companyName = "Super Lemonade Lmt"
-  val submittedDateTime = LocalDateTime.of(2023, 7, 10, 14, 30)
-  val emailAddress = "test@email.com"
-  val summaryList: Seq[(String, SummaryList)] = {
+  val view                                    = application.injector.instanceOf[RegistrationConfirmationView]
+  implicit val request: Request[?]            = FakeRequest()
+  val companyName                             = "Super Lemonade Lmt"
+  val submittedDateTime                       = LocalDateTime.of(2023, 7, 10, 14, 30)
+  val emailAddress                            = "test@email.com"
+  val summaryList: Seq[(String, SummaryList)] =
     Seq(
-      "foo" -> SummaryList(Seq(SummaryListRow(value = Value(content = HtmlContent("bar"))))),
+      "foo"  -> SummaryList(Seq(SummaryListRow(value = Value(content = HtmlContent("bar"))))),
       "wizz" -> SummaryList(Seq(SummaryListRow(value = Value(content = HtmlContent("bang")))))
     )
-  }
 
   object Selectors {
-    val heading = "govuk-heading-l"
-    val panel = "govuk-panel govuk-panel--confirmation panel-indent"
-    val panel_title = "govuk-panel__title"
-    val panel_body = "govuk-panel__body"
-    val bodyM = "govuk-body-m"
-    val body = "govuk-body"
-    val link = "govuk-link"
-    val details = "govuk-details"
-    val detailsText = "govuk-details__summary-text"
-    val detailsContent = "govuk-details__text"
+    val heading            = "govuk-heading-l"
+    val panel              = "govuk-panel govuk-panel--confirmation panel-indent"
+    val panel_title        = "govuk-panel__title"
+    val panel_body         = "govuk-panel__body"
+    val bodyM              = "govuk-body-m"
+    val body               = "govuk-body"
+    val link               = "govuk-link"
+    val details            = "govuk-details"
+    val detailsText        = "govuk-details__summary-text"
+    val detailsContent     = "govuk-details__text"
     val summaryListHeading = "govuk-heading-m"
-    val summaryList = "govuk-summary-list"
-    val summaryRow = "govuk-summary-list__row"
-    val summaryValue = "govuk-summary-list__value"
+    val summaryList        = "govuk-summary-list"
+    val summaryRow         = "govuk-summary-list__row"
+    val summaryValue       = "govuk-summary-list__value"
   }
 
   "View" - {
-    val html = view(summaryList, submittedDateTime, companyName, emailAddress)(request, messages(application), frontendAppConfig)
+    val html     = view(summaryList, submittedDateTime, companyName, emailAddress)(using
+      request,
+      messages(application),
+      frontendAppConfig
+    )
     val document = doc(html)
     "should contain the expected title" in {
       document.title() mustEqual "Application complete - Soft Drinks Industry Levy - GOV.UK"
@@ -66,12 +69,14 @@ class RegistrationConfirmationViewSpec extends ViewSpecHelper {
     "should include the expected panel" in {
       val panel = document.getElementsByClass(Selectors.panel).get(0)
       panel.getElementsByClass(Selectors.panel_title).text() mustEqual "Application complete"
-      panel.getElementsByClass(Selectors.panel_body).text() mustEqual s"We have received your application to register $companyName for the Soft Drinks Industry Levy"
+      panel
+        .getElementsByClass(Selectors.panel_body)
+        .text() mustEqual s"We have received your application to register $companyName for the Soft Drinks Industry Levy"
     }
 
     "should include a link to print page" in {
       val printPageElements = document.getElementById("printPage")
-      val link = printPageElements.getElementsByClass(Selectors.link)
+      val link              = printPageElements.getElementsByClass(Selectors.link)
       link.text() mustEqual Messages("site.print")
       link.attr("href") mustEqual "#print-dialogue"
     }
@@ -79,7 +84,8 @@ class RegistrationConfirmationViewSpec extends ViewSpecHelper {
     "that has a body" - {
       "which states the registration sent" in {
         val applicationSentAt = document.getElementById("applicationSentAt")
-        applicationSentAt.text() mustBe "Your application to register for the Soft Drinks Industry Levy was sent on 10 July 2023 at 2:30pm."
+        applicationSentAt
+          .text() mustBe "Your application to register for the Soft Drinks Industry Levy was sent on 10 July 2023 at 2:30pm."
       }
 
       "which states a confirmation email sent" in {
@@ -106,7 +112,7 @@ class RegistrationConfirmationViewSpec extends ViewSpecHelper {
           subHeading.text() mustEqual "Help using this service"
         }
         "that has the expected body" in {
-          val p1 = document.getElementById("needHelpP1")
+          val p1        = document.getElementById("needHelpP1")
           p1.text() mustEqual "Call the Soft Drinks Industry Helpline on 0300 200 3700 if you:"
           val listItems = document.getElementById("helpList").getElementsByTag("li")
           listItems.size() mustBe 2
@@ -118,23 +124,31 @@ class RegistrationConfirmationViewSpec extends ViewSpecHelper {
       "which include a details section" - {
         val details = document.getElementsByClass(Selectors.details).get(0)
         "that has the expected details summary text" in {
-          details.getElementsByClass(Selectors.detailsText).text() mustEqual Messages("registrationConfirmation.detailsSummary")
+          details.getElementsByClass(Selectors.detailsText).text() mustEqual Messages(
+            "registrationConfirmation.detailsSummary"
+          )
         }
 
         "that has the expected content" in {
           val detailsContent = details.getElementsByClass(Selectors.detailsContent).first()
           detailsContent.getElementsByClass(Selectors.summaryListHeading).first().text() mustBe "foo"
-          detailsContent.getElementsByClass(Selectors.summaryList)
+          detailsContent
+            .getElementsByClass(Selectors.summaryList)
             .first()
             .getElementsByClass(Selectors.summaryRow)
             .first()
-            .getElementsByClass(Selectors.summaryValue).first().text() mustBe "bar"
+            .getElementsByClass(Selectors.summaryValue)
+            .first()
+            .text() mustBe "bar"
           detailsContent.getElementsByClass(Selectors.summaryListHeading).last().text() mustBe "wizz"
-          detailsContent.getElementsByClass(Selectors.summaryList)
+          detailsContent
+            .getElementsByClass(Selectors.summaryList)
             .last()
             .getElementsByClass(Selectors.summaryRow)
             .first()
-            .getElementsByClass(Selectors.summaryValue).first().text() mustBe "bang"
+            .getElementsByClass(Selectors.summaryValue)
+            .first()
+            .text() mustBe "bang"
         }
       }
     }

@@ -12,16 +12,15 @@ import play.api.test.{FakeRequest, WsTestClient}
 class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
 
   val normalRoutePath = "/packaging-site-details"
-  val checkRoutePath = "/change-packaging-site-details"
+  val checkRoutePath  = "/change-packaging-site-details"
 
   given messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-  given messages: Messages = messagesApi.preferred(FakeRequest())
+  given messages: Messages       = messagesApi.preferred(FakeRequest())
 
   "GET " + normalRoutePath - {
     "when the userAnswers contains 0 packaging sites" - {
       s"must redirect to $PackAtBusinessAddressPage on a GET if the packaging site list is empty" in {
-        build
-          .commonPrecondition
+        build.commonPrecondition
 
         setAnswers(emptyUserAnswers)
         WsTestClient.withClient { client =>
@@ -29,7 +28,9 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
 
           whenReady(result1) { res =>
             res.status mustBe 303
-            res.header(HeaderNames.LOCATION) mustBe Some(routes.PackAtBusinessAddressController.onPageLoad(NormalMode).url)
+            res.header(HeaderNames.LOCATION) mustBe Some(
+              routes.PackAtBusinessAddressController.onPageLoad(NormalMode).url
+            )
           }
         }
       }
@@ -37,8 +38,7 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
 
     "when the userAnswers contains 1 packaging site and no data" - {
       "should return OK and render the PackagingSiteDetails page with no radio items selected" in {
-        build
-          .commonPrecondition
+        build.commonPrecondition
 
         setAnswers(userAnswersWith1PackingSite)
         WsTestClient.withClient { client =>
@@ -48,12 +48,14 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
             page.title must include(messages("packagingSiteDetails" + ".title1Site"))
-            val summaryList = page.getElementsByClass("govuk-summary-list")
+            val summaryList     = page.getElementsByClass("govuk-summary-list")
             summaryList.size mustBe 1
             val summaryListRows = summaryList.get(0).getElementsByClass("govuk-summary-list__row")
             summaryListRows.size() mustBe 1
-            val summaryRow = summaryListRows.get(0)
-            summaryRow.text() must include((packagingSite1.address.lines :+ packagingSite1.address.postCode).mkString(", "))
+            val summaryRow      = summaryListRows.get(0)
+            summaryRow.text() must include(
+              (packagingSite1.address.lines :+ packagingSite1.address.postCode).mkString(", ")
+            )
             val radioInputs = page.getElementsByClass("govuk-radios__input")
             radioInputs.size() mustBe 2
             radioInputs.get(0).attr("value") mustBe "true"
@@ -67,8 +69,7 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
 
     "when the userAnswers contains more than 1 packaging site and no data" - {
       "should return OK and render the PackagingSiteDetails page with no data populated" in {
-        build
-          .commonPrecondition
+        build.commonPrecondition
 
         setAnswers(emptyUserAnswers.copy(packagingSiteList = packagingSiteListWith3))
 
@@ -79,7 +80,7 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
             page.title must include(messages("packagingSiteDetails" + ".titleMultipleSites", 3))
-            val summaryList = page.getElementsByClass("govuk-summary-list")
+            val summaryList     = page.getElementsByClass("govuk-summary-list")
             summaryList.size mustBe 1
             val summaryListRows = summaryList.get(0).getElementsByClass("govuk-summary-list__row")
             summaryListRows.size() mustBe 3
@@ -87,7 +88,7 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
               val summaryRow = summaryListRows.get(index)
               summaryRow.text() must include(site.address.lines.mkString(", ") + s", ${site.address.postCode}")
             }
-            val radioInputs = page.getElementsByClass("govuk-radios__input")
+            val radioInputs     = page.getElementsByClass("govuk-radios__input")
             radioInputs.size() mustBe 2
             radioInputs.get(0).attr("value") mustBe "true"
             radioInputs.get(0).hasAttr("checked") mustBe false
@@ -101,8 +102,7 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
     userAnswersForPackagingSiteDetailsPage.foreach { case (key, userAnswers) =>
       s"when the userAnswers contains data for the page with " + key + " selected" - {
         s"should return OK and render the page with " + key + " radio unchecked" in {
-          build
-            .commonPrecondition
+          build.commonPrecondition
 
           setAnswers(userAnswers)
 
@@ -124,16 +124,20 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
         }
       }
     }
-    testOtherSuccessUserTypes(baseUrl + normalRoutePath, messages("packagingSiteDetails" + ".title1Site"), userAnswersWith1PackingSite)
+    testOtherSuccessUserTypes(
+      baseUrl + normalRoutePath,
+      messages("packagingSiteDetails" + ".title1Site"),
+      userAnswersWith1PackingSite
+    )
     testUnauthorisedUser(baseUrl + normalRoutePath)
     testUserWhoIsUnableToRegister(baseUrl + normalRoutePath)
-    testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)  }
+    testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)
+  }
 
   s"GET " + checkRoutePath - {
     "when the userAnswers contains 1 packaging site and no data" - {
       "should return OK and render the PackagingSiteDetails page with no data populated" in {
-        build
-          .commonPrecondition
+        build.commonPrecondition
 
         setAnswers(userAnswersWith1PackingSite)
 
@@ -144,12 +148,14 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
             page.title must include(messages("packagingSiteDetails" + ".title1Site"))
-            val summaryList = page.getElementsByClass("govuk-summary-list")
+            val summaryList     = page.getElementsByClass("govuk-summary-list")
             summaryList.size mustBe 1
             val summaryListRows = summaryList.get(0).getElementsByClass("govuk-summary-list__row")
             summaryListRows.size() mustBe 1
-            val summaryRow = summaryListRows.get(0)
-            summaryRow.text() must include((packagingSite1.address.lines :+ packagingSite1.address.postCode).mkString(", "))
+            val summaryRow      = summaryListRows.get(0)
+            summaryRow.text() must include(
+              (packagingSite1.address.lines :+ packagingSite1.address.postCode).mkString(", ")
+            )
             val radioInputs = page.getElementsByClass("govuk-radios__input")
             radioInputs.size() mustBe 2
             radioInputs.get(0).attr("value") mustBe "true"
@@ -163,8 +169,7 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
 
     "when the userAnswers contains more than 1 packaging site and no data" - {
       "should return OK and render the PackagingSiteDetails page with no data populated" in {
-        build
-          .commonPrecondition
+        build.commonPrecondition
 
         setAnswers(emptyUserAnswers.copy(packagingSiteList = packagingSiteListWith3))
 
@@ -175,15 +180,15 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
             res.status mustBe 200
             val page = Jsoup.parse(res.body)
             page.title must include(messages("packagingSiteDetails" + ".titleMultipleSites", 3))
-            val summaryList = page.getElementsByClass("govuk-summary-list")
+            val summaryList     = page.getElementsByClass("govuk-summary-list")
             summaryList.size mustBe 1
             val summaryListRows = summaryList.get(0).getElementsByClass("govuk-summary-list__row")
             summaryListRows.size() mustBe 3
-            packagingSiteListWith3.zipWithIndex.foreach{case((_, site), index) =>
-            val summaryRow = summaryListRows.get(index)
+            packagingSiteListWith3.zipWithIndex.foreach { case ((_, site), index) =>
+              val summaryRow = summaryListRows.get(index)
               summaryRow.text() must include(site.address.lines.mkString(", ") + s", ${site.address.postCode}")
             }
-            val radioInputs = page.getElementsByClass("govuk-radios__input")
+            val radioInputs     = page.getElementsByClass("govuk-radios__input")
             radioInputs.size() mustBe 2
             radioInputs.get(0).attr("value") mustBe "true"
             radioInputs.get(0).hasAttr("checked") mustBe false
@@ -197,8 +202,7 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
     userAnswersForPackagingSiteDetailsPage.foreach { case (key, userAnswers) =>
       s"when the userAnswers contains data for the page with " + key + " selected" - {
         s"should return OK and render the page with " + key + " radio unchecked" in {
-          build
-            .commonPrecondition
+          build.commonPrecondition
 
           setAnswers(userAnswers)
 
@@ -209,12 +213,14 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
               res.status mustBe 200
               val page = Jsoup.parse(res.body)
               page.title must include(messages("packagingSiteDetails" + ".title1Site"))
-              val summaryList = page.getElementsByClass("govuk-summary-list")
+              val summaryList     = page.getElementsByClass("govuk-summary-list")
               summaryList.size mustBe 1
               val summaryListRows = summaryList.get(0).getElementsByClass("govuk-summary-list__row")
               summaryListRows.size() mustBe 1
-              val summaryRow = summaryListRows.get(0)
-              summaryRow.text() must include(packagingSite1.address.lines.mkString(", ") + s", ${packagingSite1.address.postCode}")
+              val summaryRow      = summaryListRows.get(0)
+              summaryRow.text() must include(
+                packagingSite1.address.lines.mkString(", ") + s", ${packagingSite1.address.postCode}"
+              )
               val radioInputs = page.getElementsByClass("govuk-radios__input")
               radioInputs.size() mustBe 2
               radioInputs.get(0).attr("value") mustBe "true"
@@ -227,7 +233,11 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
       }
     }
 
-    testOtherSuccessUserTypes(baseUrl + checkRoutePath, messages("packagingSiteDetails" + ".title1Site"), userAnswersWith1PackingSite)
+    testOtherSuccessUserTypes(
+      baseUrl + checkRoutePath,
+      messages("packagingSiteDetails" + ".title1Site"),
+      userAnswersWith1PackingSite
+    )
     testUnauthorisedUser(baseUrl + checkRoutePath)
     testUserWhoIsUnableToRegister(baseUrl + checkRoutePath)
     testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath)
@@ -237,17 +247,24 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
 
     "when user selects yes" in {
       val alfOnRampURL: String = "https://onramp.com"
-      setAnswers(emptyUserAnswers.set(PackagingSiteDetailsPage, true).success.value
-        .copy(packagingSiteList = packagingSiteListWith1))
-      build
-        .commonPrecondition
-        .alf.getSuccessResponseFromALFInit(alfOnRampURL)
+      setAnswers(
+        emptyUserAnswers
+          .set(PackagingSiteDetailsPage, true)
+          .success
+          .value
+          .copy(packagingSiteList = packagingSiteListWith1)
+      )
+      build.commonPrecondition.alf.getSuccessResponseFromALFInit(alfOnRampURL)
       WsTestClient.withClient { client =>
         emptyUserAnswers
-          .set(PackagingSiteDetailsPage, true).success.value
+          .set(PackagingSiteDetailsPage, true)
+          .success
+          .value
           .copy(packagingSiteList = packagingSiteListWith1)
         val result = createClientRequestPOST(
-          client, baseUrl + normalRoutePath, Json.obj("value" -> true)
+          client,
+          baseUrl + normalRoutePath,
+          Json.obj("value" -> true)
         )
 
         whenReady(result) { res =>
@@ -259,22 +276,31 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
 
     "when user selects no" in {
       val alfOnRampURL: String = "https://onramp.com"
-      setAnswers(emptyUserAnswers.set(PackagingSiteDetailsPage, true).success.value
-        .copy(packagingSiteList = packagingSiteListWith1))
-      build
-        .commonPrecondition
-        .alf.getSuccessResponseFromALFInit(alfOnRampURL)
+      setAnswers(
+        emptyUserAnswers
+          .set(PackagingSiteDetailsPage, true)
+          .success
+          .value
+          .copy(packagingSiteList = packagingSiteListWith1)
+      )
+      build.commonPrecondition.alf.getSuccessResponseFromALFInit(alfOnRampURL)
       WsTestClient.withClient { client =>
         emptyUserAnswers
-          .set(PackagingSiteDetailsPage, true).success.value
+          .set(PackagingSiteDetailsPage, true)
+          .success
+          .value
           .copy(packagingSiteList = packagingSiteListWith1)
         val result = createClientRequestPOST(
-          client, baseUrl + normalRoutePath, Json.obj("value" -> false)
+          client,
+          baseUrl + normalRoutePath,
+          Json.obj("value" -> false)
         )
 
         whenReady(result) { res =>
           res.status mustBe 303
-          res.header(HeaderNames.LOCATION) mustBe Some(routes.AskSecondaryWarehousesController.onPageLoad(NormalMode).url)
+          res.header(HeaderNames.LOCATION) mustBe Some(
+            routes.AskSecondaryWarehousesController.onPageLoad(NormalMode).url
+          )
         }
       }
     }
@@ -284,20 +310,21 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
         "should update the session with the new value and redirect to the index controller" - {
           "when the session contains no data for page" in {
             val alfOnRampURL: String = "https://onramp.com"
-            build
-              .commonPrecondition
-              .alf.getSuccessResponseFromALFInit(alfOnRampURL)
+            build.commonPrecondition.alf.getSuccessResponseFromALFInit(alfOnRampURL)
 
             setAnswers(userAnswersWith1PackingSite)
             WsTestClient.withClient { client =>
               val yesSelected = key == "yes"
-              val result = createClientRequestPOST(
-                client, baseUrl + normalRoutePath, Json.obj("value" -> yesSelected.toString)
+              val result      = createClientRequestPOST(
+                client,
+                baseUrl + normalRoutePath,
+                Json.obj("value" -> yesSelected.toString)
               )
 
               whenReady(result) { res =>
                 res.status mustBe 303
-                val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(PackagingSiteDetailsPage))
+                val dataStoredForPage =
+                  getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(PackagingSiteDetailsPage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe yesSelected
               }
@@ -306,20 +333,21 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
 
           "when the session already contains data for page" in {
             val alfOnRampURL: String = "https://onramp.com"
-            build
-              .commonPrecondition
-              .alf.getSuccessResponseFromALFInit(alfOnRampURL)
+            build.commonPrecondition.alf.getSuccessResponseFromALFInit(alfOnRampURL)
 
             setAnswers(userAnswers)
             WsTestClient.withClient { client =>
               val yesSelected = key == "yes"
-              val result = createClientRequestPOST(
-                client, baseUrl + normalRoutePath, Json.obj("value" -> yesSelected.toString)
+              val result      = createClientRequestPOST(
+                client,
+                baseUrl + normalRoutePath,
+                Json.obj("value" -> yesSelected.toString)
               )
 
               whenReady(result) { res =>
                 res.status mustBe 303
-                val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(PackagingSiteDetailsPage))
+                val dataStoredForPage =
+                  getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(PackagingSiteDetailsPage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe yesSelected
               }
@@ -331,20 +359,22 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
 
     "when the user does not select yes or no" - {
       "should return 400 with required error" in {
-        build
-          .commonPrecondition
+        build.commonPrecondition
 
         setAnswers(userAnswersWith1PackingSite)
         WsTestClient.withClient { client =>
           val result = createClientRequestPOST(
-            client, baseUrl + normalRoutePath, Json.obj("value" -> "")
+            client,
+            baseUrl + normalRoutePath,
+            Json.obj("value" -> "")
           )
 
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
             page.title must include("Error: " + messages("packagingSiteDetails" + ".title1Site"))
-            val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
+            val errorSummary = page
+              .getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")
@@ -362,17 +392,24 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
   s"POST " + checkRoutePath - {
     "when user selects yes" in {
       val alfOnRampURL: String = "https://onramp.com"
-      setAnswers(emptyUserAnswers.set(PackagingSiteDetailsPage, true).success.value
-        .copy(packagingSiteList = packagingSiteListWith1))
-      build
-        .commonPrecondition
-        .alf.getSuccessResponseFromALFInit(alfOnRampURL)
+      setAnswers(
+        emptyUserAnswers
+          .set(PackagingSiteDetailsPage, true)
+          .success
+          .value
+          .copy(packagingSiteList = packagingSiteListWith1)
+      )
+      build.commonPrecondition.alf.getSuccessResponseFromALFInit(alfOnRampURL)
       WsTestClient.withClient { client =>
         emptyUserAnswers
-          .set(PackagingSiteDetailsPage, true).success.value
+          .set(PackagingSiteDetailsPage, true)
+          .success
+          .value
           .copy(packagingSiteList = packagingSiteListWith1)
         val result = createClientRequestPOST(
-          client, baseUrl + checkRoutePath, Json.obj("value" -> true)
+          client,
+          baseUrl + checkRoutePath,
+          Json.obj("value" -> true)
         )
 
         whenReady(result) { res =>
@@ -384,17 +421,24 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
 
     "when user selects no should redirect to check your answers" in {
       val alfOnRampURL: String = "https://onramp.com"
-      setAnswers(emptyUserAnswers.set(PackagingSiteDetailsPage, true).success.value
-        .copy(packagingSiteList = packagingSiteListWith1))
-      build
-        .commonPrecondition
-        .alf.getSuccessResponseFromALFInit(alfOnRampURL)
+      setAnswers(
+        emptyUserAnswers
+          .set(PackagingSiteDetailsPage, true)
+          .success
+          .value
+          .copy(packagingSiteList = packagingSiteListWith1)
+      )
+      build.commonPrecondition.alf.getSuccessResponseFromALFInit(alfOnRampURL)
       WsTestClient.withClient { client =>
         emptyUserAnswers
-          .set(PackagingSiteDetailsPage, true).success.value
+          .set(PackagingSiteDetailsPage, true)
+          .success
+          .value
           .copy(packagingSiteList = packagingSiteListWith1)
         val result = createClientRequestPOST(
-          client, baseUrl + checkRoutePath, Json.obj("value" -> false)
+          client,
+          baseUrl + checkRoutePath,
+          Json.obj("value" -> false)
         )
 
         whenReady(result) { res =>
@@ -409,20 +453,21 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
         "should update the session with the new value and redirect to the index controller" - {
           "when the session contains no data for page" in {
             val alfOnRampURL: String = "https://onramp.com"
-            build
-              .commonPrecondition
-              .alf.getSuccessResponseFromALFInit(alfOnRampURL)
+            build.commonPrecondition.alf.getSuccessResponseFromALFInit(alfOnRampURL)
 
             setAnswers(userAnswersWith1PackingSite)
             WsTestClient.withClient { client =>
               val yesSelected = key == "yes"
-              val result = createClientRequestPOST(
-                client, baseUrl + checkRoutePath, Json.obj("value" -> yesSelected.toString)
+              val result      = createClientRequestPOST(
+                client,
+                baseUrl + checkRoutePath,
+                Json.obj("value" -> yesSelected.toString)
               )
 
               whenReady(result) { res =>
                 res.status mustBe 303
-                val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(PackagingSiteDetailsPage))
+                val dataStoredForPage =
+                  getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(PackagingSiteDetailsPage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe yesSelected
               }
@@ -431,20 +476,21 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
 
           "when the session already contains data for page" in {
             val alfOnRampURL: String = "https://onramp.com"
-            build
-              .commonPrecondition
-              .alf.getSuccessResponseFromALFInit(alfOnRampURL)
+            build.commonPrecondition.alf.getSuccessResponseFromALFInit(alfOnRampURL)
 
             setAnswers(userAnswers)
             WsTestClient.withClient { client =>
               val yesSelected = key == "yes"
-              val result = createClientRequestPOST(
-                client, baseUrl + checkRoutePath, Json.obj("value" -> yesSelected.toString)
+              val result      = createClientRequestPOST(
+                client,
+                baseUrl + checkRoutePath,
+                Json.obj("value" -> yesSelected.toString)
               )
 
               whenReady(result) { res =>
                 res.status mustBe 303
-                val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(PackagingSiteDetailsPage))
+                val dataStoredForPage =
+                  getAnswers(userAnswers.id).fold[Option[Boolean]](None)(_.get(PackagingSiteDetailsPage))
                 dataStoredForPage.nonEmpty mustBe true
                 dataStoredForPage.get mustBe yesSelected
               }
@@ -455,20 +501,22 @@ class PackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
     }
     "when the user does not select yes or no" - {
       "should return 400 with required error" in {
-        build
-          .commonPrecondition
+        build.commonPrecondition
 
         setAnswers(userAnswersWith1PackingSite)
         WsTestClient.withClient { client =>
           val result = createClientRequestPOST(
-            client, baseUrl + checkRoutePath, Json.obj("value" -> "")
+            client,
+            baseUrl + checkRoutePath,
+            Json.obj("value" -> "")
           )
 
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
             page.title must include("Error: " + messages("packagingSiteDetails" + ".title1Site"))
-            val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
+            val errorSummary = page
+              .getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")

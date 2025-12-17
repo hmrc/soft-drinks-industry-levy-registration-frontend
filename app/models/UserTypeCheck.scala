@@ -16,21 +16,30 @@
 
 package models
 
-import pages.{ ContractPackingPage, HowManyContractPackingPage, HowManyImportsPage, HowManyLitresGloballyPage, HowManyOperatePackagingSitesPage, ImportsPage, ThirdPartyPackagersPage }
+import pages.{ContractPackingPage, HowManyContractPackingPage, HowManyImportsPage, HowManyLitresGloballyPage, HowManyOperatePackagingSitesPage, ImportsPage, ThirdPartyPackagersPage}
 
 object UserTypeCheck {
-  def isLarge(userAnswers: UserAnswers): Boolean = userAnswers.get(HowManyLitresGloballyPage).contains(HowManyLitresGlobally.Large)
-  def isSmall(userAnswers: UserAnswers): Boolean = userAnswers.get(HowManyLitresGloballyPage).contains(HowManyLitresGlobally.Small)
-  def notAProducer(userAnswers: UserAnswers): Boolean = userAnswers.get(HowManyLitresGloballyPage).contains(HowManyLitresGlobally.None)
-  def operatesPackagingSite(userAnswers: UserAnswers): Boolean = userAnswers.get(HowManyOperatePackagingSitesPage).map(Litreage.fromLitresInBands).nonEmpty
-  def copackerAll(userAnswers: UserAnswers): Boolean = userAnswers.get(HowManyContractPackingPage).map(Litreage.fromLitresInBands).nonEmpty
-  def copackee(userAnswers: UserAnswers): Boolean = isSmall(userAnswers) && userAnswers.get(ThirdPartyPackagersPage).contains(true)
-  def importer(userAnswers: UserAnswers): Boolean = userAnswers.get(HowManyImportsPage).map(Litreage.fromLitresInBands).nonEmpty
+  def isLarge(userAnswers: UserAnswers): Boolean               =
+    userAnswers.get(HowManyLitresGloballyPage).contains(HowManyLitresGlobally.Large)
+  def isSmall(userAnswers: UserAnswers): Boolean               =
+    userAnswers.get(HowManyLitresGloballyPage).contains(HowManyLitresGlobally.Small)
+  def notAProducer(userAnswers: UserAnswers): Boolean          =
+    userAnswers.get(HowManyLitresGloballyPage).contains(HowManyLitresGlobally.None)
+  def operatesPackagingSite(userAnswers: UserAnswers): Boolean =
+    userAnswers.get(HowManyOperatePackagingSitesPage).map(Litreage.fromLitresInBands).nonEmpty
+  def copackerAll(userAnswers: UserAnswers): Boolean           =
+    userAnswers.get(HowManyContractPackingPage).map(Litreage.fromLitresInBands).nonEmpty
+  def copackee(userAnswers: UserAnswers): Boolean              =
+    isSmall(userAnswers) && userAnswers.get(ThirdPartyPackagersPage).contains(true)
+  def importer(userAnswers: UserAnswers): Boolean              =
+    userAnswers.get(HowManyImportsPage).map(Litreage.fromLitresInBands).nonEmpty
 
   def doesNotNeedToRegister(userAnswers: UserAnswers): Boolean = {
-    lazy val hasNoUkActivity = userAnswers.get(ContractPackingPage).contains(false) && userAnswers.get(ImportsPage).contains(false)
-    val doesNotNeedToRegisterSmall = isSmall(userAnswers) && userAnswers.get(ThirdPartyPackagersPage).contains(false) && hasNoUkActivity
-    val doesNotNeedToRegisterNone = notAProducer(userAnswers) && hasNoUkActivity
+    lazy val hasNoUkActivity       =
+      userAnswers.get(ContractPackingPage).contains(false) && userAnswers.get(ImportsPage).contains(false)
+    val doesNotNeedToRegisterSmall =
+      isSmall(userAnswers) && userAnswers.get(ThirdPartyPackagersPage).contains(false) && hasNoUkActivity
+    val doesNotNeedToRegisterNone  = notAProducer(userAnswers) && hasNoUkActivity
 
     doesNotNeedToRegisterSmall || doesNotNeedToRegisterNone
   }

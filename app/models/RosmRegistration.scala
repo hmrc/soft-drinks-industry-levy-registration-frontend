@@ -26,48 +26,48 @@ case class RosmRegistration(
   safeId: String,
   organisation: Option[OrganisationDetails],
   individual: Option[IndividualDetails],
-  address: UkAddress) {
+  address: UkAddress
+) {
 
-  lazy val organisationName: String = {
+  lazy val organisationName: String =
     organisation.map(_.organisationName).orElse(individual.map(i => s"${i.firstName} ${i.lastName}")).getOrElse("")
-  }
 }
 
 object RosmRegistration {
   def convertToUsableUkAddress(rosmRegistration: RosmRegistration): UkAddress = {
     val organisationName: List[String] = rosmRegistration.organisationName match {
-      case "" => List.empty
+      case ""   => List.empty
       case name => List(name)
     }
     UkAddress(
       organisationName ++ rosmRegistration.address.lines,
       rosmRegistration.address.postCode,
-      rosmRegistration.address.alfId)
+      rosmRegistration.address.alfId
+    )
 
   }
   private val addressReads: Reads[UkAddress] =
-    (json: JsValue) => {
+    (json: JsValue) =>
       for {
         jsObject <- json.validate[JsObject]
-        line1 <- (jsObject \ "addressLine1").validate[String]
-        line2 <- (jsObject \ "addressLine2").validateOpt[String]
-        line3 <- (jsObject \ "addressLine3").validateOpt[String]
-        line4 <- (jsObject \ "addressLine4").validateOpt[String]
+        line1    <- (jsObject \ "addressLine1").validate[String]
+        line2    <- (jsObject \ "addressLine2").validateOpt[String]
+        line3    <- (jsObject \ "addressLine3").validateOpt[String]
+        line4    <- (jsObject \ "addressLine4").validateOpt[String]
         postCode <- (jsObject \ "postalCode").validate[String]
       } yield {
         val optlines: List[String] = List(line2, line3, line4).collect { case Some(l) if l.nonEmpty => l }
         UkAddress(List(line1) ++ optlines, postCode, None)
       }
-    }
 
-  private val addressWrites: Writes[UkAddress] = (o: UkAddress) => {
+  private val addressWrites: Writes[UkAddress] = (o: UkAddress) =>
     Json.obj(
       ("addressLine1", JsString(o.lines.headOption.getOrElse(""))),
       ("addressLine2", JsString(Try(o.lines(1)).getOrElse(""))),
       ("addressLine3", JsString(Try(o.lines(2)).getOrElse(""))),
       ("addressLine4", JsString(Try(o.lines(3)).getOrElse(""))),
-      ("postalCode", JsString(o.postCode)))
-  }
+      ("postalCode", JsString(o.postCode))
+    )
 
   private implicit val addressFormat: Format[UkAddress] = Format(addressReads, addressWrites)
 

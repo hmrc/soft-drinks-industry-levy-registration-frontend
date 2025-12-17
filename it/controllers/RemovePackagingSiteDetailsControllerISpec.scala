@@ -12,22 +12,17 @@ import play.api.test.{FakeRequest, WsTestClient}
 
 class RemovePackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
   given messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-  given messages: Messages = messagesApi.preferred(FakeRequest())
-  
-  val normalRoutePath = (ref: String)  => s"/packaging-site-details/remove/$ref"
-  val ref: String = "12345678"
-  val packagingSite: Map[String, Site] = Map(ref -> Site(
-    UkAddress(List("a", "b"), "c"),
-    None,
-    aTradingName,
-    None))
-  val updatedUserAnswers = emptyUserAnswers.copy(packagingSiteList = packagingSiteListWith3)
+  given messages: Messages       = messagesApi.preferred(FakeRequest())
+
+  val normalRoutePath                  = (ref: String) => s"/packaging-site-details/remove/$ref"
+  val ref: String                      = "12345678"
+  val packagingSite: Map[String, Site] = Map(ref -> Site(UkAddress(List("a", "b"), "c"), None, aTradingName, None))
+  val updatedUserAnswers               = emptyUserAnswers.copy(packagingSiteList = packagingSiteListWith3)
 
   "GET " + normalRoutePath("ref") - {
     "when there is 1 or few packaging sites in the packaging site list" - {
       s"should redirect to the $PackagingSiteDetailsPage" in {
-        build
-          .commonPrecondition
+        build.commonPrecondition
 
         setAnswers(emptyUserAnswers.copy(packagingSiteList = packagingSite))
 
@@ -36,7 +31,9 @@ class RemovePackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
 
           whenReady(result1) { res =>
             res.status mustBe 303
-            res.header(HeaderNames.LOCATION) mustBe Some(routes.PackagingSiteDetailsController.onPageLoad(NormalMode).url)
+            res.header(HeaderNames.LOCATION) mustBe Some(
+              routes.PackagingSiteDetailsController.onPageLoad(NormalMode).url
+            )
           }
         }
       }
@@ -44,8 +41,7 @@ class RemovePackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
 
     "when the userAnswers contains no data" - {
       "should return OK and render the RemovePackagingSiteDetails page with no data populated" in {
-        build
-          .commonPrecondition
+        build.commonPrecondition
 
         setAnswers(updatedUserAnswers)
 
@@ -54,7 +50,7 @@ class RemovePackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
 
           whenReady(result1) { res =>
             res.status mustBe 200
-            val page = Jsoup.parse(res.body)
+            val page        = Jsoup.parse(res.body)
             page.title mustBe "Are you sure you want to remove this packaging site? - Soft Drinks Industry Levy - GOV.UK"
             val radioInputs = page.getElementsByClass("govuk-radios__input")
             radioInputs.size() mustBe 2
@@ -67,7 +63,11 @@ class RemovePackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
       }
     }
 
-    testOtherSuccessUserTypes(baseUrl + normalRoutePath(ref), messages("Are you sure you want to remove this packaging site?"), ua = updatedUserAnswers)
+    testOtherSuccessUserTypes(
+      baseUrl + normalRoutePath(ref),
+      messages("Are you sure you want to remove this packaging site?"),
+      ua = updatedUserAnswers
+    )
     testUnauthorisedUser(baseUrl + normalRoutePath(ref))
     testUserWhoIsUnableToRegister(baseUrl + normalRoutePath(ref))
     testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath(ref))
@@ -76,18 +76,21 @@ class RemovePackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
   s"POST " + normalRoutePath - {
     "when the user selects true" - {
       "should remove the packaging site details associated with the ref" in {
-        build
-          .commonPrecondition
+        build.commonPrecondition
 
         setAnswers(updatedUserAnswers)
         WsTestClient.withClient { client =>
           val result = createClientRequestPOST(
-            client, baseUrl + normalRoutePath(ref), Json.obj("value" -> "true")
+            client,
+            baseUrl + normalRoutePath(ref),
+            Json.obj("value" -> "true")
           )
 
           whenReady(result) { res =>
             res.status mustBe 303
-            res.header(HeaderNames.LOCATION) mustBe Some(routes.PackagingSiteDetailsController.onPageLoad(NormalMode).url)
+            res.header(HeaderNames.LOCATION) mustBe Some(
+              routes.PackagingSiteDetailsController.onPageLoad(NormalMode).url
+            )
             val answersAfterSubmission = getAnswers(updatedUserAnswers.id).get
             answersAfterSubmission.packagingSiteList.isEmpty mustBe false
             answersAfterSubmission.data mustBe Json.obj()
@@ -97,20 +100,23 @@ class RemovePackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
     }
     "when the user selects false" - {
       "should NOT remove the packaging site details associated with the ref" in {
-        build
-          .commonPrecondition
+        build.commonPrecondition
 
         setAnswers(updatedUserAnswers)
         getAnswers(updatedUserAnswers.id).get.packagingSiteList.size mustBe 3
 
         WsTestClient.withClient { client =>
           val result = createClientRequestPOST(
-            client, baseUrl + normalRoutePath(ref), Json.obj("value" -> "false")
+            client,
+            baseUrl + normalRoutePath(ref),
+            Json.obj("value" -> "false")
           )
 
           whenReady(result) { res =>
             res.status mustBe 303
-            res.header(HeaderNames.LOCATION) mustBe Some(routes.PackagingSiteDetailsController.onPageLoad(NormalMode).url)
+            res.header(HeaderNames.LOCATION) mustBe Some(
+              routes.PackagingSiteDetailsController.onPageLoad(NormalMode).url
+            )
             val answersAfterSubmission = getAnswers(updatedUserAnswers.id).get
             answersAfterSubmission.packagingSiteList.size mustBe 3
             answersAfterSubmission.data mustBe Json.obj()
@@ -122,20 +128,22 @@ class RemovePackagingSiteDetailsControllerISpec extends ControllerITTestHelper {
 
   "when the user does not select yes or no" - {
     "should return 400 with required error" in {
-      build
-        .commonPrecondition
+      build.commonPrecondition
 
       setAnswers(updatedUserAnswers)
       WsTestClient.withClient { client =>
         val result = createClientRequestPOST(
-          client, baseUrl + normalRoutePath(ref), Json.obj("value" -> "")
+          client,
+          baseUrl + normalRoutePath(ref),
+          Json.obj("value" -> "")
         )
 
         whenReady(result) { res =>
           res.status mustBe 400
           val page = Jsoup.parse(res.body)
           page.title must include("Error: " + messages("removePackagingSiteDetails" + ".title"))
-          val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
+          val errorSummary = page
+            .getElementsByClass("govuk-list govuk-error-summary__list")
             .first()
           errorSummary
             .select("a")

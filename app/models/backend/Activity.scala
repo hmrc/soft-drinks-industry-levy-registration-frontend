@@ -16,37 +16,44 @@
 
 package models.backend
 
-import models.{ HowManyLitresGlobally, Litreage, UserAnswers }
+import models.{HowManyLitresGlobally, Litreage, UserAnswers}
 import pages._
-import play.api.libs.json.{ Format, Json }
+import play.api.libs.json.{Format, Json}
 
 case class Activity(
   ProducedOwnBrand: Option[Litreage],
   Imported: Option[Litreage],
   CopackerAll: Option[Litreage],
   Copackee: Option[Litreage],
-  isLarge: Boolean)
+  isLarge: Boolean
+)
 
 object Activity {
   implicit val format: Format[Activity] = Json.format[Activity]
 
   def fromUserAnswers(userAnswers: UserAnswers): Activity = {
-    val producedOwnBrand = userAnswers.get(HowManyOperatePackagingSitesPage)
+    val producedOwnBrand = userAnswers
+      .get(HowManyOperatePackagingSitesPage)
       .map(Litreage.fromLitresInBands(_))
-    val imported = userAnswers.get(HowManyImportsPage)
+    val imported         = userAnswers
+      .get(HowManyImportsPage)
       .map(Litreage.fromLitresInBands(_))
-    val copackerAll = userAnswers.get(HowManyContractPackingPage)
+    val copackerAll      = userAnswers
+      .get(HowManyContractPackingPage)
       .map(Litreage.fromLitresInBands(_))
-    val copackee = userAnswers.get(ThirdPartyPackagersPage)
-      .collect {
-        case true => Litreage(1, 1)
+    val copackee         = userAnswers
+      .get(ThirdPartyPackagersPage)
+      .collect { case true =>
+        Litreage(1, 1)
       }
     Activity(
       producedOwnBrand,
       imported,
       copackerAll,
       copackee,
-      userAnswers.get(HowManyLitresGloballyPage)
-        .exists(_ == HowManyLitresGlobally.Large))
+      userAnswers
+        .get(HowManyLitresGloballyPage)
+        .exists(_ == HowManyLitresGlobally.Large)
+    )
   }
 }

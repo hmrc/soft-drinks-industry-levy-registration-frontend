@@ -16,13 +16,14 @@
 
 package models.alf.init
 
-import play.api.libs.json.{ Json, Writes }
+import play.api.libs.json.{Json, Writes}
 
 case class JourneyConfig(
   version: Int,
   options: JourneyOptions,
   labels: Option[JourneyLabels] = None,
-  requestedVersion: Option[Int] = None)
+  requestedVersion: Option[Int] = None
+)
 
 case class JourneyOptions(
   continueUrl: String,
@@ -42,22 +43,19 @@ case class JourneyOptions(
   confirmPageConfig: Option[ConfirmPageConfig] = None,
   timeoutConfig: Option[TimeoutConfig] = None,
   serviceHref: Option[String] = None,
-  pageHeadingStyle: Option[String] = None)
+  pageHeadingStyle: Option[String] = None
+)
 
-case class SelectPageConfig(
-  proposalListLimit: Option[Int] = None,
-  showSearchAgainLink: Option[Boolean] = None)
+case class SelectPageConfig(proposalListLimit: Option[Int] = None, showSearchAgainLink: Option[Boolean] = None)
 
 case class ConfirmPageConfig(
   showSearchAgainLink: Option[Boolean] = None,
   showSubHeadingAndInfo: Option[Boolean] = None,
   showChangeLink: Option[Boolean] = None,
-  showConfirmChangeText: Option[Boolean] = None)
+  showConfirmChangeText: Option[Boolean] = None
+)
 
-case class TimeoutConfig(
-  timeoutAmount: Int,
-  timeoutUrl: String,
-  timeoutKeepAliveUrl: Option[String] = None)
+case class TimeoutConfig(timeoutAmount: Int, timeoutUrl: String, timeoutKeepAliveUrl: Option[String] = None)
 
 case class JourneyLabels(en: Option[LanguageLabels] = None)
 

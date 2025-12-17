@@ -12,24 +12,27 @@ import play.api.test.{FakeRequest, WsTestClient}
 class ContactDetailsControllerISpec extends ControllerITTestHelper {
 
   val normalRoutePath = "/contact-details"
-  val checkRoutePath = "/change-contact-details"
+  val checkRoutePath  = "/change-contact-details"
 
   given messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-  given messages: Messages = messagesApi.preferred(FakeRequest())
-  
-  val contactDetailsJsObject: collection.Map[String, JsValue] = Json.toJson(contactDetails).as[JsObject].value
-  val contactDetailsMap: collection.Map[String, String] = {
-    contactDetailsJsObject.map { case (fName, fValue) => fName -> fValue.as[String] }
-  }
+  given messages: Messages       = messagesApi.preferred(FakeRequest())
 
-  val fieldNameToLabels = Map("fullName" -> "Full name", "position" -> "Job title", "phoneNumber" -> "Telephone number", "email" -> "Email address")
+  val contactDetailsJsObject: collection.Map[String, JsValue] = Json.toJson(contactDetails).as[JsObject].value
+  val contactDetailsMap: collection.Map[String, String]       =
+    contactDetailsJsObject.map { case (fName, fValue) => fName -> fValue.as[String] }
+
+  val fieldNameToLabels        = Map(
+    "fullName"    -> "Full name",
+    "position"    -> "Job title",
+    "phoneNumber" -> "Telephone number",
+    "email"       -> "Email address"
+  )
   val userAnswers: UserAnswers = emptyUserAnswers.set(ContactDetailsPage, contactDetails).success.value
 
   "GET " + normalRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the ContactDetails page with no data populated" in {
-        build
-          .commonPrecondition
+        build.commonPrecondition
 
         setAnswers(emptyUserAnswers)
 
@@ -53,8 +56,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
 
     s"when the userAnswers contains data for the page" - {
       s"should return OK and render the page with fields populated" in {
-        build
-          .commonPrecondition
+        build.commonPrecondition
 
         setAnswers(userAnswers)
 
@@ -85,8 +87,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
   "GET " + checkRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the ContactDetails page with no data populated" in {
-        build
-          .commonPrecondition
+        build.commonPrecondition
 
         setAnswers(emptyUserAnswers)
 
@@ -110,8 +111,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
 
     s"when the userAnswers contains data for the page" - {
       s"should return OK and render the page with fields populated" in {
-        build
-          .commonPrecondition
+        build.commonPrecondition
 
         setAnswers(userAnswers)
 
@@ -141,19 +141,21 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
     "when the user populates answers all questions" - {
       "should update the session with the new values and redirect to the Check Your Answers controller" - {
         "when the session contains no data for page" in {
-          build
-            .commonPrecondition
+          build.commonPrecondition
 
           setAnswers(emptyUserAnswers)
           WsTestClient.withClient { client =>
             val result = createClientRequestPOST(
-              client, baseUrl + normalRoutePath, Json.toJson(contactDetailsDiff)
+              client,
+              baseUrl + normalRoutePath,
+              Json.toJson(contactDetailsDiff)
             )
 
             whenReady(result) { res =>
               res.status mustBe 303
               res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
-              val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[ContactDetails]](None)(_.get(ContactDetailsPage))
+              val dataStoredForPage =
+                getAnswers(userAnswers.id).fold[Option[ContactDetails]](None)(_.get(ContactDetailsPage))
               dataStoredForPage.nonEmpty mustBe true
               dataStoredForPage.get mustBe contactDetailsDiff
             }
@@ -161,19 +163,21 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
         }
 
         "when the session already contains data for page" in {
-          build
-            .commonPrecondition
+          build.commonPrecondition
 
           setAnswers(userAnswers)
           WsTestClient.withClient { client =>
             val result = createClientRequestPOST(
-              client, baseUrl + normalRoutePath, Json.toJson(contactDetailsDiff)
+              client,
+              baseUrl + normalRoutePath,
+              Json.toJson(contactDetailsDiff)
             )
 
             whenReady(result) { res =>
               res.status mustBe 303
               res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
-              val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[ContactDetails]](None)(_.get(ContactDetailsPage))
+              val dataStoredForPage =
+                getAnswers(userAnswers.id).fold[Option[ContactDetails]](None)(_.get(ContactDetailsPage))
               dataStoredForPage.nonEmpty mustBe true
               dataStoredForPage.get mustBe contactDetailsDiff
             }
@@ -184,21 +188,24 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
 
     "should return 400 with required error" - {
       "when no questions are answered" in {
-        build
-          .commonPrecondition
+        build.commonPrecondition
 
         setAnswers(emptyUserAnswers)
         WsTestClient.withClient { client =>
           val result = createClientRequestPOST(
-            client, baseUrl + normalRoutePath, Json.toJson(ContactDetails("", "", "", ""))
+            client,
+            baseUrl + normalRoutePath,
+            Json.toJson(ContactDetails("", "", "", ""))
           )
 
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
             page.title must include("Error: Contact person details - Soft Drinks Industry Levy - GOV.UK")
-            val errorSummaryList = page.getElementsByClass("govuk-list govuk-error-summary__list")
-              .first().getElementsByTag("li")
+            val errorSummaryList = page
+              .getElementsByClass("govuk-list govuk-error-summary__list")
+              .first()
+              .getElementsByTag("li")
             errorSummaryList.size() mustBe 4
             contactDetailsMap.zipWithIndex.foreach { case ((fieldName, _), index) =>
               val errorSummary = errorSummaryList.get(index)
@@ -212,8 +219,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
       }
       contactDetailsMap.zipWithIndex.foreach { case ((fieldName, _), index) =>
         "when no answer is given for field " + fieldName in {
-          build
-            .commonPrecondition
+          build.commonPrecondition
 
           setAnswers(emptyUserAnswers)
           val invalidJson = contactDetailsMap.foldLeft(Json.obj()) { case (current, (fn, fv)) =>
@@ -226,21 +232,23 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
           }
           WsTestClient.withClient { client =>
             val result = createClientRequestPOST(
-              client, baseUrl + normalRoutePath, invalidJson
+              client,
+              baseUrl + normalRoutePath,
+              invalidJson
             )
 
             whenReady(result) { res =>
               res.status mustBe 400
               val page = Jsoup.parse(res.body)
               page.title must include("Error: Contact person details - Soft Drinks Industry Levy - GOV.UK")
-              val errorSummaryList = page.getElementsByClass("govuk-list govuk-error-summary__list")
+              val errorSummaryList = page
+                .getElementsByClass("govuk-list govuk-error-summary__list")
                 .first()
               errorSummaryList
-
                 .select("a")
                 .attr("href") mustBe "#" + fieldName
 
-              errorSummaryList.text() must include (messages("contactDetails.error." + fieldName + ".required"))
+              errorSummaryList.text() must include(messages("contactDetails.error." + fieldName + ".required"))
             }
           }
         }
@@ -256,19 +264,21 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
     "when the user populates answers all questions" - {
       "should update the session with the new values and redirect to the index controller" - {
         "when the session contains no data for page" in {
-          build
-            .commonPrecondition
+          build.commonPrecondition
 
           setAnswers(emptyUserAnswers)
           WsTestClient.withClient { client =>
             val result = createClientRequestPOST(
-              client, baseUrl + checkRoutePath, Json.toJson(contactDetailsDiff)
+              client,
+              baseUrl + checkRoutePath,
+              Json.toJson(contactDetailsDiff)
             )
 
             whenReady(result) { res =>
               res.status mustBe 303
               res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
-              val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[ContactDetails]](None)(_.get(ContactDetailsPage))
+              val dataStoredForPage =
+                getAnswers(userAnswers.id).fold[Option[ContactDetails]](None)(_.get(ContactDetailsPage))
               dataStoredForPage.nonEmpty mustBe true
               dataStoredForPage.get mustBe contactDetailsDiff
             }
@@ -276,19 +286,21 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
         }
 
         "when the session already contains data for page" in {
-          build
-            .commonPrecondition
+          build.commonPrecondition
 
           setAnswers(userAnswers)
           WsTestClient.withClient { client =>
             val result = createClientRequestPOST(
-              client, baseUrl + checkRoutePath, Json.toJson(contactDetailsDiff)
+              client,
+              baseUrl + checkRoutePath,
+              Json.toJson(contactDetailsDiff)
             )
 
             whenReady(result) { res =>
               res.status mustBe 303
               res.header(HeaderNames.LOCATION) mustBe Some(routes.CheckYourAnswersController.onPageLoad.url)
-              val dataStoredForPage = getAnswers(userAnswers.id).fold[Option[ContactDetails]](None)(_.get(ContactDetailsPage))
+              val dataStoredForPage =
+                getAnswers(userAnswers.id).fold[Option[ContactDetails]](None)(_.get(ContactDetailsPage))
               dataStoredForPage.nonEmpty mustBe true
               dataStoredForPage.get mustBe contactDetailsDiff
             }
@@ -299,21 +311,24 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
 
     "should return 400 with required error" - {
       "when no questions are answered" in {
-        build
-          .commonPrecondition
+        build.commonPrecondition
 
         setAnswers(emptyUserAnswers)
         WsTestClient.withClient { client =>
           val result = createClientRequestPOST(
-            client, baseUrl + checkRoutePath, Json.toJson(ContactDetails("", "", "", ""))
+            client,
+            baseUrl + checkRoutePath,
+            Json.toJson(ContactDetails("", "", "", ""))
           )
 
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
             page.title must include("Error: Contact person details - Soft Drinks Industry Levy - GOV.UK")
-            val errorSummaryList = page.getElementsByClass("govuk-list govuk-error-summary__list")
-              .first().getElementsByTag("li")
+            val errorSummaryList = page
+              .getElementsByClass("govuk-list govuk-error-summary__list")
+              .first()
+              .getElementsByTag("li")
             errorSummaryList.size() mustBe 4
             contactDetailsMap.zipWithIndex.foreach { case ((fieldName, _), index) =>
               val errorSummary = errorSummaryList.get(index)
@@ -327,8 +342,7 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
       }
       contactDetailsMap.zipWithIndex.foreach { case ((fieldName, _), index) =>
         "when no answer is given for field " + fieldName in {
-          build
-            .commonPrecondition
+          build.commonPrecondition
 
           setAnswers(emptyUserAnswers)
           val invalidJson = contactDetailsMap.foldLeft(Json.obj()) { case (current, (fn, fv)) =>
@@ -341,19 +355,22 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
           }
           WsTestClient.withClient { client =>
             val result = createClientRequestPOST(
-              client, baseUrl + checkRoutePath, invalidJson
+              client,
+              baseUrl + checkRoutePath,
+              invalidJson
             )
 
             whenReady(result) { res =>
               res.status mustBe 400
               val page = Jsoup.parse(res.body)
               page.title must include("Error: Contact person details - Soft Drinks Industry Levy - GOV.UK")
-              val errorSummaryList = page.getElementsByClass("govuk-list govuk-error-summary__list")
+              val errorSummaryList = page
+                .getElementsByClass("govuk-list govuk-error-summary__list")
                 .first()
               errorSummaryList
                 .select("a")
                 .attr("href") mustBe "#" + fieldName
-              errorSummaryList.text() must include (messages("contactDetails.error." + fieldName + ".required"))
+              errorSummaryList.text() must include(messages("contactDetails.error." + fieldName + ".required"))
             }
           }
         }
@@ -362,5 +379,6 @@ class ContactDetailsControllerISpec extends ControllerITTestHelper {
 
     testUnauthorisedUser(baseUrl + checkRoutePath, Some(Json.obj("value" -> "true")))
     testUserWhoIsUnableToRegister(baseUrl + checkRoutePath, Some(Json.obj("value" -> "true")))
-    testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath, Some(Json.obj("value" -> "true")))  }
+    testAuthenticatedUserButNoUserAnswers(baseUrl + checkRoutePath, Some(Json.obj("value" -> "true")))
+  }
 }

@@ -25,10 +25,10 @@ class WarehousesTradingNameFormProviderSpec extends StringFieldBehaviours {
 
   "Trading Name field" - {
 
-    val fieldName = "warehouseTradingName"
+    val fieldName   = "warehouseTradingName"
     val requiredKey = "warehousesTradingName.error.required"
-    val lengthKey = "warehousesTradingName.error.length"
-    val maxLength = 160
+    val lengthKey   = "warehousesTradingName.error.length"
+    val maxLength   = 160
 
     behave like fieldThatBindsValidData(
       form,

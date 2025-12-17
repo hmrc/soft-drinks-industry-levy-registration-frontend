@@ -30,12 +30,20 @@ class OperatePackagingSitesSummarySpec extends RegistrationSubscriptionHelper {
           "should return None" - {
             "when isCheckAnswers" in {
               val subscription = generateSubscription(allFieldsPopulated = true)
-              val res = OperatePackagingSitesSummary.getOptHeadingAndSummary(subscription, amountProduced, isCheckAnswers = true)
+              val res          = OperatePackagingSitesSummary.getOptHeadingAndSummary(
+                subscription,
+                amountProduced,
+                isCheckAnswers = true
+              )
               res mustBe None
             }
             "when is not CheckAnswers" in {
               val subscription = generateSubscription(allFieldsPopulated = false)
-              val res = OperatePackagingSitesSummary.getOptHeadingAndSummary(subscription, amountProduced, isCheckAnswers = false)
+              val res          = OperatePackagingSitesSummary.getOptHeadingAndSummary(
+                subscription,
+                amountProduced,
+                isCheckAnswers = false
+              )
               res mustBe None
             }
           }
@@ -44,11 +52,15 @@ class OperatePackagingSitesSummarySpec extends RegistrationSubscriptionHelper {
             "should return a summary list with Yes and the number of litres" - {
               "with actions when isCheckAnswers" in {
                 val subscription = generateSubscription(allFieldsPopulated = true)
-                val res = OperatePackagingSitesSummary.getOptHeadingAndSummary(subscription, amountProduced, isCheckAnswers = true)
+                val res          = OperatePackagingSitesSummary.getOptHeadingAndSummary(
+                  subscription,
+                  amountProduced,
+                  isCheckAnswers = true
+                )
                 res mustBe defined
-                val heading = res.get._1
+                val heading      = res.get._1
                 heading mustBe "operatePackagingSites.checkYourAnswersLabel"
-                val rows = res.get._2.rows
+                val rows         = res.get._2.rows
                 rows.head.key.content.asHtml mustBe Html("Reporting own brands packaged at your own site?")
                 rows.head.key.classes mustBe ""
                 rows.head.value.content.asHtml mustBe Html("Yes")
@@ -62,7 +74,9 @@ class OperatePackagingSitesSummarySpec extends RegistrationSubscriptionHelper {
                 rows(1).value.content.asHtml mustBe Html("1,000")
                 rows(1).value.classes.trim mustBe "sdil-right-align--desktop"
                 rows(1).actions.head.items.head.href must include("/change-how-many-own-brands-next-12-months")
-                rows(1).actions.head.items.head.attributes mustBe Map("id" -> "change-litresInLowBand-litreage-operatePackagingSites")
+                rows(1).actions.head.items.head.attributes mustBe Map(
+                  "id" -> "change-litresInLowBand-litreage-operatePackagingSites"
+                )
                 rows(1).actions.head.items.head.content.asHtml mustBe Html("Change")
 
                 rows(2).key.content.asHtml mustBe Html("Litres in the high band")
@@ -70,7 +84,9 @@ class OperatePackagingSitesSummarySpec extends RegistrationSubscriptionHelper {
                 rows(2).value.content.asHtml mustBe Html("2,000")
                 rows(2).value.classes.trim mustBe "sdil-right-align--desktop"
                 rows(2).actions.head.items.head.href must include("/change-how-many-own-brands-next-12-months")
-                rows(2).actions.head.items.head.attributes mustBe Map("id" -> "change-litresInHighBand-litreage-operatePackagingSites")
+                rows(2).actions.head.items.head.attributes mustBe Map(
+                  "id" -> "change-litresInHighBand-litreage-operatePackagingSites"
+                )
                 rows(2).actions.head.items.head.content.asHtml mustBe Html("Change")
 
                 rows.size mustBe 3
@@ -78,11 +94,15 @@ class OperatePackagingSitesSummarySpec extends RegistrationSubscriptionHelper {
 
               "with actions when not isCheckAnswers" in {
                 val subscription = generateSubscription(allFieldsPopulated = true)
-                val res = OperatePackagingSitesSummary.getOptHeadingAndSummary(subscription, amountProduced, isCheckAnswers = false)
+                val res          = OperatePackagingSitesSummary.getOptHeadingAndSummary(
+                  subscription,
+                  amountProduced,
+                  isCheckAnswers = false
+                )
                 res mustBe defined
-                val heading = res.get._1
+                val heading      = res.get._1
                 heading mustBe "operatePackagingSites.checkYourAnswersLabel"
-                val rows = res.get._2.rows
+                val rows         = res.get._2.rows
                 rows.head.key.content.asHtml mustBe Html("Reporting own brands packaged at your own site?")
                 rows.head.key.classes mustBe ""
                 rows.head.value.content.asHtml mustBe Html("Yes")
@@ -110,11 +130,15 @@ class OperatePackagingSitesSummarySpec extends RegistrationSubscriptionHelper {
             "should return a summary list with No and not include number of litres" - {
               "with action when is checkAnswers" in {
                 val subscription = generateSubscription(allFieldsPopulated = false)
-                val res = OperatePackagingSitesSummary.getOptHeadingAndSummary(subscription, amountProduced, isCheckAnswers = true)
+                val res          = OperatePackagingSitesSummary.getOptHeadingAndSummary(
+                  subscription,
+                  amountProduced,
+                  isCheckAnswers = true
+                )
                 res mustBe defined
-                val heading = res.get._1
+                val heading      = res.get._1
                 heading mustBe "operatePackagingSites.checkYourAnswersLabel"
-                val rows = res.get._2.rows
+                val rows         = res.get._2.rows
                 rows.head.key.content.asHtml mustBe Html("Reporting own brands packaged at your own site?")
                 rows.head.key.classes mustBe ""
                 rows.head.value.content.asHtml mustBe Html("No")
@@ -127,11 +151,15 @@ class OperatePackagingSitesSummarySpec extends RegistrationSubscriptionHelper {
               }
               "with no action when not checkAnswers" in {
                 val subscription = generateSubscription(allFieldsPopulated = false)
-                val res = OperatePackagingSitesSummary.getOptHeadingAndSummary(subscription, amountProduced, isCheckAnswers = false)
+                val res          = OperatePackagingSitesSummary.getOptHeadingAndSummary(
+                  subscription,
+                  amountProduced,
+                  isCheckAnswers = false
+                )
                 res mustBe defined
-                val heading = res.get._1
+                val heading      = res.get._1
                 heading mustBe "operatePackagingSites.checkYourAnswersLabel"
-                val rows = res.get._2.rows
+                val rows         = res.get._2.rows
                 rows.head.key.content.asHtml mustBe Html("Reporting own brands packaged at your own site?")
                 rows.head.key.classes mustBe ""
                 rows.head.value.content.asHtml mustBe Html("No")

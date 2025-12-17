@@ -42,14 +42,18 @@ class OrganisationTypeControllerSpec extends SpecBase with MockitoSugar with Log
 
   lazy val organisationTypeRoute: String = routes.OrganisationTypeController.onPageLoad(NormalMode).url
 
-  val formProvider = new OrganisationTypeFormProvider()
+  val formProvider                 = new OrganisationTypeFormProvider()
   val form: Form[OrganisationType] = formProvider()
-  val withoutSoleTrader: Boolean = false
+  val withoutSoleTrader: Boolean   = false
   "OrganisationType Controller" - {
 
     "must return OK and the correct view with 4 radio buttons for a GET if CTEnrollment is true" in {
 
-      val application = applicationBuilder(hasCTEnrolment = true, userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration).build()
+      val application = applicationBuilder(
+        hasCTEnrolment = true,
+        userAnswers = Some(emptyUserAnswers),
+        rosmRegistration = rosmRegistration
+      ).build()
       running(application) {
         val request = FakeRequest(GET, organisationTypeRoute)
 
@@ -58,13 +62,17 @@ class OrganisationTypeControllerSpec extends SpecBase with MockitoSugar with Log
         val view = application.injector.instanceOf[OrganisationTypeView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, withoutSoleTrader = true)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, withoutSoleTrader = true)(using
+          request,
+          messages(application)
+        ).toString
       }
     }
 
     "must return OK and the correct view with 5 radio buttons for a GET if CTEnrollment is false" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration).build()
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration).build()
 
       running(application) {
         val request = FakeRequest(GET, organisationTypeRoute)
@@ -74,13 +82,19 @@ class OrganisationTypeControllerSpec extends SpecBase with MockitoSugar with Log
         val view = application.injector.instanceOf[OrganisationTypeView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, withoutSoleTrader = false)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, withoutSoleTrader = false)(using
+          request,
+          messages(application)
+        ).toString
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(sdilNumber, RegisterState.RegisterWithAuthUTR).set(OrganisationTypePage, OrganisationType.values.head).success.value
+      val userAnswers = UserAnswers(sdilNumber, RegisterState.RegisterWithAuthUTR)
+        .set(OrganisationTypePage, OrganisationType.values.head)
+        .success
+        .value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers), rosmRegistration = rosmRegistration).build()
 
@@ -92,7 +106,11 @@ class OrganisationTypeControllerSpec extends SpecBase with MockitoSugar with Log
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(OrganisationType.values.head), NormalMode, withoutSoleTrader)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(OrganisationType.values.head), NormalMode, withoutSoleTrader)(
+          using
+          request,
+          messages(application)
+        ).toString
       }
     }
 
@@ -100,7 +118,7 @@ class OrganisationTypeControllerSpec extends SpecBase with MockitoSugar with Log
 
       val mockSessionService = mock[SessionService]
 
-      when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(true)
+      when(mockSessionService.set(any())).thenReturn(createSuccessRegistrationResult(true))
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration)
@@ -124,7 +142,8 @@ class OrganisationTypeControllerSpec extends SpecBase with MockitoSugar with Log
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration).build()
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration).build()
 
       running(application) {
         val request =
@@ -138,7 +157,10 @@ class OrganisationTypeControllerSpec extends SpecBase with MockitoSugar with Log
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, withoutSoleTrader)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, withoutSoleTrader)(using
+          request,
+          messages(application)
+        ).toString
       }
     }
 
@@ -175,13 +197,15 @@ class OrganisationTypeControllerSpec extends SpecBase with MockitoSugar with Log
 
     "must fail if the setting of userAnswers fails" in {
 
-      val application = applicationBuilder(userAnswers = Some(userDetailsWithSetMethodsReturningFailure), rosmRegistration = rosmRegistration).build()
+      val application = applicationBuilder(
+        userAnswers = Some(userDetailsWithSetMethodsReturningFailure),
+        rosmRegistration = rosmRegistration
+      ).build()
 
       running(application) {
         val request =
-          FakeRequest(POST, organisationTypeRoute
-        )
-        .withFormUrlEncodedBody(("value", OrganisationType.values.head.toString))
+          FakeRequest(POST, organisationTypeRoute)
+            .withFormUrlEncodedBody(("value", OrganisationType.values.head.toString))
 
         val result = route(application, request).value
 
@@ -194,7 +218,7 @@ class OrganisationTypeControllerSpec extends SpecBase with MockitoSugar with Log
     "should log an error message when internal server error is returned when user answers are not set in session repository" in {
       val mockSessionService = mock[SessionService]
 
-      when(mockSessionService.set(any())) thenReturn createFailureRegistrationResult(SessionDatabaseInsertError)
+      when(mockSessionService.set(any())).thenReturn(createFailureRegistrationResult(SessionDatabaseInsertError))
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration)
@@ -211,11 +235,12 @@ class OrganisationTypeControllerSpec extends SpecBase with MockitoSugar with Log
               .withFormUrlEncodedBody(("value", OrganisationType.values.head.toString))
 
           await(route(application, request).value)
-          events.collectFirst {
-            case event =>
+          events
+            .collectFirst { case event =>
               event.getLevel.levelStr mustBe "ERROR"
               event.getMessage mustEqual "Failed to set value in session repository while attempting set on organisationType"
-          }.getOrElse(fail("No logging captured"))
+            }
+            .getOrElse(fail("No logging captured"))
         }
       }
     }

@@ -23,12 +23,12 @@ import java.time.{LocalDate, ZoneOffset}
 import forms.behaviours.DateBehaviours
 import play.api.data.FormError
 
-class StartDateFormProviderSpec extends DateBehaviours with SpecBase{
+class StartDateFormProviderSpec extends DateBehaviours with SpecBase {
 
   val appConfig = application.injector.instanceOf[FrontendAppConfig]
 
   val formProvider = new StartDateFormProvider(appConfig)
-  val form = formProvider()
+  val form         = formProvider()
 
   ".startDate" - {
 
@@ -41,8 +41,18 @@ class StartDateFormProviderSpec extends DateBehaviours with SpecBase{
 
     behave like mandatoryDateField(form, "startDate", "startDate.error.required.all")
 
-    behave like dateFieldWithMin(form, "startDate", min =  LocalDate.of(2000, 1, 1), FormError("startDate", "startDate.minimumDate"))
+    behave like dateFieldWithMin(
+      form,
+      "startDate",
+      min = LocalDate.of(2000, 1, 1),
+      FormError("startDate", "startDate.minimumDate")
+    )
 
-    behave like dateFieldWithMax(form, "startDate", max =  LocalDate.now().plusDays(10), FormError("startDate", "startDate.error.maximumDate"))
+    behave like dateFieldWithMax(
+      form,
+      "startDate",
+      max = LocalDate.now().plusDays(10),
+      FormError("startDate", "startDate.error.maximumDate")
+    )
   }
 }

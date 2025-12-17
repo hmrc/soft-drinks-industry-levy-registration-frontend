@@ -12,8 +12,7 @@ class ApplicationAlreadySubmittedControllerISpec extends ControllerITTestHelper 
 
   "GET " + normalRoutePath - {
     "should return OK and render the ApplicationAlreadySubmitted page" in {
-      build
-        .commonPrecondition
+      build.commonPrecondition
 
       setAnswers(emptyUserAnswers.copy(registerState = RegisterState.RegisterApplicationAccepted))
 
@@ -23,9 +22,9 @@ class ApplicationAlreadySubmittedControllerISpec extends ControllerITTestHelper 
         whenReady(result1) { res =>
           res.status mustBe 200
           val page = Jsoup.parse(res.body)
-          
+
           given messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-          given messages: Messages = messagesApi.preferred(FakeRequest())
+          given messages: Messages       = messagesApi.preferred(FakeRequest())
 
           page.title must include(messages("applicationAlreadySubmitted.heading.title"))
         }

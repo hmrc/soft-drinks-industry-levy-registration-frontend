@@ -25,11 +25,11 @@ import java.time.LocalDate
 class CreatedSubscriptionAndAmountProducedGloballySpec extends AnyFunSuite {
 
   test("CreatedSubscriptionAndAmountProducedGlobally should serialize and deserialize correctly") {
-    val address = UkAddress(List("line1", "line2"), "postcode")
-    val activity = Activity(None, None, None, None, isLarge = false)
-    val site = Site(address, Some("ref"), "tradingName", Some(LocalDate.now()))
-    val contact = Contact(Some("name"), Some("positionInCompany"), "phoneNumber", "email")
-    val subscription = Subscription(
+    val address                                      = UkAddress(List("line1", "line2"), "postcode")
+    val activity                                     = Activity(None, None, None, None, isLarge = false)
+    val site                                         = Site(address, Some("ref"), "tradingName", Some(LocalDate.now()))
+    val contact                                      = Contact(Some("name"), Some("positionInCompany"), "phoneNumber", "email")
+    val subscription                                 = Subscription(
       utr = "exampleUTR",
       orgName = "exampleOrgName",
       orgType = "exampleOrgType",
@@ -40,10 +40,11 @@ class CreatedSubscriptionAndAmountProducedGloballySpec extends AnyFunSuite {
       warehouseSites = Seq(site),
       contact = contact
     )
-    val howManyLitresGlobally = HowManyLitresGlobally.Small
-    val createdSubscriptionAndAmountProducedGlobally = CreatedSubscriptionAndAmountProducedGlobally(subscription, howManyLitresGlobally)
+    val howManyLitresGlobally                        = HowManyLitresGlobally.Small
+    val createdSubscriptionAndAmountProducedGlobally =
+      CreatedSubscriptionAndAmountProducedGlobally(subscription, howManyLitresGlobally)
 
-    val json = Json.toJson(createdSubscriptionAndAmountProducedGlobally)
+    val json         = Json.toJson(createdSubscriptionAndAmountProducedGlobally)
     val deserialized = json.validate[CreatedSubscriptionAndAmountProducedGlobally]
 
     assert(deserialized == JsSuccess(createdSubscriptionAndAmountProducedGlobally))

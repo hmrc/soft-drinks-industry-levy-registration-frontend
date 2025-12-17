@@ -18,23 +18,21 @@ package controllers.actions
 
 import controllers.routes._
 import models.RegisterState._
-import models.{ NormalMode, RegisterState }
+import models.{NormalMode, RegisterState}
 import uk.gov.hmrc.auth.core.AffinityGroup.Agent
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals._
 import uk.gov.hmrc.auth.core._
 trait ActionHelpers {
 
   val registrationRetrieval = allEnrolments and credentialRole and internalId and affinityGroup
-  val TWO = 2
-  val FOUR = 4
+  val TWO                   = 2
+  val FOUR                  = 4
 
   protected def getSdilEnrolment(enrolments: Enrolments): Option[EnrolmentIdentifier] = {
     val sdil = for {
       enrolment <- enrolments.enrolments if enrolment.key.equalsIgnoreCase("HMRC-OBTDS-ORG")
-      sdil <- enrolment.getIdentifier("EtmpRegistrationNumber") if sdil.value.slice(TWO, FOUR) == "SD"
-    } yield {
-      sdil
-    }
+      sdil      <- enrolment.getIdentifier("EtmpRegistrationNumber") if sdil.value.slice(TWO, FOUR) == "SD"
+    } yield sdil
 
     sdil.headOption
   }
@@ -48,8 +46,11 @@ trait ActionHelpers {
   protected def hasCTEnrolment(enrolments: Enrolments): Boolean =
     enrolments.getEnrolment("IR-CT").isDefined
 
-  protected def hasValidRoleAndAffinityGroup(credentialRole: Option[CredentialRole], affinityGroup: Option[AffinityGroup]): Boolean = {
-    val isNotAssistant = credentialRole.fold(true)(_ != Assistant)
+  protected def hasValidRoleAndAffinityGroup(
+    credentialRole: Option[CredentialRole],
+    affinityGroup: Option[AffinityGroup]
+  ): Boolean = {
+    val isNotAssistant          = credentialRole.fold(true)(_ != Assistant)
     lazy val validAffinityGroup = affinityGroup.fold(false)(_ != Agent)
     isNotAssistant && validAffinityGroup
   }
@@ -57,10 +58,10 @@ trait ActionHelpers {
 
 object ActionHelpers extends ActionHelpers {
   def getRouteForRegisterState(registerState: RegisterState) = registerState match {
-    case RequiresBusinessDetails => EnterBusinessDetailsController.onPageLoad
-    case AlreadyRegistered => AlreadyRegisteredController.onPageLoad
+    case RequiresBusinessDetails     => EnterBusinessDetailsController.onPageLoad
+    case AlreadyRegistered           => AlreadyRegisteredController.onPageLoad
     case RegisterApplicationAccepted => ApplicationAlreadySubmittedController.onPageLoad
-    case RegistrationPending => RegistrationPendingController.onPageLoad
-    case _ => VerifyController.onPageLoad(NormalMode)
+    case RegistrationPending         => RegistrationPendingController.onPageLoad
+    case _                           => VerifyController.onPageLoad(NormalMode)
   }
 }

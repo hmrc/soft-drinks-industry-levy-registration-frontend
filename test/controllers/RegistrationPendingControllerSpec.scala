@@ -39,10 +39,12 @@ class RegistrationPendingControllerSpec extends SpecBase {
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswersForPending), utr = Some(utr))
         .overrides(
           bind[SoftDrinksIndustryLevyConnector].toInstance(mockSdilConnector)
-        ).build()
+        )
+        .build()
 
       running(application) {
-        when(mockSdilConnector.retreiveRosmSubscription(any(), any())(any())).thenReturn(createSuccessRegistrationResult(rosmRegistration))
+        when(mockSdilConnector.retreiveRosmSubscription(any(), any())(using any()))
+          .thenReturn(createSuccessRegistrationResult(rosmRegistration))
 
         val request = FakeRequest(GET, routes.RegistrationPendingController.onPageLoad.url)
 
@@ -54,8 +56,12 @@ class RegistrationPendingControllerSpec extends SpecBase {
         contentAsString(result) mustEqual
           view(
             rosmRegistration.utr,
-            AddressFormattingHelper.formatBusinessAddress(rosmRegistration.rosmRegistration.address, Some(rosmRegistration.rosmRegistration.organisationName)),
-            frontendAppConfig.helpdeskPhoneNumber)(request, messages(application)).toString
+            AddressFormattingHelper.formatBusinessAddress(
+              rosmRegistration.rosmRegistration.address,
+              Some(rosmRegistration.rosmRegistration.organisationName)
+            ),
+            frontendAppConfig.helpdeskPhoneNumber
+          )(using request, messages(application)).toString
       }
     }
   }

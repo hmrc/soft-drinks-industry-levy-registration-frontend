@@ -19,8 +19,8 @@ package controllers
 import controllers.actions._
 
 import javax.inject.Inject
-import play.api.i18n.{ I18nSupport, MessagesApi }
-import play.api.mvc.{ Action, AnyContent, MessagesControllerComponents }
+import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.AddressFormattingHelper
 import views.html.ApplicationAlreadySubmittedView
@@ -29,12 +29,14 @@ class ApplicationAlreadySubmittedController @Inject() (
   override val messagesApi: MessagesApi,
   controllerActions: ControllerActions,
   val controllerComponents: MessagesControllerComponents,
-  view: ApplicationAlreadySubmittedView) extends FrontendBaseController with I18nSupport {
+  view: ApplicationAlreadySubmittedView
+) extends FrontendBaseController
+    with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = controllerActions.withRegisterApplicationAcceptedAction {
-    implicit request =>
-      val rosmRegistration = request.rosmWithUtr.rosmRegistration
-      val formattedAddress = AddressFormattingHelper.formatBusinessAddress(rosmRegistration.address, Some(rosmRegistration.organisationName))
-      Ok(view(formattedAddress))
+  def onPageLoad: Action[AnyContent] = controllerActions.withRegisterApplicationAcceptedAction { implicit request =>
+    val rosmRegistration = request.rosmWithUtr.rosmRegistration
+    val formattedAddress =
+      AddressFormattingHelper.formatBusinessAddress(rosmRegistration.address, Some(rosmRegistration.organisationName))
+    Ok(view(formattedAddress))
   }
 }

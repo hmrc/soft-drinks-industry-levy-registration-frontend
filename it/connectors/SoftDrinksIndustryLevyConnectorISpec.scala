@@ -8,10 +8,15 @@ import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 import testSupport.{ITCoreTestData, Specifications, TestConfiguration}
 import uk.gov.hmrc.http.HeaderCarrier
 
-class SoftDrinksIndustryLevyConnectorISpec extends Specifications with TestConfiguration with ITCoreTestData with FutureAwaits with DefaultAwaitTimeout {
+class SoftDrinksIndustryLevyConnectorISpec
+    extends Specifications
+    with TestConfiguration
+    with ITCoreTestData
+    with FutureAwaits
+    with DefaultAwaitTimeout {
 
   val connector: SoftDrinksIndustryLevyConnector = app.injector.instanceOf[SoftDrinksIndustryLevyConnector]
-  implicit val hc: HeaderCarrier = HeaderCarrier()
+  implicit val hc: HeaderCarrier                 = HeaderCarrier()
 
   "checkPendingQueue" - {
     s"should return $Registered when $OK returned" in {
@@ -40,8 +45,7 @@ class SoftDrinksIndustryLevyConnectorISpec extends Specifications with TestConfi
     }
     s"should throw exception when other status returned" in {
       stubFor(
-        get(
-          urlPathMatching(s"/check-enrolment-status/utr"))
+        get(urlPathMatching(s"/check-enrolment-status/utr"))
           .willReturn(serverError())
       )
       val response = connector.checkPendingQueue("utr")

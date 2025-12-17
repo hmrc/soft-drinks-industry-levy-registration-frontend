@@ -25,35 +25,40 @@ import java.time.LocalDate
 class OptRetrievedSubscriptionSpec extends AnyFunSuite {
 
   test("OptRetrievedSubscription should serialize to JSON correctly when the option is Some") {
-    val retrievedSubscription = RetrievedSubscription(
+    val retrievedSubscription    = RetrievedSubscription(
       utr = "1234567890",
       sdilRef = "XASD1234567890",
       orgName = "Test Organization",
       address = UkAddress(List("Line 1", "Line 2"), "Postcode"),
-      activity = RetrievedActivity(smallProducer = false, largeProducer = false, contractPacker = false, importer = false, voluntaryRegistration = false),
+      activity = RetrievedActivity(
+        smallProducer = false,
+        largeProducer = false,
+        contractPacker = false,
+        importer = false,
+        voluntaryRegistration = false
+      ),
       liabilityDate = LocalDate.of(2023, 3, 7),
       contact = Contact(Some("name"), Some("positionInCompany"), "phoneNumber", "email"),
       deregDate = Some(LocalDate.of(2024, 3, 7))
     )
     val optRetrievedSubscription = OptRetrievedSubscription(Some(retrievedSubscription))
-    val json = Json.toJson(optRetrievedSubscription)
+    val json                     = Json.toJson(optRetrievedSubscription)
 
     assert((json \ "optRetrievedSubscription").as[RetrievedSubscription] == retrievedSubscription)
   }
 
   test("OptRetrievedSubscription should serialize to JSON correctly when the option is None") {
     val optRetrievedSubscription = OptRetrievedSubscription(None)
-    val json = Json.toJson(optRetrievedSubscription)
+    val json                     = Json.toJson(optRetrievedSubscription)
 
     assert((json \ "optRetrievedSubscription").asOpt[RetrievedSubscription].isEmpty)
   }
 
   test("OptRetrievedSubscription should deserialize from JSON correctly when the option is None") {
-    val json = Json.parse(
-      """
-        |{
-        |  "optRetrievedSubscription": null
-        |}
+    val json = Json.parse("""
+                            |{
+                            |  "optRetrievedSubscription": null
+                            |}
       """.stripMargin)
 
     val expected = OptRetrievedSubscription(None)

@@ -31,23 +31,24 @@ import scala.concurrent.Future
 
 class AddressLookupConnectorSpec extends MockHttp {
 
-  val errorModel: HttpResponse = HttpResponse(Status.BAD_REQUEST, "Error Message")
-  val testAddressLookupConnector = new AddressLookupConnector(mockHttp, frontendAppConfig)
-  lazy val id = "111111111"
-  val organisation = "soft drinks ltd"
-  val addressLine1 = "line 1"
-  val addressLine2 = "line 2"
-  val addressLine3 = "line 3"
-  val addressLine4 = "line 4"
-  val postcode = "aa1 1aa"
-  val countryCode = "UK"
+  val errorModel: HttpResponse        = HttpResponse(Status.BAD_REQUEST, "Error Message")
+  val testAddressLookupConnector      = new AddressLookupConnector(mockHttp, frontendAppConfig)
+  lazy val id                         = "111111111"
+  val organisation                    = "soft drinks ltd"
+  val addressLine1                    = "line 1"
+  val addressLine2                    = "line 2"
+  val addressLine3                    = "line 3"
+  val addressLine4                    = "line 4"
+  val postcode                        = "aa1 1aa"
+  val countryCode                     = "UK"
   val customerAddressMax: AlfResponse = AlfResponse(
     AlfAddress(
       Some(organisation),
       List(addressLine1, addressLine2, addressLine3, addressLine4),
       Some(postcode),
       Some(countryCode)
-    ))
+    )
+  )
 
   "AddressLookupConnector" - {
 
@@ -63,7 +64,9 @@ class AddressLookupConnectorSpec extends MockHttp {
     }
     "return correct initAddressUrl correctly" - {
       "when feature switch is disabled" in {
-        testAddressLookupConnector.initJourneyUrl(addressLookupFrontendTestEnabled = false) mustBe s"${frontendAppConfig.addressLookupService}/api/init"
+        testAddressLookupConnector.initJourneyUrl(addressLookupFrontendTestEnabled =
+          false
+        ) mustBe s"${frontendAppConfig.addressLookupService}/api/init"
       }
       "when feature switch is enabled" in {
         testAddressLookupConnector.initJourneyUrl(addressLookupFrontendTestEnabled = true) mustBe
@@ -73,7 +76,8 @@ class AddressLookupConnectorSpec extends MockHttp {
 
     "getAddress" - {
 
-      def getAddressResult: Future[HttpResult[AlfResponse]] = testAddressLookupConnector.getAddress(id)(implicitly,implicitly)
+      def getAddressResult: Future[HttpResult[AlfResponse]] =
+        testAddressLookupConnector.getAddress(id)(using implicitly, implicitly)
 
       "return an AlfResponse Model" in {
         setupMockHttpGet(Right(customerAddressMax))
@@ -93,7 +97,11 @@ class AddressLookupConnectorSpec extends MockHttp {
       val journeyConfig = JourneyConfig(1, JourneyOptions(""), None, None)
 
       s"should return url if ${Status.ACCEPTED} returned and ${HeaderNames.LOCATION} exists" in {
-        val response = AddressLookupInitJourneyReads.read("", "", HttpResponse(Status.ACCEPTED, "", Map(HeaderNames.LOCATION -> Seq("foo"))))
+        val response = AddressLookupInitJourneyReads.read(
+          "",
+          "",
+          HttpResponse(Status.ACCEPTED, "", Map(HeaderNames.LOCATION -> Seq("foo")))
+        )
         setupMockHttpPost(response)
         await(testAddressLookupConnector.initJourney(journeyConfig)) mustBe response
       }
@@ -108,11 +116,14 @@ class AddressLookupConnectorSpec extends MockHttp {
       s"return Left if status is ${Status.BAD_REQUEST}" in {
         val response = AddressLookupInitJourneyReads.read("", "", HttpResponse(Status.BAD_REQUEST, "Error Message"))
         setupMockHttpPost(response)
-        await(testAddressLookupConnector.initJourney(journeyConfig)) mustBe Left(ErrorModel(Status.BAD_REQUEST, "Error Message returned from ALF"))
+        await(testAddressLookupConnector.initJourney(journeyConfig)) mustBe Left(
+          ErrorModel(Status.BAD_REQUEST, "Error Message returned from ALF")
+        )
       }
 
       "return Left if status not accepted statuses from API" in {
-        val response = AddressLookupInitJourneyReads.read("", "", HttpResponse(Status.INTERNAL_SERVER_ERROR, "Error Message"))
+        val response =
+          AddressLookupInitJourneyReads.read("", "", HttpResponse(Status.INTERNAL_SERVER_ERROR, "Error Message"))
         setupMockHttpPost(response)
         await(testAddressLookupConnector.initJourney(journeyConfig)) mustBe
           Left(ErrorModel(Status.INTERNAL_SERVER_ERROR, "Unexpected error occurred when init journey from ALF"))

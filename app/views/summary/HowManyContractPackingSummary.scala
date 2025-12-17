@@ -21,8 +21,8 @@ import models.CheckMode
 
 object HowManyContractPackingSummary extends SummaryListRowLitresHelper {
 
-  override val actionUrl: String = routes.HowManyContractPackingController.onPageLoad(CheckMode).url
+  override val actionUrl: String       = routes.HowManyContractPackingController.onPageLoad(CheckMode).url
   override val bandActionIdKey: String = "contractPacking"
-  override val bandHiddenKey: String = "contractPacking"
+  override val bandHiddenKey: String   = "contractPacking"
 
 }

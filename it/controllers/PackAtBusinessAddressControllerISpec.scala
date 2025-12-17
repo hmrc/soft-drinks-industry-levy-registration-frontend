@@ -12,16 +12,15 @@ import play.api.test.{FakeRequest, WsTestClient}
 class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
 
   val normalRoutePath = "/pack-at-business-address"
-  val checkRoutePath = "/change-pack-at-business-address"
+  val checkRoutePath  = "/change-pack-at-business-address"
 
   given messagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
-  given messages: Messages = messagesApi.preferred(FakeRequest())
+  given messages: Messages       = messagesApi.preferred(FakeRequest())
 
   "GET " + normalRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the PackAtBusinessAddress page with no data populated" in {
-        build
-          .commonPrecondition
+        build.commonPrecondition
 
         setAnswers(emptyUserAnswers)
 
@@ -46,8 +45,7 @@ class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
     userAnswersForPackAtBusinessAddressPage.foreach { case (key, userAnswers) =>
       s"when the userAnswers contains data for the page with " + key + " selected" - {
         s"should return OK and render the page with " + key + " radio checked" in {
-          build
-            .commonPrecondition
+          build.commonPrecondition
 
           setAnswers(userAnswers)
 
@@ -72,13 +70,13 @@ class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
     testOtherSuccessUserTypes(baseUrl + normalRoutePath, messages("packAtBusinessAddress" + ".title"))
     testUnauthorisedUser(baseUrl + normalRoutePath)
     testUserWhoIsUnableToRegister(baseUrl + normalRoutePath)
-    testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)  }
+    testAuthenticatedUserButNoUserAnswers(baseUrl + normalRoutePath)
+  }
 
   s"GET " + checkRoutePath - {
     "when the userAnswers contains no data" - {
       "should return OK and render the PackAtBusinessAddress page with no data populated" in {
-        build
-          .commonPrecondition
+        build.commonPrecondition
 
         setAnswers(emptyUserAnswers)
 
@@ -103,8 +101,7 @@ class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
     userAnswersForPackAtBusinessAddressPage.foreach { case (key, userAnswers) =>
       s"when the userAnswers contains data for the page with " + key + " selected" - {
         s"should return OK and render the page with " + key + " radio checked" in {
-          build
-            .commonPrecondition
+          build.commonPrecondition
 
           setAnswers(userAnswers)
 
@@ -137,12 +134,13 @@ class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
 
     "when user selects yes with user answers, set trading name to organisation name" in {
       setAnswers(emptyUserAnswers)
-      build
-        .commonPrecondition
+      build.commonPrecondition
 
       WsTestClient.withClient { client =>
         val result = createClientRequestPOST(
-          client, baseUrl + normalRoutePath, Json.obj("value" -> true)
+          client,
+          baseUrl + normalRoutePath,
+          Json.obj("value" -> true)
         )
 
         whenReady(result) { res =>
@@ -156,20 +154,22 @@ class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
 
     "when the user does not select yes or no" - {
       "should return 400 with required error" in {
-        build
-          .commonPrecondition
+        build.commonPrecondition
 
         setAnswers(emptyUserAnswers)
         WsTestClient.withClient { client =>
           val result = createClientRequestPOST(
-            client, baseUrl + normalRoutePath, Json.obj("value" -> "")
+            client,
+            baseUrl + normalRoutePath,
+            Json.obj("value" -> "")
           )
 
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
             page.title must include("Error: " + messages("packAtBusinessAddress" + ".title"))
-            val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
+            val errorSummary = page
+              .getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")
@@ -188,17 +188,24 @@ class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
 
     "when user selects no with user answers" in {
       val alfOnRampURL: String = "http://onramp.com"
-      setAnswers(emptyUserAnswers.set(PackAtBusinessAddressPage, false).success.value
-        .copy(warehouseList = warehouseListWith1))
-      build
-        .commonPrecondition
-        .alf.getSuccessResponseFromALFInit(alfOnRampURL)
+      setAnswers(
+        emptyUserAnswers
+          .set(PackAtBusinessAddressPage, false)
+          .success
+          .value
+          .copy(warehouseList = warehouseListWith1)
+      )
+      build.commonPrecondition.alf.getSuccessResponseFromALFInit(alfOnRampURL)
       WsTestClient.withClient { client =>
         emptyUserAnswers
-          .set(PackAtBusinessAddressPage, true).success.value
+          .set(PackAtBusinessAddressPage, true)
+          .success
+          .value
           .copy(warehouseList = warehouseListWith1)
         val result = createClientRequestPOST(
-          client, baseUrl + checkRoutePath, Json.obj("value" -> false)
+          client,
+          baseUrl + checkRoutePath,
+          Json.obj("value" -> false)
         )
 
         whenReady(result) { res =>
@@ -209,16 +216,24 @@ class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
     }
 
     "when user selects yes with user answers" in {
-      setAnswers(emptyUserAnswers.set(PackAtBusinessAddressPage, true).success.value
-        .copy(warehouseList = warehouseListWith1))
-      build
-        .commonPrecondition
+      setAnswers(
+        emptyUserAnswers
+          .set(PackAtBusinessAddressPage, true)
+          .success
+          .value
+          .copy(warehouseList = warehouseListWith1)
+      )
+      build.commonPrecondition
       WsTestClient.withClient { client =>
         emptyUserAnswers
-          .set(PackAtBusinessAddressPage, true).success.value
+          .set(PackAtBusinessAddressPage, true)
+          .success
+          .value
           .copy(warehouseList = warehouseListWith1)
         val result = createClientRequestPOST(
-          client, baseUrl + checkRoutePath, Json.obj("value" -> true)
+          client,
+          baseUrl + checkRoutePath,
+          Json.obj("value" -> true)
         )
 
         whenReady(result) { res =>
@@ -231,15 +246,17 @@ class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
     "when user selects no without user answers" in {
       val alfOnRampURL: String = "http://onramp.com"
       setAnswers(emptyUserAnswers)
-      build
-        .commonPrecondition
-        .alf.getSuccessResponseFromALFInit(alfOnRampURL)
+      build.commonPrecondition.alf.getSuccessResponseFromALFInit(alfOnRampURL)
       WsTestClient.withClient { client =>
         emptyUserAnswers
-          .set(PackAtBusinessAddressPage, true).success.value
+          .set(PackAtBusinessAddressPage, true)
+          .success
+          .value
           .copy(warehouseList = warehouseListWith1)
         val result = createClientRequestPOST(
-          client, baseUrl + checkRoutePath, Json.obj("value" -> false)
+          client,
+          baseUrl + checkRoutePath,
+          Json.obj("value" -> false)
         )
 
         whenReady(result) { res =>
@@ -251,14 +268,17 @@ class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
 
     "when user selects yes without user answers" in {
       setAnswers(emptyUserAnswers)
-      build
-        .commonPrecondition
+      build.commonPrecondition
       WsTestClient.withClient { client =>
         emptyUserAnswers
-          .set(PackAtBusinessAddressPage, true).success.value
+          .set(PackAtBusinessAddressPage, true)
+          .success
+          .value
           .copy(warehouseList = warehouseListWith1)
         val result = createClientRequestPOST(
-          client, baseUrl + checkRoutePath, Json.obj("value" -> true)
+          client,
+          baseUrl + checkRoutePath,
+          Json.obj("value" -> true)
         )
 
         whenReady(result) { res =>
@@ -270,20 +290,22 @@ class PackAtBusinessAddressControllerISpec extends ControllerITTestHelper {
 
     "when the user does not select yes or no" - {
       "should return 400 with required error" in {
-        build
-          .commonPrecondition
+        build.commonPrecondition
 
         setAnswers(emptyUserAnswers)
         WsTestClient.withClient { client =>
           val result = createClientRequestPOST(
-            client, baseUrl + checkRoutePath, Json.obj("value" -> "")
+            client,
+            baseUrl + checkRoutePath,
+            Json.obj("value" -> "")
           )
 
           whenReady(result) { res =>
             res.status mustBe 400
             val page = Jsoup.parse(res.body)
             page.title must include("Error: " + messages("packAtBusinessAddress" + ".title"))
-            val errorSummary = page.getElementsByClass("govuk-list govuk-error-summary__list")
+            val errorSummary = page
+              .getElementsByClass("govuk-list govuk-error-summary__list")
               .first()
             errorSummary
               .select("a")

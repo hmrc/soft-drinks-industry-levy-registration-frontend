@@ -24,6 +24,5 @@ import play.api.data.Form
 class ThirdPartyPackagersFormProvider @Inject() extends Mappings {
 
   def apply(): Form[Boolean] =
-    Form(
-      "value" -> boolean("thirdPartyPackagers.error.required"))
+    Form("value" -> boolean("thirdPartyPackagers.error.required"))
 }

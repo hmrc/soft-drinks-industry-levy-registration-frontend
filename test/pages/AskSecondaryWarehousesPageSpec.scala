@@ -30,10 +30,12 @@ class AskSecondaryWarehousesPageSpec extends PageBehaviours {
     beRemovable[Boolean](AskSecondaryWarehousesPage)
 
     s"url should be correct for $NormalMode" in {
-      AskSecondaryWarehousesPage.url(NormalMode) mustBe controllers.routes.AskSecondaryWarehousesController.onPageLoad(NormalMode).url
+      AskSecondaryWarehousesPage
+        .url(NormalMode) mustBe controllers.routes.AskSecondaryWarehousesController.onPageLoad(NormalMode).url
     }
     s"url should be correct for $CheckMode" in {
-      AskSecondaryWarehousesPage.url(CheckMode) mustBe controllers.routes.AskSecondaryWarehousesController.onPageLoad(CheckMode).url
+      AskSecondaryWarehousesPage
+        .url(CheckMode) mustBe controllers.routes.AskSecondaryWarehousesController.onPageLoad(CheckMode).url
     }
   }
 }

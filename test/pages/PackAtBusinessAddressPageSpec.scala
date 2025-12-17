@@ -30,10 +30,12 @@ class PackAtBusinessAddressPageSpec extends PageBehaviours {
     beRemovable[Boolean](PackAtBusinessAddressPage)
 
     s"url should be correct for $NormalMode" in {
-      PackAtBusinessAddressPage.url(NormalMode) mustBe controllers.routes.PackAtBusinessAddressController.onPageLoad(NormalMode).url
+      PackAtBusinessAddressPage
+        .url(NormalMode) mustBe controllers.routes.PackAtBusinessAddressController.onPageLoad(NormalMode).url
     }
     s"url should be correct for $CheckMode" in {
-      PackAtBusinessAddressPage.url(CheckMode) mustBe controllers.routes.PackAtBusinessAddressController.onPageLoad(CheckMode).url
+      PackAtBusinessAddressPage
+        .url(CheckMode) mustBe controllers.routes.PackAtBusinessAddressController.onPageLoad(CheckMode).url
     }
   }
 }

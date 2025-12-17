@@ -24,19 +24,19 @@ import views.html.RegistrationPendingView
 
 class RegistrationPendingViewSpec extends ViewSpecHelper {
 
-  val view = application.injector.instanceOf[RegistrationPendingView]
-  implicit val request: Request[_] = FakeRequest()
+  val view                         = application.injector.instanceOf[RegistrationPendingView]
+  implicit val request: Request[?] = FakeRequest()
 
   object Selectors {
     val heading = "govuk-heading-l"
   }
 
   "View" - {
-    val utr = "foo"
-    val address = HtmlContent("bar")
+    val utr            = "foo"
+    val address        = HtmlContent("bar")
     val helpLineNumber = "wizz"
-    val html = view(utr, address, helpLineNumber)(request, messages(application))
-    val document = doc(html)
+    val html           = view(utr, address, helpLineNumber)(using request, messages(application))
+    val document       = doc(html)
     "should contain the expected title" in {
       document.title() must include(Messages("registrationPending" + ".title"))
     }
@@ -51,9 +51,15 @@ class RegistrationPendingViewSpec extends ViewSpecHelper {
       document.getElementById("pendingUTRAddress").text() mustBe address.value.toString()
     }
     "should have the expected text" in {
-      document.getElementById("subText1").text() mustBe s"These are the details we hold for Unique Taxpayer Reference (UTR) $utr:"
-      document.getElementById("subText2").text() mustBe s"If you have not got your registration number within 24 hours you need to call the Soft Drinks Industry Levy Helpline on $helpLineNumber."
-      document.getElementById("subText3").text() mustBe "We will contact you using the information you gave in your application if there is a problem."
+      document
+        .getElementById("subText1")
+        .text() mustBe s"These are the details we hold for Unique Taxpayer Reference (UTR) $utr:"
+      document
+        .getElementById("subText2")
+        .text() mustBe s"If you have not got your registration number within 24 hours you need to call the Soft Drinks Industry Levy Helpline on $helpLineNumber."
+      document
+        .getElementById("subText3")
+        .text() mustBe "We will contact you using the information you gave in your application if there is a problem."
     }
 
     testBackLink(document)

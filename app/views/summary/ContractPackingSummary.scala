@@ -25,14 +25,15 @@ import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryList
 object ContractPackingSummary extends RegisterDetailsSummaryListWithLitres {
 
   override val summaryLitres: SummaryListRowLitresHelper = HowManyContractPackingSummary
-  //LDS ignore
-  override val key: String = "contractPacking"
-  override val action: String = routes.ContractPackingController.onPageLoad(CheckMode).url
-  override val actionId: String = "change-contractPacking"
-  override val hiddenText: String = "contractPacking"
+  // LDS ignore
+  override val key: String                               = "contractPacking"
+  override val action: String                            = routes.ContractPackingController.onPageLoad(CheckMode).url
+  override val actionId: String                          = "change-contractPacking"
+  override val hiddenText: String                        = "contractPacking"
 
-  def getOptHeadingAndSummary(subscription: Subscription, isCheckAnswers: Boolean)(implicit messages: Messages): (String, SummaryList) = {
+  def getOptHeadingAndSummary(subscription: Subscription, isCheckAnswers: Boolean)(implicit
+    messages: Messages
+  ): (String, SummaryList) =
     getHeadingAndSummary(subscription.activity.CopackerAll, isCheckAnswers)
-  }
 
 }

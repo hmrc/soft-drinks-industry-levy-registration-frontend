@@ -6,28 +6,30 @@ import play.api.http.Status
 import play.api.libs.json.Json
 import play.mvc.Http.HeaderNames
 
-
 case class ALFStub()(implicit builder: PreconditionBuilder) {
-  val aAddress = AlfResponse(address = AlfAddress(
-    organisation = Some("soft drinks ltd"),
-    List("line 1", "line 2", "line 3", "line 4"),
-    postcode = Some("aa1 1aa"),
-    countryCode = Some("UK")
-  ))
-
-  val aAddressNoOrg = AlfResponse(address = AlfAddress(
-    organisation = None,
-    List("line 1", "line 2", "line 3", "line 4"),
-    postcode = Some("aa1 1aa"),
-    countryCode = Some("UK")
-  ))
-
-  val BadAddress = (
-    "Failed Address"
+  val aAddress = AlfResponse(address =
+    AlfAddress(
+      organisation = Some("soft drinks ltd"),
+      List("line 1", "line 2", "line 3", "line 4"),
+      postcode = Some("aa1 1aa"),
+      countryCode = Some("UK")
+    )
   )
 
-  def getAddress(id : String, hasTradingName: Boolean = true) ={
-    val address = if(hasTradingName) {
+  val aAddressNoOrg = AlfResponse(address =
+    AlfAddress(
+      organisation = None,
+      List("line 1", "line 2", "line 3", "line 4"),
+      postcode = Some("aa1 1aa"),
+      countryCode = Some("UK")
+    )
+  )
+
+  val BadAddress =
+    "Failed Address"
+
+  def getAddress(id: String, hasTradingName: Boolean = true) = {
+    val address = if (hasTradingName) {
       aAddress
     } else {
       aAddressNoOrg
@@ -35,51 +37,49 @@ case class ALFStub()(implicit builder: PreconditionBuilder) {
     stubFor(
       get(
         urlPathMatching(s"/api/confirmed")
-      ).withQueryParam("id",equalTo(id))
-        .willReturn(
-        ok(Json.toJson(address).toString())))
+      ).withQueryParam("id", equalTo(id))
+        .willReturn(ok(Json.toJson(address).toString()))
+    )
     builder
   }
 
-  def getBadAddress(id : String) ={
+  def getBadAddress(id: String) = {
     stubFor(
       get(
         urlPathMatching(s"/api/confirmed")
-      ).withQueryParam("id",equalTo(id))
-        .willReturn(
-          ok(Json.toJson(BadAddress).toString())))
+      ).withQueryParam("id", equalTo(id))
+        .willReturn(ok(Json.toJson(BadAddress).toString()))
+    )
     builder
   }
 
-  def getBadResponse(id : String) ={
+  def getBadResponse(id: String) = {
     stubFor(
       get(
         urlPathMatching(s"/api/confirmed")
-      ).withQueryParam("id",equalTo(id))
-        .willReturn(
-          notFound()))
+      ).withQueryParam("id", equalTo(id))
+        .willReturn(notFound())
+    )
     builder
   }
 
-  def getSuccessResponseFromALFInit( locationHeaderReturned: String) = {
+  def getSuccessResponseFromALFInit(locationHeaderReturned: String) =
     stubFor(
       post(
         urlPathMatching("/api/init")
       )
         .willReturn(
-        status(Status.ACCEPTED)
-          .withHeader(HeaderNames.LOCATION, locationHeaderReturned)
-      ))
-  }
-  def getFailResponseFromALFInit( statusReturned: Int) = {
+          status(Status.ACCEPTED)
+            .withHeader(HeaderNames.LOCATION, locationHeaderReturned)
+        )
+    )
+  def getFailResponseFromALFInit(statusReturned: Int)               =
     stubFor(
       post(
         urlPathMatching("/api/init")
       ).willReturn(
-          status(statusReturned)
-        ))
-  }
-
-
+        status(statusReturned)
+      )
+    )
 
 }

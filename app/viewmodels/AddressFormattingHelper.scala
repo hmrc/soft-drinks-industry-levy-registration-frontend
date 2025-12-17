@@ -17,37 +17,35 @@
 package viewmodels
 
 import models.backend.UkAddress
-import play.twirl.api.{ Html, HtmlFormat }
+import play.twirl.api.{Html, HtmlFormat}
 import uk.gov.hmrc.govukfrontend.views.Aliases.HtmlContent
 
 object AddressFormattingHelper {
 
-  def formatBusinessAddress(ukAddress: UkAddress, tradingName: Option[String]): HtmlContent = {
-    HtmlContent(tradingName.fold("")(tradingName => tradingName + "<br/>") +
-      ukAddress.lines.map(line => if (line.isEmpty) { "" } else { HtmlFormat.escape(line).toString() + "<br/>" }).mkString +
-      s"""<span class="nowrap" style="white-space: nowrap;">${ukAddress.postCode}</span>""")
-  }
+  def formatBusinessAddress(ukAddress: UkAddress, tradingName: Option[String]): HtmlContent =
+    HtmlContent(
+      tradingName.fold("")(tradingName => tradingName + "<br/>") +
+        ukAddress.lines
+          .map(line =>
+            if (line.isEmpty) { "" }
+            else { HtmlFormat.escape(line).toString() + "<br/>" }
+          )
+          .mkString +
+        s"""<span class="nowrap" style="white-space: nowrap;">${ukAddress.postCode}</span>"""
+    )
 
   def addressFormatting(address: UkAddress, tradingName: String): Html = {
-    val addressFormat = determineAddressFormat(address)
-    val commaFormattedSiteAddress = address.lines.map(line => { if (line.isEmpty) "" else line + ", " })
-    val htmlSiteAddress = HtmlFormat.escape(commaFormattedSiteAddress.mkString(""))
-    val htmlPostcode = Html(s"""<span class="nowrap" style="white-space: nowrap;">${address.postCode}</span>""")
-    val htmlTradingName = HtmlFormat.escape(tradingName)
-    val breakLine = Html("<br>")
+    val addressFormat             = determineAddressFormat(address)
+    val commaFormattedSiteAddress = address.lines.map(line => if (line.isEmpty) "" else line + ", ")
+    val htmlSiteAddress           = HtmlFormat.escape(commaFormattedSiteAddress.mkString(""))
+    val htmlPostcode              = Html(s"""<span class="nowrap" style="white-space: nowrap;">${address.postCode}</span>""")
+    val htmlTradingName           = HtmlFormat.escape(tradingName)
+    val breakLine                 = Html("<br>")
 
     addressFormat match {
-      case AddressWithTradingName => HtmlFormat.fill(Seq(
-        htmlTradingName,
-        breakLine,
-        htmlSiteAddress,
-        htmlPostcode))
-      case SeparatePostCodeAddressWithTradingName => HtmlFormat.fill(Seq(
-        htmlTradingName,
-        breakLine,
-        htmlSiteAddress,
-        breakLine,
-        htmlPostcode))
+      case AddressWithTradingName                 => HtmlFormat.fill(Seq(htmlTradingName, breakLine, htmlSiteAddress, htmlPostcode))
+      case SeparatePostCodeAddressWithTradingName =>
+        HtmlFormat.fill(Seq(htmlTradingName, breakLine, htmlSiteAddress, breakLine, htmlPostcode))
     }
   }
 
@@ -64,4 +62,3 @@ object AddressFormattingHelper {
 sealed trait AddressMatching
 case object SeparatePostCodeAddressWithTradingName extends AddressMatching
 case object AddressWithTradingName extends AddressMatching
-

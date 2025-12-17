@@ -40,7 +40,7 @@ class ImportsControllerSpec extends SpecBase with MockitoSugar with LoggerHelper
   def onwardRoute = Call("GET", "/foo")
 
   val formProvider = new ImportsFormProvider()
-  val form = formProvider()
+  val form         = formProvider()
 
   lazy val importsRoute = routes.ImportsController.onPageLoad(NormalMode).url
 
@@ -48,7 +48,8 @@ class ImportsControllerSpec extends SpecBase with MockitoSugar with LoggerHelper
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration).build()
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration).build()
 
       running(application) {
         val request = FakeRequest(GET, importsRoute)
@@ -58,7 +59,7 @@ class ImportsControllerSpec extends SpecBase with MockitoSugar with LoggerHelper
         val view = application.injector.instanceOf[ImportsView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode)(using request, messages(application)).toString
       }
     }
 
@@ -76,7 +77,10 @@ class ImportsControllerSpec extends SpecBase with MockitoSugar with LoggerHelper
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(true), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(true), NormalMode)(using
+          request,
+          messages(application)
+        ).toString
       }
     }
 
@@ -84,7 +88,7 @@ class ImportsControllerSpec extends SpecBase with MockitoSugar with LoggerHelper
 
       val mockSessionService = mock[SessionService]
 
-      when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(true)
+      when(mockSessionService.set(any())).thenReturn(createSuccessRegistrationResult(true))
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration)
@@ -108,7 +112,8 @@ class ImportsControllerSpec extends SpecBase with MockitoSugar with LoggerHelper
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration).build()
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration).build()
 
       running(application) {
         val request =
@@ -122,7 +127,7 @@ class ImportsControllerSpec extends SpecBase with MockitoSugar with LoggerHelper
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode)(using request, messages(application)).toString
       }
     }
 
@@ -158,13 +163,15 @@ class ImportsControllerSpec extends SpecBase with MockitoSugar with LoggerHelper
 
     "must fail if the setting of userAnswers fails" in {
 
-      val application = applicationBuilder(userAnswers = Some(userDetailsWithSetMethodsReturningFailure), rosmRegistration = rosmRegistration).build()
+      val application = applicationBuilder(
+        userAnswers = Some(userDetailsWithSetMethodsReturningFailure),
+        rosmRegistration = rosmRegistration
+      ).build()
 
       running(application) {
         val request =
-          FakeRequest(POST, importsRoute
-        )
-        .withFormUrlEncodedBody(("value", "true"))
+          FakeRequest(POST, importsRoute)
+            .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
 
@@ -177,7 +184,7 @@ class ImportsControllerSpec extends SpecBase with MockitoSugar with LoggerHelper
     "should log an error message when internal server error is returned when user answers are not set in session repository" in {
       val mockSessionService = mock[SessionService]
 
-      when(mockSessionService.set(any())) thenReturn createFailureRegistrationResult(SessionDatabaseInsertError)
+      when(mockSessionService.set(any())).thenReturn(createFailureRegistrationResult(SessionDatabaseInsertError))
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration)
@@ -194,11 +201,12 @@ class ImportsControllerSpec extends SpecBase with MockitoSugar with LoggerHelper
               .withFormUrlEncodedBody(("value", "true"))
 
           await(route(application, request).value)
-          events.collectFirst {
-            case event =>
+          events
+            .collectFirst { case event =>
               event.getLevel.levelStr mustBe "ERROR"
               event.getMessage mustEqual "Failed to set value in session repository while attempting set on imports"
-          }.getOrElse(fail("No logging captured"))
+            }
+            .getOrElse(fail("No logging captured"))
         }
       }
     }

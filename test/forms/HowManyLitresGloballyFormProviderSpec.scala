@@ -26,13 +26,13 @@ class HowManyLitresGloballyFormProviderSpec extends OptionFieldBehaviours {
 
   ".value" - {
 
-    val fieldName = "value"
+    val fieldName   = "value"
     val requiredKey = "howManyLitresGlobally.error.required"
 
     behave like optionsField[HowManyLitresGlobally](
       form,
       fieldName,
-      validValues  = HowManyLitresGlobally.values,
+      validValues = HowManyLitresGlobally.values,
       invalidError = FormError(fieldName, "error.invalid")
     )
 

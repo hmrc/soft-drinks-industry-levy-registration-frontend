@@ -19,19 +19,19 @@ package controllers
 import controllers.actions._
 import forms.PackagingSiteDetailsFormProvider
 import handlers.ErrorHandler
-import models.{ Mode, NormalMode }
+import models.{Mode, NormalMode}
 import navigation.Navigator
 import pages.PackagingSiteDetailsPage
 import play.api.data.Form
 import play.api.i18n.MessagesApi
-import play.api.mvc.{ Action, AnyContent, MessagesControllerComponents }
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.AddressLookupState.PackingDetails
-import services.{ AddressLookupService, SessionService }
+import services.{AddressLookupService, SessionService}
 import utilities.GenericLogger
 import views.html.PackagingSiteDetailsView
 
 import javax.inject.Inject
-import scala.concurrent.{ ExecutionContext, Future }
+import scala.concurrent.{ExecutionContext, Future}
 
 class PackagingSiteDetailsController @Inject() (
   override val messagesApi: MessagesApi,
@@ -43,40 +43,41 @@ class PackagingSiteDetailsController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: PackagingSiteDetailsView,
   val errorHandler: ErrorHandler,
-  val genericLogger: GenericLogger)(implicit ec: ExecutionContext) extends ControllerHelper {
+  val genericLogger: GenericLogger
+)(implicit ec: ExecutionContext)
+    extends ControllerHelper {
 
   val form: Form[Boolean] = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = controllerActions.withUserWhoCanRegister {
-    implicit request =>
-
-      if (request.userAnswers.packagingSiteList.nonEmpty) {
-        Ok(view(form, mode, request.userAnswers.packagingSiteList))
-      } else {
-        genericLogger.logger.info(s"User at ${PackagingSiteDetailsPage.toString} with an empty packaging site list.  Redirected to Pack at business address")
-        Redirect(routes.PackAtBusinessAddressController.onPageLoad(mode))
-      }
+  def onPageLoad(mode: Mode): Action[AnyContent] = controllerActions.withUserWhoCanRegister { implicit request =>
+    if (request.userAnswers.packagingSiteList.nonEmpty) {
+      Ok(view(form, mode, request.userAnswers.packagingSiteList))
+    } else {
+      genericLogger.logger.info(
+        s"User at ${PackagingSiteDetailsPage.toString} with an empty packaging site list.  Redirected to Pack at business address"
+      )
+      Redirect(routes.PackAtBusinessAddressController.onPageLoad(mode))
+    }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = controllerActions.withUserWhoCanRegister.async {
-    implicit request =>
-
-      form.bindFromRequest().fold(
+  def onSubmit(mode: Mode): Action[AnyContent] = controllerActions.withUserWhoCanRegister.async { implicit request =>
+    form
+      .bindFromRequest()
+      .fold(
         formWithErrors =>
           Future.successful(BadRequest(view(formWithErrors, mode, request.userAnswers.packagingSiteList))),
-
-        value => {
+        value =>
           for {
             updatedAnswers <- Future.fromTry(request.userAnswers.set(PackagingSiteDetailsPage, value))
-            _ <- updateDatabaseWithoutRedirect(updatedAnswers, PackagingSiteDetailsPage)
-            onwardUrl <- if (value) {
-              addressLookupService.initJourneyAndReturnOnRampUrl(PackingDetails, mode = mode)
-            } else if (mode == NormalMode) {
-              Future.successful(routes.AskSecondaryWarehousesController.onPageLoad(mode).url)
-            } else {
-              Future.successful(routes.CheckYourAnswersController.onPageLoad.url)
-            }
+            _              <- updateDatabaseWithoutRedirect(updatedAnswers, PackagingSiteDetailsPage)
+            onwardUrl      <- if (value) {
+                                addressLookupService.initJourneyAndReturnOnRampUrl(PackingDetails, mode = mode)
+                              } else if (mode == NormalMode) {
+                                Future.successful(routes.AskSecondaryWarehousesController.onPageLoad(mode).url)
+                              } else {
+                                Future.successful(routes.CheckYourAnswersController.onPageLoad.url)
+                              }
           } yield Redirect(onwardUrl)
-        })
+      )
   }
 }

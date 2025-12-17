@@ -16,7 +16,7 @@
 
 package pages
 
-import models.{ CheckMode, HowManyLitresGlobally, NormalMode }
+import models.{CheckMode, HowManyLitresGlobally, NormalMode}
 import pages.behaviours.PageBehaviours
 
 class HowManyLitresGloballyPageSpec extends PageBehaviours {
@@ -30,10 +30,12 @@ class HowManyLitresGloballyPageSpec extends PageBehaviours {
     beRemovable[HowManyLitresGlobally](HowManyLitresGloballyPage)
 
     s"url should be correct for $NormalMode" in {
-      HowManyLitresGloballyPage.url(NormalMode) mustBe controllers.routes.HowManyLitresGloballyController.onPageLoad(NormalMode).url
+      HowManyLitresGloballyPage
+        .url(NormalMode) mustBe controllers.routes.HowManyLitresGloballyController.onPageLoad(NormalMode).url
     }
     s"url should be correct for $CheckMode" in {
-      HowManyLitresGloballyPage.url(CheckMode) mustBe controllers.routes.HowManyLitresGloballyController.onPageLoad(CheckMode).url
+      HowManyLitresGloballyPage
+        .url(CheckMode) mustBe controllers.routes.HowManyLitresGloballyController.onPageLoad(CheckMode).url
     }
   }
 }

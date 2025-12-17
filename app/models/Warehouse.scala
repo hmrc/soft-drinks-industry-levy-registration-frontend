@@ -17,11 +17,9 @@
 package models
 
 import models.backend.UkAddress
-import play.api.libs.json.{ Format, Json }
+import play.api.libs.json.{Format, Json}
 
-case class Warehouse(
-  tradingName: String,
-  address: UkAddress)
+case class Warehouse(tradingName: String, address: UkAddress)
 
 object Warehouse {
 

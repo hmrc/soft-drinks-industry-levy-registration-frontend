@@ -33,17 +33,18 @@ class AlreadyRegisteredControllerSpec extends SpecBase {
   "AlreadyRegistered Controller" - {
     val emptyUserAnswersForAlreadyReg = emptyUserAnswers.copy(registerState = RegisterState.AlreadyRegistered)
 
-
     "must return OK and the correct view for a GET" in {
       val mockSdilConnector = mock[SoftDrinksIndustryLevyConnector]
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswersForAlreadyReg), utr = Some(utr))
         .overrides(
           bind[SoftDrinksIndustryLevyConnector].toInstance(mockSdilConnector)
-        ).build()
+        )
+        .build()
 
       running(application) {
-        when(mockSdilConnector.retreiveRosmSubscription(any(), any())(any())).thenReturn(createSuccessRegistrationResult(rosmRegistration))
+        when(mockSdilConnector.retreiveRosmSubscription(any(), any())(using any()))
+          .thenReturn(createSuccessRegistrationResult(rosmRegistration))
 
         val request = FakeRequest(GET, routes.AlreadyRegisteredController.onPageLoad.url)
 
@@ -58,7 +59,7 @@ class AlreadyRegisteredControllerSpec extends SpecBase {
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual
-          view(rosmRegistration.utr, formattedAddress)(request, messages(application)).toString
+          view(rosmRegistration.utr, formattedAddress)(using request, messages(application)).toString
       }
     }
 

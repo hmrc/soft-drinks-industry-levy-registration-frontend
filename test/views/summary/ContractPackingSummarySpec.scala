@@ -27,10 +27,10 @@ class ContractPackingSummarySpec extends RegistrationSubscriptionHelper {
       "should return a summary list with Yes and the number of litres" - {
         "with actions when isCheckAnswers" in {
           val subscription = generateSubscription(allFieldsPopulated = true)
-          val res = ContractPackingSummary.getOptHeadingAndSummary(subscription, isCheckAnswers = true)
-          val heading = res._1
+          val res          = ContractPackingSummary.getOptHeadingAndSummary(subscription, isCheckAnswers = true)
+          val heading      = res._1
           heading mustBe "contractPacking.checkYourAnswersLabel"
-          val rows = res._2.rows
+          val rows         = res._2.rows
           rows.head.key.content.asHtml mustBe Html("Reporting contract packed at your own sites?")
           rows.head.key.classes mustBe ""
           rows.head.value.content.asHtml mustBe Html("Yes")
@@ -44,7 +44,9 @@ class ContractPackingSummarySpec extends RegistrationSubscriptionHelper {
           rows(1).value.content.asHtml mustBe Html("1,000")
           rows(1).value.classes.trim mustBe "sdil-right-align--desktop"
           rows(1).actions.head.items.head.href must include("/change-how-many-contract-packing-next-12-months")
-          rows(1).actions.head.items.head.attributes mustBe Map("id" -> "change-litresInLowBand-litreage-contractPacking")
+          rows(1).actions.head.items.head.attributes mustBe Map(
+            "id" -> "change-litresInLowBand-litreage-contractPacking"
+          )
           rows(1).actions.head.items.head.content.asHtml mustBe Html("Change")
 
           rows(2).key.content.asHtml mustBe Html("Litres in the high band")
@@ -52,7 +54,9 @@ class ContractPackingSummarySpec extends RegistrationSubscriptionHelper {
           rows(2).value.content.asHtml mustBe Html("2,000")
           rows(2).value.classes.trim mustBe "sdil-right-align--desktop"
           rows(2).actions.head.items.head.href must include("/change-how-many-contract-packing-next-12-months")
-          rows(2).actions.head.items.head.attributes mustBe Map("id" -> "change-litresInHighBand-litreage-contractPacking")
+          rows(2).actions.head.items.head.attributes mustBe Map(
+            "id" -> "change-litresInHighBand-litreage-contractPacking"
+          )
           rows(2).actions.head.items.head.content.asHtml mustBe Html("Change")
 
           rows.size mustBe 3
@@ -60,10 +64,10 @@ class ContractPackingSummarySpec extends RegistrationSubscriptionHelper {
 
         "with actions when not isCheckAnswers" in {
           val subscription = generateSubscription(allFieldsPopulated = true)
-          val res = ContractPackingSummary.getOptHeadingAndSummary(subscription, isCheckAnswers = false)
-          val heading = res._1
+          val res          = ContractPackingSummary.getOptHeadingAndSummary(subscription, isCheckAnswers = false)
+          val heading      = res._1
           heading mustBe "contractPacking.checkYourAnswersLabel"
-          val rows = res._2.rows
+          val rows         = res._2.rows
           rows.head.key.content.asHtml mustBe Html("Reporting contract packed at your own sites?")
           rows.head.key.classes mustBe ""
           rows.head.value.content.asHtml mustBe Html("Yes")
@@ -90,10 +94,10 @@ class ContractPackingSummarySpec extends RegistrationSubscriptionHelper {
       "should return a summary list with No and not include number of litres" - {
         "with action when is checkAnswers" in {
           val subscription = generateSubscription(allFieldsPopulated = false)
-          val res = ContractPackingSummary.getOptHeadingAndSummary(subscription, isCheckAnswers = true)
-          val heading = res._1
+          val res          = ContractPackingSummary.getOptHeadingAndSummary(subscription, isCheckAnswers = true)
+          val heading      = res._1
           heading mustBe "contractPacking.checkYourAnswersLabel"
-          val rows = res._2.rows
+          val rows         = res._2.rows
           rows.head.key.content.asHtml mustBe Html("Reporting contract packed at your own sites?")
           rows.head.key.classes mustBe ""
           rows.head.value.content.asHtml mustBe Html("No")
@@ -106,10 +110,10 @@ class ContractPackingSummarySpec extends RegistrationSubscriptionHelper {
         }
         "with no action when not checkAnswers" in {
           val subscription = generateSubscription(allFieldsPopulated = false)
-          val res = ContractPackingSummary.getOptHeadingAndSummary(subscription, isCheckAnswers = false)
-          val heading = res._1
+          val res          = ContractPackingSummary.getOptHeadingAndSummary(subscription, isCheckAnswers = false)
+          val heading      = res._1
           heading mustBe "contractPacking.checkYourAnswersLabel"
-          val rows = res._2.rows
+          val rows         = res._2.rows
           rows.head.key.content.asHtml mustBe Html("Reporting contract packed at your own sites?")
           rows.head.key.classes mustBe ""
           rows.head.value.content.asHtml mustBe Html("No")

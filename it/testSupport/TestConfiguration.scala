@@ -27,7 +27,7 @@ import scala.jdk.CollectionConverters._
 import org.mongodb.scala.{ObservableFuture, SingleObservableFuture}
 
 trait TestConfiguration
-  extends GuiceOneServerPerSuite
+    extends GuiceOneServerPerSuite
     with IntegrationPatience
     with PatienceConfiguration
     with BeforeAndAfterEach
@@ -35,71 +35,69 @@ trait TestConfiguration
     with SessionDatabaseOperations
     with SDILSessionCacheOperations {
 
-  me: Suite with TestSuite =>
+  me: Suite & TestSuite =>
 
   lazy val frontendAppConfig = app.injector.instanceOf[FrontendAppConfig]
 
   val wiremockHost: String = "localhost"
-  val wiremockPort: Int = Port.randomAvailable
+  val wiremockPort: Int    = Port.randomAvailable
 
   val baseUrl = s"http://localhost:$port/soft-drinks-industry-levy-registration"
 
-  val sessionId = "sessionId-eb3158c2-0aff-4ce8-8d1b-f2208ace52fe"
+  val sessionId                    = "sessionId-eb3158c2-0aff-4ce8-8d1b-f2208ace52fe"
   val xSessionId: (String, String) = "X-Session-ID" -> sessionId
   val xRequestId: (String, String) = "X-Request-ID" -> sessionId
-  val AUTHORIZE_HEADER_VALUE =
+  val AUTHORIZE_HEADER_VALUE       =
     "Bearer BXQ3/Treo4kQCZvVcCqKPhhpBYpRtQQKWTypn1WBfRHWUopu5V/IFWF5phY/fymAP1FMqQR27MmCJxb50Hi5GD6G3VMjMtSLu7TAAIuqDia6jByIpXJpqOgLQuadi7j0XkyDVkl0Zp/zbKtHiNrxpa0nVHm3+GUC4H2h4Ki8OjP9KwIkeIPK/mMlBESjue4V"
 
-  val sessionBaker: SessionCookieBaker = app.injector.instanceOf[SessionCookieBaker]
+  val sessionBaker: SessionCookieBaker           = app.injector.instanceOf[SessionCookieBaker]
   val cookieHeaderEncoding: CookieHeaderEncoding = app.injector.instanceOf[CookieHeaderEncoding]
-  val sessionCookieCrypto: SessionCookieCrypto = app.injector.instanceOf[SessionCookieCrypto]
+  val sessionCookieCrypto: SessionCookieCrypto   = app.injector.instanceOf[SessionCookieCrypto]
 
   def createSessionCookieAsString(sessionData: Map[String, String]): String = {
-    val sessionCookie = sessionBaker.encodeAsCookie(Session(sessionData))
+    val sessionCookie               = sessionBaker.encodeAsCookie(Session(sessionData))
     val encryptedSessionCookieValue =
       sessionCookieCrypto.crypto.encrypt(PlainText(sessionCookie.value)).value
-    val encryptedSessionCookie =
+    val encryptedSessionCookie      =
       sessionCookie.copy(value = encryptedSessionCookieValue)
     cookieHeaderEncoding.encodeCookieHeader(Seq(encryptedSessionCookie))
   }
-  val authData = Map("authToken" -> AUTHORIZE_HEADER_VALUE)
-  val sessionAndAuth  = Map("authToken" -> AUTHORIZE_HEADER_VALUE, "sessionId" -> sessionId)
+  val authData                                                              = Map("authToken" -> AUTHORIZE_HEADER_VALUE)
+  val sessionAndAuth                                                        = Map("authToken" -> AUTHORIZE_HEADER_VALUE, "sessionId" -> sessionId)
 
   lazy val sessionRepository: SessionRepository = app.injector.instanceOf[SessionRepository]
 
-  val authCookie: String = createSessionCookieAsString(authData).substring(5)
-  val authAndSessionCookie: String = createSessionCookieAsString(sessionAndAuth).substring(5)
+  val authCookie: String                                        = createSessionCookieAsString(authData).substring(5)
+  val authAndSessionCookie: String                              = createSessionCookieAsString(sessionAndAuth).substring(5)
   abstract override implicit val patienceConfig: PatienceConfig =
-    PatienceConfig(
-      timeout = Span(4, Seconds),
-      interval = Span(50, Millis))
+    PatienceConfig(timeout = Span(4, Seconds), interval = Span(50, Millis))
 
   lazy val config = Map(
-    s"microservice.services.address-lookup-frontend.host" -> s"$wiremockHost",
-    s"microservice.services.address-lookup-frontend.port" -> s"$wiremockPort",
-    s"microservice.services.auth.host" -> s"$wiremockHost",
-    s"microservice.services.auth.port" -> s"$wiremockPort",
-    s"microservice.services.bas-gateway.host" -> s"$wiremockHost",
-    s"microservice.services.bas-gateway.port" -> s"$wiremockPort",
-    s"microservice.services.soft-drinks-industry-levy.host" -> s"$wiremockHost",
-    s"microservice.services.soft-drinks-industry-levy.port" -> s"$wiremockPort",
+    s"microservice.services.address-lookup-frontend.host"     -> s"$wiremockHost",
+    s"microservice.services.address-lookup-frontend.port"     -> s"$wiremockPort",
+    s"microservice.services.auth.host"                        -> s"$wiremockHost",
+    s"microservice.services.auth.port"                        -> s"$wiremockPort",
+    s"microservice.services.bas-gateway.host"                 -> s"$wiremockHost",
+    s"microservice.services.bas-gateway.port"                 -> s"$wiremockPort",
+    s"microservice.services.soft-drinks-industry-levy.host"   -> s"$wiremockHost",
+    s"microservice.services.soft-drinks-industry-levy.port"   -> s"$wiremockPort",
     "play.filters.csrf.header.bypassHeaders.X-Requested-With" -> "*",
-    "play.filters.csrf.header.bypassHeaders.Csrf-Token" -> "nocheck",
-    "json.encryption.key" -> "fqpLDZ4sumDsekHkeEBlCA==",
-    "json.encryption.previousKeys" -> "[]",
-    "play.http.router" -> "testOnlyDoNotUseInAppConf.Routes",
-    "helpdeskPhoneNumber" -> "0300-200-1000",
-    "addressLookupFrontendTest.enabled" -> "false"
+    "play.filters.csrf.header.bypassHeaders.Csrf-Token"       -> "nocheck",
+    "json.encryption.key"                                     -> "fqpLDZ4sumDsekHkeEBlCA==",
+    "json.encryption.previousKeys"                            -> "[]",
+    "play.http.router"                                        -> "testOnlyDoNotUseInAppConf.Routes",
+    "helpdeskPhoneNumber"                                     -> "0300-200-1000",
+    "addressLookupFrontendTest.enabled"                       -> "false"
   )
 
   override implicit lazy val app: Application = appBuilder().build()
-  lazy val sessionCache = app.injector.instanceOf[SDILSessionCacheRepository]
+  lazy val sessionCache                       = app.injector.instanceOf[SDILSessionCacheRepository]
   lazy val sdilSessionCache: SDILSessionCache = app.injector.instanceOf[SDILSessionCache]
-  lazy val mongo: SessionRepository = app.injector.instanceOf[SessionRepository]
+  lazy val mongo: SessionRepository           = app.injector.instanceOf[SessionRepository]
 
   def configParams: Map[String, Any] = Map()
 
-  protected def appBuilder(): GuiceApplicationBuilder = {
+  protected def appBuilder(): GuiceApplicationBuilder =
     new GuiceApplicationBuilder()
       .in(Environment.simple(mode = Mode.Dev))
       .configure(config ++ configParams)
@@ -109,9 +107,8 @@ trait TestConfiguration
         bind[IdentifierAction].to[AuthenticatedIdentifierAction],
         bind[Clock].toInstance(Clock.systemDefaultZone().withZone(ZoneOffset.UTC))
       )
-  }
 
-  //app.injector.instanceOf[HealthController]
+  // app.injector.instanceOf[HealthController]
 
   val wireMockServer = new WireMockServer(wireMockConfig().port(wiremockPort))
 
@@ -128,18 +125,17 @@ trait TestConfiguration
     reset()
   }
 
-  override protected def afterAll(): Unit = {
+  override protected def afterAll(): Unit =
     wireMockServer.stop()
-  }
 
-  override def afterEach(): Unit = {
+  override def afterEach(): Unit =
     wireMockServer.getAllServeEvents.asScala.toList
       .sortBy(_.getRequest.getLoggedDate)
-      .map(_.getRequest).foreach(r => s"${r.getLoggedDate.toInstant.toEpochMilli}\t${r.getMethod}\t${r.getUrl}")
-  }
+      .map(_.getRequest)
+      .foreach(r => s"${r.getLoggedDate.toInstant.toEpochMilli}\t${r.getMethod}\t${r.getUrl}")
 
-  lazy val messagesAPI: MessagesApi = app.injector.instanceOf[MessagesApi]
+  lazy val messagesAPI: MessagesApi       = app.injector.instanceOf[MessagesApi]
   lazy val messagesProvider: MessagesImpl = MessagesImpl(Lang("en"), messagesAPI)
-  lazy val mcc = app.injector.instanceOf[MessagesControllerComponents]
-  implicit val ec: ExecutionContext = app.injector.instanceOf[ExecutionContext]
+  lazy val mcc                            = app.injector.instanceOf[MessagesControllerComponents]
+  implicit val ec: ExecutionContext       = app.injector.instanceOf[ExecutionContext]
 }

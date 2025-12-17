@@ -27,36 +27,41 @@ import views.html.HowManyLitresGloballyView
 
 class HowManyLitresGloballyViewSpec extends ViewSpecHelper {
 
-  val view: HowManyLitresGloballyView = application.injector.instanceOf[HowManyLitresGloballyView]
-  val formProvider = new HowManyLitresGloballyFormProvider
+  val view: HowManyLitresGloballyView   = application.injector.instanceOf[HowManyLitresGloballyView]
+  val formProvider                      = new HowManyLitresGloballyFormProvider
   val form: Form[HowManyLitresGlobally] = formProvider.apply()
-  implicit val request: Request[_] = FakeRequest()
+  implicit val request: Request[?]      = FakeRequest()
 
   object Selectors {
-    val heading = "govuk-fieldset__heading"
-    val legend = "govuk-fieldset__legend  govuk-fieldset__legend--l"
-    val radios = "govuk-radios"
-    val radiosInput = "govuk-radios__input"
-    val radiosItems = "govuk-radios__item"
-    val radiosLabels = "govuk-label govuk-radios__label"
-    val body = "govuk-body"
+    val heading           = "govuk-fieldset__heading"
+    val legend            = "govuk-fieldset__legend  govuk-fieldset__legend--l"
+    val radios            = "govuk-radios"
+    val radiosInput       = "govuk-radios__input"
+    val radiosItems       = "govuk-radios__item"
+    val radiosLabels      = "govuk-label govuk-radios__label"
+    val body              = "govuk-body"
     val errorSummaryTitle = "govuk-error-summary__title"
-    val errorSummaryList = "govuk-list govuk-error-summary__list"
-    val button = "govuk-button"
-    val form = "form"
+    val errorSummaryList  = "govuk-list govuk-error-summary__list"
+    val button            = "govuk-button"
+    val form              = "form"
   }
 
   "View" - {
-    val html = view(form, NormalMode)(request, messages(application))
+    val html     = view(form, NormalMode)(using request, messages(application))
     val document = doc(html)
     "should contain the expected title" in {
-      document.title() must include("How many litres of your own brands of liable drinks have been packaged globally in the past 12 months?")
+      document.title() must include(
+        "How many litres of your own brands of liable drinks have been packaged globally in the past 12 months?"
+      )
     }
 
     "should include a legend with the expected heading" in {
       val legend = document.getElementsByClass(Selectors.legend)
       legend.size() mustBe 1
-      legend.get(0).getElementsByClass(Selectors.legend).text() mustEqual "How many litres of your own brands of liable drinks have been packaged globally in the past 12 months?"
+      legend
+        .get(0)
+        .getElementsByClass(Selectors.legend)
+        .text() mustEqual "How many litres of your own brands of liable drinks have been packaged globally in the past 12 months?"
     }
 
     "should include 3 detail sections with the expected content" in {
@@ -64,39 +69,59 @@ class HowManyLitresGloballyViewSpec extends ViewSpecHelper {
       details.size() mustBe 3
     }
 
-      "should include the What does packaged mean detail content" in {
-        val details = document.getElementsByClass("govuk-details")
-        details.get(0).getElementsByClass("govuk-details__summary")
-          .text() mustEqual "What does packaged mean?"
-        details.get(0).getElementsByClass("govuk-details__text")
-          .text() must include("A liable drink is packaged if it is bottled, canned, or otherwise packaged, so it is ready to either drink or dilute.")
-      }
-      "should include the expected What is a liable drink detail content" in {
-        val details = document.getElementsByClass("govuk-details")
-        details.get(1).getElementsByClass("govuk-details__summary")
-          .text() mustEqual "What is a liable drink?"
-        details.get(1).getElementsByClass("govuk-body")
-          .text() mustEqual "A drink is liable if it meets all of the following conditions"
-        details.get(1).getElementsByClass("govuk-details__text")
-          .text() must include("it has a content of 1.2% alcohol by volume or less")
-      }
-      "What is a liable drink detail content should have 5 bullet points" in {
-        val details = document.getElementsByClass("govuk-details")
-        val detailBullets = details.get(1).getElementsByClass("govuk-list govuk-list--bullet").get(0)
-        detailBullets.childrenSize() mustBe 5
-      }
+    "should include the What does packaged mean detail content" in {
+      val details = document.getElementsByClass("govuk-details")
+      details
+        .get(0)
+        .getElementsByClass("govuk-details__summary")
+        .text() mustEqual "What does packaged mean?"
+      details
+        .get(0)
+        .getElementsByClass("govuk-details__text")
+        .text() must include(
+        "A liable drink is packaged if it is bottled, canned, or otherwise packaged, so it is ready to either drink or dilute."
+      )
+    }
+    "should include the expected What is a liable drink detail content" in {
+      val details = document.getElementsByClass("govuk-details")
+      details
+        .get(1)
+        .getElementsByClass("govuk-details__summary")
+        .text() mustEqual "What is a liable drink?"
+      details
+        .get(1)
+        .getElementsByClass("govuk-body")
+        .text() mustEqual "A drink is liable if it meets all of the following conditions"
+      details
+        .get(1)
+        .getElementsByClass("govuk-details__text")
+        .text() must include("it has a content of 1.2% alcohol by volume or less")
+    }
+    "What is a liable drink detail content should have 5 bullet points" in {
+      val details       = document.getElementsByClass("govuk-details")
+      val detailBullets = details.get(1).getElementsByClass("govuk-list govuk-list--bullet").get(0)
+      detailBullets.childrenSize() mustBe 5
+    }
 
-      "should include the expected What drinks are exempt? content" in {
-        val details = document.getElementsByClass("govuk-details")
-        details.get(2).getElementsByClass("govuk-details__summary")
-          .text() mustEqual "What drinks are exempt?"
-        details.get(2).getElementsByClass("govuk-body")
-          .text() mustEqual "A drink is exempt if it meets one of the following conditions:"
-        details.get(2).getElementsByClass("govuk-details__text")
-          .text() must include("it is a milk-substitute which contains at least 120 milligrams of calcium per 100ml, for example soya or almond milk")
-        val detailBullets = details.get(2).getElementsByClass("govuk-list govuk-list--bullet").get(0)
-        detailBullets.childrenSize() mustBe 4
-      }
+    "should include the expected What drinks are exempt? content" in {
+      val details = document.getElementsByClass("govuk-details")
+      details
+        .get(2)
+        .getElementsByClass("govuk-details__summary")
+        .text() mustEqual "What drinks are exempt?"
+      details
+        .get(2)
+        .getElementsByClass("govuk-body")
+        .text() mustEqual "A drink is exempt if it meets one of the following conditions:"
+      details
+        .get(2)
+        .getElementsByClass("govuk-details__text")
+        .text() must include(
+        "it is a milk-substitute which contains at least 120 milligrams of calcium per 100ml, for example soya or almond milk"
+      )
+      val detailBullets = details.get(2).getElementsByClass("govuk-list govuk-list--bullet").get(0)
+      detailBullets.childrenSize() mustBe 4
+    }
 
     "when the form is not preoccupied and has no errors" - {
 
@@ -113,7 +138,7 @@ class HowManyLitresGloballyViewSpec extends ViewSpecHelper {
             radio1
               .getElementsByClass(Selectors.radiosLabels)
               .text() mustBe Messages("howManyLitresGlobally." + radio.toString)
-            val input = radio1
+            val input  = radio1
               .getElementsByClass(Selectors.radiosInput)
             input.attr("value") mustBe radio.toString
             input.hasAttr("checked") mustBe false
@@ -123,7 +148,7 @@ class HowManyLitresGloballyViewSpec extends ViewSpecHelper {
     }
 
     HowManyLitresGlobally.values.foreach { radio =>
-      val html1 = view(form.fill(radio), NormalMode)(request, messages(application))
+      val html1     = view(form.fill(radio), NormalMode)(using request, messages(application))
       val document1 = doc(html1)
 
       s"when the form is preoccupied with " + radio.toString + " selected and has no errors" - {
@@ -137,7 +162,7 @@ class HowManyLitresGloballyViewSpec extends ViewSpecHelper {
                 radiobuttons1
                   .getElementsByClass(Selectors.radiosLabels)
                   .text() mustBe Messages("howManyLitresGlobally." + radio1.toString)
-                val input = radiobuttons1
+                val input         = radiobuttons1
                   .getElementsByClass(Selectors.radiosInput)
                 input.attr("value") mustBe radio1.toString
                 input.hasAttr("checked") mustBe true
@@ -149,7 +174,7 @@ class HowManyLitresGloballyViewSpec extends ViewSpecHelper {
                 radiobuttons1
                   .getElementsByClass(Selectors.radiosLabels)
                   .text() mustBe Messages("howManyLitresGlobally." + radio1.toString)
-                val input = radiobuttons1
+                val input         = radiobuttons1
                   .getElementsByClass(Selectors.radiosInput)
                 input.attr("value") mustBe radio1.toString
                 input.hasAttr("checked") mustBe false
@@ -166,24 +191,28 @@ class HowManyLitresGloballyViewSpec extends ViewSpecHelper {
 
     "contains a form with the correct action" - {
       "when in CheckMode" in {
-        val htmlAllSelected = view(form.fill(HowManyLitresGlobally.values.head), CheckMode)(request, messages(application))
+        val htmlAllSelected     =
+          view(form.fill(HowManyLitresGlobally.values.head), CheckMode)(using request, messages(application))
         val documentAllSelected = doc(htmlAllSelected)
 
-        documentAllSelected.select(Selectors.form)
+        documentAllSelected
+          .select(Selectors.form)
           .attr("action") mustEqual routes.HowManyLitresGloballyController.onSubmit(CheckMode).url
       }
 
       "when in NormalMode" in {
-        val htmlAllSelected = view(form.fill(HowManyLitresGlobally.values.head), NormalMode)(request, messages(application))
+        val htmlAllSelected     =
+          view(form.fill(HowManyLitresGlobally.values.head), NormalMode)(using request, messages(application))
         val documentAllSelected = doc(htmlAllSelected)
 
-        documentAllSelected.select(Selectors.form)
+        documentAllSelected
+          .select(Selectors.form)
           .attr("action") mustEqual routes.HowManyLitresGloballyController.onSubmit(NormalMode).url
       }
     }
 
     "when there are form errors" - {
-      val htmlWithErrors = view(form.bind(Map("value" -> "")), NormalMode)(request, messages(application))
+      val htmlWithErrors     = view(form.bind(Map("value" -> "")), NormalMode)(using request, messages(application))
       val documentWithErrors = doc(htmlWithErrors)
 
       "should have a title containing error" in {

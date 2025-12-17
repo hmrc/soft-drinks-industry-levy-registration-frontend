@@ -17,17 +17,17 @@
 package controllers
 
 import handlers.ErrorHandler
-import models.{ Mode, UserAnswers }
+import models.{Mode, UserAnswers}
 import navigation.Navigator
 import pages.Page
 import play.api.i18n.I18nSupport
-import play.api.mvc.{ AnyContent, Request, Result }
+import play.api.mvc.{AnyContent, Request, Result}
 import services.SessionService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utilities.GenericLogger
 
-import scala.concurrent.{ ExecutionContext, Future }
-import scala.util.{ Failure, Success, Try }
+import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Failure, Success, Try}
 
 trait ControllerHelper extends FrontendBaseController with I18nSupport {
 
@@ -35,55 +35,66 @@ trait ControllerHelper extends FrontendBaseController with I18nSupport {
   val navigator: Navigator
   val errorHandler: ErrorHandler
   val genericLogger: GenericLogger
-  private val internalServerErrorBaseMessage = "Failed to set value in session repository"
-  private def sessionRepo500ErrorMessage(page: Page): String = s"$internalServerErrorBaseMessage while attempting set on ${page.toString}"
+  private val internalServerErrorBaseMessage                 = "Failed to set value in session repository"
+  private def sessionRepo500ErrorMessage(page: Page): String =
+    s"$internalServerErrorBaseMessage while attempting set on ${page.toString}"
 
-  def updateDatabaseAndRedirect(updatedAnswers: Try[UserAnswers], page: Page, mode: Mode, previousAnswer: Option[String] = None)(implicit ec: ExecutionContext, request: Request[AnyContent]): Future[Result] = {
+  def updateDatabaseAndRedirect(
+    updatedAnswers: Try[UserAnswers],
+    page: Page,
+    mode: Mode,
+    previousAnswer: Option[String] = None
+  )(implicit ec: ExecutionContext, request: Request[AnyContent]): Future[Result] =
     updatedAnswers match {
-      case Failure(_) =>
+      case Failure(_)       =>
         genericLogger.logger.error(s"Failed to resolve user answers while on ${page.toString}")
         errorHandler.internalServerErrorTemplate.map(errorView => InternalServerError(errorView))
-      case Success(answers) => sessionService.set(answers).value.flatMap {
-        case Right(_) => Future.successful(
-          Redirect(navigator.nextPage(page, mode, answers, previousAnswer))
-        )
-        case Left(_) =>
-          genericLogger.logger.error(sessionRepo500ErrorMessage(page))
-          errorHandler.internalServerErrorTemplate.map(errorView => InternalServerError(errorView))
-      }
+      case Success(answers) =>
+        sessionService.set(answers).value.flatMap {
+          case Right(_) =>
+            Future.successful(
+              Redirect(navigator.nextPage(page, mode, answers, previousAnswer))
+            )
+          case Left(_)  =>
+            genericLogger.logger.error(sessionRepo500ErrorMessage(page))
+            errorHandler.internalServerErrorTemplate.map(errorView => InternalServerError(errorView))
+        }
     }
-  }
 
-  def updateDatabaseWithoutRedirect(updatedAnswers: UserAnswers, page: Page)(implicit ec: ExecutionContext): Future[Status] = {
+  def updateDatabaseWithoutRedirect(updatedAnswers: UserAnswers, page: Page)(implicit
+    ec: ExecutionContext
+  ): Future[Status] =
     sessionService.set(updatedAnswers).value.map {
       case Right(_) => Ok
-      case Left(_) =>
+      case Left(_)  =>
         genericLogger.logger.error(sessionRepo500ErrorMessage(page))
         InternalServerError
     }
-  }
 
-  def updateDatabaseAndRedirect(updatedAnswers: UserAnswers, page: Page, mode: Mode)(implicit ec: ExecutionContext, request: Request[AnyContent]): Future[Result] = {
+  def updateDatabaseAndRedirect(updatedAnswers: UserAnswers, page: Page, mode: Mode)(implicit
+    ec: ExecutionContext,
+    request: Request[AnyContent]
+  ): Future[Result] =
     sessionService.set(updatedAnswers).value.flatMap {
       case Right(_) => Future.successful(Redirect(navigator.nextPage(page, mode, updatedAnswers)))
-      case Left(_) =>
+      case Left(_)  =>
         genericLogger.logger.error(sessionRepo500ErrorMessage(page))
         errorHandler.internalServerErrorTemplate.map(errorView => InternalServerError(errorView))
     }
-  }
-  def updateDatabaseWithoutRedirect(updatedAnswers: Try[UserAnswers], page: Page)(success: Future[Result])(implicit ec: ExecutionContext, request: Request[AnyContent]): Future[Result] = {
+  def updateDatabaseWithoutRedirect(updatedAnswers: Try[UserAnswers], page: Page)(
+    success: Future[Result]
+  )(implicit ec: ExecutionContext, request: Request[AnyContent]): Future[Result] =
     updatedAnswers match {
-      case Failure(_) =>
+      case Failure(_)           =>
         genericLogger.logger.error(s"Failed to resolve user answers while on ${page.toString}")
         errorHandler.internalServerErrorTemplate.map(errorView => InternalServerError(errorView))
       case Success(userAnswers) =>
         sessionService.set(userAnswers).value.flatMap {
           case Right(_) => success
-          case Left(_) =>
+          case Left(_)  =>
             genericLogger.logger.error(sessionRepo500ErrorMessage(page))
             Future.successful(InternalServerError)
         }
     }
-  }
 
 }

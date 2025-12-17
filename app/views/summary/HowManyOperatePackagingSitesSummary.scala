@@ -21,8 +21,8 @@ import models.CheckMode
 
 object HowManyOperatePackagingSitesSummary extends SummaryListRowLitresHelper {
 
-  override val actionUrl: String = routes.HowManyOperatePackagingSitesController.onPageLoad(CheckMode).url
+  override val actionUrl: String       = routes.HowManyOperatePackagingSitesController.onPageLoad(CheckMode).url
   override val bandActionIdKey: String = "operatePackagingSites"
-  override val bandHiddenKey: String = "operatePackagingSites"
+  override val bandHiddenKey: String   = "operatePackagingSites"
 
 }

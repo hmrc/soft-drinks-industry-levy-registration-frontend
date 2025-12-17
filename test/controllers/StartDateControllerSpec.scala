@@ -21,22 +21,22 @@ import config.FrontendAppConfig
 import errors.SessionDatabaseInsertError
 import forms.StartDateFormProvider
 import helpers.LoggerHelper
-import models.{ NormalMode, RegisterState, UserAnswers }
-import navigation.{ FakeNavigator, Navigator }
+import models.{NormalMode, RegisterState, UserAnswers}
+import navigation.{FakeNavigator, Navigator}
 import org.jsoup.Jsoup
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
 import pages.StartDatePage
 import play.api.inject.bind
-import play.api.mvc.{ AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Call }
+import play.api.mvc.{AnyContentAsEmpty, AnyContentAsFormUrlEncoded, Call}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import services.SessionService
 import utilities.GenericLogger
 import views.html.StartDateView
 
-import java.time.{ LocalDate, ZoneOffset }
+import java.time.{LocalDate, ZoneOffset}
 
 class StartDateControllerSpec extends SpecBase with MockitoSugar with LoggerHelper {
 
@@ -47,7 +47,7 @@ class StartDateControllerSpec extends SpecBase with MockitoSugar with LoggerHelp
   val appConfig = application.injector.instanceOf[FrontendAppConfig]
 
   val formProvider = new StartDateFormProvider(appConfig)
-  val form = formProvider()
+  val form         = formProvider()
 
   def getRequest: FakeRequest[AnyContentAsEmpty.type] =
     FakeRequest(GET, startDateRoute)
@@ -55,9 +55,10 @@ class StartDateControllerSpec extends SpecBase with MockitoSugar with LoggerHelp
   def postRequest: FakeRequest[AnyContentAsFormUrlEncoded] =
     FakeRequest(POST, startDateRoute)
       .withFormUrlEncodedBody(
-        "startDate.day" -> validAnswer.getDayOfMonth.toString,
+        "startDate.day"   -> validAnswer.getDayOfMonth.toString,
         "startDate.month" -> validAnswer.getMonthValue.toString,
-        "startDate.year" -> validAnswer.getYear.toString)
+        "startDate.year"  -> validAnswer.getYear.toString
+      )
 
   lazy val startDateRoute = routes.StartDateController.onPageLoad(NormalMode).url
 
@@ -65,7 +66,8 @@ class StartDateControllerSpec extends SpecBase with MockitoSugar with LoggerHelp
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration).build()
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration).build()
 
       running(application) {
 
@@ -74,13 +76,14 @@ class StartDateControllerSpec extends SpecBase with MockitoSugar with LoggerHelp
         val view = application.injector.instanceOf[StartDateView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(getRequest, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode)(using getRequest, messages(application)).toString
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(identifier, RegisterState.RegisterWithAuthUTR).set(StartDatePage, validAnswer).success.value
+      val userAnswers =
+        UserAnswers(identifier, RegisterState.RegisterWithAuthUTR).set(StartDatePage, validAnswer).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers), rosmRegistration = rosmRegistration).build()
 
@@ -91,7 +94,10 @@ class StartDateControllerSpec extends SpecBase with MockitoSugar with LoggerHelp
         val result = route(application, getRequest).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(validAnswer), NormalMode)(getRequest, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(validAnswer), NormalMode)(using
+          getRequest,
+          messages(application)
+        ).toString
       }
     }
 
@@ -99,13 +105,14 @@ class StartDateControllerSpec extends SpecBase with MockitoSugar with LoggerHelp
 
       val mockSessionService = mock[SessionService]
 
-      when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(true)
+      when(mockSessionService.set(any())).thenReturn(createSuccessRegistrationResult(true))
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration)
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionService].toInstance(mockSessionService))
+            bind[SessionService].toInstance(mockSessionService)
+          )
           .build()
 
       running(application) {
@@ -119,7 +126,8 @@ class StartDateControllerSpec extends SpecBase with MockitoSugar with LoggerHelp
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration).build()
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration).build()
 
       running(application) {
         val request =
@@ -134,7 +142,7 @@ class StartDateControllerSpec extends SpecBase with MockitoSugar with LoggerHelp
           val result = route(application, request).value
 
           status(result) mustEqual BAD_REQUEST
-          contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+          contentAsString(result) mustEqual view(boundForm, NormalMode)(using request, messages(application)).toString
         }
       }
     }
@@ -166,13 +174,17 @@ class StartDateControllerSpec extends SpecBase with MockitoSugar with LoggerHelp
     "must fail if the setting of userAnswers fails" in {
       val mockSessionService = mock[SessionService]
 
-      when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(true)
+      when(mockSessionService.set(any())).thenReturn(createSuccessRegistrationResult(true))
 
       val application =
-        applicationBuilder(userAnswers = Some(userDetailsWithSetMethodsReturningFailure), rosmRegistration = rosmRegistration)
+        applicationBuilder(
+          userAnswers = Some(userDetailsWithSetMethodsReturningFailure),
+          rosmRegistration = rosmRegistration
+        )
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionService].toInstance(mockSessionService))
+            bind[SessionService].toInstance(mockSessionService)
+          )
           .build()
 
       running(application) {
@@ -187,24 +199,25 @@ class StartDateControllerSpec extends SpecBase with MockitoSugar with LoggerHelp
     "should log an error message when internal server error is returned when user answers are not set in session repository" in {
       val mockSessionService = mock[SessionService]
 
-      when(mockSessionService.set(any())) thenReturn createFailureRegistrationResult(SessionDatabaseInsertError)
+      when(mockSessionService.set(any())).thenReturn(createFailureRegistrationResult(SessionDatabaseInsertError))
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration)
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionService].toInstance(mockSessionService))
+            bind[SessionService].toInstance(mockSessionService)
+          )
           .build()
 
       running(application) {
         withCaptureOfLoggingFrom(application.injector.instanceOf[GenericLogger].logger) { events =>
-
           await(route(application, postRequest).value)
-          events.collectFirst {
-            case event =>
+          events
+            .collectFirst { case event =>
               event.getLevel.levelStr mustBe "ERROR"
               event.getMessage mustEqual "Failed to set value in session repository while attempting set on startDate"
-          }.getOrElse(fail("No logging captured"))
+            }
+            .getOrElse(fail("No logging captured"))
         }
       }
     }

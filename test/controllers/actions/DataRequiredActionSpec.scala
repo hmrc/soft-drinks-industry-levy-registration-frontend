@@ -36,12 +36,17 @@ import scala.concurrent.Future
 
 class DataRequiredActionSpec extends SpecBase with MockitoSugar {
 
-  class Harness(connector: SoftDrinksIndustryLevyConnector) extends DataRequiredActionImpl(connector, application.injector.instanceOf[GenericLogger], application.injector.instanceOf[ErrorHandler]) {
+  class Harness(connector: SoftDrinksIndustryLevyConnector)
+      extends DataRequiredActionImpl(
+        connector,
+        application.injector.instanceOf[GenericLogger],
+        application.injector.instanceOf[ErrorHandler]
+      ) {
     def callRefine[A](request: OptionalDataRequest[A]): Future[Either[Result, DataRequest[A]]] = refine(request)
   }
   val connector = mock[SoftDrinksIndustryLevyConnector]
-  val request = FakeRequest()
-  val postcode = "GU14 8NL"
+  val request   = FakeRequest()
+  val postcode  = "GU14 8NL"
 
   "Data Required Action" - {
 
@@ -52,19 +57,30 @@ class DataRequiredActionSpec extends SpecBase with MockitoSugar {
       result.left.toOption.get mustBe Redirect(controllers.routes.RegistrationController.start)
     }
 
-    RegisterState.values.foreach{ registerState =>
+    RegisterState.values.foreach { registerState =>
       s"when the user answers are present and has a register state of $registerState" - {
-        if(RegisterState.canRegister(registerState)) {
+        if (RegisterState.canRegister(registerState)) {
           "when the user entered a utr" - {
-            if(registerState == RegisterState.RegisterWithOtherUTR) {
-              val userAnswers = emptyUserAnswers.copy(registerState = registerState)
-                .set(EnterBusinessDetailsPage, Identify(utr, postcode)).success.value
+            if (registerState == RegisterState.RegisterWithOtherUTR) {
+              val userAnswers = emptyUserAnswers
+                .copy(registerState = registerState)
+                .set(EnterBusinessDetailsPage, Identify(utr, postcode))
+                .success
+                .value
               "should return success" - {
                 "when the utr has rosmData" in {
-                  when(connector.retreiveRosmSubscription(ArgumentMatchers.eq(utr), ArgumentMatchers.eq(identifier))(ArgumentMatchers.any()))
+                  when(
+                    connector.retreiveRosmSubscription(ArgumentMatchers.eq(utr), ArgumentMatchers.eq(identifier))(using
+                      ArgumentMatchers.any()
+                    )
+                  )
                     .thenReturn(createSuccessRegistrationResult(rosmRegistration))
                   val action = new Harness(connector)
-                  val result = action.callRefine(OptionalDataRequest(request, identifier, authUtr = None, userAnswers = Some(userAnswers))).futureValue
+                  val result = action
+                    .callRefine(
+                      OptionalDataRequest(request, identifier, authUtr = None, userAnswers = Some(userAnswers))
+                    )
+                    .futureValue
 
                   val rightResult = result.toOption.get
                   rightResult.rosmWithUtr mustBe rosmRegistration
@@ -74,16 +90,28 @@ class DataRequiredActionSpec extends SpecBase with MockitoSugar {
               }
               "should render the error page" - {
                 "when the utr does not contain rosmData" in {
-                  when(connector.retreiveRosmSubscription(ArgumentMatchers.eq(utr), ArgumentMatchers.eq(identifier))(ArgumentMatchers.any()))
+                  when(
+                    connector.retreiveRosmSubscription(ArgumentMatchers.eq(utr), ArgumentMatchers.eq(identifier))(using
+                      ArgumentMatchers.any()
+                    )
+                  )
                     .thenReturn(createFailureRegistrationResult(NoROSMRegistration))
                   val action = new Harness(connector)
-                  val result = action.callRefine(OptionalDataRequest(request, identifier, authUtr = None, userAnswers = Some(userAnswers))).futureValue
+                  val result = action
+                    .callRefine(
+                      OptionalDataRequest(request, identifier, authUtr = None, userAnswers = Some(userAnswers))
+                    )
+                    .futureValue
                   result.left.toOption.get.header.status mustBe 500
                 }
                 "when the useranswers does not contain the utr" in {
                   val userAnswerNoUtr = emptyUserAnswers.copy(registerState = registerState)
-                  val action = new Harness(connector)
-                  val result = action.callRefine(OptionalDataRequest(request, identifier, authUtr = None, userAnswers = Some(userAnswerNoUtr))).futureValue
+                  val action          = new Harness(connector)
+                  val result          = action
+                    .callRefine(
+                      OptionalDataRequest(request, identifier, authUtr = None, userAnswers = Some(userAnswerNoUtr))
+                    )
+                    .futureValue
                   result.left.toOption.get.header.status mustBe 500
                 }
               }
@@ -92,10 +120,18 @@ class DataRequiredActionSpec extends SpecBase with MockitoSugar {
               "when the user has a utr in auth" - {
                 "should return success" - {
                   "when the utr has rosmData" in {
-                    when(connector.retreiveRosmSubscription(ArgumentMatchers.eq(utr), ArgumentMatchers.eq(identifier))(ArgumentMatchers.any()))
+                    when(
+                      connector.retreiveRosmSubscription(ArgumentMatchers.eq(utr), ArgumentMatchers.eq(identifier))(
+                        using ArgumentMatchers.any()
+                      )
+                    )
                       .thenReturn(createSuccessRegistrationResult(rosmRegistration))
                     val action = new Harness(connector)
-                    val result = action.callRefine(OptionalDataRequest(request, identifier, authUtr = Some(utr), userAnswers = Some(userAnswers))).futureValue
+                    val result = action
+                      .callRefine(
+                        OptionalDataRequest(request, identifier, authUtr = Some(utr), userAnswers = Some(userAnswers))
+                      )
+                      .futureValue
 
                     val rightResult = result.toOption.get
                     rightResult.rosmWithUtr mustBe rosmRegistration
@@ -107,15 +143,27 @@ class DataRequiredActionSpec extends SpecBase with MockitoSugar {
 
               "should render the error page" - {
                 "when the utr from auth does not contain rosmData" in {
-                  when(connector.retreiveRosmSubscription(ArgumentMatchers.eq(utr), ArgumentMatchers.eq(identifier))(ArgumentMatchers.any()))
+                  when(
+                    connector.retreiveRosmSubscription(ArgumentMatchers.eq(utr), ArgumentMatchers.eq(identifier))(using
+                      ArgumentMatchers.any()
+                    )
+                  )
                     .thenReturn(createFailureRegistrationResult(NoROSMRegistration))
                   val action = new Harness(connector)
-                  val result = action.callRefine(OptionalDataRequest(request, identifier, authUtr = Some(utr), userAnswers = Some(userAnswers))).futureValue
+                  val result = action
+                    .callRefine(
+                      OptionalDataRequest(request, identifier, authUtr = Some(utr), userAnswers = Some(userAnswers))
+                    )
+                    .futureValue
                   result.left.toOption.get.header.status mustBe 500
                 }
                 "when there is no auth utr" in {
                   val action = new Harness(connector)
-                  val result = action.callRefine(OptionalDataRequest(request, identifier, authUtr = None, userAnswers = Some(userAnswers))).futureValue
+                  val result = action
+                    .callRefine(
+                      OptionalDataRequest(request, identifier, authUtr = None, userAnswers = Some(userAnswers))
+                    )
+                    .futureValue
                   result.left.toOption.get.header.status mustBe 500
                 }
               }
@@ -124,14 +172,18 @@ class DataRequiredActionSpec extends SpecBase with MockitoSugar {
         } else {
           "should redirect away" in {
             val expectedRedirectLocation = registerState match {
-              case RegisterState.RequiresBusinessDetails => routes.EnterBusinessDetailsController.onPageLoad
-              case RegisterState.AlreadyRegistered => routes.AlreadyRegisteredController.onPageLoad
+              case RegisterState.RequiresBusinessDetails     => routes.EnterBusinessDetailsController.onPageLoad
+              case RegisterState.AlreadyRegistered           => routes.AlreadyRegisteredController.onPageLoad
               case RegisterState.RegisterApplicationAccepted => routes.ApplicationAlreadySubmittedController.onPageLoad
-              case _ => routes.RegistrationPendingController.onPageLoad
+              case _                                         => routes.RegistrationPendingController.onPageLoad
             }
-            val userAnswers = emptyUserAnswers.copy(registerState = registerState)
-            val action = new Harness(connector)
-            val result = action.callRefine(OptionalDataRequest(request, identifier, authUtr = Some(utr), userAnswers = Some(userAnswers))).futureValue
+            val userAnswers              = emptyUserAnswers.copy(registerState = registerState)
+            val action                   = new Harness(connector)
+            val result                   = action
+              .callRefine(
+                OptionalDataRequest(request, identifier, authUtr = Some(utr), userAnswers = Some(userAnswers))
+              )
+              .futureValue
 
             result.left.toOption.get mustBe Redirect(expectedRedirectLocation)
           }

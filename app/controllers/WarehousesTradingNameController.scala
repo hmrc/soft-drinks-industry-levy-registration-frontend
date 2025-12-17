@@ -20,18 +20,18 @@ import controllers.actions._
 import forms.WarehousesTradingNameFormProvider
 
 import javax.inject.Inject
-import models.{ Mode, WarehousesTradingName }
+import models.{Mode, WarehousesTradingName}
 import navigation.Navigator
 import pages.WarehousesTradingNamePage
 import play.api.i18n.MessagesApi
-import play.api.mvc.{ Action, AnyContent, MessagesControllerComponents }
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.SessionService
 import views.html.WarehousesTradingNameView
 import handlers.ErrorHandler
 import play.api.data.Form
 import services.AddressLookupState.WarehouseDetails
 
-import scala.concurrent.{ ExecutionContext, Future }
+import scala.concurrent.{ExecutionContext, Future}
 import utilities.GenericLogger
 
 class WarehousesTradingNameController @Inject() (
@@ -43,14 +43,16 @@ class WarehousesTradingNameController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: WarehousesTradingNameView,
   val errorHandler: ErrorHandler,
-  val genericLogger: GenericLogger)(implicit ec: ExecutionContext) extends ControllerHelper {
+  val genericLogger: GenericLogger
+)(implicit ec: ExecutionContext)
+    extends ControllerHelper {
 
   val form: Form[WarehousesTradingName] = formProvider()
 
   def onPageLoad(mode: Mode, ref: String): Action[AnyContent] = controllerActions
     .withUserWhoCanEnterTradingName(WarehouseDetails, ref, mode) { implicit request =>
       val preparedForm = request.tradingName match {
-        case None => form
+        case None        => form
         case Some(value) => form.fill(WarehousesTradingName(value))
       }
 
@@ -58,15 +60,17 @@ class WarehousesTradingNameController @Inject() (
     }
 
   def onSubmit(mode: Mode, ref: String): Action[AnyContent] = controllerActions
-    .withUserWhoCanEnterTradingName(WarehouseDetails, ref, mode).async { implicit request =>
-      form.bindFromRequest().fold(
-        formWithErrors =>
-          Future.successful(BadRequest(view(formWithErrors, mode, ref))),
-
-        value => {
-          val updatedAnswers = request.userAnswers
-            .addWarehouse(request.aflAddress, value.warehouseTradingName, ref)
-          updateDatabaseAndRedirect(updatedAnswers, WarehousesTradingNamePage, mode)
-        })
+    .withUserWhoCanEnterTradingName(WarehouseDetails, ref, mode)
+    .async { implicit request =>
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, ref))),
+          value => {
+            val updatedAnswers = request.userAnswers
+              .addWarehouse(request.aflAddress, value.warehouseTradingName, ref)
+            updateDatabaseAndRedirect(updatedAnswers, WarehousesTradingNamePage, mode)
+          }
+        )
     }
 }

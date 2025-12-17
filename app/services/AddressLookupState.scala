@@ -16,7 +16,7 @@
 
 package services
 
-import models.{ Enumerable, WithName }
+import models.{Enumerable, WithName}
 
 sealed trait AddressLookupState
 
@@ -28,10 +28,8 @@ object AddressLookupState extends Enumerable.Implicits {
 
   case object BusinessAddress extends WithName("BusinessAddress") with AddressLookupState
 
-  val values: Seq[AddressLookupState] = Seq(
-    PackingDetails, WarehouseDetails, BusinessAddress)
+  val values: Seq[AddressLookupState] = Seq(PackingDetails, WarehouseDetails, BusinessAddress)
 
   implicit val enumerable: Enumerable[AddressLookupState] =
-    Enumerable(values.map(v => v.toString -> v): _*)
+    Enumerable(values.map(v => v.toString -> v)*)
 }
-

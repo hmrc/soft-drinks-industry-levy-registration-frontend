@@ -21,8 +21,8 @@ import models.CheckMode
 
 object HowManyImportsSummary extends SummaryListRowLitresHelper {
 
-  override val actionUrl: String = routes.HowManyImportsController.onPageLoad(CheckMode).url
+  override val actionUrl: String       = routes.HowManyImportsController.onPageLoad(CheckMode).url
   override val bandActionIdKey: String = "imports"
-  override val bandHiddenKey: String = "imports"
+  override val bandHiddenKey: String   = "imports"
 
 }

@@ -28,9 +28,9 @@ class CannotRegisterPartnershipControllerSpec extends SpecBase {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration).build()
-      val config = application.injector.instanceOf[FrontendAppConfig]
-
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration).build()
+      val config      = application.injector.instanceOf[FrontendAppConfig]
 
       running(application) {
         val request = FakeRequest(GET, routes.CannotRegisterPartnershipController.onPageLoad.url)
@@ -40,7 +40,10 @@ class CannotRegisterPartnershipControllerSpec extends SpecBase {
         val view = application.injector.instanceOf[CannotRegisterPartnershipView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(config.helpdeskPhoneNumber)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(config.helpdeskPhoneNumber)(using
+          request,
+          messages(application)
+        ).toString
       }
     }
   }

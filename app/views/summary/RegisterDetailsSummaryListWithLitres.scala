@@ -25,26 +25,29 @@ import viewmodels.govuk.summarylist._
 trait RegisterDetailsSummaryListWithLitres extends RegisterDetailsSummaryRowHelper {
 
   val summaryLitres: SummaryListRowLitresHelper
-  //LDS ignore
+  // LDS ignore
   val key: String
   val action: String
   val actionId: String
   val hiddenText: String
 
-  def getHeadingAndSummary(literage: Option[Litreage], isCheckAnswers: Boolean = true)(implicit messages: Messages): (String, SummaryList) = {
+  def getHeadingAndSummary(literage: Option[Litreage], isCheckAnswers: Boolean = true)(implicit
+    messages: Messages
+  ): (String, SummaryList) = {
     val list = summaryList(literage, isCheckAnswers)
     s"$key.checkYourAnswersLabel" -> list
   }
 
   def summaryList(optLiterage: Option[Litreage], isCheckAnswers: Boolean)(implicit messages: Messages): SummaryList = {
-    val litresDetails: Seq[SummaryListRow] = optLiterage.fold(Seq.empty[SummaryListRow])(getLitresDetails(_, isCheckAnswers))
+    val litresDetails: Seq[SummaryListRow] =
+      optLiterage.fold(Seq.empty[SummaryListRow])(getLitresDetails(_, isCheckAnswers))
 
-    SummaryListViewModel(rows =
-      row(optLiterage, isCheckAnswers) ++ litresDetails)
+    SummaryListViewModel(rows = row(optLiterage, isCheckAnswers) ++ litresDetails)
   }
 
-  private def getLitresDetails(literage: Litreage, isCheckAnswers: Boolean)(implicit messages: Messages): Seq[SummaryListRow] = {
+  private def getLitresDetails(literage: Litreage, isCheckAnswers: Boolean)(implicit
+    messages: Messages
+  ): Seq[SummaryListRow] =
     summaryLitres.rows(literage, isCheckAnswers)
-  }
 
 }

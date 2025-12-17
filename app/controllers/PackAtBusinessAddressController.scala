@@ -20,19 +20,19 @@ import controllers.actions._
 import forms.PackAtBusinessAddressFormProvider
 import handlers.ErrorHandler
 import models.backend.Site
-import models.{ Mode, RosmRegistration }
+import models.{Mode, RosmRegistration}
 import navigation.Navigator
 import pages.PackAtBusinessAddressPage
 import play.api.i18n.MessagesApi
-import play.api.mvc.{ Action, AnyContent, MessagesControllerComponents }
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.AddressLookupState.PackingDetails
-import services.{ AddressLookupService, SessionService }
+import services.{AddressLookupService, SessionService}
 import utilities.GenericLogger
 import viewmodels.AddressFormattingHelper
 import views.html.PackAtBusinessAddressView
 
 import javax.inject.Inject
-import scala.concurrent.{ ExecutionContext, Future }
+import scala.concurrent.{ExecutionContext, Future}
 
 class PackAtBusinessAddressController @Inject() (
   override val messagesApi: MessagesApi,
@@ -44,49 +44,56 @@ class PackAtBusinessAddressController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: PackAtBusinessAddressView,
   val errorHandler: ErrorHandler,
-  val genericLogger: GenericLogger)(implicit ec: ExecutionContext) extends ControllerHelper {
+  val genericLogger: GenericLogger
+)(implicit ec: ExecutionContext)
+    extends ControllerHelper {
 
   val form = formProvider()
 
   private val formattedAddress = (rosmRegistration: RosmRegistration) =>
     AddressFormattingHelper.formatBusinessAddress(rosmRegistration.address, Some(rosmRegistration.organisationName))
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = controllerActions.withUserWhoCanRegister {
-    implicit request =>
+  def onPageLoad(mode: Mode): Action[AnyContent] = controllerActions.withUserWhoCanRegister { implicit request =>
+    val preparedForm = request.userAnswers.get(PackAtBusinessAddressPage) match {
+      case None        => form
+      case Some(value) => form.fill(value)
+    }
 
-      val preparedForm = request.userAnswers.get(PackAtBusinessAddressPage) match {
-        case None => form
-        case Some(value) => form.fill(value)
-      }
-
-      Ok(view(preparedForm, formattedAddress(request.rosmWithUtr.rosmRegistration), mode))
+    Ok(view(preparedForm, formattedAddress(request.rosmWithUtr.rosmRegistration), mode))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = controllerActions.withUserWhoCanRegister.async {
-    implicit request =>
+  def onSubmit(mode: Mode): Action[AnyContent] = controllerActions.withUserWhoCanRegister.async { implicit request =>
+    val rosmReg = request.rosmWithUtr.rosmRegistration
 
-      val rosmReg = request.rosmWithUtr.rosmRegistration
-
-      form.bindFromRequest().fold(
+    form
+      .bindFromRequest()
+      .fold(
         formWithErrors =>
-          Future.successful(BadRequest(view(formWithErrors, formattedAddress(request.rosmWithUtr.rosmRegistration), mode))),
-
-        value => {
+          Future
+            .successful(BadRequest(view(formWithErrors, formattedAddress(request.rosmWithUtr.rosmRegistration), mode))),
+        value =>
           for {
             updatedAnswers <- Future.fromTry(request.userAnswers.set(PackAtBusinessAddressPage, value))
-            _ <- updateDatabaseWithoutRedirect(updatedAnswers, PackAtBusinessAddressPage)
-            onwardUrl <- if (value) {
-              updateDatabaseWithoutRedirect(updatedAnswers.copy(packagingSiteList = updatedAnswers.packagingSiteList ++ Map("1" ->
-                Site(
-                  address = rosmReg.address,
-                  ref = None,
-                  tradingName = rosmReg.organisationName,
-                  closureDate = None))), PackAtBusinessAddressPage).flatMap(_ =>
-                Future.successful(routes.PackagingSiteDetailsController.onPageLoad(mode).url))
-            } else {
-              addressLookupService.initJourneyAndReturnOnRampUrl(PackingDetails, mode = mode)
-            }
+            _              <- updateDatabaseWithoutRedirect(updatedAnswers, PackAtBusinessAddressPage)
+            onwardUrl      <- if (value) {
+                                updateDatabaseWithoutRedirect(
+                                  updatedAnswers.copy(packagingSiteList =
+                                    updatedAnswers.packagingSiteList ++ Map(
+                                      "1" ->
+                                        Site(
+                                          address = rosmReg.address,
+                                          ref = None,
+                                          tradingName = rosmReg.organisationName,
+                                          closureDate = None
+                                        )
+                                    )
+                                  ),
+                                  PackAtBusinessAddressPage
+                                ).flatMap(_ => Future.successful(routes.PackagingSiteDetailsController.onPageLoad(mode).url))
+                              } else {
+                                addressLookupService.initJourneyAndReturnOnRampUrl(PackingDetails, mode = mode)
+                              }
           } yield Redirect(onwardUrl)
-        })
+      )
   }
 }

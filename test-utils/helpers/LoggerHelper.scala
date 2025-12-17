@@ -24,14 +24,13 @@ import scala.jdk.CollectionConverters.CollectionHasAsScala
 
 trait LoggerHelper {
   protected def withCaptureOfLoggingFrom(
-                                          logger: LoggerLike
-                                        )(body: (=> List[ILoggingEvent]) => Unit): Unit = {
+    logger: LoggerLike
+  )(body: (=> List[ILoggingEvent]) => Unit): Unit =
     withCaptureOfLoggingFrom(logger.logger.asInstanceOf[LogbackLogger])(body)
-  }
 
   def withCaptureOfLoggingFrom(
-                                logger: LogbackLogger
-                              )(body: (=> List[ILoggingEvent]) => Unit): Unit = {
+    logger: LogbackLogger
+  )(body: (=> List[ILoggingEvent]) => Unit): Unit = {
     val appender = new ListAppender[ILoggingEvent]()
     appender.setContext(logger.getLoggerContext)
     appender.start()

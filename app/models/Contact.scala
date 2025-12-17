@@ -16,13 +16,9 @@
 
 package models
 
-import play.api.libs.json.{ Format, Json }
+import play.api.libs.json.{Format, Json}
 
-case class Contact(
-  name: Option[String],
-  positionInCompany: Option[String],
-  phoneNumber: String,
-  email: String)
+case class Contact(name: Option[String], positionInCompany: Option[String], phoneNumber: String, email: String)
 
 object Contact {
   implicit val format: Format[Contact] = Json.format[Contact]
@@ -31,5 +27,6 @@ object Contact {
     name = Some(contactDetails.fullName),
     positionInCompany = Some(contactDetails.position),
     phoneNumber = contactDetails.phoneNumber,
-    email = contactDetails.email)
+    email = contactDetails.email
+  )
 }

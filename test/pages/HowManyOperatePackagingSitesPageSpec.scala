@@ -16,7 +16,7 @@
 
 package pages
 
-import models.{ CheckMode, LitresInBands, NormalMode }
+import models.{CheckMode, LitresInBands, NormalMode}
 import pages.behaviours.PageBehaviours
 
 class HowManyOperatePackagingSitesPageSpec extends PageBehaviours {
@@ -30,10 +30,12 @@ class HowManyOperatePackagingSitesPageSpec extends PageBehaviours {
     beRemovable[LitresInBands](HowManyOperatePackagingSitesPage)
 
     s"url should be correct for $NormalMode" in {
-      HowManyOperatePackagingSitesPage.url(NormalMode) mustBe controllers.routes.HowManyOperatePackagingSitesController.onPageLoad(NormalMode).url
+      HowManyOperatePackagingSitesPage
+        .url(NormalMode) mustBe controllers.routes.HowManyOperatePackagingSitesController.onPageLoad(NormalMode).url
     }
     s"url should be correct for $CheckMode" in {
-      HowManyOperatePackagingSitesPage.url(CheckMode) mustBe controllers.routes.HowManyOperatePackagingSitesController.onPageLoad(CheckMode).url
+      HowManyOperatePackagingSitesPage
+        .url(CheckMode) mustBe controllers.routes.HowManyOperatePackagingSitesController.onPageLoad(CheckMode).url
     }
   }
 }

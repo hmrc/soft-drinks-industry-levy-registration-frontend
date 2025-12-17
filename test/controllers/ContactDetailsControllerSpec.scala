@@ -41,19 +41,20 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar with Logge
 
   def onwardRoute: Call = Call("GET", "/foo")
 
-  val formProvider = new ContactDetailsFormProvider()
+  val formProvider               = new ContactDetailsFormProvider()
   val form: Form[ContactDetails] = formProvider()
 
   lazy val contactDetailsRoute: String = routes.ContactDetailsController.onPageLoad(NormalMode).url
 
   val userAnswers: UserAnswers = UserAnswers(
-    identifier, RegisterState.RegisterWithAuthUTR,
+    identifier,
+    RegisterState.RegisterWithAuthUTR,
     Json.obj(
       ContactDetailsPage.toString -> Json.obj(
-        "fullName" -> "Jane Doe",
-        "position" -> "CEO",
+        "fullName"    -> "Jane Doe",
+        "position"    -> "CEO",
         "phoneNumber" -> "07700 099 990",
-        "email" -> "name@example.com"
+        "email"       -> "name@example.com"
       )
     )
   )
@@ -72,7 +73,7 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar with Logge
         val view = application.injector.instanceOf[ContactDetailsView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode)(using request, messages(application)).toString
       }
     }
 
@@ -89,7 +90,10 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar with Logge
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual
-          view(form.fill(ContactDetails("Jane Doe", "CEO", "07700 099 990", "name@example.com")), NormalMode)(request, messages(application)).toString
+          view(form.fill(ContactDetails("Jane Doe", "CEO", "07700 099 990", "name@example.com")), NormalMode)(using
+            request,
+            messages(application)
+          ).toString
       }
     }
 
@@ -97,7 +101,7 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar with Logge
 
       val mockSessionService = mock[SessionService]
 
-      when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(true)
+      when(mockSessionService.set(any())).thenReturn(createSuccessRegistrationResult(true))
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -110,7 +114,12 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar with Logge
       running(application) {
         val request =
           FakeRequest(POST, contactDetailsRoute)
-        .withFormUrlEncodedBody(("fullName", "Jane Doe"), ("position", "CEO"), ("phoneNumber", "07700 099 990"), ("email", "name@example.com"))
+            .withFormUrlEncodedBody(
+              ("fullName", "Jane Doe"),
+              ("position", "CEO"),
+              ("phoneNumber", "07700 099 990"),
+              ("email", "name@example.com")
+            )
 
         val result = route(application, request).value
 
@@ -125,9 +134,8 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar with Logge
 
       running(application) {
         val request =
-          FakeRequest(POST, contactDetailsRoute
-        )
-        .withFormUrlEncodedBody(("value", "invalid value"))
+          FakeRequest(POST, contactDetailsRoute)
+            .withFormUrlEncodedBody(("value", "invalid value"))
 
         val boundForm = form.bind(Map("value" -> "invalid value"))
 
@@ -136,7 +144,7 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar with Logge
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode)(using request, messages(application)).toString
       }
     }
 
@@ -160,9 +168,13 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar with Logge
 
       running(application) {
         val request =
-          FakeRequest(POST, contactDetailsRoute
-        )
-        .withFormUrlEncodedBody(("fullName", "Jane Doe"), ("position", "CEO"), ("phoneNumber", "07700 099 990"), ("email", "name@example.com"))
+          FakeRequest(POST, contactDetailsRoute)
+            .withFormUrlEncodedBody(
+              ("fullName", "Jane Doe"),
+              ("position", "CEO"),
+              ("phoneNumber", "07700 099 990"),
+              ("email", "name@example.com")
+            )
 
         val result = route(application, request).value
 
@@ -177,9 +189,13 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar with Logge
 
       running(application) {
         val request =
-          FakeRequest(POST, contactDetailsRoute
-        )
-        .withFormUrlEncodedBody(("fullName", "Jane Doe"), ("position", "CEO"), ("phoneNumber", "07700 099 990"), ("email", "name@example.com"))
+          FakeRequest(POST, contactDetailsRoute)
+            .withFormUrlEncodedBody(
+              ("fullName", "Jane Doe"),
+              ("position", "CEO"),
+              ("phoneNumber", "07700 099 990"),
+              ("email", "name@example.com")
+            )
 
         val result = route(application, request).value
 
@@ -192,7 +208,7 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar with Logge
     "should log an error message when internal server error is returned when user answers are not set in session repository" in {
       val mockSessionService = mock[SessionService]
 
-      when(mockSessionService.set(any())) thenReturn createFailureRegistrationResult(SessionDatabaseInsertError)
+      when(mockSessionService.set(any())).thenReturn(createFailureRegistrationResult(SessionDatabaseInsertError))
 
       val application =
         applicationBuilder(userAnswers = Some(emptyUserAnswers))
@@ -205,16 +221,21 @@ class ContactDetailsControllerSpec extends SpecBase with MockitoSugar with Logge
       running(application) {
         withCaptureOfLoggingFrom(application.injector.instanceOf[GenericLogger].logger) { events =>
           val request =
-            FakeRequest(POST, contactDetailsRoute
-          )
-          .withFormUrlEncodedBody(("fullName", "Jane Doe"), ("position", "CEO"), ("phoneNumber", "07700 099 990"), ("email", "name@example.com"))
+            FakeRequest(POST, contactDetailsRoute)
+              .withFormUrlEncodedBody(
+                ("fullName", "Jane Doe"),
+                ("position", "CEO"),
+                ("phoneNumber", "07700 099 990"),
+                ("email", "name@example.com")
+              )
 
           await(route(application, request).value)
-          events.collectFirst {
-            case event =>
+          events
+            .collectFirst { case event =>
               event.getLevel.levelStr mustBe "ERROR"
               event.getMessage mustEqual "Failed to set value in session repository while attempting set on contactDetails"
-          }.getOrElse(fail("No logging captured"))
+            }
+            .getOrElse(fail("No logging captured"))
         }
       }
     }

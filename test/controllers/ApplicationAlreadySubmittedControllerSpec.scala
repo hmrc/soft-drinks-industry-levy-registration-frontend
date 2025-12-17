@@ -37,12 +37,14 @@ class ApplicationAlreadySubmittedControllerSpec extends SpecBase {
 
       val application = applicationBuilder(
         userAnswers = Some(emptyUserAnswers.copy(registerState = RegisterState.RegisterApplicationAccepted)),
-        utr = Some(utr))
-        .overrides(
-          bind[SoftDrinksIndustryLevyConnector].toInstance(mockSdilConnector)).build()
+        utr = Some(utr)
+      )
+        .overrides(bind[SoftDrinksIndustryLevyConnector].toInstance(mockSdilConnector))
+        .build()
 
       running(application) {
-        when(mockSdilConnector.retreiveRosmSubscription(any(), any())(any())).thenReturn(createSuccessRegistrationResult(rosmRegistration))
+        when(mockSdilConnector.retreiveRosmSubscription(any(), any())(using any()))
+          .thenReturn(createSuccessRegistrationResult(rosmRegistration))
         val request = FakeRequest(GET, routes.ApplicationAlreadySubmittedController.onPageLoad.url)
 
         val result = route(application, request).value
@@ -51,10 +53,11 @@ class ApplicationAlreadySubmittedControllerSpec extends SpecBase {
 
         val formattedAddress = AddressFormattingHelper.formatBusinessAddress(
           rosmRegistration.rosmRegistration.address,
-          Some(rosmRegistration.rosmRegistration.organisationName))
+          Some(rosmRegistration.rosmRegistration.organisationName)
+        )
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(formattedAddress)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(formattedAddress)(using request, messages(application)).toString
       }
     }
   }

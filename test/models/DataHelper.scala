@@ -28,20 +28,20 @@ trait DataHelper {
   )
 
   def testProducer(
-                    isProducer: Boolean,
-                    isLarge: Option[Boolean] = None
-                  ): Producer = Producer(
+    isProducer: Boolean,
+    isLarge: Option[Boolean] = None
+  ): Producer = Producer(
     isProducer = isProducer,
     isLarge = isLarge
   )
 
   def testRetrievedActivity(
-                             smallProducer: Boolean = false,
-                             largeProducer: Boolean = false,
-                             contractPacker: Boolean = false,
-                             importer: Boolean = false,
-                             voluntaryRegistration: Boolean = false,
-                           ): RetrievedActivity = RetrievedActivity(
+    smallProducer: Boolean = false,
+    largeProducer: Boolean = false,
+    contractPacker: Boolean = false,
+    importer: Boolean = false,
+    voluntaryRegistration: Boolean = false
+  ): RetrievedActivity = RetrievedActivity(
     smallProducer = smallProducer,
     largeProducer = largeProducer,
     contractPacker = contractPacker,
@@ -50,11 +50,11 @@ trait DataHelper {
   )
 
   def testSite(
-                address: UkAddress,
-                ref: Option[String] = None,
-                tradingName: String,
-                closureDate: Option[LocalDate] = None
-              ): Site = Site(
+    address: UkAddress,
+    ref: Option[String] = None,
+    tradingName: String,
+    closureDate: Option[LocalDate] = None
+  ): Site = Site(
     address = address,
     ref = ref,
     tradingName = tradingName,
@@ -62,11 +62,11 @@ trait DataHelper {
   )
 
   def testContact(
-                   name: Option[String] = Some("test name"),
-                   positionInCompany: Option[String] = Some("test position"),
-                   phoneNumber: String,
-                   email: String
-                 ): Contact = Contact(
+    name: Option[String] = Some("test name"),
+    positionInCompany: Option[String] = Some("test position"),
+    phoneNumber: String,
+    email: String
+  ): Contact = Contact(
     name = name,
     positionInCompany = positionInCompany,
     phoneNumber = phoneNumber,
@@ -74,11 +74,11 @@ trait DataHelper {
   )
 
   def testContactDetails(
-                          fullName: String = "test name",
-                          position: String  = "test position",
-                          phoneNumber: String = "testnumber",
-                          email: String  = "test@email.test",
-                        ): ContactDetails = ContactDetails(
+    fullName: String = "test name",
+    position: String = "test position",
+    phoneNumber: String = "testnumber",
+    email: String = "test@email.test"
+  ): ContactDetails = ContactDetails(
     fullName = fullName,
     position = position,
     phoneNumber = phoneNumber,
@@ -86,24 +86,23 @@ trait DataHelper {
   )
 
   def testWarehouse(
-                     tradingName: String = "test trading name",
-                     address: UkAddress
-                   ): Warehouse = Warehouse(
+    tradingName: String = "test trading name",
+    address: UkAddress
+  ): Warehouse = Warehouse(
     tradingName = tradingName,
     address = address
   )
 
-
   def testRetrievedSubscription(
-                                 utr: String = "testutr",
-                                 sdilRef: String = "testref",
-                                 orgName: String = "test name",
-                                 address: UkAddress,
-                                 activity: RetrievedActivity,
-                                 liabilityDate: LocalDate,
-                                 contact: Contact,
-                                 deregDate: Option[LocalDate] = None
-                               ): RetrievedSubscription = RetrievedSubscription(
+    utr: String = "testutr",
+    sdilRef: String = "testref",
+    orgName: String = "test name",
+    address: UkAddress,
+    activity: RetrievedActivity,
+    liabilityDate: LocalDate,
+    contact: Contact,
+    deregDate: Option[LocalDate] = None
+  ): RetrievedSubscription = RetrievedSubscription(
     utr = utr,
     sdilRef = sdilRef,
     orgName = orgName,
@@ -113,6 +112,5 @@ trait DataHelper {
     contact = contact,
     deregDate = deregDate
   )
-
 
 }

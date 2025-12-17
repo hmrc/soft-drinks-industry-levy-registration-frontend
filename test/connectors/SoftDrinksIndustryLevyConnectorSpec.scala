@@ -30,113 +30,117 @@ class SoftDrinksIndustryLevyConnectorSpec extends HttpClientV2Helper {
 
   val (host, localPort) = ("host", "123")
 
-  val mockSDILSessionCache = mock[SDILSessionCache]
-  val softDrinksIndustryLevyConnector = new SoftDrinksIndustryLevyConnector(http = mockHttp, frontendAppConfig, mockSDILSessionCache, application.injector.instanceOf[GenericLogger])
+  val mockSDILSessionCache            = mock[SDILSessionCache]
+  val softDrinksIndustryLevyConnector = new SoftDrinksIndustryLevyConnector(
+    http = mockHttp,
+    frontendAppConfig,
+    mockSDILSessionCache,
+    application.injector.instanceOf[GenericLogger]
+  )
 
   val identifierMap = Map("sdil" -> sdilNumber, "utr" -> utr)
 
   "SoftDrinksIndustryLevyConnector" - {
 
     s"should not call the backend and return the rosm registration" in {
-      when(mockSDILSessionCache.fetchEntry[RosmWithUtr](any(), any())(any()))
+      when(mockSDILSessionCache.fetchEntry[RosmWithUtr](any(), any())(using any()))
         .thenReturn(Future.successful(Some(rosmRegistration)))
 
       val res = softDrinksIndustryLevyConnector.retreiveRosmSubscription(utr = utr, "foo")
-      whenReady(
-        res.value) {
-          response =>
-            response mustEqual Right(rosmRegistration)
-        }
+      whenReady(res.value) { response =>
+        response mustEqual Right(rosmRegistration)
+      }
     }
 
     s"should call the backend and return NoRosmRegistration if no rosm for utr" in {
-      when(mockSDILSessionCache.fetchEntry[RosmRegistration](any(), any())(any()))
+      when(mockSDILSessionCache.fetchEntry[RosmRegistration](any(), any())(using any()))
         .thenReturn(Future.successful(None))
       when(requestBuilderExecute[Option[RosmRegistration]]).thenReturn(Future.successful(None))
       val res = softDrinksIndustryLevyConnector.retreiveRosmSubscription("utr here", "foo")
-      whenReady(
-        res.value) {
-          response =>
-            response mustEqual Left(NoROSMRegistration)
-        }
+      whenReady(res.value) { response =>
+        response mustEqual Left(NoROSMRegistration)
+      }
     }
 
     "should call the backend, update the cache" - {
       "and return the rosm when one is returned" in {
-        when(mockSDILSessionCache.fetchEntry[RosmRegistration](any(), any())(any())).thenReturn(Future.successful(None))
-        when(requestBuilderExecute[Option[RosmRegistration]]).thenReturn(Future.successful(Some(rosmRegistration.rosmRegistration)))
-        when(mockSDILSessionCache.save[RosmRegistration](any, any, any)(any())).thenReturn(Future.successful(CacheMap("test", Map("ROSM_REGISTRATION" -> Json.toJson(rosmRegistration)))))
+        when(mockSDILSessionCache.fetchEntry[RosmRegistration](any(), any())(using any()))
+          .thenReturn(Future.successful(None))
+        when(requestBuilderExecute[Option[RosmRegistration]])
+          .thenReturn(Future.successful(Some(rosmRegistration.rosmRegistration)))
+        when(mockSDILSessionCache.save[RosmRegistration](any, any, any)(using any()))
+          .thenReturn(Future.successful(CacheMap("test", Map("ROSM_REGISTRATION" -> Json.toJson(rosmRegistration)))))
         val res = softDrinksIndustryLevyConnector.retreiveRosmSubscription(utr = utr, "foo")
-        whenReady(
-          res.value) {
-            response =>
-              response mustEqual Right(rosmRegistration)
-          }
+        whenReady(res.value) { response =>
+          response mustEqual Right(rosmRegistration)
+        }
       }
     }
 
-    identifierMap.foreach {
-      case (identifierType, identiferValue) =>
-        s"when the identifier type is $identifierType" - {
-          "and the cache contains an entry for subscription" - {
-            "that includes a retrievedSubscription" - {
-              "should not call the backend and return the subscription" in {
-                when(mockSDILSessionCache.fetchEntry[OptRetrievedSubscription](any(), any())(any()))
-                  .thenReturn(Future.successful(Some(OptRetrievedSubscription(Some(aSubscription)))))
+    identifierMap.foreach { case (identifierType, identiferValue) =>
+      s"when the identifier type is $identifierType" - {
+        "and the cache contains an entry for subscription" - {
+          "that includes a retrievedSubscription" - {
+            "should not call the backend and return the subscription" in {
+              when(mockSDILSessionCache.fetchEntry[OptRetrievedSubscription](any(), any())(using any()))
+                .thenReturn(Future.successful(Some(OptRetrievedSubscription(Some(aSubscription)))))
 
-                val res = softDrinksIndustryLevyConnector.retrieveSubscription(identiferValue, identifierType, "id")
+              val res = softDrinksIndustryLevyConnector.retrieveSubscription(identiferValue, identifierType, "id")
 
-                whenReady(
-                  res.value) {
-                    response =>
-                      response mustEqual Right(Some(aSubscription))
-                  }
+              whenReady(res.value) { response =>
+                response mustEqual Right(Some(aSubscription))
               }
             }
-            "that does not include a retrievedSubscription" - {
-              "should not call the backend and return None" in {
-                when(mockSDILSessionCache.fetchEntry[OptRetrievedSubscription](any(), any())(any()))
-                  .thenReturn(Future.successful(Some(OptRetrievedSubscription(None))))
+          }
+          "that does not include a retrievedSubscription" - {
+            "should not call the backend and return None" in {
+              when(mockSDILSessionCache.fetchEntry[OptRetrievedSubscription](any(), any())(using any()))
+                .thenReturn(Future.successful(Some(OptRetrievedSubscription(None))))
 
-                val res = softDrinksIndustryLevyConnector.retrieveSubscription(identiferValue, identifierType, "id")
+              val res = softDrinksIndustryLevyConnector.retrieveSubscription(identiferValue, identifierType, "id")
 
-                whenReady(
-                  res.value) {
-                    response =>
-                      response mustEqual Right(None)
-                  }
+              whenReady(res.value) { response =>
+                response mustEqual Right(None)
               }
             }
-            "and the cache contains no entry for subscription" - {
-              "should call the backend, update the cache" - {
-                "and return the subscription when one is returned" in {
-                  when(mockSDILSessionCache.fetchEntry[OptRetrievedSubscription](any(), any())(any())).thenReturn(Future.successful(None))
-                  when(requestBuilderExecute[Option[RetrievedSubscription]]).thenReturn(Future.successful(Some(aSubscription)))
-                  when(mockSDILSessionCache.save[OptRetrievedSubscription](any, any, any)(any())).thenReturn(Future.successful(CacheMap("test", Map("SUBSCRIPTION" -> Json.toJson(OptRetrievedSubscription(Some(aSubscription)))))))
-                  val res = softDrinksIndustryLevyConnector.retrieveSubscription(sdilNumber, identifierType, "id")
+          }
+          "and the cache contains no entry for subscription" - {
+            "should call the backend, update the cache" - {
+              "and return the subscription when one is returned" in {
+                when(mockSDILSessionCache.fetchEntry[OptRetrievedSubscription](any(), any())(using any()))
+                  .thenReturn(Future.successful(None))
+                when(requestBuilderExecute[Option[RetrievedSubscription]])
+                  .thenReturn(Future.successful(Some(aSubscription)))
+                when(mockSDILSessionCache.save[OptRetrievedSubscription](any, any, any)(using any())).thenReturn(
+                  Future.successful(
+                    CacheMap("test", Map("SUBSCRIPTION" -> Json.toJson(OptRetrievedSubscription(Some(aSubscription)))))
+                  )
+                )
+                val res = softDrinksIndustryLevyConnector.retrieveSubscription(sdilNumber, identifierType, "id")
 
-                  whenReady(
-                    res.value) {
-                      response =>
-                        response mustEqual Right(Some(aSubscription))
-                    }
+                whenReady(res.value) { response =>
+                  response mustEqual Right(Some(aSubscription))
                 }
-                "and return None when no subscription returned" in {
-                  when(mockSDILSessionCache.fetchEntry[OptRetrievedSubscription](any(), any())(any())).thenReturn(Future.successful(None))
-                  when(requestBuilderExecute[Option[RetrievedSubscription]]).thenReturn(Future.successful(None))
-                  when(mockSDILSessionCache.save[OptRetrievedSubscription](any, any, any)(any())).thenReturn(Future.successful(CacheMap("test", Map("SUBSCRIPTION" -> Json.toJson(OptRetrievedSubscription(None))))))
-                  val res = softDrinksIndustryLevyConnector.retrieveSubscription(sdilNumber, identifierType, "id")
+              }
+              "and return None when no subscription returned" in {
+                when(mockSDILSessionCache.fetchEntry[OptRetrievedSubscription](any(), any())(using any()))
+                  .thenReturn(Future.successful(None))
+                when(requestBuilderExecute[Option[RetrievedSubscription]]).thenReturn(Future.successful(None))
+                when(mockSDILSessionCache.save[OptRetrievedSubscription](any, any, any)(using any())).thenReturn(
+                  Future.successful(
+                    CacheMap("test", Map("SUBSCRIPTION" -> Json.toJson(OptRetrievedSubscription(None))))
+                  )
+                )
+                val res = softDrinksIndustryLevyConnector.retrieveSubscription(sdilNumber, identifierType, "id")
 
-                  whenReady(
-                    res.value) {
-                      response =>
-                        response mustEqual Right(None)
-                    }
+                whenReady(res.value) { response =>
+                  response mustEqual Right(None)
                 }
               }
             }
           }
         }
+      }
     }
   }
 }

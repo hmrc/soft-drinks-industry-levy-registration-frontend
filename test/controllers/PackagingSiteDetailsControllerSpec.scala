@@ -46,14 +46,11 @@ class PackagingSiteDetailsControllerSpec extends SpecBase with MockitoSugar with
 
   def onwardRoute: Call = Call("GET", "/foo")
 
-  val formProvider = new PackagingSiteDetailsFormProvider()
+  val formProvider        = new PackagingSiteDetailsFormProvider()
   val form: Form[Boolean] = formProvider()
 
-  val PackagingSite1: Site = Site(
-    UkAddress(List("33 Rhes Priordy", "East London"), "E73 2RP"),
-    None,
-    aTradingName,
-    None)
+  val PackagingSite1: Site =
+    Site(UkAddress(List("33 Rhes Priordy", "East London"), "E73 2RP"), None, aTradingName, None)
 
   lazy val packagingSiteListWith1: Map[String, Site] = Map(("78941132", PackagingSite1))
 
@@ -65,7 +62,9 @@ class PackagingSiteDetailsControllerSpec extends SpecBase with MockitoSugar with
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = Some(userAnswersWithPackagingSite), rosmRegistration = rosmRegistration).build()
+      val application =
+        applicationBuilder(userAnswers = Some(userAnswersWithPackagingSite), rosmRegistration = rosmRegistration)
+          .build()
 
       running(application) {
         val request = FakeRequest(GET, packagingSiteDetailsRoute)
@@ -75,7 +74,10 @@ class PackagingSiteDetailsControllerSpec extends SpecBase with MockitoSugar with
         val view = application.injector.instanceOf[PackagingSiteDetailsView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, packagingSiteListWith1)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, packagingSiteListWith1)(using
+          request,
+          messages(application)
+        ).toString
       }
     }
 
@@ -93,31 +95,38 @@ class PackagingSiteDetailsControllerSpec extends SpecBase with MockitoSugar with
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, packagingSiteListWith1)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, packagingSiteListWith1)(using
+          request,
+          messages(application)
+        ).toString
       }
     }
 
-    s"must redirect on a GET if the packaging site list is empty" in  {
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration).build()
+    s"must redirect on a GET if the packaging site list is empty" in {
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers), rosmRegistration = rosmRegistration).build()
 
       running(application) {
         val request = FakeRequest(GET, packagingSiteDetailsRoute)
-        val result = route(application, request).value
+        val result  = route(application, request).value
 
         status(result) mustEqual 303
       }
     }
 
     "must redirect to the next page when valid data is submitted (true)" in {
-      val mockSessionRepository = mock[SessionRepository]
+      val mockSessionRepository    = mock[SessionRepository]
       val mockAddressLookupService = mock[AddressLookupService]
-      val onwardUrlForALF = "foobarwizz"
+      val onwardUrlForALF          = "foobarwizz"
 
-
-      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
-      when(mockAddressLookupService.initJourneyAndReturnOnRampUrl(
-        ArgumentMatchers.eq(PackingDetails), ArgumentMatchers.any(), ArgumentMatchers.any())(
-        ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+      when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
+      when(
+        mockAddressLookupService.initJourneyAndReturnOnRampUrl(
+          ArgumentMatchers.eq(PackingDetails),
+          ArgumentMatchers.any(),
+          ArgumentMatchers.any()
+        )(using ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+      )
         .thenReturn(Future.successful(onwardUrlForALF))
 
       val application =
@@ -132,7 +141,7 @@ class PackagingSiteDetailsControllerSpec extends SpecBase with MockitoSugar with
       running(application) {
         val request =
           FakeRequest(POST, packagingSiteDetailsRoute)
-        .withFormUrlEncodedBody(("value", "true"))
+            .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
 
@@ -140,21 +149,23 @@ class PackagingSiteDetailsControllerSpec extends SpecBase with MockitoSugar with
         redirectLocation(result).value mustEqual onwardUrlForALF
 
         verify(mockAddressLookupService, times(1)).initJourneyAndReturnOnRampUrl(
-          ArgumentMatchers.eq(PackingDetails), ArgumentMatchers.any(), ArgumentMatchers.any())(
-          ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
+          ArgumentMatchers.eq(PackingDetails),
+          ArgumentMatchers.any(),
+          ArgumentMatchers.any()
+        )(using ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any())
       }
     }
 
     "must redirect to the next page when valid data is submitted (false)" in {
       val mockSessionService = mock[SessionService]
 
-      when(mockSessionService.set(any())) thenReturn createSuccessRegistrationResult(true)
+      when(mockSessionService.set(any())).thenReturn(createSuccessRegistrationResult(true))
 
       val application =
         applicationBuilder(userAnswers = Some(userAnswersWithPackagingSite), rosmRegistration = rosmRegistration)
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionService].toInstance(mockSessionService),
+            bind[SessionService].toInstance(mockSessionService)
           )
           .build()
 
@@ -172,12 +183,14 @@ class PackagingSiteDetailsControllerSpec extends SpecBase with MockitoSugar with
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(userAnswers = Some(userAnswersWithPackagingSite), rosmRegistration = rosmRegistration).build()
+      val application =
+        applicationBuilder(userAnswers = Some(userAnswersWithPackagingSite), rosmRegistration = rosmRegistration)
+          .build()
 
       running(application) {
         val request =
           FakeRequest(POST, packagingSiteDetailsRoute)
-        .withFormUrlEncodedBody(("value", ""))
+            .withFormUrlEncodedBody(("value", ""))
 
         val boundForm = form.bind(Map("value" -> ""))
 
@@ -186,7 +199,10 @@ class PackagingSiteDetailsControllerSpec extends SpecBase with MockitoSugar with
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, packagingSiteListWith1)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, packagingSiteListWith1)(using
+          request,
+          messages(application)
+        ).toString
       }
     }
 
@@ -211,7 +227,7 @@ class PackagingSiteDetailsControllerSpec extends SpecBase with MockitoSugar with
       running(application) {
         val request =
           FakeRequest(POST, packagingSiteDetailsRoute)
-        .withFormUrlEncodedBody(("value", "true"))
+            .withFormUrlEncodedBody(("value", "true"))
 
         val result = route(application, request).value
 

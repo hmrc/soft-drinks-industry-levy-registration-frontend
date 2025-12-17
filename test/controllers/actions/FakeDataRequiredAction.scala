@@ -24,14 +24,26 @@ import play.api.mvc.Results.Redirect
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class FakeDataRequiredAction(rosmRegistration: RosmWithUtr, userAnswers: Option[UserAnswers]) extends DataRequiredAction {
+class FakeDataRequiredAction(rosmRegistration: RosmWithUtr, userAnswers: Option[UserAnswers])
+    extends DataRequiredAction {
 
-  override protected def refine[A](request: OptionalDataRequest[A]): Future[Either[Result, DataRequest[A]]] = {
+  override protected def refine[A](request: OptionalDataRequest[A]): Future[Either[Result, DataRequest[A]]] =
     userAnswers match {
-      case None => Future(Left(Redirect(routes.JourneyRecoveryController.onPageLoad())))
-      case Some(userAnswers) => Future(Right(DataRequest(request, request.internalId, request.hasCTEnrolment, request.authUtr, userAnswers = userAnswers, rosmRegistration)))
+      case None              => Future(Left(Redirect(routes.JourneyRecoveryController.onPageLoad())))
+      case Some(userAnswers) =>
+        Future(
+          Right(
+            DataRequest(
+              request,
+              request.internalId,
+              request.hasCTEnrolment,
+              request.authUtr,
+              userAnswers = userAnswers,
+              rosmRegistration
+            )
+          )
+        )
     }
-  }
 
   override protected implicit val executionContext: ExecutionContext =
     scala.concurrent.ExecutionContext.Implicits.global

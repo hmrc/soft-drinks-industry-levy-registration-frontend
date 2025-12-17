@@ -16,21 +16,20 @@ import play.api.libs.ws.writeableOf_JsValue
 
 trait ControllerITTestHelper extends Specifications with TestConfiguration with ITCoreTestData {
 
-  def createClientRequestGet(client: WSClient, url: String): Future[WSResponse] = {
-    client.url(url)
+  def createClientRequestGet(client: WSClient, url: String): Future[WSResponse] =
+    client
+      .url(url)
       .withFollowRedirects(false)
       .addCookies(DefaultWSCookie("mdtp", authAndSessionCookie))
       .get()
-  }
 
-  def createClientRequestPOST(client: WSClient, url: String, json: JsValue): Future[WSResponse] = {
-    client.url(url)
+  def createClientRequestPOST(client: WSClient, url: String, json: JsValue): Future[WSResponse] =
+    client
+      .url(url)
       .addCookies(DefaultWSCookie("mdtp", authAndSessionCookie))
-      .withHttpHeaders("X-Session-ID" -> "XKSDIL000000022",
-        "Csrf-Token" -> "nocheck")
+      .withHttpHeaders("X-Session-ID" -> "XKSDIL000000022", "Csrf-Token" -> "nocheck")
       .withFollowRedirects(false)
       .post(json)
-  }
 
   def testOtherSuccessUserTypes(url: String, expectedPageTitle: String, ua: UserAnswers = emptyUserAnswers): Unit = {
     "the user is authenticated, has a sdil subscription with a deregDate" - {
@@ -52,11 +51,19 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
 
     "the user is authenticated, has no sdilEnrolment but has entered utr" - {
       s"render the $expectedPageTitle page" in {
-        build.user.isAuthorisedButNotEnrolled()
-          .sdilBackend.retrieveRosm("0000001611")
-          .sdilBackend.checkPendingQueueDoesntExist("0000001611")
+        build.user
+          .isAuthorisedButNotEnrolled()
+          .sdilBackend
+          .retrieveRosm("0000001611")
+          .sdilBackend
+          .checkPendingQueueDoesntExist("0000001611")
 
-        setAnswers(ua.copy(registerState = RegisterState.RegisterWithOtherUTR).set(EnterBusinessDetailsPage, Identify("0000001611", "GU14 8NL")).success.value)
+        setAnswers(
+          ua.copy(registerState = RegisterState.RegisterWithOtherUTR)
+            .set(EnterBusinessDetailsPage, Identify("0000001611", "GU14 8NL"))
+            .success
+            .value
+        )
 
         WsTestClient.withClient { client =>
           val result1 = createClientRequestGet(client, url)
@@ -79,7 +86,7 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
         WsTestClient.withClient { client =>
           val result1 = optJson match {
             case Some(json) => createClientRequestPOST(client, url, json)
-            case _ => createClientRequestGet(client, url)
+            case _          => createClientRequestGet(client, url)
           }
 
           whenReady(result1) { res =>
@@ -97,7 +104,7 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
         WsTestClient.withClient { client =>
           val result1 = optJson match {
             case Some(json) => createClientRequestPOST(client, url, json)
-            case _ => createClientRequestGet(client, url)
+            case _          => createClientRequestGet(client, url)
           }
 
           whenReady(result1) { res =>
@@ -115,7 +122,7 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
         WsTestClient.withClient { client =>
           val result1 = optJson match {
             case Some(json) => createClientRequestPOST(client, url, json)
-            case _ => createClientRequestGet(client, url)
+            case _          => createClientRequestGet(client, url)
           }
 
           whenReady(result1) { res =>
@@ -133,7 +140,7 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
         WsTestClient.withClient { client =>
           val result1 = optJson match {
             case Some(json) => createClientRequestPOST(client, url, json)
-            case _ => createClientRequestGet(client, url)
+            case _          => createClientRequestGet(client, url)
           }
 
           whenReady(result1) { res =>
@@ -151,7 +158,7 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
         WsTestClient.withClient { client =>
           val result1 = optJson match {
             case Some(json) => createClientRequestPOST(client, url, json)
-            case _ => createClientRequestGet(client, url)
+            case _          => createClientRequestGet(client, url)
           }
 
           whenReady(result1) { res =>
@@ -169,7 +176,7 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
         WsTestClient.withClient { client =>
           val result1 = optJson match {
             case Some(json) => createClientRequestPOST(client, url, json)
-            case _ => createClientRequestGet(client, url)
+            case _          => createClientRequestGet(client, url)
           }
 
           whenReady(result1) { res =>
@@ -186,11 +193,13 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
     "when the user answers contain a submitted date" - {
       "should redirect to registration confirmation page" in {
         build.commonPrecondition
-        setAnswers(emptyUserAnswers.copy(registerState = RegisterState.RegisterWithAuthUTR, submittedOn = Some(Instant.now)))
+        setAnswers(
+          emptyUserAnswers.copy(registerState = RegisterState.RegisterWithAuthUTR, submittedOn = Some(Instant.now))
+        )
         WsTestClient.withClient { client =>
           val result1 = optJson match {
             case Some(json) => createClientRequestPOST(client, url, json)
-            case _ => createClientRequestGet(client, url)
+            case _          => createClientRequestGet(client, url)
           }
 
           whenReady(result1) { res =>
@@ -200,12 +209,12 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
         }
       }
     }
-    RegisterState.values.filterNot(state => RegisterState.canRegister(state)).foreach{registerState =>
+    RegisterState.values.filterNot(state => RegisterState.canRegister(state)).foreach { registerState =>
       val expectedLocation = registerState match {
-        case RegisterState.AlreadyRegistered => routes.AlreadyRegisteredController.onPageLoad.url
-        case RegisterState.RegistrationPending => routes.RegistrationPendingController.onPageLoad.url
+        case RegisterState.AlreadyRegistered       => routes.AlreadyRegisteredController.onPageLoad.url
+        case RegisterState.RegistrationPending     => routes.RegistrationPendingController.onPageLoad.url
         case RegisterState.RequiresBusinessDetails => routes.EnterBusinessDetailsController.onPageLoad.url
-        case _ => routes.ApplicationAlreadySubmittedController.onPageLoad.url
+        case _                                     => routes.ApplicationAlreadySubmittedController.onPageLoad.url
       }
       s"when the user has a register state of $registerState" - {
         s"should redirect to $expectedLocation" in {
@@ -214,7 +223,7 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
           WsTestClient.withClient { client =>
             val result1 = optJson match {
               case Some(json) => createClientRequestPOST(client, url, json)
-              case _ => createClientRequestGet(client, url)
+              case _          => createClientRequestGet(client, url)
             }
 
             whenReady(result1) { res =>
@@ -227,7 +236,7 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
     }
   }
 
-  def testAuthenticatedUserButNoUserAnswers(url: String, optJson: Option[JsValue] = None): Unit = {
+  def testAuthenticatedUserButNoUserAnswers(url: String, optJson: Option[JsValue] = None): Unit =
     "the user is authenticated but has no user answers" - {
       "redirect to registration controller" in {
         build.commonPrecondition
@@ -237,7 +246,7 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
         WsTestClient.withClient { client =>
           val result1 = optJson match {
             case Some(json) => createClientRequestPOST(client, url, json)
-            case _ => createClientRequestGet(client, url)
+            case _          => createClientRequestGet(client, url)
           }
 
           whenReady(result1) { res =>
@@ -247,5 +256,4 @@ trait ControllerITTestHelper extends Specifications with TestConfiguration with 
         }
       }
     }
-  }
 }

@@ -18,7 +18,7 @@ package views
 
 import controllers.routes
 import forms.RemovePackagingSiteDetailsFormProvider
-import models.{ CheckMode, NormalMode }
+import models.{CheckMode, NormalMode}
 import play.api.i18n.Messages
 import play.api.mvc.Request
 import play.api.test.FakeRequest
@@ -27,30 +27,30 @@ import views.html.RemovePackagingSiteDetailsView
 
 class RemovePackagingSiteDetailsViewSpec extends ViewSpecHelper {
 
-  val view = application.injector.instanceOf[RemovePackagingSiteDetailsView]
-  val formProvider = new RemovePackagingSiteDetailsFormProvider
-  val form = formProvider.apply()
-  implicit val request: Request[_] = FakeRequest()
+  val view                         = application.injector.instanceOf[RemovePackagingSiteDetailsView]
+  val formProvider                 = new RemovePackagingSiteDetailsFormProvider
+  val form                         = formProvider.apply()
+  implicit val request: Request[?] = FakeRequest()
 
   object Selectors {
-    val heading = "govuk-fieldset__heading"
-    val legend = "govuk-fieldset__legend  govuk-fieldset__legend--l"
-    val radios = "govuk-radios__item"
-    val radioInput = "govuk-radios__input"
-    val radioLabels = "govuk-label govuk-radios__label"
-    val body = "govuk-body"
+    val heading           = "govuk-fieldset__heading"
+    val legend            = "govuk-fieldset__legend  govuk-fieldset__legend--l"
+    val radios            = "govuk-radios__item"
+    val radioInput        = "govuk-radios__input"
+    val radioLabels       = "govuk-label govuk-radios__label"
+    val body              = "govuk-body"
     val errorSummaryTitle = "govuk-error-summary__title"
-    val errorSummaryList = "govuk-list govuk-error-summary__list"
-    val button = "govuk-button"
-    val form = "form"
+    val errorSummaryList  = "govuk-list govuk-error-summary__list"
+    val button            = "govuk-button"
+    val form              = "form"
   }
 
   "View" - {
     List(NormalMode, CheckMode).foreach { mode =>
       s"In ${mode.toString}" - {
-        val ref = "foo"
-        val address = Html("bar")
-        val html = view(form, mode, ref, address)(request, messages(application))
+        val ref      = "foo"
+        val address  = Html("bar")
+        val html     = view(form, mode, ref, address)(using request, messages(application))
         val document = doc(html)
         "should contain the expected title" in {
           document.title() must include(Messages("removePackagingSiteDetails" + ".title"))
@@ -63,7 +63,9 @@ class RemovePackagingSiteDetailsViewSpec extends ViewSpecHelper {
         "should include a legend with the expected heading" in {
           val legend = document.getElementsByClass(Selectors.legend)
           legend.size() mustBe 1
-          legend.get(0).getElementsByClass(Selectors.legend).text() mustEqual Messages("Are you sure you want to remove this packaging site?")
+          legend.get(0).getElementsByClass(Selectors.legend).text() mustEqual Messages(
+            "Are you sure you want to remove this packaging site?"
+          )
         }
 
         "when the form is not preoccupied and has no errors" - {
@@ -101,7 +103,7 @@ class RemovePackagingSiteDetailsViewSpec extends ViewSpecHelper {
         }
 
         "when the form is preoccupied with yes and has no errors" - {
-          val html1 = view(form.fill(true), mode, ref, address)(request, messages(application))
+          val html1     = view(form.fill(true), mode, ref, address)(using request, messages(application))
           val document1 = doc(html1)
           "should have radio buttons" - {
             val radioButtons = document1.getElementsByClass(Selectors.radios)
@@ -136,7 +138,7 @@ class RemovePackagingSiteDetailsViewSpec extends ViewSpecHelper {
         }
 
         "when the form is preoccupied with no and has no errors" - {
-          val html1 = view(form.fill(false), mode, ref, address)(request, messages(application))
+          val html1     = view(form.fill(false), mode, ref, address)(using request, messages(application))
           val document1 = doc(html1)
           "should have radio buttons" - {
             val radioButtons = document1.getElementsByClass(Selectors.radios)
@@ -175,24 +177,27 @@ class RemovePackagingSiteDetailsViewSpec extends ViewSpecHelper {
         }
 
         "contains a form with the correct action" - {
-          val htmlYesSelected = view(form.fill(true), mode, ref, address)(request, messages(application))
+          val htmlYesSelected     = view(form.fill(true), mode, ref, address)(using request, messages(application))
           val documentYesSelected = doc(htmlYesSelected)
 
-          val htmlNoSelected = view(form.fill(false), mode, ref, address)(request, messages(application))
+          val htmlNoSelected     = view(form.fill(false), mode, ref, address)(using request, messages(application))
           val documentNoSelected = doc(htmlNoSelected)
           "and yes is selected" in {
-            documentYesSelected.select(Selectors.form)
+            documentYesSelected
+              .select(Selectors.form)
               .attr("action") mustEqual routes.RemovePackagingSiteDetailsController.onSubmit(mode, ref).url
           }
 
           "and no is selected" in {
-            documentNoSelected.select(Selectors.form)
+            documentNoSelected
+              .select(Selectors.form)
               .attr("action") mustEqual routes.RemovePackagingSiteDetailsController.onSubmit(mode, ref).url
           }
         }
 
         "when there are form errors" - {
-          val htmlWithErrors = view(form.bind(Map("value" -> "")), mode, ref, address)(request, messages(application))
+          val htmlWithErrors     =
+            view(form.bind(Map("value" -> "")), mode, ref, address)(using request, messages(application))
           val documentWithErrors = doc(htmlWithErrors)
 
           "should have a title containing error" in {

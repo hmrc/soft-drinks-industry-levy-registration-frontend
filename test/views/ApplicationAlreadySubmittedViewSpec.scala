@@ -24,28 +24,33 @@ import views.html.ApplicationAlreadySubmittedView
 
 class ApplicationAlreadySubmittedViewSpec extends ViewSpecHelper {
 
-  val view = application.injector.instanceOf[ApplicationAlreadySubmittedView]
-  implicit val request: Request[_] = FakeRequest()
+  val view                         = application.injector.instanceOf[ApplicationAlreadySubmittedView]
+  implicit val request: Request[?] = FakeRequest()
 
   object Selectors {
     val heading = "govuk-heading-l"
   }
 
   "View" - {
-    val registration = rosmRegistration.rosmRegistration
-    val formattedAddress = AddressFormattingHelper.formatBusinessAddress(registration.address,Some(registration.organisationName))
-    val html = view(formattedAddress)(request, messages(application))
-    val document = doc(html)
+    val registration     = rosmRegistration.rosmRegistration
+    val formattedAddress =
+      AddressFormattingHelper.formatBusinessAddress(registration.address, Some(registration.organisationName))
+    val html             = view(formattedAddress)(using request, messages(application))
+    val document         = doc(html)
     "should contain the expected title" in {
       document.title() must include(Messages("applicationAlreadySubmitted.heading.title"))
     }
 
     "should have the expected heading" in {
-      document.getElementsByClass(Selectors.heading).text() mustEqual Messages("applicationAlreadySubmitted.heading.title")
+      document.getElementsByClass(Selectors.heading).text() mustEqual Messages(
+        "applicationAlreadySubmitted.heading.title"
+      )
     }
 
     "should have the expected address" in {
-      document.getElementById("addressForUTR").text() mustBe "Super Lemonade Plc 105B Godfrey Marchant Grove Guildford GU14 8NL"
+      document
+        .getElementById("addressForUTR")
+        .text() mustBe "Super Lemonade Plc 105B Godfrey Marchant Grove Guildford GU14 8NL"
     }
 
     "should have the expected additional information paragraph" in {
@@ -54,9 +59,13 @@ class ApplicationAlreadySubmittedViewSpec extends ViewSpecHelper {
     }
 
     "should have a second paragraph with additional information including the account sign out link" in {
-      document.getElementById("account-redirect").text() mustBe ("If you want to submit your return or check the status of your " +
+      document
+        .getElementById("account-redirect")
+        .text() mustBe ("If you want to submit your return or check the status of your " +
         "application you need to sign in using the same HMRC username and password used to submit the application.")
-      document.getElementById("account-link").attr("href") mustBe s"${frontendAppConfig.loginUrl}?continue=${frontendAppConfig.sdilHomeUrl}"
+      document
+        .getElementById("account-link")
+        .attr("href") mustBe s"${frontendAppConfig.loginUrl}?continue=${frontendAppConfig.sdilHomeUrl}"
     }
 
     testBackLink(document)

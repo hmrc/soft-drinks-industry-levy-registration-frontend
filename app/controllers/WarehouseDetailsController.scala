@@ -19,21 +19,21 @@ package controllers
 import controllers.actions._
 import forms.WarehouseDetailsFormProvider
 import handlers.ErrorHandler
-import models.{ Mode, NormalMode, Warehouse }
+import models.{Mode, NormalMode, Warehouse}
 import navigation.Navigator
 import pages.WarehouseDetailsPage
 import play.api.data.Form
-import play.api.i18n.{ Messages, MessagesApi }
-import play.api.mvc.{ Action, AnyContent, MessagesControllerComponents }
+import play.api.i18n.{Messages, MessagesApi}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.AddressLookupState.WarehouseDetails
-import services.{ AddressLookupService, SessionService }
+import services.{AddressLookupService, SessionService}
 import utilities.GenericLogger
 import viewmodels.govuk.SummaryListFluency
 import views.html.WarehouseDetailsView
 import views.summary.WarehouseDetailsSummary
 
 import javax.inject.Inject
-import scala.concurrent.{ ExecutionContext, Future }
+import scala.concurrent.{ExecutionContext, Future}
 
 class WarehouseDetailsController @Inject() (
   override val messagesApi: MessagesApi,
@@ -46,45 +46,46 @@ class WarehouseDetailsController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: WarehouseDetailsView,
   val errorHandler: ErrorHandler,
-  val genericLogger: GenericLogger)(implicit ec: ExecutionContext) extends ControllerHelper with SummaryListFluency {
+  val genericLogger: GenericLogger
+)(implicit ec: ExecutionContext)
+    extends ControllerHelper
+    with SummaryListFluency {
 
   val form: Form[Boolean] = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = controllerActions.withUserWhoCanRegister {
-    implicit request =>
-
-      warehouseDetailsChecker.checkWarehouseDetails(request.userAnswers, mode) {
-        val warehouses = request.userAnswers.warehouseList
-
-        Ok(view(form, mode, createWarehouseSummary(warehouses, mode), warehouses.size))
-      }
-  }
-
-  def onSubmit(mode: Mode): Action[AnyContent] = controllerActions.withUserWhoCanRegister.async {
-    implicit request =>
-
+  def onPageLoad(mode: Mode): Action[AnyContent] = controllerActions.withUserWhoCanRegister { implicit request =>
+    warehouseDetailsChecker.checkWarehouseDetails(request.userAnswers, mode) {
       val warehouses = request.userAnswers.warehouseList
 
-      form.bindFromRequest().fold(
-        formWithErrors =>
-          Future.successful(BadRequest(view(formWithErrors, mode, createWarehouseSummary(warehouses, mode), warehouses.size))),
+      Ok(view(form, mode, createWarehouseSummary(warehouses, mode), warehouses.size))
+    }
+  }
 
-        value => {
+  def onSubmit(mode: Mode): Action[AnyContent] = controllerActions.withUserWhoCanRegister.async { implicit request =>
+    val warehouses = request.userAnswers.warehouseList
+
+    form
+      .bindFromRequest()
+      .fold(
+        formWithErrors =>
+          Future.successful(
+            BadRequest(view(formWithErrors, mode, createWarehouseSummary(warehouses, mode), warehouses.size))
+          ),
+        value =>
           for {
             updatedAnswers <- Future.fromTry(request.userAnswers.set(WarehouseDetailsPage, value))
-            _ <- updateDatabaseWithoutRedirect(updatedAnswers, WarehouseDetailsPage)
-            onwardUrl <- if (value) {
-              addressLookupService.initJourneyAndReturnOnRampUrl(WarehouseDetails, mode = mode)
-            } else if (mode == NormalMode) {
-              Future.successful(routes.ContactDetailsController.onPageLoad(mode).url)
-            } else {
-              Future.successful(routes.CheckYourAnswersController.onPageLoad.url)
-            }
+            _              <- updateDatabaseWithoutRedirect(updatedAnswers, WarehouseDetailsPage)
+            onwardUrl      <- if (value) {
+                                addressLookupService.initJourneyAndReturnOnRampUrl(WarehouseDetails, mode = mode)
+                              } else if (mode == NormalMode) {
+                                Future.successful(routes.ContactDetailsController.onPageLoad(mode).url)
+                              } else {
+                                Future.successful(routes.CheckYourAnswersController.onPageLoad.url)
+                              }
           } yield Redirect(onwardUrl)
-        })
+      )
   }
 
-  private def createWarehouseSummary(warehouses: Map[String, Warehouse], mode: Mode)(implicit messages: Messages) = {
+  private def createWarehouseSummary(warehouses: Map[String, Warehouse], mode: Mode)(implicit messages: Messages) =
     Some(SummaryListViewModel(rows = WarehouseDetailsSummary.warehouseDetailsRow(warehouses, mode)))
-  }
 }

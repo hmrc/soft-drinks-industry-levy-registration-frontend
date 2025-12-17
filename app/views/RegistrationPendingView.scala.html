@@ -20,7 +20,7 @@
         govukInsetText: GovukInsetText
 )
 
-@(utr: String, formattedAddress: HtmlContent, helpLine: String)(implicit request: Request[_], messages: Messages)
+@(utr: String, formattedAddress: HtmlContent, helpLine: String)(implicit request: Request[?], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("registrationPending.title"))) {
 

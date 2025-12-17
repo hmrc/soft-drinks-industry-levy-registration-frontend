@@ -30,10 +30,12 @@ class HowManyContractPackingPageSpec extends PageBehaviours {
     beRemovable[LitresInBands](HowManyContractPackingPage)
 
     s"url should be correct for $NormalMode" in {
-      HowManyContractPackingPage.url(NormalMode) mustBe controllers.routes.HowManyContractPackingController.onPageLoad(NormalMode).url
+      HowManyContractPackingPage
+        .url(NormalMode) mustBe controllers.routes.HowManyContractPackingController.onPageLoad(NormalMode).url
     }
     s"url should be correct for $CheckMode" in {
-      HowManyContractPackingPage.url(CheckMode) mustBe controllers.routes.HowManyContractPackingController.onPageLoad(CheckMode).url
+      HowManyContractPackingPage
+        .url(CheckMode) mustBe controllers.routes.HowManyContractPackingController.onPageLoad(CheckMode).url
     }
   }
 }

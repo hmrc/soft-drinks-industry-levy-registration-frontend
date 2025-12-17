@@ -22,10 +22,10 @@ import play.twirl.api.Html
 
 class ContactDetailsSummarySpec extends RegistrationSubscriptionHelper {
 
-  val NAME = "Jane Doe"
+  val NAME     = "Jane Doe"
   val POSITION = "CEO"
-  val PHONE = "07700 09900"
-  val EMAIL = "sample@example.com"
+  val PHONE    = "07700 09900"
+  val EMAIL    = "sample@example.com"
 
   val userContact: Contact = Contact(
     Some(NAME),
@@ -40,22 +40,22 @@ class ContactDetailsSummarySpec extends RegistrationSubscriptionHelper {
 
       "that contains change links" - {
         "when called for check your answers" in {
-          val res = ContactDetailsSummary.headingAndSummary(subscription, true)
+          val res                    = ContactDetailsSummary.headingAndSummary(subscription, true)
           val (heading, summaryList) = res
           heading mustBe "Contact person details"
-          val summaryRows = summaryList.rows
+          val summaryRows            = summaryList.rows
           summaryRows.size mustBe 4
-          val fullNameRow = summaryRows.head
+          val fullNameRow            = summaryRows.head
           fullNameRow.key.content.asHtml mustBe Html("Full name")
           fullNameRow.value.content.asHtml mustBe Html(NAME)
           fullNameRow.value.classes.trim mustBe "sdil-right-align--desktop"
           fullNameRow.actions.fold(0)(_.items.size) mustBe 1
-          val fullNameAction = fullNameRow.actions.get.items.head
+          val fullNameAction         = fullNameRow.actions.get.items.head
           fullNameAction.content.asHtml mustBe Html("Change")
           fullNameAction.href mustBe "/soft-drinks-industry-levy-registration/change-contact-details"
           fullNameAction.attributes mustBe Map("id" -> "change-fullName")
 
-          val positionRow = summaryRows(1)
+          val positionRow    = summaryRows(1)
           positionRow.key.content.asHtml mustBe Html("Job title")
           positionRow.value.content.asHtml mustBe Html(POSITION)
           positionRow.value.classes.trim mustBe "sdil-right-align--desktop"
@@ -65,7 +65,7 @@ class ContactDetailsSummarySpec extends RegistrationSubscriptionHelper {
           positionAction.href mustBe "/soft-drinks-industry-levy-registration/change-contact-details"
           positionAction.attributes mustBe Map("id" -> "change-position")
 
-          val phoneRow = summaryRows(2)
+          val phoneRow    = summaryRows(2)
           phoneRow.key.content.asHtml mustBe Html("Telephone number")
           phoneRow.value.content.asHtml mustBe Html(PHONE)
           phoneRow.value.classes.trim mustBe "sdil-right-align--desktop"
@@ -75,7 +75,7 @@ class ContactDetailsSummarySpec extends RegistrationSubscriptionHelper {
           phoneAction.href mustBe "/soft-drinks-industry-levy-registration/change-contact-details"
           phoneAction.attributes mustBe Map("id" -> "change-phoneNumber")
 
-          val emailRow = summaryRows(3)
+          val emailRow    = summaryRows(3)
           emailRow.key.content.asHtml mustBe Html("Email address")
           emailRow.value.content.asHtml mustBe Html(EMAIL)
           emailRow.value.classes.trim mustBe "sdil-right-align--desktop"
@@ -89,12 +89,12 @@ class ContactDetailsSummarySpec extends RegistrationSubscriptionHelper {
 
       "that does not contains change links" - {
         "when not called for check your answers" in {
-          val res = ContactDetailsSummary.headingAndSummary(subscription, false)
+          val res                    = ContactDetailsSummary.headingAndSummary(subscription, false)
           val (heading, summaryList) = res
           heading mustBe "Contact person details"
-          val summaryRows = summaryList.rows
+          val summaryRows            = summaryList.rows
           summaryRows.size mustBe 4
-          val fullNameRow = summaryRows.head
+          val fullNameRow            = summaryRows.head
           fullNameRow.key.content.asHtml mustBe Html("Full name")
           fullNameRow.value.content.asHtml mustBe Html(NAME)
           fullNameRow.value.classes.trim mustBe "sdil-right-align--desktop"

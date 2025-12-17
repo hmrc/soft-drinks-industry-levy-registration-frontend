@@ -44,17 +44,17 @@ trait ModelGenerators {
   implicit lazy val arbitraryContactDetails: Arbitrary[ContactDetails] =
     Arbitrary {
       for {
-        fullName <- arbitrary[String]
-        position <- arbitrary[String]
+        fullName    <- arbitrary[String]
+        position    <- arbitrary[String]
         phoneNumber <- arbitrary[String]
-        email <- arbitrary[String]
+        email       <- arbitrary[String]
       } yield ContactDetails(fullName, position, phoneNumber, email)
     }
 
   implicit lazy val arbitraryIdentification: Arbitrary[Identify] =
     Arbitrary {
       for {
-        utr <- arbitrary[String]
+        utr      <- arbitrary[String]
         postcode <- arbitrary[String]
       } yield Identify(utr, postcode)
     }
@@ -72,7 +72,7 @@ trait ModelGenerators {
   implicit lazy val arbitraryLitresInBands: Arbitrary[LitresInBands] =
     Arbitrary {
       for {
-        lowBand <- arbitrary[Long]
+        lowBand  <- arbitrary[Long]
         highBand <- arbitrary[Long]
       } yield LitresInBands(lowBand, highBand)
     }
