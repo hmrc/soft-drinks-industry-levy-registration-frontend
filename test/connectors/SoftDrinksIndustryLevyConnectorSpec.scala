@@ -200,7 +200,9 @@ class SoftDrinksIndustryLevyConnectorSpec extends HttpClientV2Helper with Regist
       when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(200, "")))
 
       Await.result(
-        softDrinksIndustryLevyConnector.createSubscription(subscriptionOnlyRequiredFields, "safeid")(using incomingHc).value,
+        softDrinksIndustryLevyConnector
+          .createSubscription(subscriptionOnlyRequiredFields, "safeid")(using incomingHc)
+          .value,
         1.seconds
       )
 

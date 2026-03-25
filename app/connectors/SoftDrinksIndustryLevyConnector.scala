@@ -51,7 +51,7 @@ class SoftDrinksIndustryLevyConnector @Inject() (
 
   private val rawHttpReads = new RawHttpReads
 
-  private def outboundHeaderCarrier(hc: HeaderCarrier): HeaderCarrier =
+  private def outboundHeaderCarrier(hc: HeaderCarrier): HeaderCarrier                                    =
     HeaderCarrier(
       requestId = hc.requestId,
       sessionId = hc.sessionId
@@ -68,7 +68,10 @@ class SoftDrinksIndustryLevyConnector @Inject() (
       startTime.map(st => s"durationMs=${System.currentTimeMillis() - st}")
     ).flatten.mkString(" ")
 
-  private def executeGet[A](operation: String, path: String)(implicit hc: HeaderCarrier, rds: HttpReads[A]): Future[A] = {
+  private def executeGet[A](operation: String, path: String)(implicit
+    hc: HeaderCarrier,
+    rds: HttpReads[A]
+  ): Future[A] = {
     val urlString = s"$sdilUrl$path"
     val startTime = System.currentTimeMillis()
     logger.info(
