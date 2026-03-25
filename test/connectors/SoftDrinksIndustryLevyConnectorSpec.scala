@@ -16,17 +16,22 @@
 
 package connectors
 
+import base.RegistrationSubscriptionHelper
 import errors.NoROSMRegistration
 import models.{OptRetrievedSubscription, RetrievedSubscription, RosmRegistration, RosmWithUtr}
+import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
-import play.api.libs.json.Json
+import org.mockito.Mockito.{clearInvocations, verify, when}
+import play.api.libs.json.{JsValue, Json}
 import repositories.{CacheMap, SDILSessionCache}
+import uk.gov.hmrc.http.{Authorization, HeaderCarrier, HttpResponse, RequestId, SessionId}
 import utilities.GenericLogger
 
-import scala.concurrent.Future
+import java.net.URL
+import scala.concurrent.{Await, Future}
+import scala.concurrent.duration.*
 
-class SoftDrinksIndustryLevyConnectorSpec extends HttpClientV2Helper {
+class SoftDrinksIndustryLevyConnectorSpec extends HttpClientV2Helper with RegistrationSubscriptionHelper {
 
   val (host, localPort) = ("host", "123")
 
@@ -39,6 +44,26 @@ class SoftDrinksIndustryLevyConnectorSpec extends HttpClientV2Helper {
   )
 
   val identifierMap = Map("sdil" -> sdilNumber, "utr" -> utr)
+
+  private def correlationHeaderCarrier(requestIdValue: String, sessionIdValue: String): HeaderCarrier =
+    HeaderCarrier(
+      authorization = Some(Authorization("Bearer incoming-token")),
+      sessionId = Some(SessionId(sessionIdValue)),
+      requestId = Some(RequestId(requestIdValue)),
+      deviceID = Some("device-id-1"),
+      otherHeaders = Seq("X-Test-Header" -> "should-not-forward")
+    )
+
+  private def assertSanitisedCorrelationIds(outboundHc: HeaderCarrier, incomingHc: HeaderCarrier): Unit = {
+    outboundHc.requestId mustBe incomingHc.requestId
+    outboundHc.sessionId mustBe incomingHc.sessionId
+    outboundHc.authorization mustBe None
+    outboundHc.deviceID mustBe None
+    outboundHc.otherHeaders mustBe Seq.empty
+  }
+
+  private def jsonResponse(status: Int, json: JsValue): HttpResponse =
+    HttpResponse(status, Json.stringify(json))
 
   "SoftDrinksIndustryLevyConnector" - {
 
@@ -55,7 +80,7 @@ class SoftDrinksIndustryLevyConnectorSpec extends HttpClientV2Helper {
     s"should call the backend and return NoRosmRegistration if no rosm for utr" in {
       when(mockSDILSessionCache.fetchEntry[RosmRegistration](any(), any())(using any()))
         .thenReturn(Future.successful(None))
-      when(requestBuilderExecute[Option[RosmRegistration]]).thenReturn(Future.successful(None))
+      when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(404, "")))
       val res = softDrinksIndustryLevyConnector.retreiveRosmSubscription("utr here", "foo")
       whenReady(res.value) { response =>
         response mustEqual Left(NoROSMRegistration)
@@ -66,8 +91,8 @@ class SoftDrinksIndustryLevyConnectorSpec extends HttpClientV2Helper {
       "and return the rosm when one is returned" in {
         when(mockSDILSessionCache.fetchEntry[RosmRegistration](any(), any())(using any()))
           .thenReturn(Future.successful(None))
-        when(requestBuilderExecute[Option[RosmRegistration]])
-          .thenReturn(Future.successful(Some(rosmRegistration.rosmRegistration)))
+        when(requestBuilderExecute[HttpResponse])
+          .thenReturn(Future.successful(jsonResponse(200, Json.toJson(rosmRegistration.rosmRegistration))))
         when(mockSDILSessionCache.save[RosmRegistration](any, any, any)(using any()))
           .thenReturn(Future.successful(CacheMap("test", Map("ROSM_REGISTRATION" -> Json.toJson(rosmRegistration)))))
         val res = softDrinksIndustryLevyConnector.retreiveRosmSubscription(utr = utr, "foo")
@@ -109,8 +134,8 @@ class SoftDrinksIndustryLevyConnectorSpec extends HttpClientV2Helper {
               "and return the subscription when one is returned" in {
                 when(mockSDILSessionCache.fetchEntry[OptRetrievedSubscription](any(), any())(using any()))
                   .thenReturn(Future.successful(None))
-                when(requestBuilderExecute[Option[RetrievedSubscription]])
-                  .thenReturn(Future.successful(Some(aSubscription)))
+                when(requestBuilderExecute[HttpResponse])
+                  .thenReturn(Future.successful(jsonResponse(200, Json.toJson(aSubscription))))
                 when(mockSDILSessionCache.save[OptRetrievedSubscription](any, any, any)(using any())).thenReturn(
                   Future.successful(
                     CacheMap("test", Map("SUBSCRIPTION" -> Json.toJson(OptRetrievedSubscription(Some(aSubscription)))))
@@ -125,7 +150,7 @@ class SoftDrinksIndustryLevyConnectorSpec extends HttpClientV2Helper {
               "and return None when no subscription returned" in {
                 when(mockSDILSessionCache.fetchEntry[OptRetrievedSubscription](any(), any())(using any()))
                   .thenReturn(Future.successful(None))
-                when(requestBuilderExecute[Option[RetrievedSubscription]]).thenReturn(Future.successful(None))
+                when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(404, "")))
                 when(mockSDILSessionCache.save[OptRetrievedSubscription](any, any, any)(using any())).thenReturn(
                   Future.successful(
                     CacheMap("test", Map("SUBSCRIPTION" -> Json.toJson(OptRetrievedSubscription(None))))
@@ -141,6 +166,50 @@ class SoftDrinksIndustryLevyConnectorSpec extends HttpClientV2Helper {
           }
         }
       }
+    }
+
+    "preserve correlation ids and strip custom headers in outbound GET HeaderCarrier for retrieveSubscription" in {
+      val incomingHc = correlationHeaderCarrier("request-id-registration-get-1", "session-id-registration-get-1")
+      clearInvocations(mockHttp)
+
+      when(mockSDILSessionCache.fetchEntry[OptRetrievedSubscription](any(), any())(using any()))
+        .thenReturn(Future.successful(None))
+      when(requestBuilderExecute[HttpResponse])
+        .thenReturn(Future.successful(jsonResponse(200, Json.toJson(aSubscription))))
+      when(mockSDILSessionCache.save[OptRetrievedSubscription](any, any, any)(using any())).thenReturn(
+        Future.successful(
+          CacheMap("test", Map("SUBSCRIPTION" -> Json.toJson(OptRetrievedSubscription(Some(aSubscription)))))
+        )
+      )
+
+      Await.result(
+        softDrinksIndustryLevyConnector.retrieveSubscription(sdilNumber, "sdil", "id")(using incomingHc).value,
+        1.seconds
+      )
+
+      val hcCaptor: ArgumentCaptor[HeaderCarrier] = ArgumentCaptor.forClass(classOf[HeaderCarrier])
+      verify(mockHttp).get(any[URL])(using hcCaptor.capture())
+
+      assertSanitisedCorrelationIds(hcCaptor.getValue, incomingHc)
+    }
+
+    "preserve correlation ids and strip custom headers in outbound POST HeaderCarrier for createSubscription" in {
+      val incomingHc = correlationHeaderCarrier("request-id-registration-post-1", "session-id-registration-post-1")
+      clearInvocations(mockHttp)
+
+      when(requestBuilderExecute[HttpResponse]).thenReturn(Future.successful(HttpResponse(200, "")))
+
+      Await.result(
+        softDrinksIndustryLevyConnector
+          .createSubscription(subscriptionOnlyRequiredFields, "safeid")(using incomingHc)
+          .value,
+        1.seconds
+      )
+
+      val hcCaptor: ArgumentCaptor[HeaderCarrier] = ArgumentCaptor.forClass(classOf[HeaderCarrier])
+      verify(mockHttp).post(any[URL])(using hcCaptor.capture())
+
+      assertSanitisedCorrelationIds(hcCaptor.getValue, incomingHc)
     }
   }
 }
