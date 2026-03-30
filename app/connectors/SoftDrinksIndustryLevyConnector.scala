@@ -22,7 +22,7 @@ import errors.{NoROSMRegistration, UnexpectedResponseFromSDIL}
 import models._
 import models.backend.Subscription
 import play.api.http.Status._
-import play.api.libs.json.Json
+import play.api.libs.json.{JsValue, Json}
 import repositories.{SDILSessionCache, SDILSessionKeys}
 import service.RegistrationResult
 import uk.gov.hmrc.http.HttpReads.Implicits._
@@ -32,6 +32,7 @@ import utilities.GenericLogger
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.control.NonFatal
 import play.api.libs.ws.JsonBodyWritables.writeableOf_JsValue
 class SoftDrinksIndustryLevyConnector @Inject() (
   val http: HttpClientV2,
@@ -42,7 +43,85 @@ class SoftDrinksIndustryLevyConnector @Inject() (
 
   lazy val sdilUrl: String = frontendAppConfig.sdilBaseUrl
 
-  private def getRosmRegistration(utr: String): String = s"$sdilUrl/rosm-registration/lookup/$utr"
+  private val logger = genericLogger.logger
+
+  private class RawHttpReads extends HttpReads[HttpResponse] {
+    override def read(method: String, url: String, response: HttpResponse): HttpResponse = response
+  }
+
+  private val rawHttpReads = new RawHttpReads
+
+  private def outboundHeaderCarrier(hc: HeaderCarrier): HeaderCarrier                                    =
+    HeaderCarrier(
+      requestId = hc.requestId,
+      sessionId = hc.sessionId
+    )
+
+  private def sdilContext(
+    path: String,
+    status: Option[Int] = None,
+    startTime: Option[Long] = None
+  ): String =
+    Seq(
+      Some(s"path=$path"),
+      status.map(st => s"status=$st"),
+      startTime.map(st => s"durationMs=${System.currentTimeMillis() - st}")
+    ).flatten.mkString(" ")
+
+  private def executeGet[A](operation: String, path: String)(implicit
+    hc: HeaderCarrier,
+    rds: HttpReads[A]
+  ): Future[A] = {
+    val urlString = s"$sdilUrl$path"
+    val startTime = System.currentTimeMillis()
+    logger.info(
+      s"SDIL $operation request ${sdilContext(path, startTime = Some(startTime))}"
+    )
+    http
+      .get(url"$urlString")(using outboundHeaderCarrier(hc))
+      .execute[HttpResponse](using rawHttpReads, ec)
+      .map { response =>
+        logger.info(
+          s"SDIL $operation response ${sdilContext(path, status = Some(response.status), startTime = Some(startTime))}"
+        )
+        rds.read("GET", urlString, response)
+      }
+      .recoverWith { case NonFatal(e) =>
+        logger.error(
+          s"SDIL $operation failure ${sdilContext(path, startTime = Some(startTime))} error=${e.getMessage}",
+          e
+        )
+        Future.failed(e)
+      }
+  }
+
+  private def executePost[A](operation: String, path: String, body: JsValue)(implicit
+    hc: HeaderCarrier,
+    rds: HttpReads[A]
+  ): Future[A] = {
+    val urlString = s"$sdilUrl$path"
+    val startTime = System.currentTimeMillis()
+    logger.info(
+      s"SDIL $operation request ${sdilContext(path, startTime = Some(startTime))}"
+    )
+    http
+      .post(url"$urlString")(using outboundHeaderCarrier(hc))
+      .withBody(body)
+      .execute[HttpResponse](using rawHttpReads, ec)
+      .map { response =>
+        logger.info(
+          s"SDIL $operation response ${sdilContext(path, status = Some(response.status), startTime = Some(startTime))}"
+        )
+        rds.read("POST", urlString, response)
+      }
+      .recoverWith { case NonFatal(e) =>
+        logger.error(
+          s"SDIL $operation failure ${sdilContext(path, startTime = Some(startTime))} error=${e.getMessage}",
+          e
+        )
+        Future.failed(e)
+      }
+  }
 
   def retreiveRosmSubscription(utr: String, internalId: String)(implicit
     hc: HeaderCarrier
@@ -50,9 +129,10 @@ class SoftDrinksIndustryLevyConnector @Inject() (
     sdilSessionCache.fetchEntry[RosmWithUtr](internalId, SDILSessionKeys.ROSM_REGISTRATION).flatMap {
       case Some(rosmReg) if rosmReg.utr == utr => Future.successful(Right(rosmReg))
       case _                                   =>
-        http
-          .get(url"${getRosmRegistration(utr)}")
-          .execute[Option[RosmRegistration]]
+        executeGet[Option[RosmRegistration]](
+          operation = "retreiveRosmSubscription",
+          path = s"/rosm-registration/lookup/$utr"
+        )
           .flatMap {
             case Some(rosmReg) =>
               val rosmWithUtr = RosmWithUtr(
@@ -64,29 +144,25 @@ class SoftDrinksIndustryLevyConnector @Inject() (
               }
             case None          => Future.successful(Left(NoROSMRegistration))
           }
-          .recover { case _ =>
-            genericLogger.logger
-              .error(s"[SoftDrinksIndustryLevyConnector][retreiveRosmSubscription] - unexpected response for $utr")
+          .recover { case NonFatal(_) =>
             Left(UnexpectedResponseFromSDIL)
           }
     }
   }
-
-  private def getSubscriptionUrl(identifierValue: String, identifierType: String): String =
-    s"$sdilUrl/subscription/$identifierType/$identifierValue"
-
   def checkPendingQueue(utr: String)(implicit hc: HeaderCarrier): RegistrationResult[SubscriptionStatus] = EitherT {
-    val pendingQueueUrl = s"$sdilUrl/check-enrolment-status/$utr"
-    http
-      .get(url"$pendingQueueUrl")
-      .execute[HttpResponse]
+    val path = s"/check-enrolment-status/$utr"
+    executeGet[HttpResponse](
+      operation = "checkPendingQueue",
+      path = path
+    )(using hc, rawHttpReads)
       .map(_.status match {
         case OK        => Right(Registered)
         case ACCEPTED  => Right(Pending)
         case NOT_FOUND => Right(DoesNotExist)
         case status    =>
-          genericLogger.logger
-            .warn(s"Returned unexpected status $status for ${hc.requestId} when attempting to check pending queue")
+          logger.warn(
+            s"SDIL checkPendingQueue unexpected-response ${sdilContext(path, status = Some(status))}"
+          )
           Left(UnexpectedResponseFromSDIL)
       })
   }
@@ -97,9 +173,10 @@ class SoftDrinksIndustryLevyConnector @Inject() (
     sdilSessionCache.fetchEntry[OptRetrievedSubscription](internalId, SDILSessionKeys.SUBSCRIPTION).flatMap {
       case Some(optSubscription) => Future.successful(Right(optSubscription.optRetrievedSubscription))
       case None                  =>
-        http
-          .get(url"${getSubscriptionUrl(identifierValue: String, identifierType)}")
-          .execute[Option[RetrievedSubscription]]
+        executeGet[Option[RetrievedSubscription]](
+          operation = "retrieveSubscription",
+          path = s"/subscription/$identifierType/$identifierValue"
+        )
           .flatMap { optRetrievedSubscription =>
             sdilSessionCache
               .save(internalId, SDILSessionKeys.SUBSCRIPTION, OptRetrievedSubscription(optRetrievedSubscription))
@@ -107,10 +184,7 @@ class SoftDrinksIndustryLevyConnector @Inject() (
                 Right(optRetrievedSubscription)
               }
           }
-          .recover { case _ =>
-            genericLogger.logger.error(
-              s"[SoftDrinksIndustryLevyConnector][retrieveSubscription] - unexpected response for $identifierValue"
-            )
+          .recover { case NonFatal(_) =>
             Left(UnexpectedResponseFromSDIL)
           }
     }
@@ -119,30 +193,28 @@ class SoftDrinksIndustryLevyConnector @Inject() (
   def createSubscription(subscription: Subscription, safeId: String)(implicit
     hc: HeaderCarrier
   ): RegistrationResult[Unit] = EitherT {
-    val createUrl = s"$sdilUrl/subscription/utr/${subscription.utr}/$safeId"
-    http
-      .post(url"$createUrl")
-      .withBody(Json.toJson(subscription))
-      .execute[HttpResponse]
+    val path = s"/subscription/utr/${subscription.utr}/$safeId"
+    executePost[HttpResponse](
+      operation = "createSubscription",
+      path = path,
+      body = Json.toJson(subscription)
+    )(using hc, rawHttpReads)
       .map { resp =>
         resp.status match {
           case OK       => Right((): Unit)
           case CONFLICT =>
-            genericLogger.logger.warn(
-              s"[SoftDrinksIndustryLevyConnector][createSubscription] - CONFLICT returned for ${subscription.utr}"
+            logger.warn(
+              s"SDIL createSubscription conflict ${sdilContext(path, status = Some(resp.status))}"
             )
             Right((): Unit)
           case status   =>
-            genericLogger.logger.error(
-              s"[SoftDrinksIndustryLevyConnector][createSubscription] - unexpected response $status for ${subscription.utr}"
+            logger.error(
+              s"SDIL createSubscription unexpected-response ${sdilContext(path, status = Some(status))}"
             )
             Left(UnexpectedResponseFromSDIL)
         }
       }
-      .recover { case _ =>
-        genericLogger.logger.error(
-          s"[SoftDrinksIndustryLevyConnector][createSubscription] - unexpected response for ${subscription.utr}"
-        )
+      .recover { case NonFatal(_) =>
         Left(UnexpectedResponseFromSDIL)
       }
   }
