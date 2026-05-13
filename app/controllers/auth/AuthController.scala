@@ -36,6 +36,9 @@ class AuthController @Inject() (
   }
 
   def signOutNoSurvey: Action[AnyContent] = identify { _ =>
-    Redirect(config.signOutUrl, Map("continue" -> Seq(routes.SignedOutController.onPageLoad.url)))
+    Redirect(
+      config.signOutUrl,
+      Map("continue" -> Seq(s"${config.registrationBaseUrl}${routes.SignedOutController.onPageLoad.url}"))
+    )
   }
 }
