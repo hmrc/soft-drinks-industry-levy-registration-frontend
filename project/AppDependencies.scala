@@ -8,7 +8,7 @@ object AppDependencies {
 
   val compile: Seq[ModuleID] = Seq(
     play.sbt.PlayImport.ws,
-    "uk.gov.hmrc"       %% s"play-frontend-hmrc-$playVersion"            % "13.4.0",
+    "uk.gov.hmrc"       %% s"play-frontend-hmrc-$playVersion"            % "13.7.0",
     "uk.gov.hmrc"       %% s"bootstrap-frontend-$playVersion"            % bootstrapVersion,
     "uk.gov.hmrc"       %% s"play-conditional-form-mapping-$playVersion" % "3.5.0",
     "uk.gov.hmrc.mongo" %% s"hmrc-mongo-$playVersion"                    % hmrcMongoVersion,
@@ -24,7 +24,7 @@ object AppDependencies {
     "org.scalatestplus.play" %% "scalatestplus-play"            % "7.0.2",
     "org.jsoup"               % "jsoup"                         % "1.22.1",
     "io.github.wolfendale"   %% "scalacheck-gen-regexp"         % "1.1.0"
-  ).map(_ % "test, it")
+  ).map(_ % Test)
 
   def all(): Seq[ModuleID] = compile ++ test
 }
