@@ -113,7 +113,7 @@ class EnterBusinessDetailsViewSpec extends ViewSpecHelper {
         errorSummary
           .select("a")
           .attr("href") mustBe "#utr"
-        errorSummary.text() mustBe Messages("Unique Taxpayer Reference (UTR) must be 10 numbers Please enter a value")
+        errorSummary.text() mustBe Messages("Unique Taxpayer Reference (UTR) must be 10 numbers Enter a value")
       }
     }
 
